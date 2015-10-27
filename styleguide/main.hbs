@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/styleguide/normalize.css">
+    <link rel="stylesheet/less" type="text/css" href="/styleguide.less">
+    <script type="text/javascript" src="/styleguide/less.min.js"></script>
+    <script type="text/javascript" src="/styleguide/jquery.min.js"></script>
+    <script type="text/javascript">
+      (function () {
+        function resizeIframes() {
+          $('.sg-example-file-body iframe').each(function () {
+            $(this).height($(this.contentDocument.body).outerHeight(true));
+          });
+        }
+
+        resizeIframes();
+        setInterval(resizeIframes, 500);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="sg-title">
+      Styleguide{{#with name}}: {{this}}{{/with}}
+
+      <a href="?seed={{seed}}">#{{seed}}</a>
+
+      {{#if requstedSeed}}
+        - <a href="?">Randomize</a>
+      {{/if}}
+    </div>
+
+    <div class="sg-menu">
+      <ul class="sg-group-list">
+        {{#each groups}}
+          <li class="sg-group">
+            <span class="sg-group-name">{{name}}</span>
+            <ul class="sg-example-list">
+              {{#each examples}}
+                <li class="sg-example">
+                  <a href="{{path}}{{#with ../../requestedSeed}}?seed={{this}}{{/with}}">{{name}}</a>
+                </li>
+              {{/each}}
+            </ul>
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+
+    <div class="sg-content">
+      {{#each files}}
+        <div class="sg-example-file">
+          <div class="sg-example-file-name">{{name}}</div>
+          <div class="sg-example-file-body">
+            <iframe src="{{path}}?seed={{seed}}"></iframe>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </body>
+</html>

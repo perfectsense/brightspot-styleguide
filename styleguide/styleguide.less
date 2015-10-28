@@ -17,8 +17,31 @@ a {
   color: white;
   font-weight: bold;
   height: 48px;
+  left: 0;
   margin: 0;
   padding: 12px 24px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.sg-available-device-list {
+  line-height: 48px;
+  position: fixed;
+  right: 24px;
+  top: 0;
+  z-index: 1;
+
+  a {
+    color: white;
+    margin-left: 6px;
+    opacity: 0.5;
+
+    &.sg-available-device-selected {
+      opacity: 1;
+    }
+  }
 }
 
 .sg-menu {
@@ -47,26 +70,43 @@ a {
 }
 
 .sg-content {
-  bottom: 0;
+  margin: 48px 0 0 @menu-width;
   padding: 12px 24px 12px 12px;
-  position: absolute;
-  left: @menu-width;
-  right: 0;
-  top: 48px;
 }
 
-.sg-example-file-name {
+.sg-file-name {
   font-weight: bold;
   margin-bottom: 12px;
 }
 
-.sg-example-file-body {
-  border: 1px solid black;
+.sg-file-body {
+  background-image: linear-gradient(-45deg,#f1f1f1,#f1f1f1 25%,#e9e9e9 25%,#e9e9e9 50%,#f1f1f1 50%,#f1f1f1 75%,#e9e9e9 75%);
+  background-size: 50px 50px;
   margin-bottom: 24px;
+  overflow: hidden;
+  padding: 24px;
 
   iframe {
     border: none;
+    display: block;
     height: 0;
     width: 100%;
   }
+}
+
+.sg-device {
+  float: left;
+  margin-right: 24px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  iframe {
+    height: 100%;
+  }
+}
+
+.sg-device-name {
+  margin-bottom: 12px;
 }

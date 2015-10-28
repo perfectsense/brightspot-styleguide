@@ -10,7 +10,7 @@
     <script type="text/javascript">
       (function () {
         function resizeIframes() {
-          $('.sg-example-file-body iframe').each(function () {
+          $('.sg-file-body > iframe').each(function () {
             $(this).height($(this.contentDocument.body).outerHeight(true));
           });
         }
@@ -20,6 +20,21 @@
 
         $(document).ready(function () {
           $('.sg-menu').stick_in_parent();
+
+          $('.sg-file-body').each(function () {
+            var $body = $(this);
+            var $devices = $body.find('> .sg-device');
+            
+            if ($devices.length > 0) {
+              var width = 50;
+              
+              $devices.each(function () {
+                width += $(this).outerWidth(true);
+              });
+
+              $body.outerWidth(width);
+            }
+          });
         });
       })();
     </script>
@@ -28,12 +43,22 @@
     <div class="sg-title">
       Styleguide{{#each names}}: {{this}}{{/each}}
 
-      <a href="?seed={{seed}}">#{{seed}}</a>
+      <a href="{{seedUrl}}">#{{seed}}</a>
 
-      {{#if requestedSeed}}
-        - <a href="?">Randomize</a>
-      {{/if}}
+      {{#with randomizeUrl}}
+        - <a href="{{this}}"><i class="fa fa-refresh"></i> Randomize</a>
+      {{/with}}
     </div>
+
+    {{#with availableDevices}}
+      <div class="sg-available-device-list">
+        <a href="{{../resetDisplayDevicesUrl}}"><i class="fa fa-ban"></i></a>
+
+        {{#each this}}
+          <a{{#if selected}} class="sg-available-device-selected"{{/if}} href="{{url}}"><i class="{{device.icon}}"></i></a>
+        {{/each}}
+      </div>
+    {{/with}}
 
     <div class="sg-menu">
       <ul class="sg-group-list">
@@ -43,7 +68,7 @@
             <ul class="sg-example-list">
               {{#each examples}}
                 <li class="sg-example">
-                  <a href="{{path}}{{#with ../../requestedSeed}}?seed={{this}}{{/with}}">{{name}}</a>
+                  <a href="{{url}}">{{name}}</a>
                 </li>
               {{/each}}
             </ul>
@@ -53,14 +78,28 @@
     </div>
 
     <div class="sg-content">
-      {{#each files}}
-        <div class="sg-example-file">
-          <div class="sg-example-file-name">{{name}}</div>
-          <div class="sg-example-file-body">
-            <iframe src="{{path}}?seed={{seed}}"></iframe>
+      <div class="sg-file-list">
+        {{#each files}}
+          <div class="sg-file">
+            <div class="sg-file-name">{{name}}</div>
+            <div class="sg-file-body">
+              {{#with ../displayDevices}}
+                {{#each this}}
+                  <div class="sg-device">
+                    <div class="sg-device-name">
+                      <i class="{{device.icon}}"></i> {{device.name}}
+                    </div>
+                    <iframe style="height: {{device.height}}px; width: {{device.width}}px;" src="{{../../path}}?device=true&amp;seed={{../../../seed}}"></iframe>
+                  </div>
+                {{/each}}
+
+              {{else}}
+                <iframe src="{{path}}?seed={{../seed}}"></iframe>
+              {{/with}}
+            </div>
           </div>
-        </div>
-      {{/each}}
+        {{/each}}
+      </div>
     </div>
   </body>
 </html>

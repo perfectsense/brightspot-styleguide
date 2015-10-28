@@ -2,7 +2,9 @@
 <html>
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <script>
       if (localStorage.getItem('useLESS')) {
         document.write('<link rel="stylesheet/less" type="text/css" href="/assets/styles/main.less" />');
@@ -25,8 +27,18 @@
         document.write('<script src="/assets/scripts/main.min.js"></scr'+'ipt>');
       }
     </script>
+
   </head>
-  <body style="margin: {{#if device}}0{{else}}24px{{/if}}; padding: 0;">
+
+  {{!-- if we need a body, render a styleguide body wrapper. Otherwise, this is done by the top level body renderer --}}
+  {{#if data.body}}
+  <body class="sg-body">
+  {{/if}}
+
     {{data}}
+
+  {{#if data.body}}
   </body>
+  {{/if}}
+
 </html>

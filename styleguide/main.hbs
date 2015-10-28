@@ -6,6 +6,7 @@
     <link rel="stylesheet/less" type="text/css" href="/styleguide.less">
     <script type="text/javascript" src="/styleguide/_/less/dist/less.min.js"></script>
     <script type="text/javascript" src="/styleguide/_/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/styleguide/_/sticky-kit/jquery.sticky-kit.min.js"></script>
     <script type="text/javascript">
       (function () {
         function resizeIframes() {
@@ -16,6 +17,10 @@
 
         resizeIframes();
         setInterval(resizeIframes, 500);
+
+        $(document).ready(function () {
+          $('.sg-menu').stick_in_parent();
+        });
       })();
     </script>
   </head>

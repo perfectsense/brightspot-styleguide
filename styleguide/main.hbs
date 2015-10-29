@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="/styleguide/_/normalize.css/normalize.css">
-    <link rel="stylesheet" type="text/css" href="/styleguide/_/font-awesome/css/font-awesome.min.css"></script>
+    <link rel="stylesheet" type="text/css" href="/styleguide/dev/normalize.css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/styleguide/dev/font-awesome/css/font-awesome.min.css"></script>
     <link rel="stylesheet/less" type="text/css" href="/styleguide.less">
-    <script type="text/javascript" src="/styleguide/_/less/dist/less.min.js"></script>
-    <script type="text/javascript" src="/styleguide/_/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="/styleguide/_/sticky-kit/jquery.sticky-kit.min.js"></script>
+    <script type="text/javascript" src="/styleguide/dev/less/dist/less.min.js"></script>
+    <script type="text/javascript" src="/styleguide/dev/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/styleguide/dev/sticky-kit/jquery.sticky-kit.min.js"></script>
     <script type="text/javascript">
       (function () {
         function resizeIframes() {
@@ -89,12 +89,12 @@
                     <div class="sg-device-name">
                       <i class="{{device.icon}}"></i> {{device.name}}
                     </div>
-                    <iframe style="height: {{device.height}}px; width: {{device.width}}px;" src="{{../../path}}?device=true&amp;seed={{../../../seed}}"></iframe>
+                    <iframe style="height: {{device.height}}px; width: {{device.width}}px;" src="{{../../url}}?device=true&amp;seed={{../../../seed}}"></iframe>
                   </div>
                 {{/each}}
 
               {{else}}
-                <iframe src="{{path}}?seed={{../seed}}"></iframe>
+                <iframe src="{{url}}?seed={{../seed}}"></iframe>
               {{/with}}
             </div>
           </div>

@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="/styleguide/dev/normalize.css/normalize.css">
-    <link rel="stylesheet" type="text/css" href="/styleguide/dev/font-awesome/css/font-awesome.min.css"></script>
-    <link rel="stylesheet/less" type="text/css" href="/styleguide.less">
-    <script type="text/javascript" src="/styleguide/dev/less/dist/less.min.js"></script>
-    <script type="text/javascript" src="/styleguide/dev/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="/styleguide/dev/sticky-kit/jquery.sticky-kit.min.js"></script>
+{{#> layout}}
+  {{#*inline 'head'}}
     <script type="text/javascript">
       (function () {
         function resizeIframes() {
@@ -38,68 +31,39 @@
         });
       })();
     </script>
-  </head>
-  <body>
-    <div class="sg-title">
-      Styleguide{{#each names}}: {{this}}{{/each}}
+  {{/inline}}
 
-      <a href="{{seedUrl}}">#{{seed}}</a>
+  {{#*inline 'content'}}
+    <div class="sg-file-list">
+      {{#each files}}
+        <div class="sg-file">
+          <div class="sg-file-name"><a href="{{url}}">{{name}}</a></div>
 
-      {{#with randomizeUrl}}
-        - <a href="{{this}}"><i class="fa fa-refresh"></i> Randomize</a>
-      {{/with}}
-    </div>
-
-    {{#with availableDevices}}
-      <div class="sg-available-device-list">
-        <a href="{{../resetDisplayDevicesUrl}}"><i class="fa fa-ban"></i></a>
-
-        {{#each this}}
-          <a{{#if selected}} class="sg-available-device-selected"{{/if}} href="{{url}}"><i class="{{device.icon}}"></i></a>
-        {{/each}}
-      </div>
-    {{/with}}
-
-    <div class="sg-menu">
-      <ul class="sg-group-list">
-        {{#each groups}}
-          <li class="sg-group">
-            <span class="sg-group-name">{{name}}</span>
-            <ul class="sg-example-list">
-              {{#each examples}}
-                <li class="sg-example">
-                  <a href="{{url}}">{{name}}</a>
-                </li>
+          {{#with options}}
+            <ul class="sg-file-option-list">
+              {{#each this}}
+                <li>{{@key}}: {{this}}</li>
               {{/each}}
             </ul>
-          </li>
-        {{/each}}
-      </ul>
-    </div>
+          {{/with}}
 
-    <div class="sg-content">
-      <div class="sg-file-list">
-        {{#each files}}
-          <div class="sg-file">
-            <div class="sg-file-name"><a href="{{url}}">{{name}}</a></div>
-            <div class="sg-file-body">
-              {{#with ../displayDevices}}
-                {{#each this}}
-                  <div class="sg-device">
-                    <div class="sg-device-name">
-                      <i class="{{device.icon}}"></i> {{device.name}}
-                    </div>
-                    <iframe style="height: {{device.height}}px; width: {{device.width}}px;" src="{{../../url}}?device=true&amp;seed={{../../../seed}}"></iframe>
+          <div class="sg-file-body">
+            {{#with ../displayDevices}}
+              {{#each this}}
+                <div class="sg-device">
+                  <div class="sg-device-name">
+                    <i class="{{device.icon}}"></i> {{device.name}}
                   </div>
-                {{/each}}
+                  <iframe style="height: {{device.height}}px; width: {{device.width}}px;" src="{{../../url}}?device=true&amp;seed={{../../../seed}}"></iframe>
+                </div>
+              {{/each}}
 
-              {{else}}
-                <iframe src="{{url}}?seed={{../seed}}"></iframe>
-              {{/with}}
-            </div>
+            {{else}}
+              <iframe src="{{url}}?seed={{../seed}}"></iframe>
+            {{/with}}
           </div>
-        {{/each}}
-      </div>
+        </div>
+      {{/each}}
     </div>
-  </body>
-</html>
+  {{/inline}}
+{{/layout}}

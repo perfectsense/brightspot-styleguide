@@ -1,0 +1,11 @@
+{{#> layout}}
+  {{#*inline 'head'}}{{/inline}}
+
+  {{#*inline 'content'}}
+    <li class="sg-less-variable-list">
+      {{#each lessVariables}}
+        <li class="sg-less-variable">{{name}}: {{value}}</li>
+      {{/each}}
+    </table>
+  {{/inline}}
+{{/layout}}

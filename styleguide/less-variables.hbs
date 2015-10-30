@@ -2,10 +2,23 @@
   {{#*inline 'head'}}{{/inline}}
 
   {{#*inline 'content'}}
-    <li class="sg-less-variable-list">
-      {{#each lessVariables}}
-        <li class="sg-less-variable">{{name}}: {{value}}</li>
-      {{/each}}
+    <table class="sg-less-variable-list">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Value</th>
+          <th>Path</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each lessVariables}}
+          <tr class="sg-less-variable">
+            <td>{{name}}</td>
+            <td>{{value}}</td>
+            <td>{{path}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
     </table>
   {{/inline}}
 {{/layout}}

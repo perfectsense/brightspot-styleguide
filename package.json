@@ -17,6 +17,7 @@
     "minimist": "^1.1.2",
     "moment": "^2.10.6",
     "normalize.css": "^3.0.3",
+    "npm-font-open-sans": "^0.0.3",
     "recursive-readdir-sync": "^1.0.6",
     "terminal-kit": "^0.15.10",
     "traverse": "^0.6.6",

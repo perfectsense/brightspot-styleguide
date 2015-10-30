@@ -1,0 +1,14 @@
+{{#> layout}}
+  {{#*inline 'head'}}{{/inline}}
+
+  {{#*inline 'content'}}
+    <div class="sg-design-name">{{name}}</div>
+    <div class="sg-design-item-list">
+      {{#each items}}
+        <div class="sg-design-item">
+          {{this}}
+        </div>
+      {{/each}}
+    </div>
+  {{/inline}}
+{{/layout}}

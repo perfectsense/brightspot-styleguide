@@ -6,7 +6,6 @@
   },
   "dependencies": {
     "chance": "^0.8.0",
-    "cors": "^2.7.1",
     "express": "^4.13.1",
     "font-awesome": "^4.4.0",
     "geopattern": "1.2.3",

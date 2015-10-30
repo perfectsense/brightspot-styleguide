@@ -6,6 +6,8 @@
   },
   "dependencies": {
     "chance": "^0.8.0",
+    "connect-fonts": "2.0.2",
+    "connect-fonts-opensans": "0.0.5",
     "express": "^4.13.1",
     "font-awesome": "^4.4.0",
     "geopattern": "1.2.3",
@@ -17,7 +19,6 @@
     "minimist": "^1.1.2",
     "moment": "^2.10.6",
     "normalize.css": "^3.0.3",
-    "npm-font-open-sans": "^0.0.3",
     "recursive-readdir-sync": "^1.0.6",
     "terminal-kit": "^0.15.10",
     "traverse": "^0.6.6",

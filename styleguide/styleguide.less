@@ -5,6 +5,7 @@ body {
   font-size: 18px;
   line-height: 24px;
   margin: 48px 0 20px 0;
+  padding: 0;
 }
 
 a {
@@ -139,7 +140,29 @@ a {
 .sg-design-item-value {
   display: inline;
 
+  pre {
+    display: inline;
+  }
+
   &:before {
     content: ' - ';
   }
+}
+
+.sg-design-item-example {
+  background: #eee;
+  padding: 10px;
+}
+
+.sg-space-example {
+  background: black;
+  height: 1px;
+  width: 300px;
+}
+
+.sg-border-example {
+  background: white;
+  margin-top: 1rem;
+  height: 10px;
+  width: 300px;
 }

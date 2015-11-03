@@ -1,56 +1,56 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="/node-modules/normalize.css/normalize.css">
-    <link rel="stylesheet" type="text/css" href="/node-modules/font-awesome/css/font-awesome.min.css"></script>
-    <link rel="stylesheet" type="text/css" href="/opensans-bold,opensans-bolditalic,opensans-italic,opensans-regular/fonts.css">
+    <head>
+        <link rel="stylesheet" type="text/css" href="/node-modules/normalize.css/normalize.css">
+        <link rel="stylesheet" type="text/css" href="/node-modules/font-awesome/css/font-awesome.min.css"></script>
+        <link rel="stylesheet" type="text/css" href="/opensans-bold,opensans-bolditalic,opensans-italic,opensans-regular/fonts.css">
 
-    <link rel="stylesheet" type="text/css" href="/styleguide.css">
-    
-    <script type="text/javascript" src="/node-modules/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="/node-modules/sticky-kit/jquery.sticky-kit.min.js"></script>
-    {{> head}}
-  </head>
-  <body>
-    <div class="sg-title">
-      Styleguide{{#each names}}: {{this}}{{/each}}
+        <link rel="stylesheet" type="text/css" href="/styleguide.css">
+        
+        <script type="text/javascript" src="/node-modules/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript" src="/node-modules/sticky-kit/jquery.sticky-kit.min.js"></script>
+        {{> head}}
+    </head>
+    <body>
+        <div class="sg-title">
+            Styleguide{{#each names}}: {{this}}{{/each}}
 
-      <a href="{{seedUrl}}">#{{seed}}</a>
+            <a href="{{seedUrl}}">#{{seed}}</a>
 
-      {{#with randomizeUrl}}
-        - <a href="{{this}}"><i class="fa fa-refresh"></i> Randomize</a>
-      {{/with}}
-    </div>
+            {{#with randomizeUrl}}
+                - <a href="{{this}}"><i class="fa fa-refresh"></i> Randomize</a>
+            {{/with}}
+        </div>
 
-    {{#with availableDevices}}
-      <div class="sg-available-device-list">
-        <a href="{{../resetDisplayDevicesUrl}}"><i class="fa fa-ban"></i></a>
+        {{#with availableDevices}}
+            <div class="sg-available-device-list">
+                <a href="{{../resetDisplayDevicesUrl}}"><i class="fa fa-ban"></i></a>
 
-        {{#each this}}
-          <a{{#if selected}} class="sg-available-device-selected"{{/if}} href="{{url}}"><i class="{{device.icon}}"></i></a>
-        {{/each}}
-      </div>
-    {{/with}}
+                {{#each this}}
+                    <a{{#if selected}} class="sg-available-device-selected"{{/if}} href="{{url}}"><i class="{{device.icon}}"></i></a>
+                {{/each}}
+            </div>
+        {{/with}}
 
-    <div class="sg-menu">
-      <ul class="sg-group-list">
-        {{#each groups}}
-          <li class="sg-group">
-            <div class="sg-group-name">{{name}}</div>
-            <ul class="sg-example-list">
-              {{#each examples}}
-                <li class="sg-example">
-                  <a href="{{url}}">{{name}}</a>
-                </li>
-              {{/each}}
+        <div class="sg-menu">
+            <ul class="sg-group-list">
+                {{#each groups}}
+                    <li class="sg-group">
+                        <div class="sg-group-name">{{name}}</div>
+                        <ul class="sg-example-list">
+                            {{#each examples}}
+                                <li class="sg-example">
+                                    <a href="{{url}}">{{name}}</a>
+                                </li>
+                            {{/each}}
+                        </ul>
+                    </li>
+                {{/each}}
             </ul>
-          </li>
-        {{/each}}
-      </ul>
-    </div>
+        </div>
 
-    <div class="sg-content">
-      {{> content}}
-    </div>
-  </body>
+        <div class="sg-content">
+            {{> content}}
+        </div>
+    </body>
 </html>

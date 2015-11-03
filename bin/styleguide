@@ -8,7 +8,7 @@ var config = require('minimist')(process.argv.slice(2));
 var server = require('../lib/server');
 
 if (config._.length > 0) {
-  config['project-path'] = config._[0];
+    config['project-path'] = config._[0];
 }
 
 server(config);

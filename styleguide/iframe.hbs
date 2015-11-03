@@ -1,44 +1,44 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script>
-      if (localStorage.getItem('useLESS')) {
-        document.write('<link rel="stylesheet/less" type="text/css" href="/assets/styles/main.less" />');
-        document.write('<script src="/assets/scripts/less.js"></scr'+'ipt>');
+        <script>
+            if (localStorage.getItem('useLESS')) {
+                document.write('<link rel="stylesheet/less" type="text/css" href="/assets/styles/main.less" />');
+                document.write('<script src="/assets/scripts/less.js"></scr'+'ipt>');
 
-      } else {
-        document.write('<link rel="stylesheet" type="text/css" href="/assets/styles/main.min.css" />');
-      }
+            } else {
+                document.write('<link rel="stylesheet" type="text/css" href="/assets/styles/main.min.css" />');
+            }
 
-      if (localStorage.getItem('useSystemJS')) {
-        document.write('<script src="/assets/scripts/system.js"></scr'+'ipt>');
-        document.write('<script src="/assets/scripts/config.js"></scr'+'ipt>');
+            if (localStorage.getItem('useSystemJS')) {
+                document.write('<script src="/assets/scripts/system.js"></scr'+'ipt>');
+                document.write('<script src="/assets/scripts/config.js"></scr'+'ipt>');
 
-        document.addEventListener('DOMContentLoaded', function (event) {
-          System.config({ baseURL: '/assets/scripts' });
-          System.import('main');
-        });
+                document.addEventListener('DOMContentLoaded', function (event) {
+                    System.config({ baseURL: '/assets/scripts' });
+                    System.import('main');
+                });
 
-      } else {
-        document.write('<script src="/assets/scripts/main.min.js"></scr'+'ipt>');
-      }
-    </script>
+            } else {
+                document.write('<script src="/assets/scripts/main.min.js"></scr'+'ipt>');
+            }
+        </script>
 
-  </head>
+    </head>
 
-  {{!-- if we need a body, render a styleguide body wrapper. Otherwise, this is done by the top level body renderer --}}
-  {{#if data.body}}
-  <body class="sg-body">
-  {{/if}}
+    {{!-- if we need a body, render a styleguide body wrapper. Otherwise, this is done by the top level body renderer --}}
+    {{#if data.body}}
+    <body class="sg-body">
+    {{/if}}
 
-    {{data}}
+        {{data}}
 
-  {{#if data.body}}
-  </body>
-  {{/if}}
+    {{#if data.body}}
+    </body>
+    {{/if}}
 
 </html>

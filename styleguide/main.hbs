@@ -1,69 +1,69 @@
 {{#> layout}}
-  {{#*inline 'head'}}
-    <script type="text/javascript">
-      (function () {
-        function resizeIframes() {
-          $('.sg-file-body > iframe').each(function () {
-            $(this).height($(this.contentDocument.body).outerHeight(true));
-          });
-        }
+    {{#*inline 'head'}}
+        <script type="text/javascript">
+            (function () {
+                function resizeIframes() {
+                    $('.sg-file-body > iframe').each(function () {
+                        $(this).height($(this.contentDocument.body).outerHeight(true));
+                    });
+                }
 
-        resizeIframes();
-        setInterval(resizeIframes, 500);
+                resizeIframes();
+                setInterval(resizeIframes, 500);
 
-        $(document).ready(function () {
-          $('.sg-menu').stick_in_parent();
+                $(document).ready(function () {
+                    $('.sg-menu').stick_in_parent();
 
-          $('.sg-file-body').each(function () {
-            var $body = $(this);
-            var $devices = $body.find('> .sg-device');
-            
-            if ($devices.length > 0) {
-              var width = 50;
-              
-              $devices.each(function () {
-                width += $(this).outerWidth(true);
-              });
+                    $('.sg-file-body').each(function () {
+                        var $body = $(this);
+                        var $devices = $body.find('> .sg-device');
+                        
+                        if ($devices.length > 0) {
+                            var width = 50;
+                            
+                            $devices.each(function () {
+                                width += $(this).outerWidth(true);
+                            });
 
-              $body.outerWidth(width);
-            }
-          });
-        });
-      })();
-    </script>
-  {{/inline}}
+                            $body.outerWidth(width);
+                        }
+                    });
+                });
+            })();
+        </script>
+    {{/inline}}
 
-  {{#*inline 'content'}}
-    <div class="sg-file-list">
-      {{#each files}}
-        <div class="sg-file">
-          <div class="sg-file-name"><a href="{{url}}">{{name}}</a></div>
+    {{#*inline 'content'}}
+        <div class="sg-file-list">
+            {{#each files}}
+                <div class="sg-file">
+                    <div class="sg-file-name"><a href="{{url}}">{{name}}</a></div>
 
-          {{#with options}}
-            <ul class="sg-file-option-list">
-              {{#each this}}
-                <li>{{@key}}: {{this}}</li>
-              {{/each}}
-            </ul>
-          {{/with}}
+                    {{#with options}}
+                        <ul class="sg-file-option-list">
+                            {{#each this}}
+                                <li>{{@key}}: {{this}}</li>
+                            {{/each}}
+                        </ul>
+                    {{/with}}
 
-          <div class="sg-file-body">
-            {{#with ../displayDevices}}
-              {{#each this}}
-                <div class="sg-device">
-                  <div class="sg-device-name">
-                    <i class="{{device.icon}}"></i> {{device.name}}
-                  </div>
-                  <iframe style="height: {{device.height}}px; width: {{device.width}}px;" src="{{../../url}}?device=true&amp;seed={{../../../seed}}"></iframe>
+                    <div class="sg-file-body">
+                        {{#with ../displayDevices}}
+                            {{#each this}}
+                                <div class="sg-device">
+                                    <div class="sg-device-name">
+                                        <i class="{{device.icon}}"></i> {{device.name}}
+                                    </div>
+                                    <iframe style="height: {{device.height}}px; width: {{device.width}}px;" src="{{../../url}}?device=true&amp;seed={{../../../seed}}"></iframe>
+                                </div>
+                            {{/each}}
+
+                        {{else}}
+                            <iframe src="{{url}}?seed={{../seed}}"></iframe>
+                        {{/with}}
+                    </div>
                 </div>
-              {{/each}}
-
-            {{else}}
-              <iframe src="{{url}}?seed={{../seed}}"></iframe>
-            {{/with}}
-          </div>
+            {{/each}}
         </div>
-      {{/each}}
-    </div>
-  {{/inline}}
+    {{/inline}}
 {{/layout}}

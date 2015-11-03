@@ -1,37 +1,37 @@
 {
-  "name": "brightspot-js-styleguide",
-  "version": "1.0.0",
-  "bin": {
-    "styleguide": "bin/styleguide"
-  },
-  "dependencies": {
-    "chance": "^0.8.0",
-    "connect-fonts": "2.0.2",
-    "connect-fonts-opensans": "0.0.5",
-    "express": "^4.13.1",
-    "font-awesome": "^4.4.0",
-    "geopattern": "1.2.3",
-    "handlebars": "^4.0.3",
-    "jquery": "2.1.4",
-    "less": "^2.5.3",
-    "less-middleware": "^2.0.1",
-    "lodash": "^3.9.3",
-    "md5": "2.0.0",
-    "minimist": "^1.1.2",
-    "moment": "^2.10.6",
-    "normalize.css": "^3.0.3",
-    "recursive-readdir-sync": "^1.0.6",
-    "terminal-kit": "^0.15.10",
-    "traverse": "^0.6.6",
-    "xml2json": "^0.8.1"
-  },
-  "devDependencies": {
-    "napa": "^2.0.2"
-  },
-  "scripts": {
-    "install": "napa"
-  },
-  "napa": {
-    "sticky-kit": "leafo/sticky-kit#v1.1.2"
-  }
+    "name": "brightspot-js-styleguide",
+    "version": "1.0.0",
+    "bin": {
+        "styleguide": "bin/styleguide"
+    },
+    "dependencies": {
+        "chance": "^0.8.0",
+        "connect-fonts": "2.0.2",
+        "connect-fonts-opensans": "0.0.5",
+        "express": "^4.13.1",
+        "font-awesome": "^4.4.0",
+        "geopattern": "1.2.3",
+        "handlebars": "^4.0.3",
+        "jquery": "2.1.4",
+        "less": "^2.5.3",
+        "less-middleware": "^2.0.1",
+        "lodash": "^3.9.3",
+        "md5": "2.0.0",
+        "minimist": "^1.1.2",
+        "moment": "^2.10.6",
+        "normalize.css": "^3.0.3",
+        "recursive-readdir-sync": "^1.0.6",
+        "terminal-kit": "^0.15.10",
+        "traverse": "^0.6.6",
+        "xml2json": "^0.8.1"
+    },
+    "devDependencies": {
+        "napa": "^2.0.2"
+    },
+    "scripts": {
+        "install": "napa"
+    },
+    "napa": {
+        "sticky-kit": "leafo/sticky-kit#v1.1.2"
+    }
 }

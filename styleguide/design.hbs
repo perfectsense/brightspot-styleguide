@@ -1,21 +1,19 @@
 {{#> layout}}
-  {{#*inline 'head'}}{{/inline}}
+    {{#*inline 'head'}}{{/inline}}
 
-  {{#*inline 'content'}}
-    <div class="sg-design-name">{{name}}</div>
-    <div class="sg-design-item-list">
-      {{#each items}}
-        
-            {{#if this.description}}
-              <div class="sg-design-description">
-                {{this.description}}
-              </div>
-            {{else}}
-              {{this}}  
-            {{/if}}
-        
-      {{/each}}
-    </div>
-  {{/inline}}
+    {{#*inline 'content'}}
+        <div class="sg-design-name">{{name}}</div>
+        <div class="sg-design-item-list">
+            {{#each items}}
+                {{#if this.description}}
+                    <div class="sg-design-description">
+                        {{this.description}}
+                    </div>
 
+                {{else}}
+                    {{this}}    
+                {{/if}}
+            {{/each}}
+        </div>
+    {{/inline}}
 {{/layout}}

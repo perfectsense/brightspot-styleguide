@@ -36,7 +36,7 @@
             <form class="sg-library-list">
                 <select onchange="window.location.href = $(this).val();">
                     {{#each availableLibraries}}
-                        <option value="{{urlPrefix}}"{{#if selected}} selected{{/if}}>{{name}}</option>
+                        <option value="{{library.urlPrefix}}"{{#if selected}} selected{{/if}}>{{library.name}}</option>
                     {{/each}}
                 </select>
             </form>

@@ -33,6 +33,14 @@
         {{/with}}
 
         <div class="sg-menu">
+            <form class="sg-library-list">
+                <select onchange="window.location.href = $(this).val();">
+                    {{#each availableLibraries}}
+                        <option value="{{urlPrefix}}"{{#if selected}} selected{{/if}}>{{name}}</option>
+                    {{/each}}
+                </select>
+            </form>
+
             <ul class="sg-group-list">
                 {{#each groups}}
                     <li class="sg-group">

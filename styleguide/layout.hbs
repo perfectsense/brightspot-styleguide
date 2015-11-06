@@ -6,7 +6,7 @@
         <link rel="stylesheet" type="text/css" href="/opensans-bold,opensans-bolditalic,opensans-italic,opensans-regular/fonts.css">
 
         <link rel="stylesheet" type="text/css" href="/styleguide.css">
-        
+
         <script type="text/javascript" src="/node-modules/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="/node-modules/sticky-kit/jquery.sticky-kit.min.js"></script>
         {{> head}}
@@ -47,9 +47,22 @@
                         <div class="sg-group-name">{{name}}</div>
                         <ul class="sg-example-list">
                             {{#each examples}}
-                                <li class="sg-example">
-                                    <a href="{{url}}">{{name}}</a>
-                                </li>
+                                {{#if ../deep}}
+                                    <li class="sg-example-category">
+                                        {{@key}}
+                                        <ul>
+                                        {{#each this}}
+                                            <li class="sg-example">
+                                                <a href="{{url}}">{{name}}</a>
+                                            </li>
+                                        {{/each}}
+                                        </ul>
+                                    </li>
+                                {{else}}
+                                    <li class="sg-example">
+                                        <a href="{{url}}">{{name}}</a>
+                                    </li>
+                                {{/if}}
                             {{/each}}
                         </ul>
                     </li>

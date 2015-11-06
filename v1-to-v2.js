@@ -1,5 +1,6 @@
 var fs = require('fs');
 var _ = require('lodash');
+var path = require('path');
 var rrs = require('recursive-readdir-sync');
 var traverse = require('traverse');
 
@@ -109,6 +110,20 @@ rrs(rootPath).forEach(function (filePath) {
             }
         });
 
-        fs.writeFileSync(filePath, JSON.stringify(data, null, '  '), 'utf8');
+        // Add the proper prefix to _template entry.
+        traverse(data).forEach(function (value) {
+            if (this.key === '_template') {
+                if (value.indexOf('bsp-') > -1 ||
+                        fs.existsSync(path.join(rootPath, '..', 'src', 'main', 'webapp', 'render', value))) {
+
+                    this.update('/render/' + value);
+
+                } else {
+                    this.update('/assets/templates/base/' + value);
+                }
+            }
+        });
+
+        fs.writeFileSync(filePath, JSON.stringify(data, null, '  ') + '\n', 'utf8');
     }
 });

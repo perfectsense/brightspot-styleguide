@@ -19,14 +19,12 @@
         "md5": "2.0.0",
         "minimist": "^1.1.2",
         "moment": "^2.10.6",
+        "napa": "^2.0.2",
         "normalize.css": "^3.0.3",
         "recursive-readdir-sync": "^1.0.6",
         "terminal-kit": "^0.15.10",
         "traverse": "^0.6.6",
         "xml2json": "^0.8.1"
-    },
-    "devDependencies": {
-        "napa": "^2.0.2"
     },
     "scripts": {
         "install": "napa"

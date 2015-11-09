@@ -49,22 +49,9 @@
                         <div class="sg-group-name">{{name}}</div>
                         <ul class="sg-example-list">
                             {{#each examples}}
-                                {{#if ../deep}}
-                                    <li class="sg-example-category">
-                                        {{@key}}
-                                        <ul>
-                                        {{#each this}}
-                                            <li class="sg-example">
-                                                <a href="{{url}}">{{name}}</a>
-                                            </li>
-                                        {{/each}}
-                                        </ul>
-                                    </li>
-                                {{else}}
-                                    <li class="sg-example">
-                                        <a href="{{url}}">{{name}}</a>
-                                    </li>
-                                {{/if}}
+                                <li class="sg-example">
+                                    <a href="{{url}}">{{name}}</a>
+                                </li>
                             {{/each}}
                         </ul>
                     </li>

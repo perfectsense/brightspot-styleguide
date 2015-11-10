@@ -120,8 +120,8 @@ public class ViewClassGenerator {
 
         public Set<String> getMapBasedTemplates() {
             Set<String> mapBasedTemplates = new HashSet<>();
-            mapBasedTemplates.add("common/attributes");
-            mapBasedTemplates.add("common/json-object");
+            mapBasedTemplates.add("/assets/templates/base/common/attributes");
+            mapBasedTemplates.add("/assets/templates/base/common/json-object");
             return mapBasedTemplates;
         }
     }

@@ -107,11 +107,15 @@ class JsonDataFile {
 
         return new JsonList(list.stream()
                 .map((item) -> resolveJsonObject(jsonDataFiles, item, null))
+                .filter(object -> object != null)
                 .collect(Collectors.toList()),
                 previousType, notes);
     }
 
     private JsonTemplateObject resolveJsonMap(JsonDataFiles jsonDataFiles, Map<String, ?> map, String fieldNotes) {
+        if (map.get("_delegate") != null) {
+            return null;
+        }
 
         String dataUrl = (String) map.get("_dataUrl");
         if (dataUrl != null) {
@@ -140,8 +144,11 @@ class JsonDataFile {
 
                         Object value = map.get(key);
                         String valueNotes = ObjectUtils.to(String.class, map.get("_" + key + "Notes"));
+                        Object resolved = resolveJsonObject(jsonDataFiles, value, valueNotes);
 
-                        fields.put(key, resolveJsonObject(jsonDataFiles, value, valueNotes));
+                        if (resolved != null) {
+                            fields.put(key, resolveJsonObject(jsonDataFiles, value, valueNotes));
+                        }
                     }
                 });
 

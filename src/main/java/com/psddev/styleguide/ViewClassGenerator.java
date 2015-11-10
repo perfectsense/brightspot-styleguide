@@ -114,7 +114,7 @@ public class ViewClassGenerator {
 
         public String getJavaSourceDirectory() {
             return StringUtils.ensureEnd(projectDirectory, "/")
-                    + "target/generated-sources/"
+                    + "target/generated-sources/styleguide/"
                     + javaPackageName.replaceAll("\\x2e", "/");
         }
 

@@ -32,10 +32,17 @@ class JsonDataFiles {
 
     public JsonDataFiles(String jsonDataFilesPath, List<String> mapTemplates) {
 
-        List<JsonDataFile> jsonDataFiles = FileUtils.listFiles(new File(jsonDataFilesPath), new String[] { "json" }, true)
-                .stream()
-                .map((file) -> new JsonDataFile(jsonDataFilesPath, fileToName(file, jsonDataFilesPath), fileToJsonObject(file, jsonDataFilesPath)))
-                .collect(Collectors.toList());
+        File jsonDataFilesPathFile = new File(jsonDataFilesPath);
+        List<JsonDataFile> jsonDataFiles;
+
+        if (jsonDataFilesPathFile.exists()) {
+            jsonDataFiles = FileUtils.listFiles(jsonDataFilesPathFile, new String[]{"json"}, true)
+                    .stream()
+                    .map((file) -> new JsonDataFile(jsonDataFilesPath, fileToName(file, jsonDataFilesPath), fileToJsonObject(file, jsonDataFilesPath)))
+                    .collect(Collectors.toList());
+        } else {
+            jsonDataFiles = new ArrayList<>();
+        }
 
         dataFilesByFile = new HashMap<>();
         dataFilesByTemplate = new HashMap<>();

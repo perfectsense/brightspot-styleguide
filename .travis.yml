@@ -1,0 +1,28 @@
+sudo: false
+
+branches:
+  except:
+    - /^v[-.0-9]+$/
+
+language: java
+
+jdk:
+  - oraclejdk8
+
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
+install: true
+
+script: mvn -Plibrary verify
+
+cache:
+  directories:
+    - $HOME/.m2
+    - tool-ui/bower_components
+    - tool-ui/node_modules
+
+after_success:
+  - git clone https://github.com/perfectsense/travis-maven-deploy.git && travis-maven-deploy/deploy.sh

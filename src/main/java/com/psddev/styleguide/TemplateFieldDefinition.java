@@ -101,6 +101,10 @@ abstract class TemplateFieldDefinition {
 
     public abstract String getJavaFieldType(Set<String> imports);
 
+    public String getJavaFieldTypeForBuilder(Set<String> imports) {
+        return getJavaFieldType();
+    }
+
     public String getJavaInterfaceMethodName() {
 
         String methodNamePrefix = "get";
@@ -163,18 +167,17 @@ abstract class TemplateFieldDefinition {
     }
 
     public String getInterfaceBuilderFieldDeclarationSource(int indent, Set<String> imports) {
-        return indent(indent) + "private " + getJavaFieldType(imports) + " " + name + ";";
+        return indent(indent) + "private " + getJavaFieldTypeForBuilder(imports) + " " + name + ";";
     }
 
     public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
-
-        String methodJavaDoc = "";
 
         StringBuilder notesJavaDoc = new StringBuilder();
         for (String note : notes) {
             notesJavaDoc.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
         }
 
+        String parameterJavadoc;
         String valueTypesJavaDocList = getValueTypesJavaDocList();
         if (valueTypesJavaDocList != null) {
             String valueTypesJavaDocListPrefix;
@@ -185,16 +188,21 @@ abstract class TemplateFieldDefinition {
                 valueTypesJavaDocListPrefix = "Typically a ";
             }
 
-            methodJavaDoc = Arrays.stream(new String[] {
-                    indent(indent) + "/**\n",
-                    indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
-                    notesJavaDoc.toString(),
-                    indent(indent) + " *\n",
-                    indent(indent) + " * @param " + name + " " + valueTypesJavaDocListPrefix + valueTypesJavaDocList + ".\n",
-                    indent(indent) + " * @return this builder.\n",
-                    indent(indent) + " */\n"
-            }).collect(Collectors.joining(""));
+            parameterJavadoc = valueTypesJavaDocListPrefix + valueTypesJavaDocList;
+
+        } else {
+            parameterJavadoc = "the " + name + " to set";
         }
+
+        String methodJavaDoc = Arrays.stream(new String[] {
+                indent(indent) + "/**\n",
+                indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
+                notesJavaDoc.toString(),
+                indent(indent) + " *\n",
+                indent(indent) + " * @param " + name + " " + parameterJavadoc + ".\n",
+                indent(indent) + " * @return this builder.\n",
+                indent(indent) + " */\n"
+        }).collect(Collectors.joining(""));
 
         String[] method = {
                 methodJavaDoc,

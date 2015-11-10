@@ -84,6 +84,11 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         return "List<" + listItemJavaType + ">";
     }
 
+    public String getJavaFieldTypeForBuilder(Set<String> imports) {
+        imports.add(List.class.getName());
+        return "List<" + ("?".equals(listItemJavaType) ? "Object" : listItemJavaType) + ">";
+    }
+
     @Override
     public Set<String> getValueTypes() {
 
@@ -114,12 +119,8 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
 
         StringBuilder builder = new StringBuilder();
 
-        imports.add("java.util.Arrays");
         imports.add("java.util.ArrayList");
         imports.add("java.util.stream.Collectors");
-
-        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports));
-        builder.append("\n\n");
 
         String nameViewClass = name + "ViewClass";
         String nameView = name + "View";
@@ -131,6 +132,20 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         for (String note : notes) {
             notesJavaDoc.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
         }
+
+        String[] method1 = {
+                indent(indent) + "/**\n",
+                indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
+                notesJavaDoc.toString(),
+                indent(indent) + " *\n",
+                indent(indent) + " * @param " + name + " Typically a List of " + valueTypesJavaDocList + ".\n",
+                indent(indent) + " * @return this builder.\n",
+                indent(indent) + " */\n",
+                indent(indent) + "public Builder " + name + "(" + getJavaFieldType(imports) + " " + name + ") {\n",
+                indent(indent + 1) + "this." + name + " = " + name + " != null ? new ArrayList<>(" + name + ") : null;\n",
+                indent(indent + 1) + "return this;\n",
+                indent(indent) + "}"
+        };
 
         /**
          * Sets the articleBody field.
@@ -148,7 +163,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             return this;
         }
          */
-        String[] method1 = {
+        String[] method2 = {
                 indent(indent) + "/**\n",
                 indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
@@ -181,7 +196,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             return this;
         }
          */
-        String[] method2 = {
+        String[] method3 = {
                 indent(indent) + "/**\n",
                 indent(indent) + " * <p>Adds an item to the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
@@ -193,7 +208,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
                 indent(indent + 1) + "if (this." + name + " == null) {\n",
                 indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
                 indent(indent + 1) + "}\n",
-                indent(indent + 1) + "this." + name + ".addAll(Arrays.asList(" + name + "));\n",
+                indent(indent + 1) + "this." + name + ".add(" + name + ");\n",
                 indent(indent + 1) + "return this;\n",
                 indent(indent) + "}"
         };
@@ -214,7 +229,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             return this;
         }
          */
-        String[] method3 = {
+        String[] method4 = {
                 indent(indent) + "/**\n",
                 indent(indent) + " * <p>Adds an item to the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
@@ -234,7 +249,8 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
 
         builder.append(Arrays.stream(method1).collect(Collectors.joining(""))).append("\n\n");
         builder.append(Arrays.stream(method2).collect(Collectors.joining(""))).append("\n\n");
-        builder.append(Arrays.stream(method3).collect(Collectors.joining("")));
+        builder.append(Arrays.stream(method3).collect(Collectors.joining(""))).append("\n\n");
+        builder.append(Arrays.stream(method4).collect(Collectors.joining("")));
 
         return builder.toString();
     }

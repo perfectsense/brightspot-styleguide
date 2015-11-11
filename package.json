@@ -27,7 +27,8 @@
         "xml2json": "^0.8.1"
     },
     "scripts": {
-        "install": "napa"
+        "install": "napa",
+        "build": "grunt"
     },
     "napa": {
         "sticky-kit": "leafo/sticky-kit#v1.1.2"

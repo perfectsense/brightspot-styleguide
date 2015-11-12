@@ -56,5 +56,17 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <distributionManagement>
+        <repository>
+            <id>psddev-releases</id>
+            <url>https://artifactory.psdops.com/psddev-releases</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>psddev-snapshots</id>
+            <url>https://artifactory.psdops.com/psddev-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
 

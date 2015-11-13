@@ -4,7 +4,12 @@ var path = require('path');
 var rrs = require('recursive-readdir-sync');
 var traverse = require('traverse');
 
-var rootPath = process.argv[2] || 'styleguide';
+var rootPath = 'styleguide';
+var wrapper = process.argv[2];
+
+if (!wrapper) {
+    throw new Error('Wrapper is required!');
+}
 
 rrs(rootPath).forEach(function (filePath) {
     if (filePath.slice(-5) === '.json') {
@@ -123,6 +128,11 @@ rrs(rootPath).forEach(function (filePath) {
                 }
             }
         });
+
+        // Add the top level _wrapper entry.
+        if (!data._wrapper) {
+            data._wrapper = wrapper;
+        }
 
         fs.writeFileSync(filePath, JSON.stringify(data, null, '  ') + '\n', 'utf8');
     }

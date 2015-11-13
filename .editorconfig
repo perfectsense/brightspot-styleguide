@@ -11,3 +11,6 @@ insert_final_newline = true
 
 [*.hbs]
 insert_final_newline = false
+
+[*.json]
+indent_size = 2

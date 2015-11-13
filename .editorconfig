@@ -12,5 +12,5 @@ insert_final_newline = true
 [*.hbs]
 insert_final_newline = false
 
-[*.json]
+[*.{json,yml}]
 indent_size = 2

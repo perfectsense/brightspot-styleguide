@@ -1,5 +1,5 @@
 {
-    "name": "brightspot-js-styleguide",
+    "name": "brightspot-styleguide",
     "version": "1.0.0",
     "bin": {
         "styleguide": "bin/styleguide"

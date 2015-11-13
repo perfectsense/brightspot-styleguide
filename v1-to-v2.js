@@ -114,7 +114,7 @@ rrs(rootPath).forEach(function (filePath) {
         traverse(data).forEach(function (value) {
             if (this.key === '_template') {
                 if (value.indexOf('bsp-') > -1 ||
-                        fs.existsSync(path.join(rootPath, '..', 'src', 'main', 'webapp', 'render', value))) {
+                        fs.existsSync(path.join(rootPath, '..', 'src', 'main', 'webapp', 'render', value) + '.hbs')) {
 
                     this.update('/render/' + value);
 

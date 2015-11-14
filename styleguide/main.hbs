@@ -4,7 +4,9 @@
             (function () {
                 function resizeIframes() {
                     $('.sg-file-body > iframe').each(function () {
-                        $(this).height($(this.contentDocument.body).outerHeight(true));
+                        var $body = $(this.contentDocument.body);
+
+                        $(this).height(Math.max($body.outerHeight(true), $body.prop('scrollHeight')));
                     });
                 }
 

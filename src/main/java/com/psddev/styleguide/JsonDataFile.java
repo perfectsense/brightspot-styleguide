@@ -128,7 +128,7 @@ class JsonDataFile {
             } else {
                 String error = "ERROR: Error in [" + getFileName() + "]. Could not resolve _dataUrl [" + dataUrl + "].";
                 System.out.println(error);
-                throw new RuntimeException(error);
+                return null;
             }
 
         } else {
@@ -140,7 +140,10 @@ class JsonDataFile {
             if (template != null) {
 
                 map.keySet().forEach((key) -> {
-                    if (!key.startsWith("_")) {
+                    if ("options".equals(key)) {
+                        return;
+
+                    } else if (!key.startsWith("_")) {
 
                         Object value = map.get(key);
                         String valueNotes = ObjectUtils.to(String.class, map.get("_" + key + "Notes"));

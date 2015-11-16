@@ -12,29 +12,50 @@
         <version>3.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>styleguide</artifactId>
+    <artifactId>styleguide-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>BrightSpot Styleguide</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.psddev</groupId>
-            <artifactId>dari-util</artifactId>
-        </dependency>
+    <modules>
+        <module>viewgenerator</module>
+        <module>example</module>
+    </modules>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.psddev</groupId>
+                <artifactId>dari-util</artifactId>
+                <version>3.2-SNAPSHOT</version>
+            </dependency>
 
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-        </dependency>
-    </dependencies>
+            <dependency>
+                <groupId>com.psddev</groupId>
+                <artifactId>cms-db</artifactId>
+                <version>3.2-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.psddev</groupId>
+                <artifactId>handlebars</artifactId>
+                <version>1.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.12</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.4</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <repositories>
         <repository>

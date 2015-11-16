@@ -63,7 +63,7 @@ class JsonDataFiles {
                 dataFilesForTemplate.add(jsonDataFile);
 
             } else {
-                System.out.println("ERROR: File [" + jsonDataFile.getFileName() + "] does not have a template!");
+                throw new MissingTemplateException(jsonDataFile);
             }
         }
 

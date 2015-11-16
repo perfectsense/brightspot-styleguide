@@ -168,9 +168,7 @@ class JsonDataFile {
                 return new JsonTemplateObject(template, fields, fieldNotes, templateNotes);
 
             } else {
-                String error = "ERROR: Error in [" + getFileName() + "]. No _template in map [" + ObjectUtils.toJson(map) + "].";
-                System.out.println(error);
-                throw new RuntimeException(error);
+                throw new MissingTemplateException(this, map);
             }
         }
     }

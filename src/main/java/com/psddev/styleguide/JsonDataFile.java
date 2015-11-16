@@ -119,6 +119,16 @@ class JsonDataFile {
 
         String dataUrl = (String) map.get("_dataUrl");
         if (dataUrl != null) {
+
+            // if it's a relative URL
+            if (!dataUrl.startsWith("/")) {
+
+                int lastSlashAt = this.fileName.lastIndexOf('/');
+                if (lastSlashAt >= 0) {
+                    dataUrl = this.fileName.substring(0, lastSlashAt) + "/" + dataUrl;
+                }
+            }
+
             JsonDataFile jsonDataFile = jsonDataFiles.getByFileName(StringUtils.ensureStart(dataUrl, "/"));
 
             if (jsonDataFile != null) {

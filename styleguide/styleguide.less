@@ -1,11 +1,23 @@
 @menu-width: 250px;
 
+.clearfix {
+  &:before,
+  &:after {
+    content: " "; // 1
+    display: table; // 2
+  }
+  &:after {
+    clear: both;
+  }
+}
+
 body {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     line-height: 24px;
     margin: 48px 0 20px 0;
     padding: 0;
+    .clearfix();
 }
 
 a {

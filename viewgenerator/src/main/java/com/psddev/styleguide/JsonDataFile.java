@@ -136,9 +136,7 @@ class JsonDataFile {
                 return jsonDataFile.templateObject;
 
             } else {
-                String error = "ERROR: Error in [" + getFileName() + "]. Could not resolve _dataUrl [" + dataUrl + "].";
-                System.out.println(error);
-                return null;
+                throw new MissingDataReferenceException(this, dataUrl);
             }
 
         } else {

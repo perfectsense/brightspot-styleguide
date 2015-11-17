@@ -30,18 +30,22 @@ class JsonDataFiles {
 
     private List<String> mapTemplates;
 
-    public JsonDataFiles(String jsonDataFilesPath, List<String> mapTemplates) {
+    public JsonDataFiles(List<String> jsonDataFilesPaths, List<String> mapTemplates) {
 
-        File jsonDataFilesPathFile = new File(jsonDataFilesPath);
-        List<JsonDataFile> jsonDataFiles;
+        List<JsonDataFile> jsonDataFiles = new ArrayList<>();
 
-        if (jsonDataFilesPathFile.exists()) {
-            jsonDataFiles = FileUtils.listFiles(jsonDataFilesPathFile, new String[]{"json"}, true)
-                    .stream()
-                    .map((file) -> new JsonDataFile(jsonDataFilesPath, fileToName(file, jsonDataFilesPath), fileToJsonObject(file, jsonDataFilesPath)))
-                    .collect(Collectors.toList());
-        } else {
-            jsonDataFiles = new ArrayList<>();
+        for (String jsonDataFilesPath : jsonDataFilesPaths) {
+            File jsonDataFilesPathFile = new File(jsonDataFilesPath);
+
+            if (jsonDataFilesPathFile.exists()) {
+                jsonDataFiles.addAll(FileUtils.listFiles(jsonDataFilesPathFile, new String[]{"json"}, true)
+                        .stream()
+                        .map((file) -> new JsonDataFile(
+                                jsonDataFilesPath,
+                                fileToName(file, jsonDataFilesPath),
+                                fileToJsonObject(file, jsonDataFilesPath)))
+                        .collect(Collectors.toList()));
+            }
         }
 
         dataFilesByFile = new HashMap<>();
@@ -122,8 +126,9 @@ class JsonDataFiles {
             }
 
             jsonTemplateObjectsMap.entrySet().forEach((entry) -> {
-                if (!mapTemplates.contains(entry.getKey())) {
-                    templateDefinitions.put(entry.getKey(), new TemplateDefinition(entry.getKey(), entry.getValue(), mapTemplates));
+                String name = StringUtils.ensureStart(entry.getKey(), "/");
+                if (!mapTemplates.contains(name)) {
+                    templateDefinitions.put(name, new TemplateDefinition(name, entry.getValue(), mapTemplates));
                 }
             });
 

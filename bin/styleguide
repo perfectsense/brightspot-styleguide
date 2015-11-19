@@ -16,6 +16,6 @@ if (config._.length > 0) {
 }
 
 // Merge the command line args onto the _config file
-config = _.extend({ }, JSON.parse(fs.readFileSync(path.join('.', '_config.json'))), config);
+config = _.extend({ }, JSON.parse(fs.readFileSync(path.join('.', '_config.json'), "utf8")), config);
 
 server(config);

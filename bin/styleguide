@@ -4,11 +4,18 @@
 
 process.title = 'styleguide';
 
+var path = require('path');
+var fs = require('fs');
+var _ = require('lodash');
+
 var config = require('minimist')(process.argv.slice(2));
 var server = require('../lib/server');
 
 if (config._.length > 0) {
     config['project-path'] = config._[0];
 }
+
+// Merge the command line args onto the _config file
+config = _.extend({ }, JSON.parse(fs.readFileSync(path.join('.', '_config.json'))), config);
 
 server(config);

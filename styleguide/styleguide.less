@@ -15,7 +15,7 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     line-height: 24px;
-    margin: 48px 0 20px 0;
+    margin: 54px 0 20px 0;
     padding: 0;
     .clearfix();
 }
@@ -25,37 +25,54 @@ a {
     text-decoration: none;
 }
 
-.sg-title {
+.sg-header {
+    position: fixed;
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    width: 100%;
+    z-index: 1;
+    top: 0;
     background: #20343f;
+    border-bottom: #38b5dc solid 6px;
+
+    > * {
+        padding: 12px 24px;
+        box-sizing: border-box;
+    }
+}
+
+.sg-header-title {
+    flex-grow: 1;
     box-sizing: border-box;
     color: white;
     font-weight: bold;
     height: 48px;
-    left: 0;
     margin: 0;
-    padding: 12px 24px;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1;
 }
 
-.sg-available-device-list {
-    line-height: 48px;
-    position: fixed;
-    right: 24px;
-    top: 0;
-    z-index: 1;
+.sg-header-controlbar {
+    flex-grow: 0;
 
+    > * {
+        display: inline-block;
+    }
+}
+
+.sg-control-available-device-list {
     a {
         color: white;
         margin-left: 6px;
         opacity: 0.5;
 
-        &.sg-available-device-selected {
+        &.sg-control-available-device-selected {
             opacity: 1;
         }
     }
+}
+
+.sg-control-available-theme-list {
+    margin-left: 24px;
 }
 
 .sg-menu {

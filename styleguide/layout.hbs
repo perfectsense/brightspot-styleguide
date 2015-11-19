@@ -13,26 +13,39 @@
         {{> head}}
     </head>
     <body>
-        <div class="sg-title">
-            Styleguide{{#each names}}: {{this}}{{/each}}
+        <header class="sg-header">
+            <div class="sg-header-title">
+                Styleguide{{#each names}}: {{this}}{{/each}}
 
-            <a href="{{seedUrl}}">#{{seed}}</a>
+                <a href="{{seedUrl}}">#{{seed}}</a>
 
-            {{#with randomizeUrl}}
-                - <a href="{{this}}"><i class="fa fa-refresh"></i> Randomize</a>
-            {{/with}}
-        </div>
-
-        {{#with availableDevices}}
-            <div class="sg-available-device-list">
-                <a href="{{../resetDisplayDevicesUrl}}"><i class="fa fa-ban"></i></a>
-
-                {{#each this}}
-                    <a{{#if selected}} class="sg-available-device-selected"{{/if}} href="{{url}}"><i class="{{device.icon}}"></i></a>
-                {{/each}}
+                {{#with randomizeUrl}}
+                    - <a href="{{this}}"><i class="fa fa-refresh"></i> Randomize</a>
+                {{/with}}
             </div>
-        {{/with}}
 
+            <div class="sg-header-controlbar">
+                {{#with availableDevices}}
+                    <div class="sg-control-available-device-list">
+                        <a href="{{../resetDisplayDevicesUrl}}"><i class="fa fa-ban"></i></a>
+
+                        {{#each this}}
+                            <a{{#if selected}} class="sg-control-available-device-selected"{{/if}} href="{{url}}"><i class="{{device.icon}}"></i></a>
+                        {{/each}}
+                    </div>
+                {{/with}}
+
+                {{#with availableThemes}}
+                    <form class="sg-control-available-theme-list">
+                        <select onchange="window.location.href = $(this).val();">
+                            {{#each this}}
+                                <option value="{{url}}"{{#if selected}} selected{{/if}}>{{theme.name}}</option>
+                            {{/each}}
+                        </select>
+                    </form>
+                {{/with}}
+            </div>
+        </header>
         <div class="sg-menu">
             <form class="sg-library-list">
                 <select onchange="window.location.href = $(this).val();">

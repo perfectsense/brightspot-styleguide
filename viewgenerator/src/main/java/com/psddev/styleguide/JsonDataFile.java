@@ -136,9 +136,7 @@ class JsonDataFile {
                 return jsonDataFile.templateObject;
 
             } else {
-                String error = "ERROR: Error in [" + getFileName() + "]. Could not resolve _dataUrl [" + dataUrl + "].";
-                System.out.println(error);
-                return null;
+                throw new MissingDataReferenceException(this, dataUrl);
             }
 
         } else {
@@ -168,9 +166,7 @@ class JsonDataFile {
                 return new JsonTemplateObject(template, fields, fieldNotes, templateNotes);
 
             } else {
-                String error = "ERROR: Error in [" + getFileName() + "]. No _template in map [" + ObjectUtils.toJson(map) + "].";
-                System.out.println(error);
-                throw new RuntimeException(error);
+                throw new MissingTemplateException(this, map);
             }
         }
     }

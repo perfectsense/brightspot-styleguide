@@ -1,0 +1,6 @@
+{
+    "_template": "components/example",
+    "foo": "hello",
+    "bar": "world",
+    "baz": "!!!"
+}

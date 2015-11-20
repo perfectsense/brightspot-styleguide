@@ -30,7 +30,7 @@ class JsonDataFiles {
 
     private List<String> mapTemplates;
 
-    public JsonDataFiles(List<String> jsonDataFilesPaths, List<String> mapTemplates) {
+    public JsonDataFiles(List<String> jsonDataFilesPaths, Set<String> ignoredFileNames, List<String> mapTemplates) {
 
         List<JsonDataFile> jsonDataFiles = new ArrayList<>();
 
@@ -40,6 +40,7 @@ class JsonDataFiles {
             if (jsonDataFilesPathFile.exists()) {
                 jsonDataFiles.addAll(FileUtils.listFiles(jsonDataFilesPathFile, new String[]{"json"}, true)
                         .stream()
+                        .filter((file) -> !ignoredFileNames.contains(file.getName()))
                         .map((file) -> new JsonDataFile(
                                 jsonDataFilesPath,
                                 fileToName(file, jsonDataFilesPath),

@@ -49,7 +49,7 @@
                 <executions>
                     <execution>
                         <id>generate-view-classes</id>
-                        <phase>generate-sources</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>java</goal>
                         </goals>
@@ -58,8 +58,13 @@
                             <includePluginDependencies>true</includePluginDependencies>
                             <mainClass>com.psddev.styleguide.ViewClassGenerator</mainClass>
                             <arguments>
-                                <argument>${project.basedir}</argument>
-                                <argument>com.psddev.example.view</argument>
+                                <argument>--json-dir=${project.basedir}/styleguide</argument>
+                                <argument>--java-package-prefix=com.psddev.styleguide.example</argument>
+                                <argument>--build-dir=${project.build.directory}/generated-sources/styleguide</argument>
+                                <argument>--map-templates=/assets/templates/base/common/attributes</argument>
+                                <argument>--map-templates=/assets/templates/base/common/json-object</argument>
+                                <argument>--map-templates=/render/common/attributes</argument>
+                                <argument>--map-templates=/render/common/json-object</argument>
                             </arguments>
                         </configuration>
                     </execution>

@@ -36,11 +36,11 @@
                     </div>
                 {{/with}}
 
-                {{#with availableThemes}}
-                    <form class="sg-control-available-theme-list">
+                {{#with availableStylesheets}}
+                    <form class="sg-control-available-stylesheet-list">
                         <select onchange="window.location.href = $(this).val();">
                             {{#each this}}
-                                <option value="{{url}}"{{#if selected}} selected{{/if}}>{{theme.name}}</option>
+                                <option value="{{url}}"{{#if selected}} selected{{/if}}>{{name}}</option>
                             {{/each}}
                         </select>
                     </form>

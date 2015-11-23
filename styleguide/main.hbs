@@ -19,10 +19,10 @@
                     $('.sg-file-body').each(function () {
                         var $body = $(this);
                         var $devices = $body.find('> .sg-device');
-                        
+
                         if ($devices.length > 0) {
                             var width = 50;
-                            
+
                             $devices.each(function () {
                                 width += $(this).outerWidth(true);
                             });
@@ -63,12 +63,16 @@
                                     <div class="sg-device-name">
                                         <i class="{{device.icon}}"></i> {{device.name}}
                                     </div>
-                                    <iframe style="height: {{device.height}}px; width: {{device.width}}px;" src="{{../../url}}?device=true&amp;seed={{../../../seed}}"></iframe>
+
+                                    <iframe
+                                        style="height: {{device.height}}px; width: {{device.width}}px;"
+                                        src="{{../../url}}?device=true&amp;seed={{../../../seed}}{{#if ../../../selectedStyleSheet}}&amp;ss={{../../../selectedStyleSheet.idx}}{{/if}}">
+                                    </iframe>
                                 </div>
                             {{/each}}
 
                         {{else}}
-                            <iframe src="{{url}}?seed={{../seed}}"></iframe>
+                            <iframe src="{{url}}?seed={{../seed}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}"></iframe>
                         {{/with}}
                     </div>
                 </div>

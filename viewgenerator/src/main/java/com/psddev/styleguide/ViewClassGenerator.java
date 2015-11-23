@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,14 +28,15 @@ public class ViewClassGenerator {
         String javaPackageName = arguments.getJavaPackageName();
         String javaSourceDirectory = arguments.getJavaSourceDirectory();
         List<String> mapBasedTemplates = new ArrayList<>(arguments.getMapTemplates());
+        Set<String> ignoredFileNames = arguments.getIgnoredFileNames();
 
-        System.out.println("args=                   " + Arrays.stream(args).collect(Collectors.joining(" ")));
-        System.out.println("--json-dir=             " + jsonDirectories);
-        System.out.println("--java-package-prefix=  " + javaPackageName);
-        System.out.println("--build-dir=            " + javaSourceDirectory);
-        System.out.println("--map-templates=:       " + mapBasedTemplates);
+        System.out.println("           --json-dir= " + jsonDirectories);
+        System.out.println("--java-package-prefix= " + javaPackageName);
+        System.out.println("          --build-dir= " + javaSourceDirectory);
+        System.out.println("      --map-templates= " + mapBasedTemplates);
+        System.out.println("       --ignore-files= " + ignoredFileNames);
 
-        JsonDataFiles dataFiles = new JsonDataFiles(new ArrayList<>(jsonDirectories), mapBasedTemplates);
+        JsonDataFiles dataFiles = new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates);
 
         List<TemplateDefinition> templateDefinitions = dataFiles.getTemplateDefinitions();
 
@@ -122,11 +124,12 @@ public class ViewClassGenerator {
         private static final String JAVA_PACKAGE_PREFIX = "--java-package-prefix=";
         private static final String BUILD_DIRECTORY_PREFIX = "--build-dir=";
         private static final String MAP_TEMPLATES_PREFIX = "--map-templates=";
+        private static final String IGNORE_FILES_PREFIX = "--ignore-files=";
 
         // default argument values
         private static final String DEFAULT_JSON_DIRECTORY = System.getProperty("user.dir") + "/styleguide";
 
-        private static final String DEFAULT_JAVA_PACKAGE = "com.psddev.styleguide.view";
+        private static final String DEFAULT_JAVA_PACKAGE = "com.psddev.view";
 
         private static final String DEFAULT_BUILD_DIRECTORY = System.getProperty("user.dir") + "/target/generated-sources/styleguide";
 
@@ -134,12 +137,18 @@ public class ViewClassGenerator {
                 "/assets/templates/base/common/attributes",
                 "/assets/templates/base/common/json-object",
                 "/render/common/attributes",
-                "/render/common/json-object"};
+                "/render/common/json-object"
+        };
+
+        private static final String[] DEFAULT_IGNORED_FILE_NAMES = {
+                "_config.json"
+        };
 
         private Set<String> jsonDirectories = new LinkedHashSet<>();
         private String javaPackageName;
         private String buildDirectory;
         private Set<String> mapTemplates = new LinkedHashSet<>();
+        private Set<String> ignoredFileNames = new HashSet<>();
 
         public Arguments(String[] args) {
 
@@ -153,7 +162,8 @@ public class ViewClassGenerator {
                         JSON_DIRECTORY_PREFIX,
                         JAVA_PACKAGE_PREFIX,
                         BUILD_DIRECTORY_PREFIX,
-                        MAP_TEMPLATES_PREFIX), ", ")
+                        MAP_TEMPLATES_PREFIX,
+                        IGNORE_FILES_PREFIX), ", ")
                         + "] instead.");
 
                 this.jsonDirectories.add(StringUtils.ensureEnd(args[0], "/") + "styleguide");
@@ -175,6 +185,8 @@ public class ViewClassGenerator {
                     } else if (arg.startsWith(MAP_TEMPLATES_PREFIX)) {
                         processStringSetArgument(MAP_TEMPLATES_PREFIX, arg).forEach(
                                 (template) -> mapTemplates.add(StringUtils.ensureStart(template, "/")));
+                    } else if (arg.startsWith(IGNORE_FILES_PREFIX)) {
+                        processStringSetArgument(IGNORE_FILES_PREFIX, arg).forEach(ignoredFileNames::add);
                     }
                 }
             }
@@ -199,14 +211,21 @@ public class ViewClassGenerator {
 
             if (mapTemplates.isEmpty()) {
                 System.out.println("No map templates specified with [" + MAP_TEMPLATES_PREFIX
-                        + "], default to " + Arrays.asList(DEFAULT_MAP_TEMPLATES) + ".");
+                        + "], defaulting to " + Arrays.asList(DEFAULT_MAP_TEMPLATES) + ".");
                 mapTemplates.addAll(Arrays.asList(DEFAULT_MAP_TEMPLATES));
+            }
+
+            if (ignoredFileNames.isEmpty()) {
+                System.out.println("No ignored files specified with [" + IGNORE_FILES_PREFIX
+                        + "], defaulting to " + Arrays.asList(DEFAULT_IGNORED_FILE_NAMES) + ".");
+                ignoredFileNames.addAll(Arrays.asList(DEFAULT_IGNORED_FILE_NAMES));
             }
 
             validateJsonDirectories();
             validateJavaPackageName();
             validateBuildDirectory();
             validateMapTemplates();
+            validateIgnoredFileNames();
         }
 
         public Set<String> getJsonDirectories() {
@@ -223,6 +242,10 @@ public class ViewClassGenerator {
 
         public Set<String> getMapTemplates() {
             return mapTemplates;
+        }
+
+        public Set<String> getIgnoredFileNames() {
+            return ignoredFileNames;
         }
 
         public String getJavaSourceDirectory() {
@@ -270,6 +293,10 @@ public class ViewClassGenerator {
         }
 
         private void validateMapTemplates() {
+            // nothing to do yet...
+        }
+
+        private void validateIgnoredFileNames() {
             // nothing to do yet...
         }
     }

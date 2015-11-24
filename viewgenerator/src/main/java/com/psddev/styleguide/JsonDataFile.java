@@ -148,7 +148,7 @@ class JsonDataFile {
             if (template != null) {
 
                 map.keySet().forEach((key) -> {
-                    if ("displayOptions".equals(key)) {
+                    if ("displayOptions".equals(key) || "options".equals(key)) {
                         return;
 
                     } else if (!key.startsWith("_")) {

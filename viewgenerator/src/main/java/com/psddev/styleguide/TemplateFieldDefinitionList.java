@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.psddev.dari.util.StringUtils;
-
 class TemplateFieldDefinitionList extends TemplateFieldDefinition {
 
     private String listItemJavaType;

@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.psddev.dari.util.StringUtils;
-
 class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
 
     private Set<String> templateTypes = new LinkedHashSet<>();

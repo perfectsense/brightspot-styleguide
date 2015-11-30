@@ -92,7 +92,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
                     indent(indent) + " * @param value the value at the associated key.\n",
                     indent(indent) + " * @return this builder.\n",
                     indent(indent) + " */\n",
-                    indent(indent) + "public Builder add" + StringUtils.toPascalCase(name) + "(String key, String value) {\n",
+                    indent(indent) + "public Builder add" + StyleguideStringUtils.toPascalCase(name) + "(String key, String value) {\n",
                     indent(indent + 1) + "if (this." + name + " == null) {\n",
                     indent(indent + 2) + "this." + name + " = new LinkedHashMap<>();\n",
                     indent(indent + 1) + "}\n",

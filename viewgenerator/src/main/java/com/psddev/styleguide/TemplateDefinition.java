@@ -194,6 +194,6 @@ class TemplateDefinition {
             className = templateName;
         }
 
-        return StringUtils.toPascalCase(className) + "View";
+        return StyleguideStringUtils.toPascalCase(className) + "View";
     }
 }

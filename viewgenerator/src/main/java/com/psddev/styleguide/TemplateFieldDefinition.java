@@ -113,7 +113,7 @@ abstract class TemplateFieldDefinition {
             methodNamePrefix = "is";
         }
 
-        return methodNamePrefix + StringUtils.toPascalCase(name);
+        return methodNamePrefix + StyleguideStringUtils.toPascalCase(name);
     }
 
     public final String getValueTypesJavaDocList() {

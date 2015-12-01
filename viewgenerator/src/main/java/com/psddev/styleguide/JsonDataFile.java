@@ -1,14 +1,19 @@
 package com.psddev.styleguide;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
 
 class JsonDataFile {
+
+    private static final Set<String> JSON_MAP_KEYS = new HashSet<>(Arrays.asList("displayOptions", "options"));
 
     private String filePath;
     private String fileName;
@@ -47,7 +52,7 @@ class JsonDataFile {
 
     public void resolveTemplate(JsonDataFiles jsonDataFiles) {
         if (!isTemplateObjectResolved) {
-            templateObject = resolveJsonMap(jsonDataFiles, deepJsonCopyMap(jsonData), null);
+            templateObject = resolveJsonTemplateObject(jsonDataFiles, deepJsonCopyMap(jsonData), null);
             isTemplateObjectResolved = true;
         }
     }
@@ -57,7 +62,11 @@ class JsonDataFile {
         return getFileName() + " (" + getTemplateName() + "): " + ObjectUtils.toJson(getJsonData());
     }
 
-    private JsonObject resolveJsonObject(JsonDataFiles jsonDataFiles, Object object, String notes) {
+    private Set<String> jsonMapKeys() {
+        return JSON_MAP_KEYS;
+    }
+
+    private JsonObject resolveJsonObject(String key, JsonDataFiles jsonDataFiles, Object object, String notes) {
 
         if (object instanceof String) {
             return new JsonString((String) object, notes);
@@ -74,7 +83,13 @@ class JsonDataFile {
         } else if (object instanceof Map) {
             @SuppressWarnings("unchecked")
             Map<String, ?> valueMap = (Map<String, ?>) object;
-            return resolveJsonMap(jsonDataFiles, valueMap, notes);
+
+            if (jsonMapKeys().contains(key)) {
+                return new JsonMap(valueMap, notes);
+
+            } else {
+                return resolveJsonTemplateObject(jsonDataFiles, valueMap, notes);
+            }
 
         } else {
             String error = "ERROR: Error in [" + getFileName() + "]. Unknown value type [" + object.getClass() + "].";
@@ -85,18 +100,22 @@ class JsonDataFile {
 
     private JsonList resolveJsonList(JsonDataFiles jsonDataFiles, List<?> list, String notes) {
 
+        List<JsonObject> jsonObjects = list.stream()
+                .map((item) -> resolveJsonObject(null, jsonDataFiles, item, null))
+                .filter(object -> object != null)
+                .collect(Collectors.toList());
+
         JsonObjectType previousType = null;
 
-        // verify all items are the same type.
-        for (Object item : list) {
+        for (JsonObject jsonObject : jsonObjects) {
 
-            JsonObjectType itemType = JsonObjectType.fromObject(item);
+            JsonObjectType itemType = jsonObject.getType();
             if (previousType != null) {
 
                 if (previousType != itemType) {
                     String error = "ERROR: Error in [" + getFileName() + "]. List can only contain one kind of JSON object type but found ["
                             + previousType + "] and [" + itemType + "].";
-                    System.out.println(error);
+
                     throw new RuntimeException(error);
                 }
 
@@ -105,14 +124,10 @@ class JsonDataFile {
             }
         }
 
-        return new JsonList(list.stream()
-                .map((item) -> resolveJsonObject(jsonDataFiles, item, null))
-                .filter(object -> object != null)
-                .collect(Collectors.toList()),
-                previousType, notes);
+        return new JsonList(jsonObjects, previousType, notes);
     }
 
-    private JsonTemplateObject resolveJsonMap(JsonDataFiles jsonDataFiles, Map<String, ?> map, String fieldNotes) {
+    private JsonTemplateObject resolveJsonTemplateObject(JsonDataFiles jsonDataFiles, Map<String, ?> map, String fieldNotes) {
         if (map.get("_delegate") != null) {
             return null;
         }
@@ -148,17 +163,14 @@ class JsonDataFile {
             if (template != null) {
 
                 map.keySet().forEach((key) -> {
-                    if ("displayOptions".equals(key) || "options".equals(key)) {
-                        return;
-
-                    } else if (!key.startsWith("_")) {
+                    if (!key.startsWith("_")) {
 
                         Object value = map.get(key);
                         String valueNotes = ObjectUtils.to(String.class, map.get("_" + key + "Notes"));
-                        Object resolved = resolveJsonObject(jsonDataFiles, value, valueNotes);
+                        JsonObject resolved = resolveJsonObject(key, jsonDataFiles, value, valueNotes);
 
                         if (resolved != null) {
-                            fields.put(key, resolveJsonObject(jsonDataFiles, value, valueNotes));
+                            fields.put(key, resolved);
                         }
                     }
                 });

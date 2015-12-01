@@ -25,7 +25,7 @@ abstract class TemplateFieldDefinition {
         values.forEach((value) -> valueTypes.add(value.getType()));
 
         if (valueTypes.size() == 1
-                || valueTypes.size() == 2 && valueTypes.contains(JsonObjectType.MAP) && valueTypes.contains(JsonObjectType.STRING)) {
+                || valueTypes.size() == 2 && valueTypes.contains(JsonObjectType.TEMPLATE_OBJECT) && valueTypes.contains(JsonObjectType.STRING)) {
 
             if (valueTypes.size() == 2) {
 
@@ -33,7 +33,7 @@ abstract class TemplateFieldDefinition {
                 System.out.println("WARN: (" + parentTemplate + " - " + name
                         + ") has multiple value types " + valueTypes + ", but this is a common use case so we allow it.");
 
-                effectiveValueType = JsonObjectType.MAP;
+                effectiveValueType = JsonObjectType.TEMPLATE_OBJECT;
 
             } else {
                 effectiveValueType = valueTypes.iterator().next();
@@ -52,6 +52,9 @@ abstract class TemplateFieldDefinition {
                 return new TemplateFieldDefinitionList(parentTemplate, name, values, mapTemplates);
 
             } else if (effectiveValueType == JsonObjectType.MAP) {
+                return new TemplateFieldDefinitionMap(parentTemplate, name, values, mapTemplates);
+
+            } else if (effectiveValueType == JsonObjectType.TEMPLATE_OBJECT) {
                 return new TemplateFieldDefinitionObject(parentTemplate, name, values, mapTemplates);
 
             } else {

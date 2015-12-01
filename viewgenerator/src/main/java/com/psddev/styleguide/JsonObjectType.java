@@ -9,7 +9,8 @@ enum JsonObjectType {
     NUMBER,
     STRING,
     LIST,
-    MAP;
+    MAP,
+    TEMPLATE_OBJECT;
 
     public static JsonObjectType fromObject(Object object) {
 
@@ -26,8 +27,11 @@ enum JsonObjectType {
             return LIST;
 
         } else if (object instanceof Map) {
-            return MAP;
-
+            if (((Map<?, ?>) object).get("_template") != null) {
+                return TEMPLATE_OBJECT;
+            } else {
+                return MAP;
+            }
         } else {
             return null;
         }

@@ -57,7 +57,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
                 listItemJavaType = "?";
                 listItemTypes.add("java.util.List");
 
-            } else if (effectiveListValueType == JsonObjectType.MAP) {
+            } else if (effectiveListValueType == JsonObjectType.TEMPLATE_OBJECT) {
                 listItemJavaType = "?";
 
                 values.forEach((value) -> {

@@ -58,7 +58,7 @@ class JsonTemplateObject extends JsonObject {
 
     @Override
     public JsonObjectType getType() {
-        return JsonObjectType.MAP;
+        return JsonObjectType.TEMPLATE_OBJECT;
     }
 
     @Override

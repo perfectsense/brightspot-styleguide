@@ -32,6 +32,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
         }
     }
 
+    @Override
     public Set<String> getValueTypes() {
 
         Set<String> viewClassNames = new LinkedHashSet<>();
@@ -48,6 +49,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
         return viewClassNames;
     }
 
+    @Override
     public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
 
         StringBuilder builder = new StringBuilder();

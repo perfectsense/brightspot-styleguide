@@ -44,17 +44,27 @@
                             });
                         });
 
+                        var $message = $('<span/>', {
+                            'class': 'sg-file-form-message'
+                        });
+
+                        $form.find('button').after($message);
+
                         $form.on('submit', function () {
+                            $message.text('Saving...');
+
                             $.post('/save', $form.serialize()).
 
                                 done(function (data) {
+                                    $message.text('Saved successfully!');
+
                                     $form.closest('.sg-file').find('iframe').each(function () {
                                         this.contentWindow.location.reload();
                                     });
                                 }).
 
                                 fail(function () {
-                                    alert('Unable to save ' + $form.find('input[name="path"]').val());
+                                    $message.text('Unable to save ' + $form.find('input[name="path"]').val());
                                 });
 
                             return false;
@@ -95,7 +105,7 @@
 
                         <form class="sg-file-form">
                             <input type="hidden" name="path" value="{{exampleFilePath}}">
-    <textarea class="code" name="data">{{exampleFileData}}</textarea>
+                            <textarea class="code" name="data">{{exampleFileData}}</textarea>
                             <button>Save</button>
                         </form>
                     </div>

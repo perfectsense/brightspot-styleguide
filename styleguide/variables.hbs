@@ -1,19 +1,114 @@
 {{#> layout}}
-    {{#*inline 'head'}}{{/inline}}
+    {{#*inline 'head'}}
+        <link rel="stylesheet" type="text/css" href="/node-modules/codemirror/lib/codemirror.css">
+
+        <script type="text/javascript" src="/node-modules/sticky-kit/jquery.sticky-kit.min.js"></script>
+        <script type="text/javascript" src="/node-modules/codemirror/lib/codemirror.js"></script>
+        <script type="text/javascript" src="/node-modules/codemirror/mode/javascript/javascript.js"></script>
+
+        <script type="text/javascript">
+            (function () {
+                $(document).ready(function () {
+                    $('.sg-design').each(function () {
+                        var $design = $(this);
+                        var $name = $design.find('.sg-design-name');
+                        var $form = $design.find('.sg-design-form');
+
+                        $name.append(' - ');
+                        $name.append($('<a/>', {
+                            href: '#',
+                            text: 'Toggle Edit',
+                            click: function () {
+                                $design.toggleClass('sg-design--hide');
+                                return false;
+                            }
+                        }));
+
+                        $form.find('textarea').each(function () {
+                            CodeMirror.fromTextArea(this, {
+                                lineNumbers: true,
+                                mode: 'json'
+                            });
+                        });
+
+                        var $message = $('<span/>', {
+                            'class': 'sg-design-form-message'
+                        });
+
+                        $form.find('button').after($message);
+
+                        $form.on('submit', function () {
+                            $message.text('Saving...');
+
+                            $.post('/save', $form.serialize()).
+
+                                done(function (data) {
+                                    $message.text('Saved successfully!');
+
+                                    $form.closest('.sg-design').find('iframe').each(function () {
+                                        this.contentWindow.location.reload();
+                                    });
+                                }).
+
+                                fail(function () {
+                                    $message.text('Unable to save ' + $form.find('input[name="path"]').val());
+                                });
+
+                            return false;
+                        });
+
+                        $design.addClass('sg-design--hide');
+
+                        $design.find('.sg-design-header').stick_in_parent({
+                            offset_top: 48
+                        });
+                    });
+
+                    $('.sg-file-body').each(function () {
+                        var $body = $(this);
+                        var $devices = $body.find('> .sg-device');
+
+                        if ($devices.length > 0) {
+                            var width = 50;
+
+                            $devices.each(function () {
+                                width += $(this).outerWidth(true);
+                            });
+
+                            $body.outerWidth(width);
+                        }
+                    });
+                });
+            })();
+        </script>
+
+    {{/inline}}
 
     {{#*inline 'content'}}
-        <div class="sg-design-name">{{name}}</div>
-        <div class="sg-design-item-list">
-            {{#each items}}
-                {{#if this.description}}
-                    <div class="sg-design-description">
-                        {{this.description}}
-                    </div>
+        <div class="sg-design">
+            <div class="sg-design-header">
+                <div class="sg-design-name">{{name}}</div>
 
-                {{else}}
-                    {{this}}    
-                {{/if}}
-            {{/each}}
+                <form class="sg-design-form">
+                    <input type="hidden" name="grunt" value="true">
+                    <input type="hidden" name="path" value="{{selectedFilePath}}">
+                    <textarea class="code" name="data">{{selectedFileData}}</textarea>
+                    <button>Save</button>
+                </form>
+            </div>
+
+            <div class="sg-design-item-list">
+                {{#each items}}
+                    {{#if this.description}}
+                        <div class="sg-design-description">
+                            {{this.description}}
+                        </div>
+
+                    {{else}}
+                        {{this}}    
+                    {{/if}}
+                {{/each}}
+            </div>
         </div>
     {{/inline}}
 {{/layout}}

@@ -101,18 +101,21 @@ a {
     padding: 12px 24px 12px 12px;
 }
 
-.sg-file-header {
+.sg-file-header,
+.sg-design-header {
     background: #20343f;
     color: white;
     margin-bottom: 12px;
     padding: 6px 12px;
+    z-index: 50;
 }
 
 .sg-file-name {
     font-weight: bold;
 }
 
-.sg-file-form {
+.sg-file-form,
+.sg-design-form {
     padding: 12px 0;
 
     button {
@@ -120,9 +123,15 @@ a {
         margin-top: 12px;
     }
 
-    .sg-file--hide & {
+    .sg-file--hide &,
+    .sg-design--hide & {
         display: none;
     }
+}
+
+.sg-file-form-message,
+.sg-design-form-message {
+    margin-left: 16px;
 }
 
 .sg-file-option-list {
@@ -163,7 +172,6 @@ a {
 
 .sg-design-name {
     font-weight: bold;
-    margin-bottom: 12px;
 }
 
 .sg-design-description {

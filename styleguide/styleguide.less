@@ -37,7 +37,7 @@ a {
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 1;
+    z-index: 1000;
 }
 
 .sg-available-device-list {
@@ -101,9 +101,28 @@ a {
     padding: 12px 24px 12px 12px;
 }
 
+.sg-file-header {
+    background: #20343f;
+    color: white;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+}
+
 .sg-file-name {
     font-weight: bold;
-    margin-bottom: 12px;
+}
+
+.sg-file-form {
+    padding: 12px 0;
+
+    button {
+        color: black;
+        margin-top: 12px;
+    }
+
+    .sg-file--hide & {
+        display: none;
+    }
 }
 
 .sg-file-option-list {

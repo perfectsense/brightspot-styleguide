@@ -173,20 +173,22 @@ public class ViewClassGenerator {
             } else {
                 for (String arg : args) {
 
-                    if (arg.startsWith(JSON_DIRECTORY_PREFIX)) {
-                        jsonDirectories.addAll(processStringSetArgument(JSON_DIRECTORY_PREFIX, arg));
+                    if (arg != null) {
+                        if (arg.startsWith(JSON_DIRECTORY_PREFIX)) {
+                            jsonDirectories.addAll(processStringSetArgument(JSON_DIRECTORY_PREFIX, arg));
 
-                    } else if (arg.startsWith(JAVA_PACKAGE_PREFIX)) {
-                        javaPackageName = processStringArgument(JAVA_PACKAGE_PREFIX, arg);
+                        } else if (arg.startsWith(JAVA_PACKAGE_PREFIX)) {
+                            javaPackageName = processStringArgument(JAVA_PACKAGE_PREFIX, arg);
 
-                    } else if (arg.startsWith(BUILD_DIRECTORY_PREFIX)) {
-                        buildDirectory = processStringArgument(BUILD_DIRECTORY_PREFIX, arg);
+                        } else if (arg.startsWith(BUILD_DIRECTORY_PREFIX)) {
+                            buildDirectory = processStringArgument(BUILD_DIRECTORY_PREFIX, arg);
 
-                    } else if (arg.startsWith(MAP_TEMPLATES_PREFIX)) {
-                        processStringSetArgument(MAP_TEMPLATES_PREFIX, arg).forEach(
-                                (template) -> mapTemplates.add(StringUtils.ensureStart(template, "/")));
-                    } else if (arg.startsWith(IGNORE_FILES_PREFIX)) {
-                        processStringSetArgument(IGNORE_FILES_PREFIX, arg).forEach(ignoredFileNames::add);
+                        } else if (arg.startsWith(MAP_TEMPLATES_PREFIX)) {
+                            processStringSetArgument(MAP_TEMPLATES_PREFIX, arg).forEach(
+                                    (template) -> mapTemplates.add(StringUtils.ensureStart(template, "/")));
+                        } else if (arg.startsWith(IGNORE_FILES_PREFIX)) {
+                            processStringSetArgument(IGNORE_FILES_PREFIX, arg).forEach(ignoredFileNames::add);
+                        }
                     }
                 }
             }

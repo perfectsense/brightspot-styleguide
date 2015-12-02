@@ -9,6 +9,11 @@ var fs = require('fs');
 var _ = require('lodash');
 
 var config = require('minimist')(process.argv.slice(2));
+
+if (config.daemon) {
+    require('daemon')();
+}
+
 var server = require('../lib/server');
 
 if (config._.length > 0) {

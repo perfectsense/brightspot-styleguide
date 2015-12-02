@@ -10,6 +10,7 @@
     "codemirror": "5.9.0",
     "connect-fonts": "2.0.2",
     "connect-fonts-opensans": "0.0.5",
+    "daemon": "1.1.0",
     "express": "^4.13.1",
     "font-awesome": "^4.4.0",
     "geopattern": "1.2.3",

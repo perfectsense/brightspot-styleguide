@@ -13,7 +13,10 @@ import com.psddev.dari.util.StringUtils;
 
 class JsonDataFile {
 
-    private static final Set<String> JSON_MAP_KEYS = new HashSet<>(Arrays.asList("displayOptions", "options"));
+    private static final Set<String> JSON_MAP_KEYS = new HashSet<>(Arrays.asList(
+            "displayOptions",
+            "extraAttributes",
+            "jsonObject"));
 
     private String filePath;
     private String fileName;

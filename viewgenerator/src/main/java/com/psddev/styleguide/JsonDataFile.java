@@ -1,5 +1,7 @@
 package com.psddev.styleguide;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -32,12 +34,37 @@ class JsonDataFile {
         this.jsonData = jsonData;
     }
 
+    /**
+     * @return the base path of this JSON data file and all its associated files.
+     * This is NOT necessarily the lowest level directory where the file actually
+     * lives. See {@link #getFileDirectoryPath()} for that information.
+     */
     public String getFilePath() {
         return filePath;
     }
 
+    /**
+     * @return the path and file name of this JSON data file relative to {@link #getFilePath()}.
+     */
     public String getFileName() {
         return fileName;
+    }
+
+    /**
+     * @return the path to the lowest level directory containing this JSON data file.
+     */
+    public String getFileDirectoryPath() {
+
+        String fileNamePath = getFileName();
+
+        int lastSlashAt = fileNamePath.lastIndexOf('/');
+        if (lastSlashAt >= 0) {
+            fileNamePath = fileNamePath.substring(0, lastSlashAt);
+        } else {
+            fileNamePath = "";
+        }
+
+        return getFilePath() + fileNamePath;
     }
 
     public Map<String, Object> getJsonData() {
@@ -63,6 +90,24 @@ class JsonDataFile {
     @Override
     public String toString() {
         return getFileName() + " (" + getTemplateName() + "): " + ObjectUtils.toJson(getJsonData());
+    }
+
+    private JsonDataFile resolveDataUrl(String dataUrl, JsonDataFiles jsonDataFiles) {
+
+        // if it's a relative URL
+        if (!dataUrl.startsWith("/")) {
+            try {
+                dataUrl = Paths.get(getFileDirectoryPath(), dataUrl)
+                        .toRealPath(/*LinkOption.NOFOLLOW_LINKS*/)
+                        .toString()
+                        .substring(getFilePath().length());
+
+            } catch (IOException | IllegalArgumentException e) {
+                return null;
+            }
+        }
+
+        return jsonDataFiles.getByFileName(StringUtils.ensureStart(dataUrl, "/"));
     }
 
     private Set<String> jsonMapKeys() {
@@ -138,17 +183,7 @@ class JsonDataFile {
         String dataUrl = (String) map.get("_dataUrl");
         if (dataUrl != null) {
 
-            // if it's a relative URL
-            if (!dataUrl.startsWith("/")) {
-
-                int lastSlashAt = this.fileName.lastIndexOf('/');
-                if (lastSlashAt >= 0) {
-                    dataUrl = this.fileName.substring(0, lastSlashAt) + "/" + dataUrl;
-                }
-            }
-
-            JsonDataFile jsonDataFile = jsonDataFiles.getByFileName(StringUtils.ensureStart(dataUrl, "/"));
-
+            JsonDataFile jsonDataFile = resolveDataUrl(dataUrl, jsonDataFiles);
             if (jsonDataFile != null) {
                 jsonDataFile.resolveTemplate(jsonDataFiles);
                 return jsonDataFile.templateObject;

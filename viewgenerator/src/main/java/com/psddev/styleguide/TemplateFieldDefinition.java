@@ -110,7 +110,7 @@ abstract class TemplateFieldDefinition {
 
         String methodNamePrefix = "get";
 
-        if ("Boolean".equals(getJavaFieldType())) {
+        if ("boolean".equals(getJavaFieldType())) {
             methodNamePrefix = "is";
         }
 

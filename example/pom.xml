@@ -58,13 +58,9 @@
                             <includePluginDependencies>true</includePluginDependencies>
                             <mainClass>com.psddev.styleguide.ViewClassGenerator</mainClass>
                             <arguments>
-                                <argument>--json-dir=${project.basedir}/styleguide</argument>
                                 <argument>--java-package-prefix=com.psddev.styleguide.example</argument>
+                                <argument>--json-dir=${project.basedir}/styleguide</argument>
                                 <argument>--build-dir=${project.build.directory}/generated-sources/styleguide</argument>
-                                <argument>--map-templates=/assets/templates/base/common/attributes</argument>
-                                <argument>--map-templates=/assets/templates/base/common/json-object</argument>
-                                <argument>--map-templates=/render/common/attributes</argument>
-                                <argument>--map-templates=/render/common/json-object</argument>
                             </arguments>
                         </configuration>
                     </execution>

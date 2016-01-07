@@ -1,8 +1,8 @@
 # Installation
 
-Make sure that `package.json` and `Gruntfile.js` exist at the root of the
-project directory, and `pom.xml` contains the view generator build plugins.
-The examples are in the [example](example) sub-project.
+Make sure that `bower.json`, `Gruntfile.js`, and `package.json` exist at the
+root of the project directory, and `pom.xml` contains the view generator build
+plugins. The examples are in the [example](example) sub-project.
 
 Build the project:
 

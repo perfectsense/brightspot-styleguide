@@ -117,18 +117,14 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
             if (valueTypesJavaDocList != null) {
                 methodJavaDoc = Arrays.stream(new String[] {
                         indent(indent) + "/**\n",
-                        indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
-                        notesJavaDoc.toString(),
-                        indent(indent) + " *\n",
-                        indent(indent) + " * @param " + name + "ViewClass the " + name + " view class, typically a Class of " + valueTypesJavaDocList + ".\n",
-                        indent(indent) + " * @param " + name +  "Model the model powering the " + name + " view.\n",
-                        indent(indent) + " * @return this builder.\n",
+                        indent(indent) + " * @deprecated no replacement\n",
                         indent(indent) + " */\n"
                 }).collect(Collectors.joining(""));
             }
 
             String[] method = {
                     methodJavaDoc,
+                    indent(indent) + "@Deprecated\n",
                     indent(indent) + "public Builder " + name + "(Class<?> " + name + "ViewClass, Object " + name + "Model) {\n",
                     indent(indent + 1) + "this." + name + " = request.createView(" + name + "ViewClass, " + name + "Model);\n",
                     indent(indent + 1) + "return this;\n",

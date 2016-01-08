@@ -163,13 +163,9 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
          */
         String[] method2 = {
                 indent(indent) + "/**\n",
-                indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
-                notesJavaDoc.toString(),
-                indent(indent) + " *\n",
-                indent(indent) + " * @param " + nameViewClass + " the " + name + " views class, typically a " + valueTypesJavaDocList + ".\n",
-                indent(indent) + " * @param " + nameModels + " the models powering the " + name + " views.\n",
-                indent(indent) + " * @return this builder.\n",
+                indent(indent) + " * @deprecated no replacement\n",
                 indent(indent) + " */\n",
+                indent(indent) + "@Deprecated\n",
                 indent(indent) + "public Builder " + name + "(Class<?> " + nameViewClass + ", List<?> " + nameModels + ") {\n",
                 indent(indent + 1) + "this." + name + " = " + nameModels + ".stream()\n",
                 indent(indent + 3) + ".map((" + nameModel + ") -> request.createView(" + nameViewClass + ", " + nameModel + "))\n",
@@ -229,13 +225,9 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
          */
         String[] method4 = {
                 indent(indent) + "/**\n",
-                indent(indent) + " * <p>Adds an item to the " + name + " field.</p>\n",
-                notesJavaDoc.toString(),
-                indent(indent) + " *\n",
-                indent(indent) + " * @param " + nameViewClass + " the " + name + " view class, typically a Class of " + valueTypesJavaDocList + ".\n",
-                indent(indent) + " * @param " + nameModel + " the model powering the " + name + " view.\n",
-                indent(indent) + " * @return this builder.\n",
+                indent(indent) + " * @deprecated no replacement\n",
                 indent(indent) + " */\n",
+                indent(indent) + "@Deprecated\n",
                 indent(indent) + "public Builder add" + StyleguideStringUtils.toPascalCase(name) + "(Class<?> " + nameViewClass + ", Object " + nameModel + ") {\n",
                 indent(indent + 1) + "Object " + name + " = request.createView(" + nameViewClass + ", " + nameModel + ");\n",
                 indent(indent + 1) + "if (" + name + " != null) {\n",

@@ -128,6 +128,7 @@ class TemplateDefinition {
         builder.append("     */\n");
         builder.append("    class Builder {\n");
         builder.append("\n");
+        builder.append("        @Deprecated\n");
         builder.append("        private ViewRequest request;\n");
         builder.append("\n");
         for (TemplateFieldDefinition fieldDef : fields) {
@@ -137,6 +138,13 @@ class TemplateDefinition {
         builder.append("        /**\n");
         builder.append("         * <p>Creates a builder for ").append("{@link ").append(getJavaClassName()).append("}").append(" objects.</p>\n");
         builder.append("         */\n");
+        builder.append("        public Builder() {\n");
+        builder.append("        }\n");
+        builder.append("\n");
+        builder.append("        /**\n");
+        builder.append("         * @deprecated use {@link #Builder()} instead.\n");
+        builder.append("         */\n");
+        builder.append("        @Deprecated\n");
         builder.append("        public Builder(ViewRequest request) {\n");
         builder.append("            this.request = request;\n");
         builder.append("        }\n");

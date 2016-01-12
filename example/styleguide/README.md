@@ -45,7 +45,7 @@ or a random number within a range (`[ 1, 5 ]` - [example](components/list/many-i
 
 Location of the Handlebars template used to render the JSON object.
 The default root path is `src/main/webapp`, so the [link/index.json](components/link/index.json)
-`_template` entry of `assets/components/link` points to [../src/main/webapp/assets/components/link.hbs](src/main/webapp/assets/components/link.hbs).
+`_template` entry of `assets/components/link` points to [src/main/webapp/assets/components/link.hbs](../src/main/webapp/assets/components/link.hbs).
 This entry is required unless the object is referenced as either
 `displayOptions` ([example](components/list/three-items.json)) or
 `extraAttributes` ([example](components/link/index.json)).

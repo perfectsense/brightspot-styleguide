@@ -1,4 +1,5 @@
 {
+    "_wrapper": "/_wrapper.json",
     "_template": "assets/components/link",
     "body": "{{words}}",
     "extraAttributes": {

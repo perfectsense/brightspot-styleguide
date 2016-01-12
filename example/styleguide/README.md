@@ -1,6 +1,6 @@
 # Example File Format
 
-If the file's name starts with an underscore, like [_item.json](styleguide/components/list/_item.json),
+If the file's name starts with an underscore, like [_item.json](components/list/_item.json),
 it won't show up in the styleguide navigation.
 
 ## String Substitution
@@ -33,25 +33,25 @@ URL to a randomly generated image.
 
 `_dataUrl`
 
-Location of another file that should be merged with the JSON object ([example](styleguide/components/link/index.json)).
+Location of another file that should be merged with the JSON object ([example](components/link/index.json)).
 
 `_repeat`
 
 How many times the JSON object should be repeated when it's in a list.
-The value can be exact (`3` - [example](styleguide/components/list/three-items.json))
-or a random number within a range (`[ 1, 5 ]` - [example](styleguide/components/list/many-items.json)).
+The value can be exact (`3` - [example](components/list/three-items.json))
+or a random number within a range (`[ 1, 5 ]` - [example](components/list/many-items.json)).
 
 `_template`
 
 Location of the Handlebars template used to render the JSON object.
-The default root path is `src/main/webapp`, so the [link/index.json](styleguide/components/link/index.json)
+The default root path is `src/main/webapp`, so the [link/index.json](components/link/index.json)
 `_template` entry of `assets/components/link` points to [src/main/webapp/assets/components/link.hbs](src/main/webapp/assets/components/link.hbs).
 This entry is required unless the object is referenced as either
-`displayOptions` ([example](styleguide/components/list/three-items.json)) or
-`extraAttributes` ([example](styleguide/components/link/index.json)).
+`displayOptions` ([example](components/list/three-items.json)) or
+`extraAttributes` ([example](components/link/index.json)).
 
 `_wrapper`
 
 Location of another file that should wrap the JSON object. That file should
 contain an entry of `{ "_delegate": true }` to indicate where the JSON object
-should be included ([example](styleguide/components/link/index.json)).
+should be included ([example](components/link/index.json)).

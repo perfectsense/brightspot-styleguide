@@ -1,0 +1,13 @@
+{
+    "_wrapper": "/_wrapper.json",
+    "_template": "assets/components/list",
+    "displayOptions": {
+        "listClass": "three-items"
+    },
+    "items": [
+        {
+            "_dataUrl": "_item.json",
+            "_repeat": 3
+        }
+    ]
+}

@@ -33,7 +33,7 @@ URL to a randomly generated image.
 
 `_dataUrl`
 
-Location of another file that should be merged with the JSON object ([example](components/link/index.json)).
+Location of another file that should be merged with the JSON object ([example](components/list/three-items.json)).
 
 `_repeat`
 

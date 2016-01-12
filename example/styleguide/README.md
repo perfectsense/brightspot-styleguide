@@ -7,7 +7,7 @@ it won't show up in the styleguide navigation.
 
 ### Rules
 
-- Number or count can be exact (`3`) or a random number within a range
+- Number argument can be exact (`3`) or a random number within a range
   (`[ 1, 5 ]`).
 - All arguments are optional.
 - Parentheses can be omitted when there are no arguments (e.g. `{{words}}`

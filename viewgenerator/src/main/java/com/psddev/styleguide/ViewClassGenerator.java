@@ -3,6 +3,7 @@ package com.psddev.styleguide;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -175,13 +176,17 @@ public class ViewClassGenerator {
 
                     if (arg != null) {
                         if (arg.startsWith(JSON_DIRECTORY_PREFIX)) {
-                            jsonDirectories.addAll(processStringSetArgument(JSON_DIRECTORY_PREFIX, arg));
+                            Set<String> dirs = processStringSetArgument(JSON_DIRECTORY_PREFIX, arg);
+                            for (String dir : dirs) {
+                                jsonDirectories.add(convertToPlatformSpecificPath(dir));
+                            }
 
                         } else if (arg.startsWith(JAVA_PACKAGE_PREFIX)) {
                             javaPackageName = processStringArgument(JAVA_PACKAGE_PREFIX, arg);
 
                         } else if (arg.startsWith(BUILD_DIRECTORY_PREFIX)) {
-                            buildDirectory = processStringArgument(BUILD_DIRECTORY_PREFIX, arg);
+                            String dir = processStringArgument(BUILD_DIRECTORY_PREFIX, arg);
+                            buildDirectory = convertToPlatformSpecificPath(dir);
 
                         } else if (arg.startsWith(MAP_TEMPLATES_PREFIX)) {
                             processStringSetArgument(MAP_TEMPLATES_PREFIX, arg).forEach(
@@ -300,6 +305,14 @@ public class ViewClassGenerator {
 
         private void validateIgnoredFileNames() {
             // nothing to do yet...
+        }
+
+        private String convertToPlatformSpecificPath(String path) {
+            if (path != null) {
+                return Paths.get(path).toString();
+            } else {
+                return null;
+            }
         }
     }
 }

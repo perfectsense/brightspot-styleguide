@@ -94,32 +94,18 @@ class JsonDataFile {
 
     private JsonDataFile resolveDataUrl(String dataUrl, JsonDataFiles jsonDataFiles) {
 
-        boolean debug = "_item.json".equals(dataUrl);
-
         // if it's a relative URL
         if (!dataUrl.startsWith("/")) {
             try {
-                if (debug) {
-                    System.out.println("getFileDirectoryPath(): " + getFileDirectoryPath());
-                    System.out.println("dataUrl: " + dataUrl);
-                    System.out.println("getFilePath(): " + getFilePath());
-                }
                 dataUrl = Paths.get(getFileDirectoryPath(), dataUrl)
                         .toRealPath(/*LinkOption.NOFOLLOW_LINKS*/)
                         .toString()
                         .substring(getFilePath().length());
-                if (debug) {
-                    System.out.println("relativeUrl: " + dataUrl);
-                }
 
             } catch (IOException | IllegalArgumentException e) {
                 e.printStackTrace();
                 return null;
             }
-        }
-
-        if (debug) {
-            System.out.println("jsonDataFiles.dataFilesByFile.keySet(): " + jsonDataFiles.dataFilesByFile.keySet());
         }
 
         return jsonDataFiles.getByFileName(StringUtils.ensureStart(dataUrl, PathUtils.SLASH));

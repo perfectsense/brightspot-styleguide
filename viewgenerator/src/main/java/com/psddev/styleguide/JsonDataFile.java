@@ -113,6 +113,7 @@ class JsonDataFile {
                 }
 
             } catch (IOException | IllegalArgumentException e) {
+                e.printStackTrace();
                 return null;
             }
         }

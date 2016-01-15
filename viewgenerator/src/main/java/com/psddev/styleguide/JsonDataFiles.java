@@ -20,7 +20,7 @@ import com.psddev.dari.util.StringUtils;
 
 class JsonDataFiles {
 
-    public Map<String, JsonDataFile> dataFilesByFile;
+    private Map<String, JsonDataFile> dataFilesByFile;
 
     private Map<String, List<JsonDataFile>> dataFilesByTemplate;
 

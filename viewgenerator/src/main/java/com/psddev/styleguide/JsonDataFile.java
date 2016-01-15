@@ -122,7 +122,7 @@ class JsonDataFile {
             System.out.println("jsonDataFiles.dataFilesByFile.keySet(): " + jsonDataFiles.dataFilesByFile.keySet());
         }
 
-        return jsonDataFiles.getByFileName(StringUtils.ensureStart(dataUrl, "/"));
+        return jsonDataFiles.getByFileName(StringUtils.ensureStart(dataUrl, PathUtils.SLASH));
     }
 
     private Set<String> jsonMapKeys() {

@@ -57,7 +57,7 @@ class JsonDataFile {
 
         String fileNamePath = getFileName();
 
-        int lastSlashAt = fileNamePath.lastIndexOf('/');
+        int lastSlashAt = fileNamePath.lastIndexOf(PathUtils.SLASH);
         if (lastSlashAt >= 0) {
             fileNamePath = fileNamePath.substring(0, lastSlashAt);
         } else {
@@ -103,11 +103,12 @@ class JsonDataFile {
                         .substring(getFilePath().length());
 
             } catch (IOException | IllegalArgumentException e) {
+                e.printStackTrace();
                 return null;
             }
         }
 
-        return jsonDataFiles.getByFileName(StringUtils.ensureStart(dataUrl, "/"));
+        return jsonDataFiles.getByFileName(StringUtils.ensureStart(PathUtils.replaceAllWithSlash(dataUrl, "/"), PathUtils.SLASH));
     }
 
     private Set<String> jsonMapKeys() {

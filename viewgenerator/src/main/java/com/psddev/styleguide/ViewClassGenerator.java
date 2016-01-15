@@ -127,11 +127,11 @@ public class ViewClassGenerator {
         private static final String IGNORE_FILES_PREFIX = "--ignore-files=";
 
         // default argument values
-        private static final String DEFAULT_JSON_DIRECTORY = System.getProperty("user.dir") + "/styleguide";
+        private static final String DEFAULT_JSON_DIRECTORY = PathUtils.buildPath(System.getProperty("user.dir"), "styleguide");
 
         private static final String DEFAULT_JAVA_PACKAGE = "com.psddev.view";
 
-        private static final String DEFAULT_BUILD_DIRECTORY = System.getProperty("user.dir") + "/target/generated-sources/styleguide";
+        private static final String DEFAULT_BUILD_DIRECTORY = PathUtils.buildPath(System.getProperty("user.dir"), "target", "generated-sources", "styleguide");
 
         private static final String[] DEFAULT_MAP_TEMPLATES = {
                 "/assets/templates/base/common/attributes",
@@ -166,8 +166,8 @@ public class ViewClassGenerator {
                         IGNORE_FILES_PREFIX), ", ")
                         + "] instead.");
 
-                this.jsonDirectories.add(StringUtils.ensureEnd(args[0], "/") + "styleguide");
-                this.buildDirectory = StringUtils.ensureEnd(args[0], "/") + "target/generated-sources/styleguide/";
+                this.jsonDirectories.add(PathUtils.buildPath(args[0], "styleguide"));
+                this.buildDirectory = PathUtils.buildPathWithEndingSlash(args[0], "target", "generated-sources", "styleguide");
                 this.javaPackageName = args[1];
 
             } else {
@@ -251,7 +251,7 @@ public class ViewClassGenerator {
         }
 
         public String getJavaSourceDirectory() {
-            return StringUtils.ensureEnd(getBuildDirectory(), "/") + getJavaPackageName().replaceAll("\\x2e", "/");
+            return StringUtils.ensureEnd(getBuildDirectory(), PathUtils.SLASH) + PathUtils.replaceAllWithSlash(getJavaPackageName(), "\\x2e");
         }
 
         private String processStringArgument(String argName, String argValue) {

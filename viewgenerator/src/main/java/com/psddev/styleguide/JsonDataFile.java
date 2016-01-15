@@ -57,7 +57,7 @@ class JsonDataFile {
 
         String fileNamePath = getFileName();
 
-        int lastSlashAt = fileNamePath.lastIndexOf('/');
+        int lastSlashAt = fileNamePath.lastIndexOf(System.getProperty("file.separator"));
         if (lastSlashAt >= 0) {
             fileNamePath = fileNamePath.substring(0, lastSlashAt);
         } else {
@@ -94,13 +94,23 @@ class JsonDataFile {
 
     private JsonDataFile resolveDataUrl(String dataUrl, JsonDataFiles jsonDataFiles) {
 
+        boolean debug = "_item.json".equals(dataUrl);
+
         // if it's a relative URL
         if (!dataUrl.startsWith("/")) {
             try {
+                if (debug) {
+                    System.out.println("getFileDirectoryPath(): " + getFileDirectoryPath());
+                    System.out.println("dataUrl: " + dataUrl);
+                    System.out.println("getFilePath(): " + getFilePath());
+                }
                 dataUrl = Paths.get(getFileDirectoryPath(), dataUrl)
                         .toRealPath(/*LinkOption.NOFOLLOW_LINKS*/)
                         .toString()
                         .substring(getFilePath().length());
+                if (debug) {
+                    System.out.println("relativeUrl: " + dataUrl);
+                }
 
             } catch (IOException | IllegalArgumentException e) {
                 return null;

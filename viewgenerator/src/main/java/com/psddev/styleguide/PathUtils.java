@@ -16,4 +16,12 @@ public final class PathUtils {
     public static String buildPathWithEndingSlash(String... pathParts) {
         return buildPath(pathParts) + SLASH;
     }
+
+    public static String replaceAllWithSlash(String text, String regex) {
+        return text.replaceAll(regex, getRegexSlash());
+    }
+
+    private static String getRegexSlash() {
+        return "\\".equals(SLASH) ? "\\\\" : SLASH;
+    }
 }

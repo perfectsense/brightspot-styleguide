@@ -251,8 +251,7 @@ public class ViewClassGenerator {
         }
 
         public String getJavaSourceDirectory() {
-            System.out.println("PathUtils.SLASH: " + PathUtils.SLASH);
-            return StringUtils.ensureEnd(getBuildDirectory(), PathUtils.SLASH) + getJavaPackageName().replaceAll("\\x2e", PathUtils.SLASH);
+            return StringUtils.ensureEnd(getBuildDirectory(), PathUtils.SLASH) + PathUtils.replaceAllWithSlash(getJavaPackageName(), "\\x2e");
         }
 
         private String processStringArgument(String argName, String argValue) {

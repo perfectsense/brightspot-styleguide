@@ -57,7 +57,7 @@ class JsonDataFile {
 
         String fileNamePath = getFileName();
 
-        int lastSlashAt = fileNamePath.lastIndexOf(System.getProperty("file.separator"));
+        int lastSlashAt = fileNamePath.lastIndexOf(PathUtils.SLASH);
         if (lastSlashAt >= 0) {
             fileNamePath = fileNamePath.substring(0, lastSlashAt);
         } else {

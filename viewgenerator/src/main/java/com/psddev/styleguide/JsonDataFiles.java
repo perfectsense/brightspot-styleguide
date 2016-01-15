@@ -172,6 +172,6 @@ class JsonDataFiles {
     }
 
     private static String fileToName(File file, String baseFilePath) {
-        return StringUtils.ensureStart(file.getAbsolutePath().replace(baseFilePath, ""), "/");
+        return StringUtils.ensureStart(file.getAbsolutePath().replace(baseFilePath, ""), PathUtils.SLASH);
     }
 }

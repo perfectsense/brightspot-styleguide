@@ -118,6 +118,10 @@ class JsonDataFile {
             }
         }
 
+        if (debug) {
+            System.out.println("jsonDataFiles.dataFilesByFile.keySet(): " + jsonDataFiles.dataFilesByFile.keySet());
+        }
+
         return jsonDataFiles.getByFileName(StringUtils.ensureStart(dataUrl, "/"));
     }
 

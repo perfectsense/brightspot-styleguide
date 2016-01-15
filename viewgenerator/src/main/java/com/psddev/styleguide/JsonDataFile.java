@@ -108,7 +108,7 @@ class JsonDataFile {
             }
         }
 
-        return jsonDataFiles.getByFileName(StringUtils.ensureStart(dataUrl, PathUtils.SLASH));
+        return jsonDataFiles.getByFileName(StringUtils.ensureStart(PathUtils.replaceAllWithSlash(dataUrl, "/"), PathUtils.SLASH));
     }
 
     private Set<String> jsonMapKeys() {

@@ -6,8 +6,8 @@ import java.util.Set;
 
 class TemplateFieldDefinitionNumber extends TemplateFieldDefinition {
 
-    public TemplateFieldDefinitionNumber(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates) {
-        super(parentTemplate, name, values, mapTemplates);
+    public TemplateFieldDefinitionNumber(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
+        super(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
     }
 
     @Override

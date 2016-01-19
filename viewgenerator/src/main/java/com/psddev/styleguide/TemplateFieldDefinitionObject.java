@@ -11,8 +11,8 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
 
     private Set<String> templateTypes = new LinkedHashSet<>();
 
-    public TemplateFieldDefinitionObject(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates) {
-        super(parentTemplate, name, values, mapTemplates);
+    public TemplateFieldDefinitionObject(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
+        super(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
         values.forEach((value) -> {
             if (value instanceof JsonTemplateObject) {
@@ -40,7 +40,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
         if (!isStringMap()) {
             for (String templateType : templateTypes) {
 
-                String viewClassName = TemplateDefinition.getJavaClassNameForTemplate(templateType);
+                String viewClassName = TemplateDefinition.getJavaClassNameForTemplate(templateType, javaClassNamePrefix);
 
                 viewClassNames.add(viewClassName);
             }

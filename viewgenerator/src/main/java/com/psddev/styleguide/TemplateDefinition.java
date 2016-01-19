@@ -19,15 +19,18 @@ class TemplateDefinition {
 
     private Set<String> notes = new LinkedHashSet<>();
 
+    private String javaClassNamePrefix;
+
     /**
      * @param name the template name.
      * @param jsonTemplateObjects all the JSON template objects found for this template.
      * @param mapTemplates list of template names that are actually just String key/value pairs,
      *                     and should be treated as a Map of String ot String instead of a fielded Object.
      */
-    public TemplateDefinition(String name, List<JsonTemplateObject> jsonTemplateObjects, List<String> mapTemplates) {
+    public TemplateDefinition(String name, List<JsonTemplateObject> jsonTemplateObjects, List<String> mapTemplates, String javaClassNamePrefix) {
         this.name = name;
         this.fields = aggregateFieldDefinitions(jsonTemplateObjects, mapTemplates);
+        this.javaClassNamePrefix = javaClassNamePrefix;
     }
 
     public String getName() {
@@ -82,7 +85,7 @@ class TemplateDefinition {
         }
 
         return fieldInstances.entrySet().stream()
-                .map((entry) -> TemplateFieldDefinition.createInstance(getName(), entry.getKey(), entry.getValue(), mapTemplates))
+                .map((entry) -> TemplateFieldDefinition.createInstance(getName(), entry.getKey(), entry.getValue(), mapTemplates, javaClassNamePrefix))
                 .collect(Collectors.toList());
     }
 
@@ -178,7 +181,7 @@ class TemplateDefinition {
     }
 
     public String getJavaClassName() {
-        return getJavaClassNameForTemplate(name);
+        return getJavaClassNameForTemplate(name, javaClassNamePrefix);
     }
 
     private String getJavaImportStatements(Set<String> imports) {
@@ -192,7 +195,12 @@ class TemplateDefinition {
         return builder.toString();
     }
 
-    public static String getJavaClassNameForTemplate(String templateName) {
+    public static String getJavaClassNameForTemplate(String templateName, String javaClassNamePrefix) {
+
+        if (javaClassNamePrefix == null) {
+            javaClassNamePrefix = "";
+        }
+
         String className;
 
         int lastSlashAt = templateName.lastIndexOf('/');
@@ -202,6 +210,6 @@ class TemplateDefinition {
             className = templateName;
         }
 
-        return StyleguideStringUtils.toPascalCase(className) + "View";
+        return javaClassNamePrefix + StyleguideStringUtils.toPascalCase(className) + "View";
     }
 }

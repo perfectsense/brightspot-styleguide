@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 class TemplateFieldDefinitionMap extends TemplateFieldDefinition {
 
-    public TemplateFieldDefinitionMap(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates) {
-        super(parentTemplate, name, values, mapTemplates);
+    public TemplateFieldDefinitionMap(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
+        super(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
     }
 
     @Override

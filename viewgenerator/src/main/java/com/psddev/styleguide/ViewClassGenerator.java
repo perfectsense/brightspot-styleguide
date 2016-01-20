@@ -30,14 +30,18 @@ public class ViewClassGenerator {
         String javaSourceDirectory = arguments.getJavaSourceDirectory();
         List<String> mapBasedTemplates = new ArrayList<>(arguments.getMapTemplates());
         Set<String> ignoredFileNames = arguments.getIgnoredFileNames();
+        String classNamePrefix = arguments.getClassNamePrefix();
 
         System.out.println("           --json-dir= " + jsonDirectories);
         System.out.println("--java-package-prefix= " + javaPackageName);
         System.out.println("          --build-dir= " + javaSourceDirectory);
         System.out.println("      --map-templates= " + mapBasedTemplates);
         System.out.println("       --ignore-files= " + ignoredFileNames);
+        if (!StringUtils.isBlank(classNamePrefix)) {
+            System.out.println("  --class-name-prefix= " + classNamePrefix);
+        }
 
-        JsonDataFiles dataFiles = new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates);
+        JsonDataFiles dataFiles = new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates, classNamePrefix);
 
         List<TemplateDefinition> templateDefinitions = dataFiles.getTemplateDefinitions();
 
@@ -126,6 +130,7 @@ public class ViewClassGenerator {
         private static final String BUILD_DIRECTORY_PREFIX = "--build-dir=";
         private static final String MAP_TEMPLATES_PREFIX = "--map-templates=";
         private static final String IGNORE_FILES_PREFIX = "--ignore-files=";
+        private static final String CLASS_NAME_PREFIX_PREFIX = "--class-name-prefix=";
 
         // default argument values
         private static final String DEFAULT_JSON_DIRECTORY = PathUtils.buildPath(System.getProperty("user.dir"), "styleguide");
@@ -150,6 +155,7 @@ public class ViewClassGenerator {
         private String buildDirectory;
         private Set<String> mapTemplates = new LinkedHashSet<>();
         private Set<String> ignoredFileNames = new HashSet<>();
+        private String classNamePrefix = null;
 
         public Arguments(String[] args) {
 
@@ -193,6 +199,8 @@ public class ViewClassGenerator {
                                     (template) -> mapTemplates.add(StringUtils.ensureStart(template, "/")));
                         } else if (arg.startsWith(IGNORE_FILES_PREFIX)) {
                             processStringSetArgument(IGNORE_FILES_PREFIX, arg).forEach(ignoredFileNames::add);
+                        } else if (arg.startsWith(CLASS_NAME_PREFIX_PREFIX)) {
+                            classNamePrefix = processStringArgument(CLASS_NAME_PREFIX_PREFIX, arg);
                         }
                     }
                 }
@@ -233,6 +241,7 @@ public class ViewClassGenerator {
             validateBuildDirectory();
             validateMapTemplates();
             validateIgnoredFileNames();
+            validateClassNamePrefix();
         }
 
         public Set<String> getJsonDirectories() {
@@ -257,6 +266,10 @@ public class ViewClassGenerator {
 
         public String getJavaSourceDirectory() {
             return StringUtils.ensureEnd(getBuildDirectory(), PathUtils.SLASH) + PathUtils.replaceAllWithSlash(getJavaPackageName(), "\\x2e");
+        }
+
+        public String getClassNamePrefix() {
+            return classNamePrefix;
         }
 
         private String processStringArgument(String argName, String argValue) {
@@ -305,6 +318,10 @@ public class ViewClassGenerator {
 
         private void validateIgnoredFileNames() {
             // nothing to do yet...
+        }
+
+        private void validateClassNamePrefix() {
+            // nothing to do yet
         }
 
         private String convertToPlatformSpecificPath(String path) {

@@ -32,7 +32,9 @@ class JsonDataFiles {
 
     private String javaClassNamePrefix;
 
-    public JsonDataFiles(List<String> jsonDataFilesPaths, Set<String> ignoredFileNames, List<String> mapTemplates, String javaClassNamePrefix) {
+    private String javaClassNameSuffix;
+
+    public JsonDataFiles(List<String> jsonDataFilesPaths, Set<String> ignoredFileNames, List<String> mapTemplates, String javaClassNamePrefix, String javaClassNameSuffix) {
 
         List<JsonDataFile> jsonDataFiles = new ArrayList<>();
 
@@ -76,6 +78,7 @@ class JsonDataFiles {
 
         this.mapTemplates = mapTemplates != null ? mapTemplates : Collections.emptyList();
         this.javaClassNamePrefix = javaClassNamePrefix;
+        this.javaClassNameSuffix = javaClassNameSuffix;
     }
 
     public JsonDataFile getByFileName(String fileName) {
@@ -132,7 +135,7 @@ class JsonDataFiles {
             jsonTemplateObjectsMap.entrySet().forEach((entry) -> {
                 String name = StringUtils.ensureStart(entry.getKey(), "/");
                 if (!mapTemplates.contains(name)) {
-                    templateDefinitions.put(name, new TemplateDefinition(name, entry.getValue(), mapTemplates, javaClassNamePrefix));
+                    templateDefinitions.put(name, new TemplateDefinition(name, entry.getValue(), mapTemplates, javaClassNamePrefix, javaClassNameSuffix));
                 }
             });
 

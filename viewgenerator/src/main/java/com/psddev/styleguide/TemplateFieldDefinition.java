@@ -16,8 +16,9 @@ abstract class TemplateFieldDefinition {
     protected List<String> mapTemplates;
     protected Set<String> notes;
     protected String javaClassNamePrefix;
+    protected String javaClassNameSuffix;
 
-    public static TemplateFieldDefinition createInstance(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
+    public static TemplateFieldDefinition createInstance(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix, String javaClassNameSuffix) {
 
         JsonObjectType effectiveValueType;
 
@@ -41,22 +42,22 @@ abstract class TemplateFieldDefinition {
             }
 
             if (effectiveValueType == JsonObjectType.BOOLEAN) {
-                return new TemplateFieldDefinitionBoolean(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionBoolean(parentTemplate, name, values, mapTemplates, javaClassNamePrefix, javaClassNameSuffix);
 
             } else if (effectiveValueType == JsonObjectType.STRING) {
-                return new TemplateFieldDefinitionString(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionString(parentTemplate, name, values, mapTemplates, javaClassNamePrefix, javaClassNameSuffix);
 
             } else if (effectiveValueType == JsonObjectType.NUMBER) {
-                return new TemplateFieldDefinitionNumber(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionNumber(parentTemplate, name, values, mapTemplates, javaClassNamePrefix, javaClassNameSuffix);
 
             } else if (effectiveValueType == JsonObjectType.LIST) {
-                return new TemplateFieldDefinitionList(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionList(parentTemplate, name, values, mapTemplates, javaClassNamePrefix, javaClassNameSuffix);
 
             } else if (effectiveValueType == JsonObjectType.MAP) {
-                return new TemplateFieldDefinitionMap(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionMap(parentTemplate, name, values, mapTemplates, javaClassNamePrefix, javaClassNameSuffix);
 
             } else if (effectiveValueType == JsonObjectType.TEMPLATE_OBJECT) {
-                return new TemplateFieldDefinitionObject(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionObject(parentTemplate, name, values, mapTemplates, javaClassNamePrefix, javaClassNameSuffix);
 
             } else {
                 throw new IllegalArgumentException("ERROR: (" + parentTemplate + " - " + name
@@ -72,7 +73,7 @@ abstract class TemplateFieldDefinition {
         }
     }
 
-    public TemplateFieldDefinition(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
+    public TemplateFieldDefinition(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix, String javaClassNameSuffix) {
         this.parentTemplate = parentTemplate;
         this.name = name;
         this.values = values;
@@ -85,6 +86,7 @@ abstract class TemplateFieldDefinition {
             }
         });
         this.javaClassNamePrefix = javaClassNamePrefix;
+        this.javaClassNameSuffix = javaClassNameSuffix;
     }
 
     @Override

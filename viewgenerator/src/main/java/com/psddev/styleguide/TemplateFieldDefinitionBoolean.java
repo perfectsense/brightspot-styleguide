@@ -6,8 +6,8 @@ import java.util.Set;
 
 class TemplateFieldDefinitionBoolean extends TemplateFieldDefinition {
 
-    public TemplateFieldDefinitionBoolean(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
-        super(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+    public TemplateFieldDefinitionBoolean(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix, String javaClassNameSuffix) {
+        super(parentTemplate, name, values, mapTemplates, javaClassNamePrefix, javaClassNameSuffix);
     }
 
     @Override

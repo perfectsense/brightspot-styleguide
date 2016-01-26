@@ -21,16 +21,19 @@ class TemplateDefinition {
 
     private String javaClassNamePrefix;
 
+    private String javaClassNameSuffix;
+
     /**
      * @param name the template name.
      * @param jsonTemplateObjects all the JSON template objects found for this template.
      * @param mapTemplates list of template names that are actually just String key/value pairs,
      *                     and should be treated as a Map of String ot String instead of a fielded Object.
      */
-    public TemplateDefinition(String name, List<JsonTemplateObject> jsonTemplateObjects, List<String> mapTemplates, String javaClassNamePrefix) {
+    public TemplateDefinition(String name, List<JsonTemplateObject> jsonTemplateObjects, List<String> mapTemplates, String javaClassNamePrefix, String javaClassNameSuffix) {
         this.name = name;
         this.fields = aggregateFieldDefinitions(jsonTemplateObjects, mapTemplates);
         this.javaClassNamePrefix = javaClassNamePrefix;
+        this.javaClassNameSuffix = javaClassNameSuffix;
     }
 
     public String getName() {
@@ -85,7 +88,7 @@ class TemplateDefinition {
         }
 
         return fieldInstances.entrySet().stream()
-                .map((entry) -> TemplateFieldDefinition.createInstance(getName(), entry.getKey(), entry.getValue(), mapTemplates, javaClassNamePrefix))
+                .map((entry) -> TemplateFieldDefinition.createInstance(getName(), entry.getKey(), entry.getValue(), mapTemplates, javaClassNamePrefix, javaClassNameSuffix))
                 .collect(Collectors.toList());
     }
 
@@ -181,7 +184,7 @@ class TemplateDefinition {
     }
 
     public String getJavaClassName() {
-        return getJavaClassNameForTemplate(name, javaClassNamePrefix);
+        return getJavaClassNameForTemplate(name, javaClassNamePrefix, javaClassNameSuffix);
     }
 
     private String getJavaImportStatements(Set<String> imports) {
@@ -195,10 +198,14 @@ class TemplateDefinition {
         return builder.toString();
     }
 
-    public static String getJavaClassNameForTemplate(String templateName, String javaClassNamePrefix) {
+    public static String getJavaClassNameForTemplate(String templateName, String javaClassNamePrefix, String javaClassNameSuffix) {
 
         if (javaClassNamePrefix == null) {
             javaClassNamePrefix = "";
+        }
+
+        if (javaClassNameSuffix == null) {
+            javaClassNameSuffix = "View";
         }
 
         String className;
@@ -210,6 +217,6 @@ class TemplateDefinition {
             className = templateName;
         }
 
-        return javaClassNamePrefix + StyleguideStringUtils.toPascalCase(className) + "View";
+        return javaClassNamePrefix + StyleguideStringUtils.toPascalCase(className) + javaClassNameSuffix;
     }
 }

@@ -31,6 +31,7 @@ public class ViewClassGenerator {
         List<String> mapBasedTemplates = new ArrayList<>(arguments.getMapTemplates());
         Set<String> ignoredFileNames = arguments.getIgnoredFileNames();
         String classNamePrefix = arguments.getClassNamePrefix();
+        String classNameSuffix = arguments.getClassNameSuffix();
 
         System.out.println("           --json-dir= " + jsonDirectories);
         System.out.println("--java-package-prefix= " + javaPackageName);
@@ -40,8 +41,11 @@ public class ViewClassGenerator {
         if (!StringUtils.isBlank(classNamePrefix)) {
             System.out.println("  --class-name-prefix= " + classNamePrefix);
         }
+        if (!StringUtils.isBlank(classNameSuffix)) {
+            System.out.println("  --class-name-suffix= " + classNameSuffix);
+        }
 
-        JsonDataFiles dataFiles = new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates, classNamePrefix);
+        JsonDataFiles dataFiles = new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates, classNamePrefix, classNameSuffix);
 
         List<TemplateDefinition> templateDefinitions = dataFiles.getTemplateDefinitions();
 
@@ -131,6 +135,7 @@ public class ViewClassGenerator {
         private static final String MAP_TEMPLATES_PREFIX = "--map-templates=";
         private static final String IGNORE_FILES_PREFIX = "--ignore-files=";
         private static final String CLASS_NAME_PREFIX_PREFIX = "--class-name-prefix=";
+        private static final String CLASS_NAME_SUFFIX_PREFIX = "--class-name-suffix=";
 
         // default argument values
         private static final String DEFAULT_JSON_DIRECTORY = PathUtils.buildPath(System.getProperty("user.dir"), "styleguide");
@@ -156,6 +161,7 @@ public class ViewClassGenerator {
         private Set<String> mapTemplates = new LinkedHashSet<>();
         private Set<String> ignoredFileNames = new HashSet<>();
         private String classNamePrefix = null;
+        private String classNameSuffix = null;
 
         public Arguments(String[] args) {
 
@@ -201,6 +207,8 @@ public class ViewClassGenerator {
                             processStringSetArgument(IGNORE_FILES_PREFIX, arg).forEach(ignoredFileNames::add);
                         } else if (arg.startsWith(CLASS_NAME_PREFIX_PREFIX)) {
                             classNamePrefix = processStringArgument(CLASS_NAME_PREFIX_PREFIX, arg);
+                        } else if (arg.startsWith(CLASS_NAME_SUFFIX_PREFIX)) {
+                            classNameSuffix = processStringArgument(CLASS_NAME_SUFFIX_PREFIX, arg);
                         }
                     }
                 }
@@ -242,6 +250,7 @@ public class ViewClassGenerator {
             validateMapTemplates();
             validateIgnoredFileNames();
             validateClassNamePrefix();
+            validateClassNameSuffix();
         }
 
         public Set<String> getJsonDirectories() {
@@ -270,6 +279,10 @@ public class ViewClassGenerator {
 
         public String getClassNamePrefix() {
             return classNamePrefix;
+        }
+
+        public String getClassNameSuffix() {
+            return classNameSuffix;
         }
 
         private String processStringArgument(String argName, String argValue) {
@@ -321,6 +334,10 @@ public class ViewClassGenerator {
         }
 
         private void validateClassNamePrefix() {
+            // nothing to do yet
+        }
+
+        private void validateClassNameSuffix() {
             // nothing to do yet
         }
 

@@ -166,7 +166,10 @@ abstract class TemplateFieldDefinition {
             }).collect(Collectors.joining(""));
         }
 
-        return methodJavaDoc + indent(indent) + getJavaFieldType(imports) + " " + getJavaInterfaceMethodName() + "();";
+        return methodJavaDoc
+                + indent(indent) + "default " + getJavaFieldType(imports) + " " + getJavaInterfaceMethodName() + "() {\n"
+                + indent(indent + 1) + "return null;\n"
+                + indent(indent) + "}";
     }
 
     public String getInterfaceBuilderFieldDeclarationSource(int indent, Set<String> imports) {

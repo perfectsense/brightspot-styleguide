@@ -29,6 +29,31 @@ URL to a randomly generated image.
 
 `{{words(wordCount)}}`
 
+`{{stylesheet()}}`
+
+URL to a stylesheet. You define the URL(s) in a `_config.json` at the root of the styleguide directory.
+For example:
+
+```json
+{
+    "stylesheets": [
+        {
+            "name": "Theme A",
+            "href": "/assets/styles/theme-a.min.css"
+        },
+        {
+            "name": "Theme B",
+            "href": "/assets/styles/theme-b.min.css"
+        }
+    ]
+}
+```
+
+Which will cause the styleguide to render a select list in the upper right. For example:
+
+![image](https://cldup.com/9ACNTLyBkb.png)
+
+
 ## Special Entries
 
 `_dataUrl`

@@ -120,6 +120,21 @@ class TemplateDefinition {
         builder.append("public interface ").append(getJavaClassName()).append(" {\n");
 
         for (TemplateFieldDefinition fieldDef : fields) {
+
+            if (fieldDef instanceof TemplateFieldDefinitionList
+                    || fieldDef instanceof TemplateFieldDefinitionObject
+                    || fieldDef instanceof TemplateFieldDefinitionString) {
+
+                String declaration = fieldDef.getInterfaceStaticStringVariableDeclaration(1);
+                if (declaration != null) {
+                    builder.append("\n").append(declaration);
+                }
+            }
+        }
+
+        builder.append("\n");
+
+        for (TemplateFieldDefinition fieldDef : fields) {
             builder.append("\n").append(fieldDef.getInterfaceMethodDeclarationSource(1, imports)).append("\n");
         }
 

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.psddev.dari.util.StringUtils;
+
 abstract class TemplateFieldDefinition {
 
     protected String parentTemplate;
@@ -170,6 +172,14 @@ abstract class TemplateFieldDefinition {
                 + indent(indent) + "default " + getJavaFieldType(imports) + " " + getJavaInterfaceMethodName() + "() {\n"
                 + indent(indent + 1) + "return null;\n"
                 + indent(indent) + "}";
+    }
+
+    public String getInterfaceStaticStringVariableDeclaration(int indent) {
+
+        String varName = StringUtils.toUnderscored(name).toUpperCase() + "_TYPE";
+        String varValue = name;
+
+        return indent(indent) + "static final String " + varName + " = \"" + varValue + "\";";
     }
 
     public String getInterfaceBuilderFieldDeclarationSource(int indent, Set<String> imports) {

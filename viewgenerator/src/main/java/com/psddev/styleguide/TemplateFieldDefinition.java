@@ -167,7 +167,7 @@ abstract class TemplateFieldDefinition {
         }
 
         return methodJavaDoc
-                + indent(indent) + "default " + getJavaFieldType(imports) + " " + getJavaInterfaceMethodName() + "() {\n"
+                + indent(indent) + "default " + getJavaFieldType(imports) + " " + getJavaInterfaceMethodName() + "() throws Exception {\n"
                 + indent(indent + 1) + "return null;\n"
                 + indent(indent) + "}";
     }

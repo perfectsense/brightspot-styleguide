@@ -6,30 +6,19 @@
         <script type="text/javascript" src="/node-modules/codemirror/lib/codemirror.js"></script>
         <script type="text/javascript" src="/node-modules/codemirror/mode/javascript/javascript.js"></script>
 
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.1/iframeResizer.min.js"></script>
+
         <script type="text/javascript">
             (function () {
 
-                function resizeIframes() {
-                    $('.sg-file-body > iframe').each(function () {
-
-                        var $body = $(this.contentDocument.body),
-                            $scrollHeight = $body.prop('scrollHeight'),
-                            $outerHeight = $body.outerHeight(true),
-                            containerHeight = Math.max($scrollHeight, $outerHeight);
-
-                        $body.children().css('overflow', 'auto');
-
-                        $(this).height(containerHeight);
+                $(window).on('load', function() {
+                    $('.sg-file-body > iframe').iFrameResize({
+                        log: true,
+                        heightCalculationMethod: 'max',
+                        autoResize: true
 
                     });
-                }
-
-
-                $(window).on('load', function() {
-                    resizeIframes();
-                    setInterval(resizeIframes, 500);
                 });
-
 
                 $(document).ready(function () {
                     $('.sg-menu').stick_in_parent();

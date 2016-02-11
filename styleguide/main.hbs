@@ -12,9 +12,12 @@
 
                 $(window).on('load', function() {
                     $('.sg-file-body > iframe').iFrameResize({
-                        log: true,
+                        log: false,
                         heightCalculationMethod: 'max',
-                        autoResize: true
+                        autoResize: true,
+                        initCallback: function(iframe) {
+                            $(iframe).contents().find('html', 'body').css('height', 'auto');
+                        }
                     });
                 });
 

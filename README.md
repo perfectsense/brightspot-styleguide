@@ -26,3 +26,8 @@ Run Brightspot Styleguide:
 
 Add [example JSON files](example/styleguide) to the `styleguide`
 directory to see pages at [http://localhost:3000](http://localhost:3000).
+
+# Troubleshooting
+
+IFrame not resizing properly:
+If you change your viewport width and the iframe doesn't resize to the content correctly, this is most likely due to an element height within the iframe, usually the `html` or `body`, set at 100% in the CSS. To avoid this discrepant behavior, make sure the element height is set to auto.

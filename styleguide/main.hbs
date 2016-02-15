@@ -5,19 +5,21 @@
         <script type="text/javascript" src="/node-modules/sticky-kit/jquery.sticky-kit.min.js"></script>
         <script type="text/javascript" src="/node-modules/codemirror/lib/codemirror.js"></script>
         <script type="text/javascript" src="/node-modules/codemirror/mode/javascript/javascript.js"></script>
+        <script type="text/javascript" src="/node-modules/iframe-resizer/js/iframeResizer.min.js"></script>
 
         <script type="text/javascript">
             (function () {
-                function resizeIframes() {
-                    $('.sg-file-body > iframe').each(function () {
-                        var $body = $(this.contentDocument.body);
 
-                        $(this).height(Math.max($body.outerHeight(true), $body.prop('scrollHeight')));
+                $(window).on('load', function() {
+                    $('.sg-file-body > iframe').iFrameResize({
+                        log: false,
+                        heightCalculationMethod: 'max',
+                        autoResize: true,
+                        initCallback: function(iframe) {
+                            $(iframe).contents().find('html', 'body').css('height', 'auto');
+                        }
                     });
-                }
-
-                resizeIframes();
-                setInterval(resizeIframes, 500);
+                });
 
                 $(document).ready(function () {
                     $('.sg-menu').stick_in_parent();

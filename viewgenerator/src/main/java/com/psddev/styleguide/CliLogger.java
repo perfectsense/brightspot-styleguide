@@ -125,7 +125,7 @@ class CliLogger {
         return new MessageBuilder(this, color);
     }
 
-    static class MessageBuilder {
+    static final class MessageBuilder {
 
         private CliLogger logger;
 

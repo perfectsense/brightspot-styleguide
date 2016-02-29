@@ -3,6 +3,8 @@ package com.psddev.styleguide;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,25 +30,31 @@ class JsonDataFiles {
 
     private boolean isDataFilesResolved = false;
 
-    private List<String> mapTemplates;
+    private Set<String> mapTemplates;
+
+    private String javaPackagePrefix;
 
     private String javaClassNamePrefix;
 
-    public JsonDataFiles(List<String> jsonDataFilesPaths, Set<String> ignoredFileNames, List<String> mapTemplates, String javaClassNamePrefix) {
+    public JsonDataFiles(List<Path> jsonDataFilesPaths,
+                         Set<Path> ignoredFileNames,
+                         Set<String> mapTemplates,
+                         String javaPackagePrefix,
+                         String javaClassNamePrefix) {
 
         List<JsonDataFile> jsonDataFiles = new ArrayList<>();
 
-        for (String jsonDataFilesPath : jsonDataFilesPaths) {
-            File jsonDataFilesPathFile = new File(jsonDataFilesPath);
+        for (Path jsonDataFilesPath : jsonDataFilesPaths) {
+            File jsonDataFilesPathFile = jsonDataFilesPath.toFile();
 
             if (jsonDataFilesPathFile.exists()) {
-                jsonDataFiles.addAll(FileUtils.listFiles(jsonDataFilesPathFile, new String[]{"json"}, true)
+                jsonDataFiles.addAll(FileUtils.listFiles(jsonDataFilesPathFile, new String[] { "json" }, true)
                         .stream()
-                        .filter((file) -> !ignoredFileNames.contains(file.getName()))
+                        .filter((file) -> !ignoredFileNames.contains(Paths.get(file.getName())))
                         .map((file) -> new JsonDataFile(
-                                jsonDataFilesPath,
-                                fileToName(file, jsonDataFilesPath),
-                                fileToJsonObject(file, jsonDataFilesPath)))
+                                jsonDataFilesPath.toString(),
+                                fileToName(file, jsonDataFilesPath.toString()),
+                                fileToJsonObject(file, jsonDataFilesPath.toString())))
                         .collect(Collectors.toList()));
             }
         }
@@ -74,7 +82,13 @@ class JsonDataFiles {
             }
         }
 
-        this.mapTemplates = mapTemplates != null ? mapTemplates : Collections.emptyList();
+        this.mapTemplates = mapTemplates != null ? mapTemplates : Collections.emptySet();
+
+        if (StringUtils.isBlank(javaPackagePrefix)) {
+            this.javaPackagePrefix = "";
+        } else {
+            this.javaPackagePrefix = StringUtils.ensureEnd(javaPackagePrefix, ".");
+        }
         this.javaClassNamePrefix = javaClassNamePrefix;
     }
 
@@ -113,7 +127,6 @@ class JsonDataFiles {
                 set.addAll(jsonTemplateObject.getIdentityTemplateObjects());
             }
 
-            // TODO: Extract this out so we can get at this data too for printing.
             Map<String, List<JsonTemplateObject>> jsonTemplateObjectsMap = new HashMap<>();
 
             for (JsonTemplateObject jsonTemplateObject : set) {
@@ -129,10 +142,38 @@ class JsonDataFiles {
                 jsonTemplateObjects.add(jsonTemplateObject);
             }
 
+            // find the common path prefix ensuring that the paths do not start with slash
+            int commonPrefixIndex = PathUtils.getCommonPrefixIndex(
+                    jsonTemplateObjectsMap.keySet().stream()
+                            .map(name -> StringUtils.removeStart(name, "/"))
+                            .collect(Collectors.toList()), '/');
+
             jsonTemplateObjectsMap.entrySet().forEach((entry) -> {
-                String name = StringUtils.ensureStart(entry.getKey(), "/");
+
+                //System.out.println(entry.getKey() + " -> " + entry.getValue());
+
+                // again for consistency, remove the leading slash
+                String name = StringUtils.removeStart(entry.getKey(), "/");
+
+                String commonName = name.substring(commonPrefixIndex);
+                String commonNamePath;
+                int lastSlashAt = commonName.lastIndexOf('/');
+                if (lastSlashAt > 0) {
+                    commonNamePath = commonName.substring(0, lastSlashAt);
+                } else {
+                    commonNamePath = "";
+                }
+
+                String javaPackageName = javaPackagePrefix + commonNamePath.replaceAll("/", ".");
+
                 if (!mapTemplates.contains(name)) {
-                    templateDefinitions.put(name, new TemplateDefinition(name, entry.getValue(), mapTemplates, javaClassNamePrefix));
+                    templateDefinitions.put(name, new TemplateDefinition(
+                            // add the leading slash back when passing to the TemplateDefinition
+                            StringUtils.ensureStart(name, "/"),
+                            StringUtils.removeSurrounding(javaPackageName, "."),
+                            entry.getValue(),
+                            mapTemplates,
+                            javaClassNamePrefix));
                 }
             });
 

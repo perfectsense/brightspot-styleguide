@@ -1,6 +1,5 @@
 package com.psddev.styleguide;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -15,11 +14,11 @@ abstract class TemplateFieldDefinition {
     protected String parentTemplate;
     protected String name;
     protected List<JsonObject> values;
-    protected List<String> mapTemplates;
+    protected Set<String> mapTemplates;
     protected Set<String> notes;
     protected String javaClassNamePrefix;
 
-    public static TemplateFieldDefinition createInstance(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
+    public static TemplateFieldDefinition createInstance(String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
 
         JsonObjectType effectiveValueType;
 
@@ -74,7 +73,7 @@ abstract class TemplateFieldDefinition {
         }
     }
 
-    public TemplateFieldDefinition(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
+    public TemplateFieldDefinition(String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
         this.parentTemplate = parentTemplate;
         this.name = name;
         this.values = values;
@@ -92,6 +91,10 @@ abstract class TemplateFieldDefinition {
     @Override
     public String toString() {
         return getJavaFieldType() + " " + name + " : " + getValueTypes();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Set<String> getNotes() {
@@ -123,7 +126,7 @@ abstract class TemplateFieldDefinition {
 
     public final String getValueTypesJavaDocList() {
 
-        List<String> types = new ArrayList<>(getValueTypes());
+        List<String> types = getValueTypes().stream().sorted().collect(Collectors.toList());
         if (types.size() > 1) {
 
             List<String> firstTypes = types.subList(0, types.size() - 1);
@@ -186,7 +189,7 @@ abstract class TemplateFieldDefinition {
         return indent(indent) + "private " + getJavaFieldTypeForBuilder(imports) + " " + name + ";";
     }
 
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports, boolean removeDeprecations) {
 
         StringBuilder notesJavaDoc = new StringBuilder();
         for (String note : notes) {

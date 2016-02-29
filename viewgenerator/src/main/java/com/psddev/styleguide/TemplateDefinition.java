@@ -1,5 +1,6 @@
 package com.psddev.styleguide;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -9,11 +10,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
 
 class TemplateDefinition {
 
     private String name;
+    private String javaPackageName;
 
     private List<TemplateFieldDefinition> fields;
 
@@ -27,14 +30,19 @@ class TemplateDefinition {
      * @param mapTemplates list of template names that are actually just String key/value pairs,
      *                     and should be treated as a Map of String ot String instead of a fielded Object.
      */
-    public TemplateDefinition(String name, List<JsonTemplateObject> jsonTemplateObjects, List<String> mapTemplates, String javaClassNamePrefix) {
+    public TemplateDefinition(String name, String javaPackageName, List<JsonTemplateObject> jsonTemplateObjects, Set<String> mapTemplates, String javaClassNamePrefix) {
         this.name = name;
+        this.javaPackageName = javaPackageName;
         this.fields = aggregateFieldDefinitions(jsonTemplateObjects, mapTemplates);
         this.javaClassNamePrefix = javaClassNamePrefix;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getJavaPackageName() {
+        return javaPackageName;
     }
 
     public List<TemplateFieldDefinition> getFields() {
@@ -58,7 +66,7 @@ class TemplateDefinition {
         return builder.toString();
     }
 
-    private List<TemplateFieldDefinition> aggregateFieldDefinitions(List<JsonTemplateObject> jsonTemplateObjects, List<String> mapTemplates) {
+    private List<TemplateFieldDefinition> aggregateFieldDefinitions(List<JsonTemplateObject> jsonTemplateObjects, Set<String> mapTemplates) {
 
         Map<String, List<JsonObject>> fieldInstances = new LinkedHashMap<>();
 
@@ -86,24 +94,27 @@ class TemplateDefinition {
 
         return fieldInstances.entrySet().stream()
                 .map((entry) -> TemplateFieldDefinition.createInstance(getName(), entry.getKey(), entry.getValue(), mapTemplates, javaClassNamePrefix))
+                .sorted((tfd1, tfd2) -> ObjectUtils.compare(tfd1.getName(), tfd2.getName(), true))
                 .collect(Collectors.toList());
     }
 
-    public String getJavaClassSource(String packageName) {
+    public String getJavaClassSource(boolean removeDeprecations) {
 
         StringBuilder builder = new StringBuilder();
 
         Set<String> imports = new LinkedHashSet<>();
 
-        imports.add("com.psddev.cms.view.ViewRequest");
+        if (!removeDeprecations) {
+            imports.add("com.psddev.cms.view.ViewRequest");
+        }
         imports.add("com.psddev.handlebars.HandlebarsTemplate");
 
         builder.append("/* AUTO-GENERATED FILE.  DO NOT MODIFY.\n");
         builder.append(" *\n");
-        builder.append(" * This class was automatically generated on ").append(new Date()).append(" by the\n");
+        builder.append(" * This class was automatically generated on ").append(new SimpleDateFormat(ViewClassGenerator.DATE_FORMAT).format(new Date())).append(" by the\n");
         builder.append(" * Maven build tool based on JSON files it found. It should NOT be modified by hand.\n");
         builder.append(" */\n");
-        builder.append("package ").append(packageName).append(";\n");
+        builder.append("package ").append(javaPackageName).append(";\n");
         builder.append("\n");
         builder.append("${importsPlaceholder}");
         builder.append("\n");
@@ -146,9 +157,11 @@ class TemplateDefinition {
         builder.append("     */\n");
         builder.append("    class Builder {\n");
         builder.append("\n");
-        builder.append("        @Deprecated\n");
-        builder.append("        private ViewRequest request;\n");
-        builder.append("\n");
+        if (!removeDeprecations) {
+            builder.append("        @Deprecated\n");
+            builder.append("        private ViewRequest request;\n");
+            builder.append("\n");
+        }
         for (TemplateFieldDefinition fieldDef : fields) {
             builder.append(fieldDef.getInterfaceBuilderFieldDeclarationSource(2, imports)).append("\n");
         }
@@ -158,16 +171,18 @@ class TemplateDefinition {
         builder.append("         */\n");
         builder.append("        public Builder() {\n");
         builder.append("        }\n");
-        builder.append("\n");
-        builder.append("        /**\n");
-        builder.append("         * @deprecated use {@link #Builder()} instead.\n");
-        builder.append("         */\n");
-        builder.append("        @Deprecated\n");
-        builder.append("        public Builder(ViewRequest request) {\n");
-        builder.append("            this.request = request;\n");
-        builder.append("        }\n");
+        if (!removeDeprecations) {
+            builder.append("\n");
+            builder.append("        /**\n");
+            builder.append("         * @deprecated use {@link #Builder()} instead.\n");
+            builder.append("         */\n");
+            builder.append("        @Deprecated\n");
+            builder.append("        public Builder(ViewRequest request) {\n");
+            builder.append("            this.request = request;\n");
+            builder.append("        }\n");
+        }
         for (TemplateFieldDefinition fieldDef : fields) {
-            builder.append("\n").append(fieldDef.getInterfaceBuilderMethodImplementationSource(2, imports)).append("\n");
+            builder.append("\n").append(fieldDef.getInterfaceBuilderMethodImplementationSource(2, imports, removeDeprecations)).append("\n");
         }
 
         builder.append("\n");

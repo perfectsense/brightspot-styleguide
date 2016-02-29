@@ -2,334 +2,266 @@ package com.psddev.styleguide;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+
+import com.psddev.dari.util.IoUtils;
+import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
 
 public class ViewClassGenerator {
 
+    private static final String BRIGHTSPOT_ASCII =
+              " _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ \n"
+            + "| __  | __  |     |   __|  |  |_   _|   __|  _  |     |_   _|\n"
+            + "| __ -|    -|-   -|  |  |     | | | |__   |   __|  |  | | |  \n"
+            + "|_____|__|__|_____|_____|__|__| |_| |_____|__|  |_____| |_|  \n";
+    //                                                      48 |-----| 55
+
+    private static final int BRIGHTSPOT_ASCII_O_START_INDEX = 48;
+    private static final int BRIGHTSPOT_ASCII_O_END_INDEX = 55;
+
+    private static final String VIEW_GENERATOR_ASCII =
+               " _____ _              _____                     _            \n"
+            +  "|  |  |_|___ _ _ _   |   __|___ ___ ___ ___ ___| |_ ___ ___  \n"
+            +  "|  |  | | -_| | | |  |  |  | -_|   | -_|  _| .'|  _| . |  _| \n"
+            + " \\___/|_|___|_____|  |_____|___|_|_|___|_| |__,|_| |___|_|   \n";
+
+    public static final String DATE_FORMAT = "EEE MMM dd kk:mm:ss zzz yyyy";
+    private static final String DATE_FORMAT_PATTERN = "\\w{3} \\w{3} \\d{2} \\d{2}:\\d{2}:\\d{2} \\w{3} \\d{4}";
+
+    /**
+     * Main method that can be invoked from the command line
+     *
+     * @param args command line arguments.
+     */
     public static void main(String[] args) {
 
-        System.out.println("---------------------------------");
-        System.out.println("----- View Class Generator ------");
-        System.out.println("---------------------------------");
+        ViewClassGeneratorCliArguments arguments = new ViewClassGeneratorCliArguments(args);
 
-        Arguments arguments = new Arguments(args);
+        ViewClassGenerator viewClassGenerator = new ViewClassGenerator(arguments);
 
-        Set<String> jsonDirectories = arguments.getJsonDirectories();
-        String javaPackageName = arguments.getJavaPackageName();
-        String javaSourceDirectory = arguments.getJavaSourceDirectory();
-        List<String> mapBasedTemplates = new ArrayList<>(arguments.getMapTemplates());
-        Set<String> ignoredFileNames = arguments.getIgnoredFileNames();
-        String classNamePrefix = arguments.getClassNamePrefix();
+        if (arguments.isWatch()) {
+            viewClassGenerator.watch();
 
-        System.out.println("           --json-dir= " + jsonDirectories);
-        System.out.println("--java-package-prefix= " + javaPackageName);
-        System.out.println("          --build-dir= " + javaSourceDirectory);
-        System.out.println("      --map-templates= " + mapBasedTemplates);
-        System.out.println("       --ignore-files= " + ignoredFileNames);
-        if (!StringUtils.isBlank(classNamePrefix)) {
-            System.out.println("  --class-name-prefix= " + classNamePrefix);
+        } else {
+            viewClassGenerator.generateClasses();
         }
+    }
 
-        JsonDataFiles dataFiles = new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates, classNamePrefix);
+    private Set<Path> jsonDirectories;
+    private String javaPackageName;
+    private Path javaSourceDirectory;
+
+    private Set<String> mapBasedTemplates;
+    private Set<Path> ignoredFileNames;
+    private String classNamePrefix;
+    private boolean removeDeprecations;
+
+    private CliLogger logger = CliLogger.getLogger();
+
+    public ViewClassGenerator(Set<Path> jsonDirectories, Path javaSourceDirectory, String javaPackageName) {
+        this.jsonDirectories = jsonDirectories;
+        this.javaSourceDirectory = javaSourceDirectory;
+        this.javaPackageName = javaPackageName;
+
+        // TODO: Need to expose these somehow.
+        this.mapBasedTemplates = Collections.emptySet();
+        this.ignoredFileNames = Collections.emptySet();
+        this.classNamePrefix = null;
+        this.removeDeprecations = true;
+    }
+
+    private ViewClassGenerator(ViewClassGeneratorCliArguments arguments) {
+        this.jsonDirectories = arguments.getJsonDirectories();
+        this.javaPackageName = arguments.getJavaPackageName();
+        this.javaSourceDirectory = arguments.getBuildDirectory();
+        this.mapBasedTemplates = arguments.getMapTemplates();
+        this.ignoredFileNames = arguments.getIgnoredFileNames();
+        this.classNamePrefix = arguments.getClassNamePrefix();
+        this.removeDeprecations = arguments.isRemoveDeprecations();
+    }
+
+    public void disableLogColors() {
+        logger = CliLogger.getColorlessLogger();
+    }
+
+    public void printGeneratedClasses() {
+        getGeneratedClasses().forEach((file, source) -> {
+            String fileName = file.toString();
+            String underline = new String(new char[fileName.length()]).replace("\0", "-");
+            logger.green().and(fileName, "\n", underline, "\n").reset().and(source, "\n").log();
+        });
+    }
+
+    public Map<Path, String> getGeneratedClasses() {
+
+        Map<Path, String> generated = new LinkedHashMap<>();
+
+        JsonDataFiles dataFiles = new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates, javaPackageName, classNamePrefix);
 
         List<TemplateDefinition> templateDefinitions = dataFiles.getTemplateDefinitions();
 
-        int commonPrefixLength = getCommonPrefixLength(templateDefinitions
-                .stream()
-                .map(TemplateDefinition::getName)
-                .collect(Collectors.toList()));
+        for (TemplateDefinition templateDef : templateDefinitions.stream()
+                .sorted((td1, td2) -> ObjectUtils.compare(td1.getName(), td2.getName(), true))
+                .collect(Collectors.toList())) {
 
-        for (TemplateDefinition templateDef : templateDefinitions) {
+            String packageName = templateDef.getJavaPackageName();
+            Path sourceDirectory = Paths.get(javaSourceDirectory.toString(), packageName.split("\\x2e"));
 
-            String name = templateDef.getName();
-            if (commonPrefixLength >= 0) {
+            String classSource = templateDef.getJavaClassSource(removeDeprecations);
+            Path classFile = sourceDirectory.resolve(templateDef.getJavaClassName() + ".java");
 
-                int lastSlashAt = name.lastIndexOf('/');
-                if (lastSlashAt > commonPrefixLength) {
-                    name = name.substring(commonPrefixLength, lastSlashAt);
+            generated.put(classFile, classSource);
+        }
 
-                } else {
-                    name = null;
+        return generated;
+    }
+
+    public List<Path> generateClasses() {
+
+        printLogo();
+
+        for (Path jsonDirectory : jsonDirectories) {
+            logger.green().and("Scanning Directory: ").reset().and(jsonDirectory).log();
+        }
+
+        return generateClasses(true);
+    }
+
+    private List<Path> generateClasses(boolean overwriteAll) {
+
+        long start = System.currentTimeMillis();
+
+        // list of files generated AND written
+        List<Path> generatedFiles = new ArrayList<>();
+
+        getGeneratedClasses().forEach((classFile, classSource) -> {
+
+            boolean overwrite = overwriteAll || sourceFileChanged(classFile, classSource);
+
+            if (overwrite) {
+
+                try {
+                    saveJavaFile(classFile, classSource);
+
+                    generatedFiles.add(classFile);
+
+                    logger.green().and("Wrote file: ")
+                            .reset().and(PathUtils.getRelativeCommonPath(classFile, jsonDirectories))
+                            .log();
+
+                } catch (FileNotFoundException e) {
+                    logger.red("Aborting. Failed to write file: ", classFile);
+                    logger.red("Cause: ", e.getMessage());
+
+                    throw new IllegalStateException(e);
                 }
-
-            } else {
-                name = null;
             }
+        });
 
-            String packageName = javaPackageName;
-            String sourceDirectory = javaSourceDirectory;
+        long duration = System.currentTimeMillis() - start;
 
-            if (name != null) {
-                packageName += "." + StringUtils.removeSurrounding(name.replace('/', '.'), ".");
-                sourceDirectory += "/" + StringUtils.removeSurrounding(name, "/");
-            }
-
-            String classSource = templateDef.getJavaClassSource(packageName);
-            String className = templateDef.getJavaClassName();
-
-            saveJavaFile(className + ".java", classSource, sourceDirectory);
+        if (!generatedFiles.isEmpty()) {
+            logger.cyan("Generated ", generatedFiles.size(), " files in ", duration, "ms at ", new SimpleDateFormat(DATE_FORMAT).format(new Date()));
         }
+
+        return generatedFiles;
     }
 
-    private static int getCommonPrefixLength(List<String> names) {
+    public void watch() {
 
-        int namesLength = names.size();
+        printLogo();
 
-        if (namesLength > 1) {
-
-            Collections.sort(names);
-
-            String first = names.get(0);
-            String last = names.get(namesLength - 1);
-            int commonLength = first.length();
-            int commonIndex = 0;
-
-            while (commonIndex < commonLength
-                    && first.charAt(commonIndex) == last.charAt(commonIndex)) {
-
-                ++commonIndex;
+        final Supplier<Void> generator = Suppliers.memoizeWithExpiration(() -> {
+            try {
+                generateClasses(false);
+            } catch (Exception e) {
+                logger.red("Failed to generate classes: ", e.getMessage());
             }
+            return null;
 
-            return first.substring(0, commonIndex).length();
-
-        } else {
-            return -1;
-        }
-    }
-
-    private static void saveJavaFile(String fileName, String fileContents, String targetDirectory) {
+        }, 1, TimeUnit.SECONDS);
 
         try {
-            File targetFile = new File(targetDirectory, fileName);
-            targetFile.getParentFile().mkdirs();
-            PrintWriter writer = new PrintWriter(targetFile);
-            writer.print(fileContents);
-            writer.close();
+            WatchDirectory watchDirectory = new WatchDirectory(jsonDirectories);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            watchDirectory.setProcessChangeFunction((path, watchEventKind) -> {
+
+                // TODO: Need to fix this up
+                generator.get();
+
+                System.out.println();
+                return true;
+            });
+
+            for (Path jsonDirectory : jsonDirectories) {
+                logger.green().and("Watching Directory: ").reset().and(jsonDirectory);
+            }
+
+            watchDirectory.start();
+
+        } catch (IOException e) {
+            logger.red("Failed create watch service: ", e.getMessage());
         }
     }
 
-    private static class Arguments {
+    private boolean sourceFileChanged(Path classFile, String classSource) {
 
-        // argument prefixes
-        private static final String JSON_DIRECTORY_PREFIX = "--json-dir=";
-        private static final String JAVA_PACKAGE_PREFIX = "--java-package-prefix=";
-        private static final String BUILD_DIRECTORY_PREFIX = "--build-dir=";
-        private static final String MAP_TEMPLATES_PREFIX = "--map-templates=";
-        private static final String IGNORE_FILES_PREFIX = "--ignore-files=";
-        private static final String CLASS_NAME_PREFIX_PREFIX = "--class-name-prefix=";
+        if (classFile.toFile().exists()) {
 
-        // default argument values
-        private static final String DEFAULT_JSON_DIRECTORY = PathUtils.buildPath(System.getProperty("user.dir"), "styleguide");
+            try {
+                String existingClassSource = IoUtils.toString(classFile.toFile(), StandardCharsets.UTF_8);
 
-        private static final String DEFAULT_JAVA_PACKAGE = "com.psddev.view";
+                String existingHash = StringUtils.hex(StringUtils.md5(existingClassSource.replaceFirst(DATE_FORMAT_PATTERN, "")));
+                String newHash = StringUtils.hex(StringUtils.md5(classSource.replaceFirst(DATE_FORMAT_PATTERN, "")));
 
-        private static final String DEFAULT_BUILD_DIRECTORY = PathUtils.buildPath(System.getProperty("user.dir"), "target", "generated-sources", "styleguide");
+                return !newHash.equals(existingHash);
 
-        private static final String[] DEFAULT_MAP_TEMPLATES = {
-                "/assets/templates/base/common/attributes",
-                "/assets/templates/base/common/json-object",
-                "/render/common/attributes",
-                "/render/common/json-object"
-        };
-
-        private static final String[] DEFAULT_IGNORED_FILE_NAMES = {
-                "_config.json"
-        };
-
-        private Set<String> jsonDirectories = new LinkedHashSet<>();
-        private String javaPackageName;
-        private String buildDirectory;
-        private Set<String> mapTemplates = new LinkedHashSet<>();
-        private Set<String> ignoredFileNames = new HashSet<>();
-        private String classNamePrefix = null;
-
-        public Arguments(String[] args) {
-
-            // legacy argument syntax
-            if (args.length == 2
-                    && !args[0].startsWith("--")
-                    && !args[1].startsWith("--")) {
-
-                System.out.println("Using legacy argument syntax. Please use ["
-                        + StringUtils.join(Arrays.asList(
-                        JSON_DIRECTORY_PREFIX,
-                        JAVA_PACKAGE_PREFIX,
-                        BUILD_DIRECTORY_PREFIX,
-                        MAP_TEMPLATES_PREFIX,
-                        IGNORE_FILES_PREFIX), ", ")
-                        + "] instead.");
-
-                this.jsonDirectories.add(PathUtils.buildPath(args[0], "styleguide"));
-                this.buildDirectory = PathUtils.buildPathWithEndingSlash(args[0], "target", "generated-sources", "styleguide");
-                this.javaPackageName = args[1];
-
-            } else {
-                for (String arg : args) {
-
-                    if (arg != null) {
-                        if (arg.startsWith(JSON_DIRECTORY_PREFIX)) {
-                            Set<String> dirs = processStringSetArgument(JSON_DIRECTORY_PREFIX, arg);
-                            for (String dir : dirs) {
-                                jsonDirectories.add(convertToPlatformSpecificPath(dir));
-                            }
-
-                        } else if (arg.startsWith(JAVA_PACKAGE_PREFIX)) {
-                            javaPackageName = processStringArgument(JAVA_PACKAGE_PREFIX, arg);
-
-                        } else if (arg.startsWith(BUILD_DIRECTORY_PREFIX)) {
-                            String dir = processStringArgument(BUILD_DIRECTORY_PREFIX, arg);
-                            buildDirectory = convertToPlatformSpecificPath(dir);
-
-                        } else if (arg.startsWith(MAP_TEMPLATES_PREFIX)) {
-                            processStringSetArgument(MAP_TEMPLATES_PREFIX, arg).forEach(
-                                    (template) -> mapTemplates.add(StringUtils.ensureStart(template, "/")));
-                        } else if (arg.startsWith(IGNORE_FILES_PREFIX)) {
-                            processStringSetArgument(IGNORE_FILES_PREFIX, arg).forEach(ignoredFileNames::add);
-                        } else if (arg.startsWith(CLASS_NAME_PREFIX_PREFIX)) {
-                            classNamePrefix = processStringArgument(CLASS_NAME_PREFIX_PREFIX, arg);
-                        }
-                    }
-                }
+            } catch (IOException e) {
+                // if we can't read the existing file
+                logger.yellow("Could not read file [", classFile, "]. Cause: ", e.getMessage());
+                return true;
             }
 
-            if (jsonDirectories.isEmpty()) {
-                System.out.println("No JSON directories specified with [" + JSON_DIRECTORY_PREFIX
-                        + "], defaulting to [" + DEFAULT_JSON_DIRECTORY + "].");
-                jsonDirectories.add(DEFAULT_JSON_DIRECTORY);
-            }
-
-            if (javaPackageName == null) {
-                System.out.println("No java package specified with [" + JAVA_PACKAGE_PREFIX
-                        + "], defaulting to [" + DEFAULT_JAVA_PACKAGE + "].");
-                javaPackageName = DEFAULT_JAVA_PACKAGE;
-            }
-
-            if (buildDirectory == null) {
-                System.out.println("No build directory specified with [" + BUILD_DIRECTORY_PREFIX
-                        + "], defaulting to [" + DEFAULT_BUILD_DIRECTORY + "].");
-                buildDirectory = DEFAULT_BUILD_DIRECTORY;
-            }
-
-            if (mapTemplates.isEmpty()) {
-                System.out.println("No map templates specified with [" + MAP_TEMPLATES_PREFIX
-                        + "], defaulting to " + Arrays.asList(DEFAULT_MAP_TEMPLATES) + ".");
-                mapTemplates.addAll(Arrays.asList(DEFAULT_MAP_TEMPLATES));
-            }
-
-            if (ignoredFileNames.isEmpty()) {
-                System.out.println("No ignored files specified with [" + IGNORE_FILES_PREFIX
-                        + "], defaulting to " + Arrays.asList(DEFAULT_IGNORED_FILE_NAMES) + ".");
-                ignoredFileNames.addAll(Arrays.asList(DEFAULT_IGNORED_FILE_NAMES));
-            }
-
-            validateJsonDirectories();
-            validateJavaPackageName();
-            validateBuildDirectory();
-            validateMapTemplates();
-            validateIgnoredFileNames();
-            validateClassNamePrefix();
+        } else {
+            return true;
         }
+    }
 
-        public Set<String> getJsonDirectories() {
-            return jsonDirectories;
+    private static void saveJavaFile(Path javaFile, String javaSource) throws FileNotFoundException {
+        File targetFile = javaFile.toFile();
+        targetFile.getParentFile().mkdirs();
+        PrintWriter writer = new PrintWriter(targetFile);
+        writer.print(javaSource);
+        writer.close();
+    }
+
+    private void printLogo() {
+
+        String[] brightspotAsciiRows = BRIGHTSPOT_ASCII.split("\\n");
+        for (String row : brightspotAsciiRows) {
+            logger.blue().and(row.substring(0, BRIGHTSPOT_ASCII_O_START_INDEX))
+                    .red().and(row.substring(BRIGHTSPOT_ASCII_O_START_INDEX, BRIGHTSPOT_ASCII_O_END_INDEX))
+                    .blue().and(row.substring(BRIGHTSPOT_ASCII_O_END_INDEX))
+                    .log();
         }
-
-        public String getJavaPackageName() {
-            return javaPackageName;
-        }
-
-        public String getBuildDirectory() {
-            return buildDirectory;
-        }
-
-        public Set<String> getMapTemplates() {
-            return mapTemplates;
-        }
-
-        public Set<String> getIgnoredFileNames() {
-            return ignoredFileNames;
-        }
-
-        public String getJavaSourceDirectory() {
-            return StringUtils.ensureEnd(getBuildDirectory(), PathUtils.SLASH) + PathUtils.replaceAllWithSlash(getJavaPackageName(), "\\x2e");
-        }
-
-        public String getClassNamePrefix() {
-            return classNamePrefix;
-        }
-
-        private String processStringArgument(String argName, String argValue) {
-            String value = argValue.substring(argName.length());
-            return !value.isEmpty() ? value : null;
-        }
-
-        private Set<String> processStringSetArgument(String argPrefix, String argValue) {
-
-            Set<String> valueSet = new LinkedHashSet<>();
-
-            String valueString = argValue.substring(argPrefix.length());
-            if (!valueString.isEmpty()) {
-                String[] values = valueString.split(",");
-                for (String value : values) {
-                    if (!value.isEmpty()) {
-                        valueSet.add(value);
-                    }
-                }
-            }
-
-            return valueSet;
-        }
-
-        private void validateJsonDirectories() {
-            for (String dir : jsonDirectories) {
-                if (!new File(dir).isDirectory()) {
-                    throw new IllegalArgumentException("JSON Directory [" + dir + "] must be a directory!");
-                }
-            }
-        }
-
-        private void validateJavaPackageName() {
-            if (!javaPackageName.matches("([A-Z_a-z0-9]+\\x2e)*[A-Z_a-z0-9]+")) {
-                throw new IllegalArgumentException("Java Package [" + javaPackageName + "] must be a valid java package name!");
-            }
-        }
-
-        private void validateBuildDirectory() {
-            // nothing to do yet...
-        }
-
-        private void validateMapTemplates() {
-            // nothing to do yet...
-        }
-
-        private void validateIgnoredFileNames() {
-            // nothing to do yet...
-        }
-
-        private void validateClassNamePrefix() {
-            // nothing to do yet
-        }
-
-        private String convertToPlatformSpecificPath(String path) {
-            if (path != null) {
-                return Paths.get(path).toString();
-            } else {
-                return null;
-            }
-        }
+        logger.blue(VIEW_GENERATOR_ASCII);
     }
 }

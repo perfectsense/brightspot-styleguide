@@ -1,12 +1,14 @@
 package com.psddev.styleguide;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Supplier;
@@ -43,7 +47,7 @@ public class ViewClassGenerator {
             +  "|  |  | | -_| | | |  |  |  | -_|   | -_|  _| .'|  _| . |  _| \n"
             + " \\___/|_|___|_____|  |_____|___|_|_|___|_| |__,|_| |___|_|   \n";
 
-    public static final String DATE_FORMAT = "EEE MMM dd kk:mm:ss zzz yyyy";
+    static final String DATE_FORMAT = "EEE MMM dd kk:mm:ss zzz yyyy";
     private static final String DATE_FORMAT_PATTERN = "\\w{3} \\w{3} \\d{2} \\d{2}:\\d{2}:\\d{2} \\w{3} \\d{4}";
 
     /**
@@ -167,11 +171,9 @@ public class ViewClassGenerator {
                             .reset().and(PathUtils.getRelativeCommonPath(classFile, jsonDirectories))
                             .log();
 
-                } catch (FileNotFoundException e) {
-                    logger.red("Aborting. Failed to write file: ", classFile);
+                } catch (IOException e) {
+                    logger.red("Failed to write file: ", classFile);
                     logger.red("Cause: ", e.getMessage());
-
-                    throw new IllegalStateException(e);
                 }
             }
         });
@@ -189,12 +191,19 @@ public class ViewClassGenerator {
 
         printLogo();
 
+        final AtomicBoolean viewsChanged = new AtomicBoolean(false);
+        final AtomicReference<RuntimeException> generationError = new AtomicReference<>(null);
+
         final Supplier<Void> generator = Suppliers.memoizeWithExpiration(() -> {
+
             try {
-                generateClasses(false);
-            } catch (Exception e) {
-                logger.red("Failed to generate classes: ", e.getMessage());
+                List<Path> generated = generateClasses(false);
+                viewsChanged.set(!generated.isEmpty());
+
+            } catch (RuntimeException e) {
+                generationError.set(e);
             }
+
             return null;
 
         }, 1, TimeUnit.SECONDS);
@@ -204,11 +213,43 @@ public class ViewClassGenerator {
 
             watchDirectory.setProcessChangeFunction((path, watchEventKind) -> {
 
-                // TODO: Need to fix this up
-                generator.get();
+                if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
 
-                System.out.println();
-                return true;
+                    String eventType = null;
+
+                    if (watchEventKind == StandardWatchEventKinds.ENTRY_CREATE) {
+                        eventType = "created";
+
+                    } else if (watchEventKind == StandardWatchEventKinds.ENTRY_DELETE) {
+                        eventType = "deleted";
+
+                    } else if (watchEventKind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                        eventType = "modified";
+                    }
+
+                    if (eventType != null) {
+                        logger.green().and(">>")
+                                .reset().and(" File \"")
+                                .green().and(path)
+                                .reset().and("\" ", eventType, ".")
+                                .log();
+
+                        generator.get();
+
+                        @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+                        RuntimeException error = generationError.getAndSet(null);
+                        if (error != null) {
+                            logger.red("Failed to generate classes: ", error.getMessage());
+
+                        } else if (!viewsChanged.getAndSet(false)) {
+                            logger.cyan("No views affected by changes...");
+                        }
+
+                        return true;
+                    }
+                }
+
+                return false;
             });
 
             for (Path jsonDirectory : jsonDirectories) {
@@ -245,7 +286,7 @@ public class ViewClassGenerator {
         }
     }
 
-    private static void saveJavaFile(Path javaFile, String javaSource) throws FileNotFoundException {
+    private static void saveJavaFile(Path javaFile, String javaSource) throws IOException {
         File targetFile = javaFile.toFile();
         targetFile.getParentFile().mkdirs();
         PrintWriter writer = new PrintWriter(targetFile);

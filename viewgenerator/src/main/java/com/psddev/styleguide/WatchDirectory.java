@@ -119,7 +119,7 @@ class WatchDirectory {
 
         for (;;) {
             if (changed) {
-                logger.green("Waiting for changes...");
+                logger.green("\nWaiting for changes...");
                 changed = false;
             }
 

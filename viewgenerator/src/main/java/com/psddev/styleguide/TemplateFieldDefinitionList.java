@@ -14,8 +14,8 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
     private Set<String> listItemTypes;
     private JsonObjectType effectiveListValueType;
 
-    public TemplateFieldDefinitionList(String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
-        super(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+    public TemplateFieldDefinitionList(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
+        super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
         Set<JsonObjectType> listValueTypes = new HashSet<>();
 
@@ -103,9 +103,10 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             } else {
                 for (String templateType : listItemTypes) {
 
-                    String viewClassName = TemplateDefinition.getJavaClassNameForTemplate(templateType, javaClassNamePrefix);
-
-                    viewClassNames.add(viewClassName);
+                    String className = templateDefinitions.getTemplateDefinitionRelativeClassName(templateType, parentTemplate);
+                    if (className != null) {
+                        viewClassNames.add(className);
+                    }
                 }
             }
         }

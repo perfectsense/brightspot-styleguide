@@ -11,8 +11,8 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
 
     private Set<String> templateTypes = new LinkedHashSet<>();
 
-    public TemplateFieldDefinitionObject(String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
-        super(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+    public TemplateFieldDefinitionObject(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
+        super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
         values.forEach((value) -> {
             if (value instanceof JsonTemplateObject) {
@@ -40,9 +40,10 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
         if (!isStringMap()) {
             for (String templateType : templateTypes) {
 
-                String viewClassName = TemplateDefinition.getJavaClassNameForTemplate(templateType, javaClassNamePrefix);
-
-                viewClassNames.add(viewClassName);
+                String viewClassName = templateDefinitions.getTemplateDefinitionRelativeClassName(templateType, parentTemplate);
+                if (viewClassName != null) {
+                    viewClassNames.add(viewClassName);
+                }
             }
         }
 
@@ -55,9 +56,9 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
         StringBuilder builder = new StringBuilder();
 
         builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports, removeDeprecations));
-        builder.append("\n\n");
 
         if (isStringMap()) {
+            builder.append("\n\n");
             imports.add("java.util.LinkedHashMap");
 
             StringBuilder notesJavaDoc = new StringBuilder();
@@ -107,6 +108,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
 
         } else {
             if (!removeDeprecations) {
+                builder.append("\n\n");
                 String methodJavaDoc = "";
 
                 String valueTypesJavaDocList = getValueTypesJavaDocList();

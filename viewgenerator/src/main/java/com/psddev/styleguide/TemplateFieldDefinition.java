@@ -11,6 +11,7 @@ import com.psddev.dari.util.StringUtils;
 
 abstract class TemplateFieldDefinition {
 
+    protected TemplateDefinitions templateDefinitions;
     protected String parentTemplate;
     protected String name;
     protected List<JsonObject> values;
@@ -18,7 +19,7 @@ abstract class TemplateFieldDefinition {
     protected Set<String> notes;
     protected String javaClassNamePrefix;
 
-    public static TemplateFieldDefinition createInstance(String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
+    public static TemplateFieldDefinition createInstance(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
 
         JsonObjectType effectiveValueType;
 
@@ -42,22 +43,22 @@ abstract class TemplateFieldDefinition {
             }
 
             if (effectiveValueType == JsonObjectType.BOOLEAN) {
-                return new TemplateFieldDefinitionBoolean(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionBoolean(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
             } else if (effectiveValueType == JsonObjectType.STRING) {
-                return new TemplateFieldDefinitionString(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionString(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
             } else if (effectiveValueType == JsonObjectType.NUMBER) {
-                return new TemplateFieldDefinitionNumber(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionNumber(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
             } else if (effectiveValueType == JsonObjectType.LIST) {
-                return new TemplateFieldDefinitionList(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionList(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
             } else if (effectiveValueType == JsonObjectType.MAP) {
-                return new TemplateFieldDefinitionMap(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionMap(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
             } else if (effectiveValueType == JsonObjectType.TEMPLATE_OBJECT) {
-                return new TemplateFieldDefinitionObject(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionObject(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
             } else {
                 throw new IllegalArgumentException("ERROR: (" + parentTemplate + " - " + name
@@ -73,7 +74,8 @@ abstract class TemplateFieldDefinition {
         }
     }
 
-    public TemplateFieldDefinition(String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
+    public TemplateFieldDefinition(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
+        this.templateDefinitions = templateDefinitions;
         this.parentTemplate = parentTemplate;
         this.name = name;
         this.values = values;
@@ -125,8 +127,28 @@ abstract class TemplateFieldDefinition {
     }
 
     public final String getValueTypesJavaDocList() {
+        List<String> types = getValueTypes().stream()
+                .sorted()
+                .map(type -> {
 
-        List<String> types = getValueTypes().stream().sorted().collect(Collectors.toList());
+                    // "java.lang.String" -> "java.lang.String"
+                    // "BarView" -> "BarView"
+                    // "com.psddev.FooView" -> "com.psddev.FooView FooView"
+                    if (!type.startsWith("java") && type.contains(".")) {
+
+                        int lastDotAt = type.lastIndexOf('.');
+                        if (lastDotAt >= 0 && lastDotAt < type.length() - 1) {
+                            return type + " " + type.substring(lastDotAt + 1);
+
+                        } else {
+                            return type;
+                        }
+
+                    } else {
+                        return type;
+                    }
+                })
+                .collect(Collectors.toList());
         if (types.size() > 1) {
 
             List<String> firstTypes = types.subList(0, types.size() - 1);

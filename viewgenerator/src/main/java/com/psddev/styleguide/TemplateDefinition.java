@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
@@ -17,12 +16,15 @@ class TemplateDefinition {
 
     private String name;
     private String javaPackageName;
+    private String javaClassNamePrefix;
 
-    private List<TemplateFieldDefinition> fields;
+    private List<JsonTemplateObject> jsonTemplateObjects;
+    private Set<String> mapTemplates;
 
+    private List<TemplateFieldDefinition> fields = new ArrayList<>();
     private Set<String> notes = new LinkedHashSet<>();
 
-    private String javaClassNamePrefix;
+    private boolean isFieldsResolved;
 
     /**
      * @param name the template name.
@@ -33,8 +35,14 @@ class TemplateDefinition {
     public TemplateDefinition(String name, String javaPackageName, List<JsonTemplateObject> jsonTemplateObjects, Set<String> mapTemplates, String javaClassNamePrefix) {
         this.name = name;
         this.javaPackageName = javaPackageName;
-        this.fields = aggregateFieldDefinitions(jsonTemplateObjects, mapTemplates);
         this.javaClassNamePrefix = javaClassNamePrefix;
+        this.jsonTemplateObjects = jsonTemplateObjects;
+        this.mapTemplates = mapTemplates;
+        // add notes
+        jsonTemplateObjects.stream()
+                .map(JsonTemplateObject::getTemplateNotes)
+                .filter(notes -> notes != null)
+                .forEach(notes::add);
     }
 
     public String getName() {
@@ -45,7 +53,8 @@ class TemplateDefinition {
         return javaPackageName;
     }
 
-    public List<TemplateFieldDefinition> getFields() {
+    public List<TemplateFieldDefinition> getFields(TemplateDefinitions templateDefinitions) {
+        resolveFields(templateDefinitions);
         return new ArrayList<>(fields);
     }
 
@@ -66,36 +75,44 @@ class TemplateDefinition {
         return builder.toString();
     }
 
-    private List<TemplateFieldDefinition> aggregateFieldDefinitions(List<JsonTemplateObject> jsonTemplateObjects, Set<String> mapTemplates) {
+    public void resolveFields(TemplateDefinitions templateDefinitions) {
 
-        Map<String, List<JsonObject>> fieldInstances = new LinkedHashMap<>();
+        if (!isFieldsResolved) {
 
-        for (JsonTemplateObject jsonTemplateObject : jsonTemplateObjects) {
+            Map<String, List<JsonObject>> fieldInstances = new LinkedHashMap<>();
 
-            String templateNotes = jsonTemplateObject.getTemplateNotes();
-            if (templateNotes != null) {
-                notes.add(templateNotes);
-            }
+            for (JsonTemplateObject jsonTemplateObject : jsonTemplateObjects) {
 
-            for (Map.Entry<String, JsonObject> entry : jsonTemplateObject.getFields().entrySet()) {
+                for (Map.Entry<String, JsonObject> entry : jsonTemplateObject.getFields().entrySet()) {
 
-                String fieldName = entry.getKey();
-                JsonObject fieldValue = entry.getValue();
+                    String fieldName = entry.getKey();
+                    JsonObject fieldValue = entry.getValue();
 
-                List<JsonObject> fieldValues = fieldInstances.get(fieldName);
-                if (fieldValues == null) {
-                    fieldValues = new ArrayList<>();
-                    fieldInstances.put(fieldName, fieldValues);
+                    List<JsonObject> fieldValues = fieldInstances.get(fieldName);
+                    if (fieldValues == null) {
+                        fieldValues = new ArrayList<>();
+                        fieldInstances.put(fieldName, fieldValues);
+                    }
+
+                    fieldValues.add(fieldValue);
                 }
-
-                fieldValues.add(fieldValue);
             }
-        }
 
-        return fieldInstances.entrySet().stream()
-                .map((entry) -> TemplateFieldDefinition.createInstance(getName(), entry.getKey(), entry.getValue(), mapTemplates, javaClassNamePrefix))
-                .sorted((tfd1, tfd2) -> ObjectUtils.compare(tfd1.getName(), tfd2.getName(), true))
-                .collect(Collectors.toList());
+            fieldInstances.entrySet().stream()
+                    .map((entry) -> TemplateFieldDefinition.createInstance(
+                            templateDefinitions,
+                            getName(),
+                            entry.getKey(),
+                            entry.getValue(),
+                            mapTemplates,
+                            javaClassNamePrefix))
+
+                    .sorted((tfd1, tfd2) -> ObjectUtils.compare(tfd1.getName(), tfd2.getName(), true))
+
+                    .forEach(fields::add);
+
+            isFieldsResolved = true;
+        }
     }
 
     public String getJavaClassSource(boolean removeDeprecations) {
@@ -130,6 +147,7 @@ class TemplateDefinition {
         builder.append("@HandlebarsTemplate(\"").append(StringUtils.removeStart(name, "/")).append("\")\n");
         builder.append("public interface ").append(getJavaClassName()).append(" {\n");
 
+        boolean printedAnyStaticStringVariableDeclaration = false;
         for (TemplateFieldDefinition fieldDef : fields) {
 
             if (fieldDef instanceof TemplateFieldDefinitionList
@@ -139,11 +157,13 @@ class TemplateDefinition {
                 String declaration = fieldDef.getInterfaceStaticStringVariableDeclaration(1);
                 if (declaration != null) {
                     builder.append("\n").append(declaration);
+                    printedAnyStaticStringVariableDeclaration = true;
                 }
             }
         }
-
-        builder.append("\n");
+        if (printedAnyStaticStringVariableDeclaration) {
+            builder.append("\n");
+        }
 
         for (TemplateFieldDefinition fieldDef : fields) {
             builder.append("\n").append(fieldDef.getInterfaceMethodDeclarationSource(1, imports)).append("\n");
@@ -156,14 +176,16 @@ class TemplateDefinition {
         builder.append("     * <p>Builder of ").append("{@link ").append(getJavaClassName()).append("}").append(" objects.</p>\n");
         builder.append("     */\n");
         builder.append("    class Builder {\n");
-        builder.append("\n");
         if (!removeDeprecations) {
+            builder.append("\n");
             builder.append("        @Deprecated\n");
             builder.append("        private ViewRequest request;\n");
-            builder.append("\n");
         }
-        for (TemplateFieldDefinition fieldDef : fields) {
-            builder.append(fieldDef.getInterfaceBuilderFieldDeclarationSource(2, imports)).append("\n");
+        if (!fields.isEmpty()) {
+            for (TemplateFieldDefinition fieldDef : fields) {
+                builder.append("\n").append(fieldDef.getInterfaceBuilderFieldDeclarationSource(2, imports));
+            }
+            builder.append("\n");
         }
         builder.append("\n");
         builder.append("        /**\n");
@@ -211,7 +233,20 @@ class TemplateDefinition {
     }
 
     public String getJavaClassName() {
-        return getJavaClassNameForTemplate(name, javaClassNamePrefix);
+        if (javaClassNamePrefix == null) {
+            javaClassNamePrefix = "";
+        }
+
+        String className;
+
+        int lastSlashAt = name.lastIndexOf('/');
+        if (lastSlashAt >= 0) {
+            className = name.substring(lastSlashAt + 1);
+        } else {
+            className = name;
+        }
+
+        return javaClassNamePrefix + StyleguideStringUtils.toPascalCase(className) + "View";
     }
 
     private String getJavaImportStatements(Set<String> imports) {
@@ -223,23 +258,5 @@ class TemplateDefinition {
         }
 
         return builder.toString();
-    }
-
-    public static String getJavaClassNameForTemplate(String templateName, String javaClassNamePrefix) {
-
-        if (javaClassNamePrefix == null) {
-            javaClassNamePrefix = "";
-        }
-
-        String className;
-
-        int lastSlashAt = templateName.lastIndexOf('/');
-        if (lastSlashAt >= 0) {
-            className = templateName.substring(lastSlashAt + 1);
-        } else {
-            className = templateName;
-        }
-
-        return javaClassNamePrefix + StyleguideStringUtils.toPascalCase(className) + "View";
     }
 }

@@ -26,7 +26,7 @@ class JsonDataFiles {
 
     private Map<String, List<JsonDataFile>> dataFilesByTemplate;
 
-    private Map<String, TemplateDefinition> templateDefinitions;
+    private TemplateDefinitions templateDefinitions;
 
     private boolean isDataFilesResolved = false;
 
@@ -101,14 +101,9 @@ class JsonDataFiles {
         return byTemplate != null ? new ArrayList<>(byTemplate) : null;
     }
 
-    public TemplateDefinition getTemplateDefintion(String templateName) {
+    public TemplateDefinitions getTemplateDefinitions() {
         resolveAllDataFileTemplates();
-        return templateDefinitions.get(templateName);
-    }
-
-    public List<TemplateDefinition> getTemplateDefinitions() {
-        resolveAllDataFileTemplates();
-        return new ArrayList<>(templateDefinitions.values());
+        return templateDefinitions;
     }
 
     private void resolveAllDataFileTemplates() {
@@ -119,63 +114,13 @@ class JsonDataFiles {
                 jsonDataFile.resolveTemplate(this);
             }
 
-            templateDefinitions = new HashMap<>();
-
-            Set<JsonTemplateObject> set = Collections.newSetFromMap(new IdentityHashMap<>());
+            Set<JsonTemplateObject> jsonTemplateObjects = Collections.newSetFromMap(new IdentityHashMap<>());
             for (JsonDataFile jsonDataFile : dataFilesByFile.values()) {
                 JsonTemplateObject jsonTemplateObject = jsonDataFile.getTemplateObject(this);
-                set.addAll(jsonTemplateObject.getIdentityTemplateObjects());
+                jsonTemplateObjects.addAll(jsonTemplateObject.getIdentityTemplateObjects());
             }
 
-            Map<String, List<JsonTemplateObject>> jsonTemplateObjectsMap = new HashMap<>();
-
-            for (JsonTemplateObject jsonTemplateObject : set) {
-
-                String templateName = jsonTemplateObject.getTemplateName();
-
-                List<JsonTemplateObject> jsonTemplateObjects = jsonTemplateObjectsMap.get(templateName);
-                if (jsonTemplateObjects == null) {
-                    jsonTemplateObjects = new ArrayList<>();
-                    jsonTemplateObjectsMap.put(templateName, jsonTemplateObjects);
-                }
-
-                jsonTemplateObjects.add(jsonTemplateObject);
-            }
-
-            // find the common path prefix ensuring that the paths do not start with slash
-            int commonPrefixIndex = PathUtils.getCommonPrefixIndex(
-                    jsonTemplateObjectsMap.keySet().stream()
-                            .map(name -> StringUtils.removeStart(name, "/"))
-                            .collect(Collectors.toList()), '/');
-
-            jsonTemplateObjectsMap.entrySet().forEach((entry) -> {
-
-                //System.out.println(entry.getKey() + " -> " + entry.getValue());
-
-                // again for consistency, remove the leading slash
-                String name = StringUtils.removeStart(entry.getKey(), "/");
-
-                String commonName = name.substring(commonPrefixIndex);
-                String commonNamePath;
-                int lastSlashAt = commonName.lastIndexOf('/');
-                if (lastSlashAt > 0) {
-                    commonNamePath = commonName.substring(0, lastSlashAt);
-                } else {
-                    commonNamePath = "";
-                }
-
-                String javaPackageName = javaPackagePrefix + commonNamePath.replaceAll("/", ".");
-
-                if (!mapTemplates.contains(name)) {
-                    templateDefinitions.put(name, new TemplateDefinition(
-                            // add the leading slash back when passing to the TemplateDefinition
-                            StringUtils.ensureStart(name, "/"),
-                            StringUtils.removeSurrounding(javaPackageName, "."),
-                            entry.getValue(),
-                            mapTemplates,
-                            javaClassNamePrefix));
-                }
-            });
+            templateDefinitions = new TemplateDefinitions(jsonTemplateObjects, mapTemplates, javaPackagePrefix, javaClassNamePrefix);
 
             isDataFilesResolved = true;
         }

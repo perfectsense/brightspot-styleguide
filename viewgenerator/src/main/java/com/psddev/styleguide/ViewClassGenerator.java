@@ -116,9 +116,9 @@ public class ViewClassGenerator {
 
         JsonDataFiles dataFiles = new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates, javaPackageName, classNamePrefix);
 
-        List<TemplateDefinition> templateDefinitions = dataFiles.getTemplateDefinitions();
+        TemplateDefinitions templateDefinitions = dataFiles.getTemplateDefinitions();
 
-        for (TemplateDefinition templateDef : templateDefinitions.stream()
+        for (TemplateDefinition templateDef : templateDefinitions.get().stream()
                 .sorted((td1, td2) -> ObjectUtils.compare(td1.getName(), td2.getName(), true))
                 .collect(Collectors.toList())) {
 

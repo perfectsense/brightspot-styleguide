@@ -212,7 +212,7 @@ public class ViewClassGenerator {
             });
 
             for (Path jsonDirectory : jsonDirectories) {
-                logger.green().and("Watching Directory: ").reset().and(jsonDirectory);
+                logger.green().and("Watching Directory: ").reset().and(jsonDirectory).log();
             }
 
             watchDirectory.start();

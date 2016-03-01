@@ -33,8 +33,7 @@ abstract class TemplateFieldDefinition {
             if (valueTypes.size() == 2) {
 
                 // special case that we allow, but just log it as a warning.
-                System.out.println("WARN: (" + parentTemplate + " - " + name
-                        + ") has multiple value types " + valueTypes + ", but this is a common use case so we allow it.");
+                CliLogger.getLogger().yellow("WARN: (", parentTemplate, " - ", name, ") has multiple value types ", valueTypes, ".");
 
                 effectiveValueType = JsonObjectType.TEMPLATE_OBJECT;
 

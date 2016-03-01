@@ -231,7 +231,7 @@ public class ViewClassGenerator {
                         logger.green().and(">>")
                                 .reset().and(" File \"")
                                 .green().and(path)
-                                .reset().and("\" ", eventType, ".")
+                                .reset().and("\" ", eventType, ".\n")
                                 .log();
 
                         generator.get();

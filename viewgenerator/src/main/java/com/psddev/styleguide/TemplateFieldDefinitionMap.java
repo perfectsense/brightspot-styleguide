@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 class TemplateFieldDefinitionMap extends TemplateFieldDefinition {
 
-    public TemplateFieldDefinitionMap(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
-        super(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+    public TemplateFieldDefinitionMap(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
+        super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
     }
 
     @Override
@@ -25,11 +25,11 @@ class TemplateFieldDefinitionMap extends TemplateFieldDefinition {
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports, boolean removeDeprecations) {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports));
+        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports, removeDeprecations));
         builder.append("\n\n");
 
         imports.add("java.util.LinkedHashMap");

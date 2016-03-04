@@ -11,8 +11,8 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
 
     private Set<String> templateTypes = new LinkedHashSet<>();
 
-    public TemplateFieldDefinitionObject(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
-        super(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+    public TemplateFieldDefinitionObject(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
+        super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
         values.forEach((value) -> {
             if (value instanceof JsonTemplateObject) {
@@ -40,9 +40,10 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
         if (!isStringMap()) {
             for (String templateType : templateTypes) {
 
-                String viewClassName = TemplateDefinition.getJavaClassNameForTemplate(templateType, javaClassNamePrefix);
-
-                viewClassNames.add(viewClassName);
+                String viewClassName = templateDefinitions.getTemplateDefinitionRelativeClassName(templateType, parentTemplate);
+                if (viewClassName != null) {
+                    viewClassNames.add(viewClassName);
+                }
             }
         }
 
@@ -50,14 +51,14 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports, boolean removeDeprecations) {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports));
-        builder.append("\n\n");
+        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports, removeDeprecations));
 
         if (isStringMap()) {
+            builder.append("\n\n");
             imports.add("java.util.LinkedHashMap");
 
             StringBuilder notesJavaDoc = new StringBuilder();
@@ -106,32 +107,30 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
             builder.append(Arrays.stream(method).collect(Collectors.joining("")));
 
         } else {
-            String methodJavaDoc = "";
+            if (!removeDeprecations) {
+                builder.append("\n\n");
+                String methodJavaDoc = "";
 
-            StringBuilder notesJavaDoc = new StringBuilder();
-            for (String note : notes) {
-                notesJavaDoc.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
+                String valueTypesJavaDocList = getValueTypesJavaDocList();
+                if (valueTypesJavaDocList != null) {
+                    methodJavaDoc = Arrays.stream(new String[]{
+                            indent(indent) + "/**\n",
+                            indent(indent) + " * @deprecated no replacement\n",
+                            indent(indent) + " */\n"
+                    }).collect(Collectors.joining(""));
+                }
+
+                String[] method = {
+                        methodJavaDoc,
+                        indent(indent) + "@Deprecated\n",
+                        indent(indent) + "public Builder " + name + "(Class<?> " + name + "ViewClass, Object " + name + "Model) {\n",
+                        indent(indent + 1) + "this." + name + " = request.createView(" + name + "ViewClass, " + name + "Model);\n",
+                        indent(indent + 1) + "return this;\n",
+                        indent(indent) + "}"
+                };
+
+                builder.append(Arrays.stream(method).collect(Collectors.joining("")));
             }
-
-            String valueTypesJavaDocList = getValueTypesJavaDocList();
-            if (valueTypesJavaDocList != null) {
-                methodJavaDoc = Arrays.stream(new String[] {
-                        indent(indent) + "/**\n",
-                        indent(indent) + " * @deprecated no replacement\n",
-                        indent(indent) + " */\n"
-                }).collect(Collectors.joining(""));
-            }
-
-            String[] method = {
-                    methodJavaDoc,
-                    indent(indent) + "@Deprecated\n",
-                    indent(indent) + "public Builder " + name + "(Class<?> " + name + "ViewClass, Object " + name + "Model) {\n",
-                    indent(indent + 1) + "this." + name + " = request.createView(" + name + "ViewClass, " + name + "Model);\n",
-                    indent(indent + 1) + "return this;\n",
-                    indent(indent) + "}"
-            };
-
-            builder.append(Arrays.stream(method).collect(Collectors.joining("")));
         }
 
         return builder.toString();

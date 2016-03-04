@@ -14,8 +14,8 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
     private Set<String> listItemTypes;
     private JsonObjectType effectiveListValueType;
 
-    public TemplateFieldDefinitionList(String parentTemplate, String name, List<JsonObject> values, List<String> mapTemplates, String javaClassNamePrefix) {
-        super(parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+    public TemplateFieldDefinitionList(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
+        super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
 
         Set<JsonObjectType> listValueTypes = new HashSet<>();
 
@@ -103,9 +103,10 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             } else {
                 for (String templateType : listItemTypes) {
 
-                    String viewClassName = TemplateDefinition.getJavaClassNameForTemplate(templateType, javaClassNamePrefix);
-
-                    viewClassNames.add(viewClassName);
+                    String className = templateDefinitions.getTemplateDefinitionRelativeClassName(templateType, parentTemplate);
+                    if (className != null) {
+                        viewClassNames.add(className);
+                    }
                 }
             }
         }
@@ -113,12 +114,15 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         return viewClassNames;
     }
 
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
+    @Override
+    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports, boolean removeDeprecations) {
 
         StringBuilder builder = new StringBuilder();
 
         imports.add("java.util.ArrayList");
-        imports.add("java.util.stream.Collectors");
+        if (!removeDeprecations) {
+            imports.add("java.util.stream.Collectors");
+        }
 
         String nameViewClass = name + "ViewClass";
         String nameView = name + "View";
@@ -238,9 +242,16 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         };
 
         builder.append(Arrays.stream(method1).collect(Collectors.joining(""))).append("\n\n");
-        builder.append(Arrays.stream(method2).collect(Collectors.joining(""))).append("\n\n");
-        builder.append(Arrays.stream(method3).collect(Collectors.joining(""))).append("\n\n");
-        builder.append(Arrays.stream(method4).collect(Collectors.joining("")));
+
+        if (!removeDeprecations) {
+            builder.append(Arrays.stream(method2).collect(Collectors.joining(""))).append("\n\n");
+        }
+
+        builder.append(Arrays.stream(method3).collect(Collectors.joining(""))).append(removeDeprecations ? "" : "\n\n");
+
+        if (!removeDeprecations) {
+            builder.append(Arrays.stream(method4).collect(Collectors.joining("")));
+        }
 
         return builder.toString();
     }

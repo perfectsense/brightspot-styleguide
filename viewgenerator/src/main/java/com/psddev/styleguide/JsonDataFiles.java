@@ -3,6 +3,8 @@ package com.psddev.styleguide;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,29 +26,35 @@ class JsonDataFiles {
 
     private Map<String, List<JsonDataFile>> dataFilesByTemplate;
 
-    private Map<String, TemplateDefinition> templateDefinitions;
+    private TemplateDefinitions templateDefinitions;
 
     private boolean isDataFilesResolved = false;
 
-    private List<String> mapTemplates;
+    private Set<String> mapTemplates;
+
+    private String javaPackagePrefix;
 
     private String javaClassNamePrefix;
 
-    public JsonDataFiles(List<String> jsonDataFilesPaths, Set<String> ignoredFileNames, List<String> mapTemplates, String javaClassNamePrefix) {
+    public JsonDataFiles(List<Path> jsonDataFilesPaths,
+                         Set<Path> ignoredFileNames,
+                         Set<String> mapTemplates,
+                         String javaPackagePrefix,
+                         String javaClassNamePrefix) {
 
         List<JsonDataFile> jsonDataFiles = new ArrayList<>();
 
-        for (String jsonDataFilesPath : jsonDataFilesPaths) {
-            File jsonDataFilesPathFile = new File(jsonDataFilesPath);
+        for (Path jsonDataFilesPath : jsonDataFilesPaths) {
+            File jsonDataFilesPathFile = jsonDataFilesPath.toFile();
 
             if (jsonDataFilesPathFile.exists()) {
-                jsonDataFiles.addAll(FileUtils.listFiles(jsonDataFilesPathFile, new String[]{"json"}, true)
+                jsonDataFiles.addAll(FileUtils.listFiles(jsonDataFilesPathFile, new String[] { "json" }, true)
                         .stream()
-                        .filter((file) -> !ignoredFileNames.contains(file.getName()))
+                        .filter((file) -> !ignoredFileNames.contains(Paths.get(file.getName())))
                         .map((file) -> new JsonDataFile(
-                                jsonDataFilesPath,
-                                fileToName(file, jsonDataFilesPath),
-                                fileToJsonObject(file, jsonDataFilesPath)))
+                                jsonDataFilesPath.toString(),
+                                fileToName(file, jsonDataFilesPath.toString()),
+                                fileToJsonObject(file, jsonDataFilesPath.toString())))
                         .collect(Collectors.toList()));
             }
         }
@@ -74,7 +82,13 @@ class JsonDataFiles {
             }
         }
 
-        this.mapTemplates = mapTemplates != null ? mapTemplates : Collections.emptyList();
+        this.mapTemplates = mapTemplates != null ? mapTemplates : Collections.emptySet();
+
+        if (StringUtils.isBlank(javaPackagePrefix)) {
+            this.javaPackagePrefix = "";
+        } else {
+            this.javaPackagePrefix = StringUtils.ensureEnd(javaPackagePrefix, ".");
+        }
         this.javaClassNamePrefix = javaClassNamePrefix;
     }
 
@@ -87,14 +101,9 @@ class JsonDataFiles {
         return byTemplate != null ? new ArrayList<>(byTemplate) : null;
     }
 
-    public TemplateDefinition getTemplateDefintion(String templateName) {
+    public TemplateDefinitions getTemplateDefinitions() {
         resolveAllDataFileTemplates();
-        return templateDefinitions.get(templateName);
-    }
-
-    public List<TemplateDefinition> getTemplateDefinitions() {
-        resolveAllDataFileTemplates();
-        return new ArrayList<>(templateDefinitions.values());
+        return templateDefinitions;
     }
 
     private void resolveAllDataFileTemplates() {
@@ -105,36 +114,13 @@ class JsonDataFiles {
                 jsonDataFile.resolveTemplate(this);
             }
 
-            templateDefinitions = new HashMap<>();
-
-            Set<JsonTemplateObject> set = Collections.newSetFromMap(new IdentityHashMap<>());
+            Set<JsonTemplateObject> jsonTemplateObjects = Collections.newSetFromMap(new IdentityHashMap<>());
             for (JsonDataFile jsonDataFile : dataFilesByFile.values()) {
                 JsonTemplateObject jsonTemplateObject = jsonDataFile.getTemplateObject(this);
-                set.addAll(jsonTemplateObject.getIdentityTemplateObjects());
+                jsonTemplateObjects.addAll(jsonTemplateObject.getIdentityTemplateObjects());
             }
 
-            // TODO: Extract this out so we can get at this data too for printing.
-            Map<String, List<JsonTemplateObject>> jsonTemplateObjectsMap = new HashMap<>();
-
-            for (JsonTemplateObject jsonTemplateObject : set) {
-
-                String templateName = jsonTemplateObject.getTemplateName();
-
-                List<JsonTemplateObject> jsonTemplateObjects = jsonTemplateObjectsMap.get(templateName);
-                if (jsonTemplateObjects == null) {
-                    jsonTemplateObjects = new ArrayList<>();
-                    jsonTemplateObjectsMap.put(templateName, jsonTemplateObjects);
-                }
-
-                jsonTemplateObjects.add(jsonTemplateObject);
-            }
-
-            jsonTemplateObjectsMap.entrySet().forEach((entry) -> {
-                String name = StringUtils.ensureStart(entry.getKey(), "/");
-                if (!mapTemplates.contains(name)) {
-                    templateDefinitions.put(name, new TemplateDefinition(name, entry.getValue(), mapTemplates, javaClassNamePrefix));
-                }
-            });
+            templateDefinitions = new TemplateDefinitions(jsonTemplateObjects, mapTemplates, javaPackagePrefix, javaClassNamePrefix);
 
             isDataFilesResolved = true;
         }

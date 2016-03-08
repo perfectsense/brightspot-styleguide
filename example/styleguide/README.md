@@ -21,6 +21,9 @@ URL to a randomly generated image.
 
 `{{name()}}`
 
+`{{color()}}`
+Randomly generate a rgb color. With options to choose `'dark'` or `'light'` colors.
+
 `{{number(number)}}`
 
 `{{paragraphs(paragraphCount, sentenceCount, wordCount)}}`

@@ -17,45 +17,61 @@ it won't show up in the styleguide navigation.
 
 #### image
 
-```{{image(width, height)}}```
+```
+{{image(width, height)}}
+```
 
 URL to a randomly generated image.
 
 #### name
 
-```{{name()}}```
+```
+{{name()}}
+```
 
 Generate a random name - first and last
 
 #### hexcolor
 
-```{{hexcolor()}}```
+```
+{{hexcolor()}}
+```
 
-Randomly generate a hex color with options to choose a luminosity value `{{hexcolor(25)}`
+Randomly generate a hex color with options to choose a brightness value `{{hexcolor(25)}`
 To use a different format than hex, you can write:
 `"color":"hsl({{number([0,360])}}, 50%, 100%)"` in your json file
 
 #### number
 
-```{{number(number)}}```
+```
+{{number(number)}}
+```
 
 Generate a random number. Option to pass in an array to provide a range of numbers to generate from ie - `{{number([1, 100])}}`.
 
 #### paragraphs
 
-```{{paragraphs(paragraphCount, sentenceCount, wordCount)}}```
+```
+{{paragraphs(paragraphCount, sentenceCount, wordCount)}}
+```
 
 #### sentences
 
-```{{sentences(sentenceCount, wordCount)}}```
+```
+{{sentences(sentenceCount, wordCount)}}
+```
 
 #### words
 
-```{{words(wordCount)}}```
+```
+{{words(wordCount)}}
+```
 
 #### stylesheet
 
-```{{stylesheet()}}```
+```
+{{stylesheet()}}
+```
 
 URL to a stylesheet. You define the URL(s) in a `_config.json` at the root of the styleguide directory.
 For example:

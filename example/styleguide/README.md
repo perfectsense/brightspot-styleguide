@@ -37,7 +37,7 @@ Generate a random name - first and last
 {{hexcolor()}}
 ```
 
-Randomly generate a hex color with options to choose a brightness value `{{hexcolor(25)}`
+Randomly generate a hex color with options to choose a luminosity value ranging from 0 -100 `{{hexcolor(25)}`
 To use a different format than hex, you can write:
 `"color":"hsl({{number([0,360])}}, 50%, 100%)"` in your json file
 

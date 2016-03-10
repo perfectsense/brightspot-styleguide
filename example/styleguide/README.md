@@ -15,21 +15,64 @@ it won't show up in the styleguide navigation.
 
 ### Methods
 
-`{{image(width, height)}}`
+#### image
+
+```
+{{image(width, height)}}
+```
 
 URL to a randomly generated image.
 
-`{{name()}}`
+#### name
 
-`{{number(number)}}`
+```
+{{name()}}
+```
 
-`{{paragraphs(paragraphCount, sentenceCount, wordCount)}}`
+Generate a random name - first and last
 
-`{{sentences(sentenceCount, wordCount)}}`
+#### hexColor
 
-`{{words(wordCount)}}`
+```
+{{hexColor(luminosity)}}
+```
 
-`{{stylesheet()}}`
+Randomly generate a hex color with options to choose a luminosity value ranging from dark-light or 0-100 `{{hexColor(25)}`
+.To use a different format than hex, you could use the `{{number}}` generator and `hsl` color-space like this:
+
+`"color":"hsl({{number([0,360])}}, 50%, 100%)"`
+
+#### number
+
+```
+{{number(number)}}
+```
+
+Generate a random number. Option to pass in an array to provide a range of numbers to generate from ie - `{{number([1, 100])}}`.
+
+#### paragraphs
+
+```
+{{paragraphs(paragraphCount, sentenceCount, wordCount)}}
+```
+
+#### sentences
+
+```
+{{sentences(sentenceCount, wordCount)}}
+```
+
+#### words
+
+```
+{{words(wordCount)}}
+```
+
+#### stylesheet
+
+```
+{{stylesheet()}}
+```
 
 URL to a stylesheet. You define the URL(s) in a `_config.json` at the root of the styleguide directory.
 For example:

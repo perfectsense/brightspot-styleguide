@@ -31,15 +31,16 @@ URL to a randomly generated image.
 
 Generate a random name - first and last
 
-#### hexcolor
+#### hexColor
 
 ```
-{{hexcolor()}}
+{{hexColor(luminosity)}}
 ```
 
-Randomly generate a hex color with options to choose a luminosity value ranging from 0 -100 `{{hexcolor(25)}`
-To use a different format than hex, you can write:
-`"color":"hsl({{number([0,360])}}, 50%, 100%)"` in your json file
+Randomly generate a hex color with options to choose a luminosity value ranging from dark-light or 0-100 `{{hexColor(25)}`
+To use a different format than hex, you can write in your JSON file:
+
+`"color":"hsl({{number([0,360])}}, 50%, 100%)"`
 
 #### number
 

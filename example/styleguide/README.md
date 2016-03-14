@@ -31,6 +31,22 @@ URL to a randomly generated image.
 
 Generate a random name - first and last
 
+#### date
+
+```
+{{date()}}
+
+default: 'full'
+arguments: 'full' | 'long' | 'short' | 'iso'
+```
+
+Generate a random date.
+Optional arguments:
+ - **'full'** - full date pattern (ie: Tue Oct 18 2072 07:31:28 GMT-0400 (EDT))
+ - **'long'** - long date pattern (ie: Tuesday, October 18, 2072 )
+ - **'short'** - short date pattern (ie: 10/18/2072)
+ - **'iso'** - iso date pattern (ie: 2072-10-18)
+
 #### hexColor
 
 ```

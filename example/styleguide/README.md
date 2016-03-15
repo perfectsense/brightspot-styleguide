@@ -36,14 +36,13 @@ Generate a random name - first and last
 ```
 {{date()}}
 
-default: 'full'
-arguments: 'full' | 'long' | 'short' | 'iso'
+arguments: 'unformatted' | 'short' | 'iso'
 ```
 
 Generate a random date.
 Optional arguments:
- - **'full'** - full date pattern (ie: Tue Oct 18 2072 07:31:28 GMT-0400 (EDT))
- - **'long'** - long date pattern (ie: Tuesday, October 18, 2072 )
+ - **defualt** - long date pattern (ie: October 18, 2072 )
+ - **'unformatted'** - full date pattern (ie: Tue Oct 18 2072 07:31:28 GMT-0400 (EDT))
  - **'short'** - short date pattern (ie: 10/18/2072)
  - **'iso'** - iso date pattern (ie: 2072-10-18)
 

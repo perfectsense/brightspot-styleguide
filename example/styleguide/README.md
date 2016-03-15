@@ -29,7 +29,22 @@ URL to a randomly generated image.
 {{name()}}
 ```
 
-Generate a random name - first and last
+Generates a random name; first and last
+
+#### date
+
+```
+{{date()}}
+
+arguments: 'unformatted' | 'short' | 'iso'
+```
+
+Generates a random date. Defaults to this format: `October 18, 2072`
+
+Optional arguments:
+ - **unformatted** - full date pattern (ie: `Tue Oct 18 2072 07:31:28 GMT-0400 (EDT)`)
+ - **short** - short date pattern (ie: `10/18/2072`)
+ - **iso** - iso date pattern (ie: `2072-10-18`)
 
 #### hexColor
 
@@ -37,7 +52,7 @@ Generate a random name - first and last
 {{hexColor(luminosity)}}
 ```
 
-Randomly generate a hex color with options to choose a luminosity value ranging from dark-light or 0-100 `{{hexColor(25)}`
+Generates a random hex color with options to choose a luminosity value ranging from dark-light or 0-100 `{{hexColor(25)}`
 .To use a different format than hex, you could use the `{{number}}` generator and `hsl` color-space like this:
 
 `"color":"hsl({{number([0,360])}}, 50%, 100%)"`
@@ -48,7 +63,7 @@ Randomly generate a hex color with options to choose a luminosity value ranging 
 {{number(number)}}
 ```
 
-Generate a random number. Option to pass in an array to provide a range of numbers to generate from ie - `{{number([1, 100])}}`.
+Generates a random number. Option to pass in an array to provide a range of numbers to generate from ie - `{{number([1, 100])}}`.
 
 #### paragraphs
 

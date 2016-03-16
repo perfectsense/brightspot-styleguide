@@ -37,11 +37,21 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         if (!listValueTypes.isEmpty()) {
 
             if (listValueTypes.size() > 1) {
-                throw new IllegalArgumentException("ERROR: (" + this.parentTemplate + " - " + this.name
-                        + ") List can only have one item value type but found [" + listValueTypes + "]!");
-            }
 
-            effectiveListValueType = listValueTypes.iterator().next();
+                if (listValueTypes.size() == 2
+                        && listValueTypes.contains(JsonObjectType.TEMPLATE_OBJECT) && listValueTypes.contains(JsonObjectType.STRING)) {
+
+                    // We allow Strings and Objects to co-exist and just treat them as if it is Object
+                    effectiveListValueType = JsonObjectType.TEMPLATE_OBJECT;
+
+                } else {
+                    throw new IllegalArgumentException("ERROR: (" + this.parentTemplate + " - " + this.name
+                            + ") List can only have one item value type but found [" + listValueTypes + "]!");
+                }
+
+            } else {
+                effectiveListValueType = listValueTypes.iterator().next();
+            }
 
             if (effectiveListValueType == JsonObjectType.BOOLEAN) {
                 listItemJavaType = "Boolean";

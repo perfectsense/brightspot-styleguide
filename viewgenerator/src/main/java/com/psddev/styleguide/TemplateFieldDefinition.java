@@ -31,10 +31,7 @@ abstract class TemplateFieldDefinition {
                 || valueTypes.size() == 2 && valueTypes.contains(JsonObjectType.TEMPLATE_OBJECT) && valueTypes.contains(JsonObjectType.STRING)) {
 
             if (valueTypes.size() == 2) {
-
-                // special case that we allow, but just log it as a warning.
-                CliLogger.getLogger().yellow("WARN: (", parentTemplate, " - ", name, ") has multiple value types ", valueTypes, ".");
-
+                // We allow Strings and Objects to co-exist and just treat them as if it is Object
                 effectiveValueType = JsonObjectType.TEMPLATE_OBJECT;
 
             } else {

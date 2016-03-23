@@ -15,6 +15,13 @@
                         log: false,
                         heightCalculationMethod: 'max',
                         autoResize: true,
+                        scrolling: true,
+                        {{#if example.exampleMinHeight}}
+                          minHeight: {{example.exampleMinHeight}},
+                        {{/if}}
+                        {{#if example.exampleMaxHeight}}
+                          maxHeight: {{example.exampleMaxHeight}},
+                        {{/if}}
                         initCallback: function(iframe) {
                             $(iframe).contents().find('html', 'body').css('height', 'auto');
                         }

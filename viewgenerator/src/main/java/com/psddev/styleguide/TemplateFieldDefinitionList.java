@@ -146,7 +146,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             notesJavaDoc.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
         }
 
-        String[] method1 = {
+        String[] method1_1 = {
                 indent(indent) + "/**\n",
                 indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
@@ -161,13 +161,74 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         };
 
         /**
-         * Sets the articleBody field.
+         * Adds a single item to the articleBody field.
          *
-         * @param articleBodyViewClass the articleBody views class, typically a Class of {@link FigureView}.
-         * @param articleBodyModels the models powering the articleBody views.
+         * @param articleBody the item to add, typically a {@link FigureView}.
          * @return this builder.
          */
         /*
+        public Builder addToAuthors(Object authors) {
+            if (this.authors == null) {
+                this.authors = new ArrayList<>();
+            }
+            this.authors.add(authors);
+            return this;
+        }
+         */
+        String[] method1_2 = {
+                indent(indent) + "/**\n",
+                indent(indent) + " * <p>Adds a single item to the " + name + " field.</p>\n",
+                notesJavaDoc.toString(),
+                indent(indent) + " *\n",
+                indent(indent) + " * @param " + name + " the item to add, typically a " + valueTypesJavaDocList + ".\n",
+                indent(indent) + " * @return this builder.\n",
+                indent(indent) + " */\n",
+                indent(indent) + "public Builder addTo" + StyleguideStringUtils.toPascalCase(name) + "(Object " + name + ") {\n",
+                indent(indent + 1) + "if (this." + name + " == null) {\n",
+                indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
+                indent(indent + 1) + "}\n",
+                indent(indent + 1) + "this." + name + ".add(" + name + ");\n",
+                indent(indent + 1) + "return this;\n",
+                indent(indent) + "}"
+        };
+
+        /**
+         * Adds a Collection of items to the articleBody field.
+         *
+         * @param articleBody the items to add, typically a {@link FigureView}.
+         * @return this builder.
+         */
+        /*
+        public Builder addAllToAuthors(Collection<?> authors) {
+            if (this.authors == null) {
+                this.authors = new ArrayList<>();
+            }
+            this.authors.addAll(authors);
+            return this;
+        }
+         */
+        String[] method1_3 = {
+                indent(indent) + "/**\n",
+                indent(indent) + " * <p>Adds a Collection of items to the " + name + " field.</p>\n",
+                notesJavaDoc.toString(),
+                indent(indent) + " *\n",
+                indent(indent) + " * @param " + name + " the items to add, typically a " + valueTypesJavaDocList + ".\n",
+                indent(indent) + " * @return this builder.\n",
+                indent(indent) + " */\n",
+                indent(indent) + "public Builder addAllTo" + StyleguideStringUtils.toPascalCase(name) + "(" + getJavaFieldType(imports) + " " + name + ") {\n",
+                indent(indent + 1) + "if (this." + name + " == null) {\n",
+                indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
+                indent(indent + 1) + "}\n",
+                indent(indent + 1) + "this." + name + ".addAll(" + name + ");\n",
+                indent(indent + 1) + "return this;\n",
+                indent(indent) + "}"
+        };
+
+        /**
+         * @deprecated no replacement.
+         */
+        /*
+        @Deprecated
         public Builder authors(Class<?> authorsViewClass, List<?> authorsModels) {
             this.authors = authorsModels.stream()
                     .map((authorsModel) -> request.createView(authorsViewClass, authorModel))
@@ -191,12 +252,10 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         };
 
         /**
-         * Adds an item to the articleBody field.
-         *
-         * @param articleBody the view to set, typically a {@link FigureView}.
-         * @return this builder.
+         * @deprecated Use {@link #addToArticleBody(Object)} instead.
          */
         /*
+        @Deprecated
         public Builder addAuthors(Object authors) {
             if (this.authors == null) {
                 this.authors = new ArrayList<>();
@@ -207,12 +266,9 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
          */
         String[] method3 = {
                 indent(indent) + "/**\n",
-                indent(indent) + " * <p>Adds an item to the " + name + " field.</p>\n",
-                notesJavaDoc.toString(),
-                indent(indent) + " *\n",
-                indent(indent) + " * @param " + name + " the view to set, typically a " + valueTypesJavaDocList + ".\n",
-                indent(indent) + " * @return this builder.\n",
+                indent(indent) + " * @deprecated Use {@link #addTo" + StyleguideStringUtils.toPascalCase(name) + "(Object)} instead.\n",
                 indent(indent) + " */\n",
+                indent(indent) + "@Deprecated\n",
                 indent(indent) + "public Builder add" + StyleguideStringUtils.toPascalCase(name) + "(Object " + name + ") {\n",
                 indent(indent + 1) + "if (this." + name + " == null) {\n",
                 indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
@@ -223,13 +279,10 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         };
 
         /**
-         * Adds an item to the articleBody field.
-         *
-         * @param articleBodyViewClass the articleBody view class, typically a Class of {@link FigureView}.
-         * @param articleBodyModel the model powering the articleBody view.
-         * @return this builder.
+         * @deprecated no replacement.
          */
         /*
+        @Deprecated
         public Builder addAuthors(Class<?> authorsViewClass, Object authorsModel) {
             Object authors = request.createView(authorsViewClass, authorsModel);
             if (authors != null) {
@@ -252,7 +305,11 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
                 indent(indent) + "}"
         };
 
-        builder.append(Arrays.stream(method1).collect(Collectors.joining(""))).append("\n\n");
+        builder.append(Arrays.stream(method1_1).collect(Collectors.joining(""))).append("\n\n");
+
+        builder.append(Arrays.stream(method1_2).collect(Collectors.joining(""))).append("\n\n");
+
+        builder.append(Arrays.stream(method1_3).collect(Collectors.joining(""))).append("\n\n");
 
         if (!removeDeprecations) {
             builder.append(Arrays.stream(method2).collect(Collectors.joining(""))).append("\n\n");

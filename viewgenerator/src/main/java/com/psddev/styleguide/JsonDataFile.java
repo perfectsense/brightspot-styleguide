@@ -214,7 +214,7 @@ class JsonDataFile {
                     }
                 });
 
-                return new JsonTemplateObject(template, fields, fieldNotes, templateNotes);
+                return new JsonTemplateObject(StringUtils.ensureStart(template, "/"), fields, fieldNotes, templateNotes);
 
             } else {
                 throw new MissingTemplateException(this, map);

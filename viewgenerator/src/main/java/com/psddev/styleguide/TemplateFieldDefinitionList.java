@@ -1,6 +1,7 @@
 package com.psddev.styleguide;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -65,7 +66,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
 
             } else if (effectiveListValueType == JsonObjectType.LIST) {
                 listItemJavaType = "?";
-                listItemTypes.add("java.util.List");
+                listItemTypes.add("java.util.Collection");
 
             } else if (effectiveListValueType == JsonObjectType.TEMPLATE_OBJECT) {
                 listItemJavaType = "?";
@@ -88,13 +89,13 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
 
     @Override
     public String getJavaFieldType(Set<String> imports) {
-        imports.add(List.class.getName());
-        return "List<" + listItemJavaType + ">";
+        imports.add(Collection.class.getName());
+        return "Collection<" + listItemJavaType + ">";
     }
 
     public String getJavaFieldTypeForBuilder(Set<String> imports) {
-        imports.add(List.class.getName());
-        return "List<" + ("?".equals(listItemJavaType) ? "Object" : listItemJavaType) + ">";
+        imports.add(Collection.class.getName());
+        return "Collection<" + ("?".equals(listItemJavaType) ? "Object" : listItemJavaType) + ">";
     }
 
     @Override
@@ -108,7 +109,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
                 return Collections.singleton("java.lang.String");
 
             } else if (effectiveListValueType == JsonObjectType.LIST) {
-                return Collections.singleton("java.util.List");
+                return Collections.singleton("java.util.Collection");
 
             } else {
                 for (String templateType : listItemTypes) {
@@ -150,7 +151,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
                 indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
                 indent(indent) + " *\n",
-                indent(indent) + " * @param " + name + " Typically a List of " + valueTypesJavaDocList + ".\n",
+                indent(indent) + " * @param " + name + " Typically a Collection of " + valueTypesJavaDocList + ".\n",
                 indent(indent) + " * @return this builder.\n",
                 indent(indent) + " */\n",
                 indent(indent) + "public Builder " + name + "(" + getJavaFieldType(imports) + " " + name + ") {\n",
@@ -180,7 +181,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
                 indent(indent) + " * @deprecated no replacement\n",
                 indent(indent) + " */\n",
                 indent(indent) + "@Deprecated\n",
-                indent(indent) + "public Builder " + name + "(Class<?> " + nameViewClass + ", List<?> " + nameModels + ") {\n",
+                indent(indent) + "public Builder " + name + "(Class<?> " + nameViewClass + ", Collection<?> " + nameModels + ") {\n",
                 indent(indent + 1) + "this." + name + " = " + nameModels + ".stream()\n",
                 indent(indent + 3) + ".map((" + nameModel + ") -> request.createView(" + nameViewClass + ", " + nameModel + "))\n",
                 indent(indent + 3) + ".filter((" + nameView + ") -> " + nameView + " != null)\n",

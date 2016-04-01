@@ -171,7 +171,7 @@ abstract class TemplateFieldDefinition {
             String valueTypesJavaDocListPrefix;
 
             if (this instanceof TemplateFieldDefinitionList) {
-                valueTypesJavaDocListPrefix = "Typically a List of ";
+                valueTypesJavaDocListPrefix = "Typically a Collection of ";
             } else {
                 valueTypesJavaDocListPrefix = "Typically a ";
             }
@@ -184,7 +184,7 @@ abstract class TemplateFieldDefinition {
             methodJavaDoc = Arrays.stream(new String[] {
                     indent(indent) + "/**\n",
                     notesSource.toString(),
-                    indent(indent) + " * <p>" + valueTypesJavaDocListPrefix + valueTypesJavaDocList + "</p>.\n",
+                    indent(indent) + " * <p>" + valueTypesJavaDocListPrefix + valueTypesJavaDocList + ".</p>\n",
                     indent(indent) + " */\n"
             }).collect(Collectors.joining(""));
         }
@@ -220,7 +220,7 @@ abstract class TemplateFieldDefinition {
             String valueTypesJavaDocListPrefix;
 
             if (this instanceof TemplateFieldDefinitionList) {
-                valueTypesJavaDocListPrefix = "Typically a List of ";
+                valueTypesJavaDocListPrefix = "Typically a Collection of ";
             } else {
                 valueTypesJavaDocListPrefix = "Typically a ";
             }

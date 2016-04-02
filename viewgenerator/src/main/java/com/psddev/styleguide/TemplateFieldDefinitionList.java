@@ -146,7 +146,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             notesJavaDoc.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
         }
 
-        String[] method1_1 = {
+        String[] method1 = {
                 indent(indent) + "/**\n",
                 indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
@@ -175,7 +175,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             return this;
         }
          */
-        String[] method1_2 = {
+        String[] method2 = {
                 indent(indent) + "/**\n",
                 indent(indent) + " * <p>Adds a single item to the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
@@ -207,7 +207,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             return this;
         }
          */
-        String[] method1_3 = {
+        String[] method3 = {
                 indent(indent) + "/**\n",
                 indent(indent) + " * <p>Adds a Collection of items to the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
@@ -225,33 +225,6 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         };
 
         /**
-         * @deprecated no replacement.
-         */
-        /*
-        @Deprecated
-        public Builder authors(Class<?> authorsViewClass, List<?> authorsModels) {
-            this.authors = authorsModels.stream()
-                    .map((authorsModel) -> request.createView(authorsViewClass, authorModel))
-                    .filter((authorsView) -> authorsView != null)
-                    .collect(Collectors.toList());
-            return this;
-        }
-         */
-        String[] method2 = {
-                indent(indent) + "/**\n",
-                indent(indent) + " * @deprecated no replacement\n",
-                indent(indent) + " */\n",
-                indent(indent) + "@Deprecated\n",
-                indent(indent) + "public Builder " + name + "(Class<?> " + nameViewClass + ", Collection<?> " + nameModels + ") {\n",
-                indent(indent + 1) + "this." + name + " = " + nameModels + ".stream()\n",
-                indent(indent + 3) + ".map((" + nameModel + ") -> request.createView(" + nameViewClass + ", " + nameModel + "))\n",
-                indent(indent + 3) + ".filter((" + nameView + ") -> " + nameView + " != null)\n",
-                indent(indent + 3) + ".collect(Collectors.toList());\n",
-                indent(indent + 1) + "return this;\n",
-                indent(indent) + "}"
-        };
-
-        /**
          * @deprecated Use {@link #addToArticleBody(Object)} instead.
          */
         /*
@@ -264,7 +237,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             return this;
         }
          */
-        String[] method3 = {
+        String[] method4 = {
                 indent(indent) + "/**\n",
                 indent(indent) + " * @deprecated Use {@link #addTo" + StyleguideStringUtils.toPascalCase(name) + "(Object)} instead.\n",
                 indent(indent) + " */\n",
@@ -283,6 +256,33 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
          */
         /*
         @Deprecated
+        public Builder authors(Class<?> authorsViewClass, List<?> authorsModels) {
+            this.authors = authorsModels.stream()
+                    .map((authorsModel) -> request.createView(authorsViewClass, authorModel))
+                    .filter((authorsView) -> authorsView != null)
+                    .collect(Collectors.toList());
+            return this;
+        }
+         */
+        String[] method5 = {
+                indent(indent) + "/**\n",
+                indent(indent) + " * @deprecated no replacement\n",
+                indent(indent) + " */\n",
+                indent(indent) + "@Deprecated\n",
+                indent(indent) + "public Builder " + name + "(Class<?> " + nameViewClass + ", Collection<?> " + nameModels + ") {\n",
+                indent(indent + 1) + "this." + name + " = " + nameModels + ".stream()\n",
+                indent(indent + 3) + ".map((" + nameModel + ") -> request.createView(" + nameViewClass + ", " + nameModel + "))\n",
+                indent(indent + 3) + ".filter((" + nameView + ") -> " + nameView + " != null)\n",
+                indent(indent + 3) + ".collect(Collectors.toList());\n",
+                indent(indent + 1) + "return this;\n",
+                indent(indent) + "}"
+        };
+
+        /**
+         * @deprecated no replacement.
+         */
+        /*
+        @Deprecated
         public Builder addAuthors(Class<?> authorsViewClass, Object authorsModel) {
             Object authors = request.createView(authorsViewClass, authorsModel);
             if (authors != null) {
@@ -291,7 +291,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             return this;
         }
          */
-        String[] method4 = {
+        String[] method6 = {
                 indent(indent) + "/**\n",
                 indent(indent) + " * @deprecated no replacement\n",
                 indent(indent) + " */\n",
@@ -305,20 +305,18 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
                 indent(indent) + "}"
         };
 
-        builder.append(Arrays.stream(method1_1).collect(Collectors.joining(""))).append("\n\n");
+        builder.append(Arrays.stream(method1).collect(Collectors.joining(""))).append("\n\n");
 
-        builder.append(Arrays.stream(method1_2).collect(Collectors.joining(""))).append("\n\n");
+        builder.append(Arrays.stream(method2).collect(Collectors.joining(""))).append("\n\n");
 
-        builder.append(Arrays.stream(method1_3).collect(Collectors.joining(""))).append("\n\n");
+        builder.append(Arrays.stream(method3).collect(Collectors.joining(""))).append("\n\n");
 
-        if (!removeDeprecations) {
-            builder.append(Arrays.stream(method2).collect(Collectors.joining(""))).append("\n\n");
-        }
-
-        builder.append(Arrays.stream(method3).collect(Collectors.joining(""))).append(removeDeprecations ? "" : "\n\n");
+        builder.append(Arrays.stream(method4).collect(Collectors.joining(""))).append(removeDeprecations ? "" : "\n\n");
 
         if (!removeDeprecations) {
-            builder.append(Arrays.stream(method4).collect(Collectors.joining("")));
+            builder.append(Arrays.stream(method5).collect(Collectors.joining(""))).append("\n\n");
+
+            builder.append(Arrays.stream(method6).collect(Collectors.joining("")));
         }
 
         return builder.toString();

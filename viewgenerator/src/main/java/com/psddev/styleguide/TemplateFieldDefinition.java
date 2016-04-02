@@ -195,12 +195,30 @@ abstract class TemplateFieldDefinition {
                 + indent(indent) + "}";
     }
 
-    public String getInterfaceStaticStringVariableDeclaration(int indent) {
+    public String getInterfaceStaticStringVariableDeclaration(int indent, String suffix) {
+        return getInterfaceStaticStringVariableDeclarationHelper(indent, suffix, false, null);
+    }
 
-        String varName = StringUtils.toUnderscored(name).toUpperCase() + "_TYPE";
+    public String getInterfaceStaticStringVariableDeclarationDeprecated(int indent, String suffix, String alternateSuffix) {
+        return getInterfaceStaticStringVariableDeclarationHelper(indent, suffix, true, alternateSuffix);
+    }
+
+    private String getInterfaceStaticStringVariableDeclarationHelper(int indent, String suffix, boolean isDeprecated, String alternateSuffix) {
+        String varName = StringUtils.toUnderscored(name).toUpperCase() + suffix;
         String varValue = name;
 
-        return indent(indent) + "static final String " + varName + " = \"" + varValue + "\";";
+        String declaration = "";
+
+        if (isDeprecated) {
+            String deprecatedVarName = StringUtils.toUnderscored(name).toUpperCase() + alternateSuffix;
+            declaration += indent(indent) + "/**\n";
+            declaration += indent(indent) + " * @deprecated Use {@link #" + deprecatedVarName + "} instead.\n";
+            declaration += indent(indent) + " */\n";
+            declaration += indent(indent) + "@Deprecated\n";
+        }
+        declaration += indent(indent) + "static final String " + varName + " = \"" + varValue + "\";";
+
+        return declaration;
     }
 
     public String getInterfaceBuilderFieldDeclarationSource(int indent, Set<String> imports) {

@@ -147,22 +147,25 @@ class TemplateDefinition {
         builder.append("@HandlebarsTemplate(\"").append(StringUtils.removeStart(name, "/")).append("\")\n");
         builder.append("public interface ").append(getJavaClassName()).append(" {\n");
 
-        boolean printedAnyStaticStringVariableDeclaration = false;
         for (TemplateFieldDefinition fieldDef : fields) {
 
             if (fieldDef instanceof TemplateFieldDefinitionList
                     || fieldDef instanceof TemplateFieldDefinitionObject
                     || fieldDef instanceof TemplateFieldDefinitionString) {
 
-                String declaration = fieldDef.getInterfaceStaticStringVariableDeclaration(1);
-                if (declaration != null) {
-                    builder.append("\n").append(declaration);
-                    printedAnyStaticStringVariableDeclaration = true;
-                }
+                String declaration = fieldDef.getInterfaceStaticStringVariableDeclaration(1, "_ELEMENT");
+                builder.append("\n").append(declaration).append("\n");
             }
         }
-        if (printedAnyStaticStringVariableDeclaration) {
-            builder.append("\n");
+        for (TemplateFieldDefinition fieldDef : fields) {
+
+            if (fieldDef instanceof TemplateFieldDefinitionList
+                    || fieldDef instanceof TemplateFieldDefinitionObject
+                    || fieldDef instanceof TemplateFieldDefinitionString) {
+
+                String declaration = fieldDef.getInterfaceStaticStringVariableDeclarationDeprecated(1, "_TYPE", "_ELEMENT");
+                builder.append("\n").append(declaration).append("\n");
+            }
         }
 
         for (TemplateFieldDefinition fieldDef : fields) {

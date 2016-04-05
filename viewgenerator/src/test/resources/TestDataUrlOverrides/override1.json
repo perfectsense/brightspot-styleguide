@@ -1,0 +1,7 @@
+{
+    "_template": "templates/parent",
+    "child": {
+        "_dataUrl": "/data.json",
+        "foo1": "bar1"
+    }
+}

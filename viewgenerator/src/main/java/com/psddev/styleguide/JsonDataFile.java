@@ -186,8 +186,32 @@ class JsonDataFile {
 
             JsonDataFile jsonDataFile = resolveDataUrl(dataUrl, jsonDataFiles);
             if (jsonDataFile != null) {
+
+                // don't allow the use of both _dataUrl and _template since template should never be overridden.
+                if (map.get("_template") != null) {
+                    throw new DataUrlTemplateOverrideException(this, dataUrl);
+                }
+
+                // resolve the data URL.
                 jsonDataFile.resolveTemplate(jsonDataFiles);
-                return jsonDataFile.templateObject;
+
+                // if the map contains extra values then we need to override the data URL data.
+                if (map.keySet().stream().filter(key -> !key.startsWith("_")).count() > 0) {
+
+                    // copy the data URL data
+                    Map<String, Object> extendedJsonData = deepJsonCopyMap(jsonDataFile.getJsonData());
+
+                    // overlay the current data on top of the dataUrl's data
+                    map.entrySet().stream()
+                            .filter(entry -> !"_dataUrl".equals(entry.getKey()))
+                            .forEach(entry -> extendedJsonData.put(entry.getKey(), entry.getValue()));
+
+                    return resolveJsonTemplateObject(jsonDataFiles, extendedJsonData, null);
+
+                } else {
+                    // just return the dataUrl's pre-resolved template object
+                    return jsonDataFile.templateObject;
+                }
 
             } else {
                 throw new MissingDataReferenceException(this, dataUrl);

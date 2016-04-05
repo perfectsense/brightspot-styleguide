@@ -106,6 +106,38 @@ public class ViewClassGenerator {
         logger = CliLogger.getColorlessLogger();
     }
 
+    public Set<String> getMapBasedTemplates() {
+        return mapBasedTemplates;
+    }
+
+    public void setMapBasedTemplates(Set<String> mapBasedTemplates) {
+        this.mapBasedTemplates = mapBasedTemplates;
+    }
+
+    public Set<Path> getIgnoredFileNames() {
+        return ignoredFileNames;
+    }
+
+    public void setIgnoredFileNames(Set<Path> ignoredFileNames) {
+        this.ignoredFileNames = ignoredFileNames;
+    }
+
+    public String getClassNamePrefix() {
+        return classNamePrefix;
+    }
+
+    public void setClassNamePrefix(String classNamePrefix) {
+        this.classNamePrefix = classNamePrefix;
+    }
+
+    public boolean isRemoveDeprecations() {
+        return removeDeprecations;
+    }
+
+    public void setRemoveDeprecations(boolean removeDeprecations) {
+        this.removeDeprecations = removeDeprecations;
+    }
+
     public void printGeneratedClasses() {
         getGeneratedClasses().forEach((file, source) -> {
             String fileName = file.toString();
@@ -114,13 +146,19 @@ public class ViewClassGenerator {
         });
     }
 
+    JsonDataFiles getJsonDataFiles() {
+        return new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates, javaPackageName, classNamePrefix);
+    }
+
+    TemplateDefinitions getTemplateDefinitions() {
+        return getJsonDataFiles().getTemplateDefinitions();
+    }
+
     public Map<Path, String> getGeneratedClasses() {
 
         Map<Path, String> generated = new LinkedHashMap<>();
 
-        JsonDataFiles dataFiles = new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates, javaPackageName, classNamePrefix);
-
-        TemplateDefinitions templateDefinitions = dataFiles.getTemplateDefinitions();
+        TemplateDefinitions templateDefinitions = getTemplateDefinitions();
 
         for (TemplateDefinition templateDef : templateDefinitions.get().stream()
                 .sorted((td1, td2) -> ObjectUtils.compare(td1.getName(), td2.getName(), true))

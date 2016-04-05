@@ -87,6 +87,10 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         }
     }
 
+    Set<String> getListItemTypes() {
+        return listItemTypes;
+    }
+
     @Override
     public String getJavaFieldType(Set<String> imports) {
         imports.add(Collection.class.getName());

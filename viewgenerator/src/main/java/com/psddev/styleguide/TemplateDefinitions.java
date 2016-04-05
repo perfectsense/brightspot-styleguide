@@ -92,7 +92,7 @@ class TemplateDefinitions {
 
     public TemplateDefinition getByName(String name) {
         resolveAllTemplateFieldDefinitions();
-        return definitions.get(name);
+        return definitions.get(StringUtils.ensureStart(name, "/"));
     }
 
     /**

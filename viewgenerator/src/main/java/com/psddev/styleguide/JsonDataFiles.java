@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,10 +52,18 @@ class JsonDataFiles {
                 jsonDataFiles.addAll(FileUtils.listFiles(jsonDataFilesPathFile, new String[] { "json" }, true)
                         .stream()
                         .filter((file) -> !ignoredFileNames.contains(Paths.get(file.getName())))
-                        .map((file) -> new JsonDataFile(
-                                jsonDataFilesPath.toString(),
-                                fileToName(file, jsonDataFilesPath.toString()),
-                                fileToJsonObject(file, jsonDataFilesPath.toString())))
+                        .map((file) -> {
+                            Map<String, Object> jsonObject = fileToJsonObject(file, jsonDataFilesPath.toString());
+                            if (jsonObject != null) {
+                                return new JsonDataFile(
+                                        jsonDataFilesPath.toString(),
+                                        fileToName(file, jsonDataFilesPath.toString()),
+                                        jsonObject);
+                            } else {
+                                return null;
+                            }
+                        })
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList()));
             }
         }

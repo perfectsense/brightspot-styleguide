@@ -26,11 +26,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.psddev</groupId>
-            <artifactId>cms-db</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>

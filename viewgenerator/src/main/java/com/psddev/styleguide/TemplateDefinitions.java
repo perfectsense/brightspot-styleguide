@@ -28,7 +28,7 @@ class TemplateDefinitions {
 
             String templateName = jsonTemplateObject.getTemplateName();
 
-            if (JsonDataFile.DELEGATE_TEMPLATE_OBJECT_KEY.equals(templateName)) {
+            if (templateName == null) {
                 continue;
             }
 

@@ -3,6 +3,7 @@ package com.psddev.styleguide;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +20,8 @@ class JsonDataFile {
             "displayOptions",
             "extraAttributes",
             "jsonObject"));
+
+    static final String DELEGATE_TEMPLATE_OBJECT_KEY = "_delegate";
 
     private String filePath;
     private String fileName;
@@ -177,8 +180,9 @@ class JsonDataFile {
     }
 
     private JsonTemplateObject resolveJsonTemplateObject(JsonDataFiles jsonDataFiles, Map<String, ?> map, String fieldNotes) {
-        if (map.get("_delegate") != null) {
-            return null;
+        // check if the special delegate key is the only key present and create a dummy template object.
+        if (map.get(DELEGATE_TEMPLATE_OBJECT_KEY) != null && map.size() == 1) {
+            return new JsonTemplateObject(DELEGATE_TEMPLATE_OBJECT_KEY, Collections.emptyMap(), null, null);
         }
 
         String dataUrl = (String) map.get("_dataUrl");

@@ -28,6 +28,10 @@ class TemplateDefinitions {
 
             String templateName = jsonTemplateObject.getTemplateName();
 
+            if (templateName == null) {
+                continue;
+            }
+
             List<JsonTemplateObject> list = jsonTemplateObjectsMap.get(templateName);
             if (list == null) {
                 list = new ArrayList<>();

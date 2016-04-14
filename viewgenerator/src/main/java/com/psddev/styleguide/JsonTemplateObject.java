@@ -16,7 +16,7 @@ class JsonTemplateObject extends JsonObject {
 
     public JsonTemplateObject(String template, Map<String, JsonObject> fields, String fieldNotes, String templateNotes) {
         this.template = template;
-        this.fields = fields;
+        this.fields = fields != null ? fields : Collections.emptyMap();
         this.fieldNotes = fieldNotes;
         this.templateNotes = templateNotes;
     }

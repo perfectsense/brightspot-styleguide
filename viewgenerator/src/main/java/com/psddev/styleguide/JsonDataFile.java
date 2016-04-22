@@ -156,26 +156,30 @@ class JsonDataFile {
                 .filter(object -> object != null)
                 .collect(Collectors.toList());
 
-        JsonObjectType previousType = null;
+        JsonObjectType effectiveType = null;
 
-        for (JsonObject jsonObject : jsonObjects) {
+        Set<JsonObjectType> allTypes = jsonObjects.stream()
+                .map(JsonObject::getType)
+                .collect(Collectors.toSet());
 
-            JsonObjectType itemType = jsonObject.getType();
-            if (previousType != null) {
+        int typesCount = allTypes.size();
+        if (typesCount > 1) {
 
-                if (previousType != itemType) {
-                    String error = "ERROR: Error in [" + getFileName() + "]. List can only contain one kind of JSON object type but found ["
-                            + previousType + "] and [" + itemType + "].";
-
-                    throw new RuntimeException(error);
-                }
+            // We allow Strings and Objects to co-exist and just treat them as if it is Object
+            if (typesCount == 2 && allTypes.contains(JsonObjectType.STRING) && allTypes.contains(JsonObjectType.TEMPLATE_OBJECT)) {
+                effectiveType = JsonObjectType.TEMPLATE_OBJECT;
 
             } else {
-                previousType = itemType;
+                String error = "ERROR: Error in [" + getFileName()
+                        + "]. List can only contain one kind of JSON object type but found " + allTypes;
+
+                throw new RuntimeException(error);
             }
+        } else if (typesCount == 1) {
+            effectiveType = allTypes.iterator().next();
         }
 
-        return new JsonList(jsonObjects, previousType, notes);
+        return new JsonList(jsonObjects, effectiveType, notes);
     }
 
     private JsonTemplateObject resolveJsonTemplateObject(JsonDataFiles jsonDataFiles, Map<String, ?> map, String fieldNotes) {

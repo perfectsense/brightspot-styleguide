@@ -121,10 +121,19 @@ class TemplateDefinition {
 
         Set<String> imports = new LinkedHashSet<>();
 
+        final String viewRequestClassName = "com.psddev.cms.view.ViewRequest";
+        final String viewInterfaceClassName = "com.psddev.cms.view.ViewInterface";
+        final String handlebarsTemplateClassName = "com.psddev.handlebars.HandlebarsTemplate";
+
         if (!removeDeprecations) {
-            imports.add("com.psddev.cms.view.ViewRequest");
+            imports.add(viewRequestClassName);
         }
-        imports.add("com.psddev.handlebars.HandlebarsTemplate");
+
+        if (classExists(viewInterfaceClassName)) {
+            imports.add(viewInterfaceClassName);
+        }
+
+        imports.add(handlebarsTemplateClassName);
 
         builder.append("/* AUTO-GENERATED FILE.  DO NOT MODIFY.\n");
         builder.append(" *\n");
@@ -144,7 +153,10 @@ class TemplateDefinition {
             builder.append(" */\n");
         }
 
-        builder.append("@HandlebarsTemplate(\"").append(StringUtils.removeStart(name, "/")).append("\")\n");
+        if (classExists(viewInterfaceClassName)) {
+            builder.append("@").append(toSimpleClassName(viewInterfaceClassName)).append("\n");
+        }
+        builder.append("@").append(toSimpleClassName(handlebarsTemplateClassName)).append("(\"").append(StringUtils.removeStart(name, "/")).append("\")\n");
         builder.append("public interface ").append(getJavaClassName()).append(" {\n");
 
         for (TemplateFieldDefinition fieldDef : fields) {
@@ -261,5 +273,27 @@ class TemplateDefinition {
         }
 
         return builder.toString();
+    }
+
+    // Helper method to convert the String "com.package.name.ClassName" --> "ClassName"
+    private static String toSimpleClassName(String className) {
+
+        int lastDotAt = className.lastIndexOf('.');
+
+        if (lastDotAt >= 0) {
+            className = className.substring(lastDotAt + 1);
+        }
+
+        return className;
+    }
+
+    // Checks if a class exists for the given className.
+    private static boolean classExists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }

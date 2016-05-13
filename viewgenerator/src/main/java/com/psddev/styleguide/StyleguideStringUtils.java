@@ -1,19 +1,22 @@
 package com.psddev.styleguide;
 
-import com.psddev.dari.util.StringUtils;
-
 class StyleguideStringUtils {
 
-    /**
-     * Hack to fix a StringIndexOutOfBoundsException in com.psddev.dari.util.StringUtils#toPascalCase
-     */
-    public static String toPascalCase(String string) {
+    /** Converts a java field name into its method equivalent minus the get/set/add prefix */
+    public static String toJavaMethodCase(String string) {
         if (string != null && !string.isEmpty()) {
             char first = string.charAt(0);
             if (" -_.$".indexOf(first) > -1) {
                 string = string.substring(1);
             }
+            return Character.toUpperCase(string.charAt(0)) + string.substring(1);
+        } else {
+            return string;
         }
-        return StringUtils.toPascalCase(string);
+    }
+
+    /** Converts a file name into its java class name equivalent. */
+    public static String toJavaClassCase(String string) {
+        return toJavaMethodCase(string);
     }
 }

@@ -261,7 +261,7 @@ class TemplateDefinition {
             className = name;
         }
 
-        return javaClassNamePrefix + StyleguideStringUtils.toPascalCase(className) + "View";
+        return javaClassNamePrefix + StyleguideStringUtils.toJavaClassCase(className) + "View";
     }
 
     private String getJavaImportStatements(Set<String> imports) {

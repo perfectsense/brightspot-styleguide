@@ -24,6 +24,10 @@ Run Brightspot Styleguide:
     (FE Developer)$ npm run grunt -- watch
     (Java Developer)$ target/bin/grunt watch
 
+If you need to run the styleguide on a different port or directly on a host, you can pass those options into the command line. For example, to utilize the styleguide on a Virtual Machine, you need to run it on your local IP vs just `locahost`
+
+    $ npm run styleguide -- --port=3001 --host=192.168.0.100
+
 Add [example JSON files](example/styleguide) to the `styleguide`
 directory to see pages at [http://localhost:3000](http://localhost:3000).
 

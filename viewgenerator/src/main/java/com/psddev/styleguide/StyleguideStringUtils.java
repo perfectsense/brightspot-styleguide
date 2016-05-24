@@ -1,5 +1,7 @@
 package com.psddev.styleguide;
 
+import com.psddev.dari.util.StringUtils;
+
 class StyleguideStringUtils {
 
     /** Converts a java field name into its method equivalent minus the get/set/add prefix */
@@ -17,6 +19,14 @@ class StyleguideStringUtils {
 
     /** Converts a file name into its java class name equivalent. */
     public static String toJavaClassCase(String string) {
-        return toJavaMethodCase(string);
+        if (string != null && !string.isEmpty()) {
+            char first = string.charAt(0);
+            if (" -_.$".indexOf(first) > -1) {
+                string = string.substring(1);
+            }
+            return StringUtils.toPascalCase(string);
+        } else {
+            return string;
+        }
     }
 }

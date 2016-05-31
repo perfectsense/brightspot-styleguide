@@ -27,7 +27,7 @@ enum JsonObjectType {
             return LIST;
 
         } else if (object instanceof Map) {
-            if (((Map<?, ?>) object).get("_template") != null) {
+            if (JsonTemplateObject.getTemplateName((Map<?, ?>) object) != null) {
                 return TEMPLATE_OBJECT;
             } else {
                 return MAP;

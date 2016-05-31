@@ -133,6 +133,11 @@ This entry is required unless the object is referenced as either
 `displayOptions` ([example](components/list/three-items.json)) or
 `extraAttributes` ([example](components/link/index.json)).
 
+`_view`
+
+Path used to create a view that renders JSON output. The `_view` entry should be used instead of `_template` when the
+output for the view should be directly serialized to JSON using a `JsonViewRenderer`.
+
 `_wrapper`
 
 Location of another file that should wrap the JSON object. That file should

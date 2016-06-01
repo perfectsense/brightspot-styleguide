@@ -264,13 +264,18 @@ class TemplateDefinition {
             javaClassNamePrefix = "";
         }
 
-        String className;
+        String className = name;
 
-        int lastSlashAt = name.lastIndexOf('/');
-        if (lastSlashAt >= 0) {
-            className = name.substring(lastSlashAt + 1);
+        if (name.contains(".")) {
+            int lastDotAt = name.lastIndexOf('.');
+            if (lastDotAt > 0) {
+                className = name.substring(lastDotAt + 1);
+            }
         } else {
-            className = name;
+            int lastSlashAt = name.lastIndexOf('/');
+            if (lastSlashAt >= 0) {
+                className = name.substring(lastSlashAt + 1);
+            }
         }
 
         return javaClassNamePrefix + StyleguideStringUtils.toJavaClassCase(className) + "View";

@@ -55,12 +55,18 @@ class TemplateDefinitions {
             String name = StringUtils.removeStart(entry.getKey(), "/");
 
             String commonName = name.substring(commonPrefixIndex);
-            String commonNamePath;
-            int lastSlashAt = commonName.lastIndexOf('/');
-            if (lastSlashAt > 0) {
-                commonNamePath = commonName.substring(0, lastSlashAt);
+            String commonNamePath = "";
+
+            if (commonName.contains(".")) {
+                int lastDotAt = commonName.lastIndexOf('.');
+                if (lastDotAt > 0) {
+                    commonNamePath = commonName.substring(0, lastDotAt);
+                }
             } else {
-                commonNamePath = "";
+                int lastSlashAt = commonName.lastIndexOf('/');
+                if (lastSlashAt > 0) {
+                    commonNamePath = commonName.substring(0, lastSlashAt);
+                }
             }
 
             String javaPackageName = javaPackagePrefix + commonNamePath.replaceAll("/", ".");

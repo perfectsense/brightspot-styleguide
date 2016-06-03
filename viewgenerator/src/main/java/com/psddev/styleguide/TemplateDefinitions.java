@@ -43,9 +43,10 @@ class TemplateDefinitions {
 
         // find the common path prefix ensuring that the paths do not start with slash
         int commonPrefixIndex = PathUtils.getCommonPrefixIndex(
-                jsonTemplateObjectsMap.keySet().stream()
-                        .map(name -> StringUtils.removeStart(name, "/"))
-                        .collect(Collectors.toList()), '/');
+                jsonTemplateObjects.stream()
+                    .filter(template -> template.getTemplateFormat() == JsonTemplateObject.TemplateFormat.Handlebars)
+                    .map(template -> StringUtils.removeStart(template.getTemplateName(), "/"))
+                    .collect(Collectors.toList()), '/');
 
         definitions = new HashMap<>();
 

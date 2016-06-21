@@ -19,6 +19,11 @@
 
     <name>BrightSpot Styleguide - Example</name>
 
+    <properties>
+        <styleguide.viewgenerator.skip>false</styleguide.viewgenerator.skip>
+        <styleguide.viewgenerator.watch>false</styleguide.viewgenerator.watch>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.psddev</groupId>
@@ -37,6 +42,10 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
+
+                <configuration>
+                    <skip>${styleguide.viewgenerator.skip}</skip>
+                </configuration>
 
                 <dependencies>
                     <dependency>
@@ -61,6 +70,7 @@
                                 <argument>--java-package-prefix=com.psddev.styleguide.example</argument>
                                 <argument>--json-dir=${project.basedir}/styleguide</argument>
                                 <argument>--build-dir=${project.build.directory}/generated-sources/styleguide</argument>
+                                <argument>--watch=${styleguide.viewgenerator.watch}</argument>
                             </arguments>
                         </configuration>
                     </execution>

@@ -55,14 +55,16 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             }
 
             if (effectiveListValueType == JsonObjectType.BOOLEAN) {
-                listItemJavaType = "Boolean";
+                listItemJavaType = "?";
+                listItemTypes.add("java.lang.Boolean");
 
             } else if (effectiveListValueType == JsonObjectType.STRING) {
                 listItemJavaType = "?";
                 listItemTypes.add("java.lang.String");
 
             } else if (effectiveListValueType == JsonObjectType.NUMBER) {
-                listItemJavaType = "? extends Number";
+                listItemJavaType = "?";
+                listItemTypes.add("java.lang.Number");
 
             } else if (effectiveListValueType == JsonObjectType.LIST) {
                 listItemJavaType = "?";
@@ -111,6 +113,12 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
 
             if (effectiveListValueType == JsonObjectType.STRING) {
                 return Collections.singleton("java.lang.String");
+
+            } else if (effectiveListValueType == JsonObjectType.BOOLEAN) {
+                return Collections.singleton("java.lang.Boolean");
+
+            } else if (effectiveListValueType == JsonObjectType.NUMBER) {
+                return Collections.singleton("java.lang.Number");
 
             } else if (effectiveListValueType == JsonObjectType.LIST) {
                 return Collections.singleton("java.util.Collection");

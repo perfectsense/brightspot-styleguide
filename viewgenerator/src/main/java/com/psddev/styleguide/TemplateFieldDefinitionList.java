@@ -313,11 +313,11 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
 
         builder.append(Arrays.stream(method2).collect(Collectors.joining(""))).append("\n\n");
 
-        builder.append(Arrays.stream(method3).collect(Collectors.joining(""))).append("\n\n");
-
-        builder.append(Arrays.stream(method4).collect(Collectors.joining(""))).append(removeDeprecations ? "" : "\n\n");
+        builder.append(Arrays.stream(method3).collect(Collectors.joining(""))).append(removeDeprecations ? "" : "\n\n");
 
         if (!removeDeprecations) {
+            builder.append(Arrays.stream(method4).collect(Collectors.joining(""))).append("\n\n");
+
             builder.append(Arrays.stream(method5).collect(Collectors.joining(""))).append("\n\n");
 
             builder.append(Arrays.stream(method6).collect(Collectors.joining("")));

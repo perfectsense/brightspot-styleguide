@@ -33,9 +33,14 @@
   },
   "scripts": {
     "install": "napa",
-    "build": "grunt"
+    "build": "grunt",
+    "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "napa": {
     "sticky-kit": "leafo/sticky-kit#v1.1.2"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "mocha": "2.5.3"
   }
 }

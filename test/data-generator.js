@@ -36,13 +36,16 @@ describe("Date Generator", function() {
         expect(/\s$/.test(isoDate)).to.be.false
     })
 
+    it("should be a valid Date type", function() {
+        assert.typeOf(new Date(defaultDate), 'date', 'can be converted back to a Date object')
+        assert.typeOf(new Date(unformattedDate), 'date', 'can be converted back to a Date object')
+        assert.typeOf(new Date(shortDate), 'date', 'can be converted back to a Date object')
+        assert.typeOf(new Date(isoDate), 'date', 'can be converted back to a Date object')
+    })
+
     describe("called as `date()`", function() {
         it("should be the Date as a string", function() {
             assert.typeOf(defaultDate, 'string', 'it is a Date String')
-        })
-
-        it("should be a valid Date type", function() {
-            assert.typeOf(new Date(defaultDate), 'date', 'can be converted back to a Date object')
         })
     })
 
@@ -59,6 +62,12 @@ describe("Date Generator", function() {
     describe("called as `date('short')`", function() {
         it("should be the Date as a string", function() {
             assert.typeOf(shortDate, 'string', 'it is a Date String')
+        })
+    })
+
+    describe("called as `date('iso')`", function() {
+        it("should be the Date as a string", function() {
+            assert.typeOf(isoDate, 'string', 'it is a Date String')
         })
     })
 });

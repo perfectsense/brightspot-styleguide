@@ -34,7 +34,8 @@
   "scripts": {
     "install": "napa",
     "build": "grunt",
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "test": "./node_modules/.bin/mocha --recursive -R xunit test/ > test-reports.xml",
+    "testLocal": "./node_modules/.bin/mocha -R spec"
   },
   "napa": {
     "sticky-kit": "leafo/sticky-kit#v1.1.2"

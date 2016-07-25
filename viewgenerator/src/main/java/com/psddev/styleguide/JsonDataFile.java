@@ -74,7 +74,7 @@ class JsonDataFile {
     }
 
     public String getTemplateName() {
-        return (String) jsonData.get("_template");
+        return JsonTemplateObject.getTemplateName(jsonData);
     }
 
     public JsonTemplateObject getTemplateObject(JsonDataFiles jsonDataFiles) {
@@ -185,7 +185,7 @@ class JsonDataFile {
     private JsonTemplateObject resolveJsonTemplateObject(JsonDataFiles jsonDataFiles, Map<String, ?> map, String fieldNotes) {
         // check if the special delegate key is the only key present and create a dummy template object.
         if (map.get(DELEGATE_TEMPLATE_OBJECT_KEY) != null && map.size() == 1) {
-            return new JsonTemplateObject(null, null, null, null);
+            return new JsonTemplateObject(null, null, null, null, null);
         }
 
         String dataUrl = (String) map.get("_dataUrl");
@@ -194,8 +194,8 @@ class JsonDataFile {
             JsonDataFile jsonDataFile = resolveDataUrl(dataUrl, jsonDataFiles);
             if (jsonDataFile != null) {
 
-                // don't allow the use of both _dataUrl and _template since template should never be overridden.
-                if (map.get("_template") != null) {
+                // don't allow the use of _dataUrl and either _template or _view since they should never be overridden.
+                if (JsonTemplateObject.getTemplateName(map) != null) {
                     throw new DataUrlTemplateOverrideException(this, dataUrl);
                 }
 
@@ -227,7 +227,8 @@ class JsonDataFile {
         } else {
             Map<String, JsonObject> fields = new LinkedHashMap<>();
 
-            String template = (String) map.get("_template");
+            String template = JsonTemplateObject.getTemplateName(map);
+            JsonTemplateObject.TemplateFormat format = JsonTemplateObject.getTemplateFormat(map);
             String templateNotes = (String) map.get("_notes");
 
             if (template != null) {
@@ -245,7 +246,7 @@ class JsonDataFile {
                     }
                 });
 
-                return new JsonTemplateObject(StringUtils.ensureStart(template, "/"), fields, fieldNotes, templateNotes);
+                return new JsonTemplateObject(StringUtils.ensureStart(template, "/"), fields, fieldNotes, templateNotes, format);
 
             } else {
                 throw new MissingTemplateException(this, map);

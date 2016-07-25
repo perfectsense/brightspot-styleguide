@@ -15,22 +15,6 @@ it won't show up in the styleguide navigation.
 
 ### Methods
 
-#### image
-
-```
-{{image(width, height)}}
-```
-
-URL to a randomly generated image.
-
-#### name
-
-```
-{{name()}}
-```
-
-Generates a random name; first and last
-
 #### date
 
 ```
@@ -57,6 +41,22 @@ Generates a random hex color with options to choose a luminosity value ranging f
 
 `"color":"hsl({{number([0,360])}}, 50%, 100%)"`
 
+#### image
+
+```
+{{image(width, height)}}
+```
+
+URL to a randomly generated image.
+
+#### name
+
+```
+{{name()}}
+```
+
+Generates a random name; first and last
+
 #### number
 
 ```
@@ -75,12 +75,6 @@ Generates a random number. Option to pass in an array to provide a range of numb
 
 ```
 {{sentences(sentenceCount, wordCount)}}
-```
-
-#### words
-
-```
-{{words(wordCount)}}
 ```
 
 #### stylesheet
@@ -111,6 +105,40 @@ Which will cause the styleguide to render a select list in the upper right. For 
 
 ![image](https://cldup.com/9ACNTLyBkb.png)
 
+#### var
+
+```
+{{var('foo')}}
+```
+
+Interpolates the value of a variable defined in your styleguide's `_config.json` file.
+
+For example if the contents of `_config.json` are:
+```
+{
+    vars: {
+        "color": "blue"
+    }
+}
+```
+
+and in your example json you used the generator like:
+
+```
+{
+    "title": "The sky is {{var('color')}} today"
+}
+```
+
+the `title` property would yield:
+
+`The sky is blue today`
+
+#### words
+
+```
+{{words(wordCount)}}
+```
 
 ## Special Entries
 
@@ -132,6 +160,11 @@ The default root path is `src/main/webapp`, so the [link/index.json](components/
 This entry is required unless the object is referenced as either
 `displayOptions` ([example](components/list/three-items.json)) or
 `extraAttributes` ([example](components/link/index.json)).
+
+`_view`
+
+Path used to create a view that renders JSON output. The `_view` entry should be used instead of `_template` when the
+output for the view should be directly serialized to JSON using a `JsonViewRenderer`.
 
 `_wrapper`
 

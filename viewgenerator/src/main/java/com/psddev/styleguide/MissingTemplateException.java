@@ -11,6 +11,6 @@ public class MissingTemplateException extends RuntimeException {
     }
 
     public MissingTemplateException(JsonDataFile jsonDataFile, Map<String, ?> map) {
-        super("Error in [" + jsonDataFile.getFileName() + "]. No _template in map [" + ObjectUtils.toJson(map) + "].");
+        super("Error in [" + jsonDataFile.getFileName() + "]. No _template or _view in map [" + ObjectUtils.toJson(map) + "].");
     }
 }

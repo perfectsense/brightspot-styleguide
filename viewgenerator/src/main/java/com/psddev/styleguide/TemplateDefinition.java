@@ -124,6 +124,12 @@ class TemplateDefinition {
         final String viewRequestClassName = "com.psddev.cms.view.ViewRequest";
         final String viewInterfaceClassName = "com.psddev.cms.view.ViewInterface";
         final String handlebarsTemplateClassName = "com.psddev.handlebars.HandlebarsTemplate";
+        final String jsonTemplateClassName = "com.psddev.cms.view.JsonView";
+        String templateClassName = handlebarsTemplateClassName;
+
+        if (isJsonFormat()) {
+            templateClassName = jsonTemplateClassName;
+        }
 
         if (!removeDeprecations) {
             imports.add(viewRequestClassName);
@@ -133,7 +139,7 @@ class TemplateDefinition {
             imports.add(viewInterfaceClassName);
         }
 
-        imports.add(handlebarsTemplateClassName);
+        imports.add(templateClassName);
 
         builder.append("/* AUTO-GENERATED FILE.  DO NOT MODIFY.\n");
         builder.append(" *\n");
@@ -156,7 +162,13 @@ class TemplateDefinition {
         if (classExists(viewInterfaceClassName)) {
             builder.append("@").append(toSimpleClassName(viewInterfaceClassName)).append("\n");
         }
-        builder.append("@").append(toSimpleClassName(handlebarsTemplateClassName)).append("(\"").append(StringUtils.removeStart(name, "/")).append("\")\n");
+
+        builder.append("@").append(toSimpleClassName(templateClassName));
+        if (!isJsonFormat()) {
+            builder.append("(\"").append(StringUtils.removeStart(name, "/")).append("\")");
+        }
+        builder.append("\n");
+
         builder.append("public interface ").append(getJavaClassName()).append(" {\n");
 
         for (TemplateFieldDefinition fieldDef : fields) {
@@ -252,13 +264,18 @@ class TemplateDefinition {
             javaClassNamePrefix = "";
         }
 
-        String className;
+        String className = name;
 
-        int lastSlashAt = name.lastIndexOf('/');
-        if (lastSlashAt >= 0) {
-            className = name.substring(lastSlashAt + 1);
+        if (name.contains(".")) {
+            int lastDotAt = name.lastIndexOf('.');
+            if (lastDotAt > 0) {
+                className = name.substring(lastDotAt + 1);
+            }
         } else {
-            className = name;
+            int lastSlashAt = name.lastIndexOf('/');
+            if (lastSlashAt >= 0) {
+                className = name.substring(lastSlashAt + 1);
+            }
         }
 
         return javaClassNamePrefix + StyleguideStringUtils.toJavaClassCase(className) + "View";
@@ -273,6 +290,14 @@ class TemplateDefinition {
         }
 
         return builder.toString();
+    }
+
+    /**
+     * @return true only if all templates specify a JSON format (they should be consistent)
+     */
+    private boolean isJsonFormat() {
+        return jsonTemplateObjects != null
+            && jsonTemplateObjects.stream().allMatch(template -> template.getTemplateFormat() == JsonTemplateObject.TemplateFormat.Json);
     }
 
     // Helper method to convert the String "com.package.name.ClassName" --> "ClassName"

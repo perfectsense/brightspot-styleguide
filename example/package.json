@@ -3,7 +3,7 @@
   "private": true,
   "devDependencies": {
     "bsp-grunt": "perfectsense/brightspot-js-grunt#master",
-    "bsp-styleguide": "perfectsense/brightspot-styleguide#rc/1",
+    "bsp-styleguide": "perfectsense/brightspot-styleguide#release/1.0",
     "grunt": "0.4.5",
     "grunt-cli": "0.1.13"
   },

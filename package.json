@@ -34,8 +34,7 @@
   "scripts": {
     "install": "napa",
     "build": "grunt",
-    "test": "./node_modules/.bin/mocha -R spec",
-    "postinstall": "npm test"
+    "test": "./node_modules/.bin/mocha -R spec"
   },
   "napa": {
     "sticky-kit": "leafo/sticky-kit#v1.1.2"

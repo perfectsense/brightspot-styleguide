@@ -31,6 +31,12 @@ If you need to run the styleguide on a different port or directly on a host, you
 Add [example JSON files](example/styleguide) to the `styleguide`
 directory to see pages at [http://localhost:3000](http://localhost:3000).
 
+# Tests
+
+Run this command from the root of the project:
+
+`npm run test`
+
 # Troubleshooting
 
 IFrame not resizing properly:

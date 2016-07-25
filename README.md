@@ -33,9 +33,9 @@ directory to see pages at [http://localhost:3000](http://localhost:3000).
 
 # Tests
 
-Run this command from the root of the project:
+The test harness will run as part of the Maven build automatically. It is tied into the `npm scripts` block defined in the `package.json`. If you'd like to run the tests manually, make sure you have a local `npm` installation and run:
 
-`npm run test`
+`npm test`
 
 # Troubleshooting
 

@@ -21,6 +21,7 @@
     <modules>
         <module>viewgenerator</module>
         <module>example</module>
+        <module>test</module>
     </modules>
 
     <dependencyManagement>

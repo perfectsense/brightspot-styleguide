@@ -76,7 +76,7 @@ public class ViewClassGenerator {
     private Set<String> mapBasedTemplates;
     private Set<Path> ignoredFileNames;
     private String classNamePrefix;
-    private boolean removeDeprecations;
+    private boolean removeDeprecations = true;
 
     private CliLogger logger = CliLogger.getLogger();
 

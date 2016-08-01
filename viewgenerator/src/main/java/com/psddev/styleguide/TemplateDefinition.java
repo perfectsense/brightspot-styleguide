@@ -181,14 +181,17 @@ class TemplateDefinition {
                 builder.append("\n").append(declaration).append("\n");
             }
         }
-        for (TemplateFieldDefinition fieldDef : fields) {
 
-            if (fieldDef instanceof TemplateFieldDefinitionList
-                    || fieldDef instanceof TemplateFieldDefinitionObject
-                    || fieldDef instanceof TemplateFieldDefinitionString) {
+        if (!removeDeprecations) {
+            for (TemplateFieldDefinition fieldDef : fields) {
 
-                String declaration = fieldDef.getInterfaceStaticStringVariableDeclarationDeprecated(1, "_TYPE", "_ELEMENT");
-                builder.append("\n").append(declaration).append("\n");
+                if (fieldDef instanceof TemplateFieldDefinitionList
+                        || fieldDef instanceof TemplateFieldDefinitionObject
+                        || fieldDef instanceof TemplateFieldDefinitionString) {
+
+                    String declaration = fieldDef.getInterfaceStaticStringVariableDeclarationDeprecated(1, "_TYPE", "_ELEMENT");
+                    builder.append("\n").append(declaration).append("\n");
+                }
             }
         }
 

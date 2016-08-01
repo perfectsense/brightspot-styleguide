@@ -40,7 +40,7 @@ class ViewClassGeneratorCliArguments {
     private Set<String> mapTemplates = new LinkedHashSet<>();
     private Set<Path> ignoredFileNames = new HashSet<>();
     private String classNamePrefix = null;
-    private boolean removeDeprecations = false;
+    private boolean removeDeprecations = true;
     private boolean watch = false;
 
     public ViewClassGeneratorCliArguments(String[] args) {

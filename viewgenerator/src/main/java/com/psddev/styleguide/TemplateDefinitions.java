@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.psddev.dari.util.StringUtils;
 
@@ -40,26 +41,36 @@ class TemplateDefinitions {
             list.add(jsonTemplateObject);
         }
 
+        // find the common path prefix ensuring that the paths do not start with slash
+        int commonPrefixIndex = PathUtils.getCommonPrefixIndex(
+                jsonTemplateObjects.stream()
+                    .filter(template -> template.getTemplateFormat() == JsonTemplateObject.TemplateFormat.Handlebars)
+                    .map(template -> StringUtils.removeStart(template.getTemplateName(), "/"))
+                    .collect(Collectors.toList()), '/');
+
         definitions = new HashMap<>();
 
         jsonTemplateObjectsMap.entrySet().forEach((entry) -> {
 
             // again for consistency, remove the leading slash
             String name = StringUtils.removeStart(entry.getKey(), "/");
-            String namePath = "";
-            int lastPathIndex = -1;
 
-            if (name.contains(".")) {
-                lastPathIndex = name.lastIndexOf('.');
+            String commonName = name.substring(commonPrefixIndex);
+            String commonNamePath = "";
+
+            if (commonName.contains(".")) {
+                int lastDotAt = commonName.lastIndexOf('.');
+                if (lastDotAt > 0) {
+                    commonNamePath = commonName.substring(0, lastDotAt);
+                }
             } else {
-                lastPathIndex = name.lastIndexOf('/');
+                int lastSlashAt = commonName.lastIndexOf('/');
+                if (lastSlashAt > 0) {
+                    commonNamePath = commonName.substring(0, lastSlashAt);
+                }
             }
 
-            if (lastPathIndex > 0) {
-                namePath = name.substring(0, lastPathIndex);
-            }
-
-            String javaPackageName = javaPackagePrefix + namePath.replaceAll("/", ".");
+            String javaPackageName = javaPackagePrefix + commonNamePath.replaceAll("/", ".");
 
             if (!mapTemplates.contains(name)) {
                 definitions.put(StringUtils.ensureStart(name, "/"), new TemplateDefinition(

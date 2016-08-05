@@ -110,7 +110,9 @@
             {{#each files}}
                 <div class="sg-file">
                     <div class="sg-file-header">
-                        <div class="sg-file-name"><a href="{{url}}">{{name}}</a></div>
+                        <div class="sg-file-name">
+                            <a href="{{url}}?seed={{../seed}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}">{{name}}</a>
+                        </div>
 
                         <form class="sg-file-form">
                             <input type="hidden" name="path" value="{{exampleFilePath}}">

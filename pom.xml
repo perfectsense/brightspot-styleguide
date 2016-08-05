@@ -9,9 +9,10 @@
     <parent>
         <groupId>com.psddev</groupId>
         <artifactId>dari</artifactId>
-        <version>3.2-SNAPSHOT</version>
+        <version>3.2.2272-34adce</version>
     </parent>
 
+    <groupId>com.psddev</groupId>
     <artifactId>styleguide-parent</artifactId>
     <version>1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -20,7 +21,7 @@
 
     <modules>
         <module>viewgenerator</module>
-        <module>example</module>
+        <module>test</module>
     </modules>
 
     <dependencyManagement>
@@ -28,19 +29,13 @@
             <dependency>
                 <groupId>com.psddev</groupId>
                 <artifactId>dari-util</artifactId>
-                <version>3.2-SNAPSHOT</version>
+                <version>3.2.2272-34adce</version>
             </dependency>
 
             <dependency>
                 <groupId>com.psddev</groupId>
                 <artifactId>cms-db</artifactId>
-                <version>3.2-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.psddev</groupId>
-                <artifactId>handlebars</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>3.2.6238-6e3773</version>
             </dependency>
 
             <dependency>

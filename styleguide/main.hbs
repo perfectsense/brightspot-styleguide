@@ -2,7 +2,7 @@
     {{#*inline 'head'}}
         <link rel="stylesheet" type="text/css" href="/node-modules/codemirror/lib/codemirror.css">
 
-        <script type="text/javascript" src="/node-modules/sticky-kit/jquery.sticky-kit.min.js"></script>
+        <script type="text/javascript" src="/node-modules/sticky-kit/dist/sticky-kit.min.js"></script>
         <script type="text/javascript" src="/node-modules/codemirror/lib/codemirror.js"></script>
         <script type="text/javascript" src="/node-modules/codemirror/mode/javascript/javascript.js"></script>
         <script type="text/javascript" src="/node-modules/iframe-resizer/js/iframeResizer.min.js"></script>
@@ -110,7 +110,9 @@
             {{#each files}}
                 <div class="sg-file">
                     <div class="sg-file-header">
-                        <div class="sg-file-name"><a href="{{url}}">{{name}}</a></div>
+                        <div class="sg-file-name">
+                            <a href="{{url}}?seed={{../seed}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}">{{name}}</a>
+                        </div>
 
                         <form class="sg-file-form">
                             <input type="hidden" name="path" value="{{exampleFilePath}}">

@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.psddev</groupId>
         <artifactId>dari</artifactId>
-        <version>3.2-SNAPSHOT</version>
+        <version>3.2.2272-34adce</version>
     </parent>
 
     <groupId>com.psddev</groupId>
@@ -28,13 +28,13 @@
             <dependency>
                 <groupId>com.psddev</groupId>
                 <artifactId>dari-util</artifactId>
-                <version>3.2-SNAPSHOT</version>
+                <version>3.2.2272-34adce</version>
             </dependency>
 
             <dependency>
                 <groupId>com.psddev</groupId>
                 <artifactId>cms-db</artifactId>
-                <version>3.2-SNAPSHOT</version>
+                <version>3.2.6238-6e3773</version>
             </dependency>
 
             <dependency>

@@ -1,8 +1,0 @@
-{
-    "_template": "assets/components/link",
-    "body": "{{words}}",
-    "extraAttributes": {
-        "href": "#",
-        "target": "_blank"
-    }
-}

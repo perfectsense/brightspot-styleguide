@@ -20,7 +20,6 @@
 
     <modules>
         <module>viewgenerator</module>
-        <module>example</module>
     </modules>
 
     <dependencyManagement>

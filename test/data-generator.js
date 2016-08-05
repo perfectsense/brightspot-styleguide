@@ -36,7 +36,7 @@ describe("Date Generator", function() {
         expect(/\s$/.test(isoDate)).to.be.false
     })
 
-    it("should be a valid Date type", function() {
+    it("should return a valid Date type", function() {
         assert.typeOf(new Date(defaultDate), 'date', 'can be converted back to a Date object')
         assert.typeOf(new Date(unformattedDate), 'date', 'can be converted back to a Date object')
         assert.typeOf(new Date(shortDate), 'date', 'can be converted back to a Date object')
@@ -68,6 +68,53 @@ describe("Date Generator", function() {
     describe("called as `date('iso')`", function() {
         it("should be the Date as a string", function() {
             assert.typeOf(isoDate, 'string', 'it is a Date String')
+        })
+    })
+});
+
+describe("Number Generator", function() {
+
+    var seed = 1
+    var numberArg = 10
+    var chance = new Chance(1)
+    var result
+
+    describe("called as `number()`", function() {
+        it("should throw an Error when called with a value that's not a number", function(){
+            expect(new DataGenerator({}).number()).to.be.an('error')
+        })
+    })
+
+    describe("called as `number("+ numberArg +")`", function() {
+        result = new DataGenerator({
+            "seed": seed,
+            "test": "{{number()}}"
+        }).number(numberArg)
+
+        it("should return a number between 0 and the argument inclusive when called with a single number argument", function() {
+            assert.isAtLeast(result, 0, result + " is greater or equal to 0");
+            assert.isBelow(result, result + 1, result + " is strictly less than " + (result + 1));
+        })
+
+        it("should return a valid Number type", function() {
+            assert.isNumber(result, 'number', "can be converted back to a Number object")
+        })
+    })
+
+    var numberArgRange = [5,10]
+    describe("called as `number(["+ numberArgRange.toString() +"])`", function() {
+        result = new DataGenerator({
+            "seed": seed,
+            "test": "{{number()}}"
+        }).number(numberArgRange)
+
+        it("should return a number within the range inclusive when called with an Array argument", function() {
+            assert.isAtLeast(result, numberArgRange[0], result + " is greater or equal to 0");
+            assert.isBelow(result, numberArgRange[1] + 1, result + " is strictly less than " + (numberArgRange[1] + 1));
+        })
+
+        it("should return a valid Number type", function() {
+            assert.isNumber(result, 'number', "can be converted back to a Number object")
         })
     })
 });

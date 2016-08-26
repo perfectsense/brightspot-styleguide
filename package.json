@@ -7,6 +7,7 @@
   "dependencies": {
     "body-parser": "1.14.1",
     "chance": "^0.8.0",
+    "cheerio": "0.22.0",
     "codemirror": "5.9.0",
     "connect-fonts": "2.0.2",
     "connect-fonts-opensans": "0.0.5",
@@ -15,6 +16,7 @@
     "express": "^4.13.1",
     "font-awesome": "^4.4.0",
     "geopattern": "1.2.3",
+    "glob": "7.0.5",
     "handlebars": "^4.0.3",
     "iframe-resizer": "3.5.0",
     "jquery": "2.1.4",

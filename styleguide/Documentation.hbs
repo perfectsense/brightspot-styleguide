@@ -1,0 +1,44 @@
+{{#with this.documentation}}
+    <script src="/jsdocs/scripts/prettify/prettify.js"> </script>
+    <script src="/jsdocs/scripts/prettify/lang-css.js"> </script>
+    <link type="text/css" rel="stylesheet" href="/jsdocs/styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="/jsdocs/styles/jsdoc-default.css">
+
+    <div class="Documentation">
+        <h1 class="Documentation-title">{{title}}</h1>
+        <p class="Documentation-description">{{{description}}}</p>
+
+        <h3>Examples</h3>
+        <ul>
+        {{#each ../files}}
+            <li><a href="#{{name}}">{{name}}</a></li>
+        {{/each}}
+        </ul>
+
+        <hr/>
+
+        {{#with jsDoc}}
+            {{{this}}}
+        {{/with}}
+
+        {{#each sections}}
+            <section class="Documentation-section">
+                <h2 id="{{title}}" class="Documentation-section-title">{{title}}</h2>
+                <div class="Documentation-section-description">{{{description}}}</div>
+
+                <ul class="Documentation-section-items">
+                {{#each items}}
+                    <li class="Documentation-section-items-item">
+                        <h3 class="Documentation-section-item-title">{{title}}</h3>
+                        <p class="Documentation-section-item-description">{{{description}}}</p>
+                        {{#if iframeSrc}}<iframe width="100%" height="400px" src="{{iframeSrc}}"></iframe>{{/if}}
+                        {{~#with snippet}}<pre><code class="language-{{language}}">{{code}}</code></pre>{{~/with}}
+                        <hr/>
+                    </li>
+                {{/each}}
+                </ul>
+            </section>
+        {{/each}}
+
+    </div>
+{{/with}}

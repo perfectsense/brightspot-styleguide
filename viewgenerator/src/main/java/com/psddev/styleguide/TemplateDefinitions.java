@@ -59,7 +59,7 @@ class TemplateDefinitions {
                 namePath = name.substring(0, lastPathIndex);
             }
 
-            String javaPackageName = javaPackagePrefix + namePath.replaceAll("/", ".");
+            String javaPackageName = generateJavaPackageName(javaPackagePrefix, namePath);
 
             if (!mapTemplates.contains(name)) {
                 definitions.put(StringUtils.ensureStart(name, "/"), new TemplateDefinition(
@@ -71,6 +71,25 @@ class TemplateDefinitions {
                         javaClassNamePrefix));
             }
         });
+    }
+
+    // generates the package name for the template at the given path using
+    // the given prefix
+    private String generateJavaPackageName(String javaPackagePrefix, String templatePath) {
+
+        StringBuilder javaPackageNameBuilder = new StringBuilder();
+
+        String javaPackageSuffix = templatePath.replaceAll("/", ".");
+
+        for (char c : (javaPackagePrefix + "." + javaPackageSuffix).replaceAll("\\.+", ".").toCharArray()) {
+
+            // excludes characters that would be invalid in a java package name
+            if (Character.isJavaIdentifierPart(c) || c == '.') {
+                javaPackageNameBuilder.append(c);
+            }
+        }
+
+        return javaPackageNameBuilder.toString();
     }
 
     private void resolveAllTemplateFieldDefinitions() {

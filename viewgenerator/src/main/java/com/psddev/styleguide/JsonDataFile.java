@@ -102,7 +102,7 @@ class JsonDataFile {
                 dataUrl = Paths.get(getFileDirectoryPath(), dataUrl)
                         .toRealPath(/*LinkOption.NOFOLLOW_LINKS*/)
                         .toString()
-                        .substring(getFilePath().length());
+                        .substring(Paths.get(getFilePath()).toRealPath().toString().length());
 
             } catch (IOException | IllegalArgumentException e) {
                 e.printStackTrace();

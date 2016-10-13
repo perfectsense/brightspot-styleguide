@@ -79,16 +79,13 @@ class TemplateDefinitions {
 
         StringBuilder javaPackageNameBuilder = new StringBuilder();
 
-        javaPackagePrefix = StringUtils.removeEnd(javaPackagePrefix, ".");
-        templatePath = StringUtils.ensureStart(templatePath.replaceAll("/", "."), ".");
+        String javaPackageSuffix = templatePath.replaceAll("/", ".");
 
-        char prev = '\0';
-        for (char c : (javaPackagePrefix + templatePath).toCharArray()) {
+        for (char c : (javaPackagePrefix + "." + javaPackageSuffix).replaceAll("\\.+", ".").toCharArray()) {
 
             // excludes characters that would be invalid in a java package name
-            if (Character.isJavaIdentifierPart(c) || (c == '.' && c != prev)) {
+            if (Character.isJavaIdentifierPart(c) || c == '.') {
                 javaPackageNameBuilder.append(c);
-                prev = c;
             }
         }
 

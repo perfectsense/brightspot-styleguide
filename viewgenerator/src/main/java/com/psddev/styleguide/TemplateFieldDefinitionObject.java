@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
+class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements TemplateFieldType {
 
     private Set<String> templateTypes = new LinkedHashSet<>();
 
@@ -16,9 +16,20 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
 
         values.forEach((value) -> {
             if (value instanceof JsonTemplateObject) {
-                templateTypes.add(((JsonTemplateObject) value).getTemplateName());
+
+                String templateName = ((JsonTemplateObject) value).getTemplateName();
+                // the only time this would be null is when the object contains the DELEGATE_TEMPLATE_OBJECT_KEY key
+                if (templateName != null) {
+                    templateTypes.add(templateName);
+                }
             }
         });
+    }
+
+    @Override
+    public String getFullyQualifiedClassName() {
+        TemplateDefinition parentTemplateDef = templateDefinitions.getByName(parentTemplate);
+        return parentTemplateDef.getFullyQualifiedClassName() + "." + StyleguideStringUtils.toJavaClassCase(name);
     }
 
     @Override
@@ -28,26 +39,31 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
             return "Map<String, String>";
 
         } else {
-            return "Object";
+            TemplateFieldType fieldType = getEffectiveValueType();
+            if (fieldType instanceof TemplateDefinition) {
+                imports.add(fieldType.getFullyQualifiedClassName());
+            }
+
+            return fieldType.getLocalClassName();
         }
     }
 
     @Override
-    public Set<String> getValueTypes() {
+    public Set<TemplateFieldType> getFieldValueTypes() {
 
-        Set<String> viewClassNames = new LinkedHashSet<>();
+        Set<TemplateFieldType> fieldTypes = new LinkedHashSet<>();
 
         if (!isStringMap()) {
             for (String templateType : templateTypes) {
 
-                String viewClassName = templateDefinitions.getTemplateDefinitionRelativeClassName(templateType, parentTemplate);
-                if (viewClassName != null) {
-                    viewClassNames.add(viewClassName);
+                TemplateDefinition templateDef = templateDefinitions.getByName(templateType);
+                if (templateDef != null) {
+                    fieldTypes.add(templateDef);
                 }
             }
         }
 
-        return viewClassNames;
+        return fieldTypes;
     }
 
     @Override
@@ -111,7 +127,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition {
                 builder.append("\n\n");
                 String methodJavaDoc = "";
 
-                String valueTypesJavaDocList = getValueTypesJavaDocList();
+                String valueTypesJavaDocList = getValueTypesJavadocsClassLinksJavadocSnippet();
                 if (valueTypesJavaDocList != null) {
                     methodJavaDoc = Arrays.stream(new String[]{
                             indent(indent) + "/**\n",

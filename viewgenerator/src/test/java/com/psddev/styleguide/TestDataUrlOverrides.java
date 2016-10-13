@@ -25,7 +25,7 @@ public class TestDataUrlOverrides {
         TemplateDefinition itemDef = definitions.getByName("templates/child");
 
         // get its fields
-        List<TemplateFieldDefinition> fields = itemDef.getFields(definitions);
+        List<TemplateFieldDefinition> fields = itemDef.getFields();
 
         Set<String> fieldNames = fields.stream().map(TemplateFieldDefinition::getName).collect(Collectors.toSet());
 

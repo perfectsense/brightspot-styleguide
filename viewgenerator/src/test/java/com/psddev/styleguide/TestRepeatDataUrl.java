@@ -20,7 +20,7 @@ public class TestRepeatDataUrl {
         TemplateDefinition itemDef = definitions.getByName("templates/list");
 
         // get its fields
-        List<TemplateFieldDefinition> fields = itemDef.getFields(definitions);
+        List<TemplateFieldDefinition> fields = itemDef.getFields();
 
         // find a field named "items"
         TemplateFieldDefinition itemsFieldDef = fields.stream().filter(field -> "items".equals(field.getName())).findFirst().get();

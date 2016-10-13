@@ -8,11 +8,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
 
-class TemplateDefinition {
+class TemplateDefinition implements TemplateFieldType {
+
+    private TemplateDefinitions templateDefinitions;
 
     private String name;
     private String javaPackageName;
@@ -32,7 +35,8 @@ class TemplateDefinition {
      * @param mapTemplates list of template names that are actually just String key/value pairs,
      *                     and should be treated as a Map of String ot String instead of a fielded Object.
      */
-    public TemplateDefinition(String name, String javaPackageName, List<JsonTemplateObject> jsonTemplateObjects, Set<String> mapTemplates, String javaClassNamePrefix) {
+    public TemplateDefinition(TemplateDefinitions templateDefinitions, String name, String javaPackageName, List<JsonTemplateObject> jsonTemplateObjects, Set<String> mapTemplates, String javaClassNamePrefix) {
+        this.templateDefinitions = templateDefinitions;
         this.name = name;
         this.javaPackageName = javaPackageName;
         this.javaClassNamePrefix = javaClassNamePrefix;
@@ -49,11 +53,7 @@ class TemplateDefinition {
         return name;
     }
 
-    public String getJavaPackageName() {
-        return javaPackageName;
-    }
-
-    public List<TemplateFieldDefinition> getFields(TemplateDefinitions templateDefinitions) {
+    public List<TemplateFieldDefinition> getFields() {
         resolveFields(templateDefinitions);
         return new ArrayList<>(fields);
     }
@@ -73,6 +73,11 @@ class TemplateDefinition {
         builder.append("\n");
 
         return builder.toString();
+    }
+
+    @Override
+    public String getFullyQualifiedClassName() {
+        return getJavaPackageName() + "." + getJavaClassName();
     }
 
     public void resolveFields(TemplateDefinitions templateDefinitions) {
@@ -169,7 +174,7 @@ class TemplateDefinition {
         }
         builder.append("\n");
 
-        builder.append("public interface ").append(getJavaClassName()).append(" {\n");
+        builder.append("public interface ").append(getClassName()).append(getImplementedTemplateFieldDefinitions(imports)).append(" {\n");
 
         for (TemplateFieldDefinition fieldDef : fields) {
 
@@ -199,11 +204,25 @@ class TemplateDefinition {
             builder.append("\n").append(fieldDef.getInterfaceMethodDeclarationSource(1, imports)).append("\n");
         }
 
+        // Field level interfaces
+
+        for (TemplateFieldDefinition fieldDef : fields) {
+
+            Set<TemplateFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
+
+            if (fieldValueTypes.size() > 1 && fieldDef instanceof TemplateFieldType) {
+                builder.append("\n    /**");
+                builder.append("\n     * <p>").append(fieldDef.getValueTypesJavadocsClassLinksJavadocSnippet()).append("</p>");
+                builder.append("\n     */");
+                builder.append("\n    interface ").append(((TemplateFieldType) fieldDef).getLocalClassName()).append(" {\n    }\n");
+            }
+        }
+
         // static inner Builder class.
 
         builder.append("\n");
         builder.append("    /**\n");
-        builder.append("     * <p>Builder of ").append("{@link ").append(getJavaClassName()).append("}").append(" objects.</p>\n");
+        builder.append("     * <p>Builder of ").append("{@link ").append(getClassName()).append("}").append(" objects.</p>\n");
         builder.append("     */\n");
         builder.append("    class Builder {\n");
         if (!removeDeprecations) {
@@ -219,7 +238,7 @@ class TemplateDefinition {
         }
         builder.append("\n");
         builder.append("        /**\n");
-        builder.append("         * <p>Creates a builder for ").append("{@link ").append(getJavaClassName()).append("}").append(" objects.</p>\n");
+        builder.append("         * <p>Creates a builder for ").append("{@link ").append(getClassName()).append("}").append(" objects.</p>\n");
         builder.append("         */\n");
         builder.append("        public Builder() {\n");
         builder.append("        }\n");
@@ -239,12 +258,12 @@ class TemplateDefinition {
 
         builder.append("\n");
         builder.append("        /**\n");
-        builder.append("         * Builds the {@link ").append(getJavaClassName()).append("}.\n");
+        builder.append("         * Builds the {@link ").append(getClassName()).append("}.\n");
         builder.append("         *\n");
-        builder.append("         * @return the fully built {@link ").append(getJavaClassName()).append("}.\n");
+        builder.append("         * @return the fully built {@link ").append(getClassName()).append("}.\n");
         builder.append("         */\n");
-        builder.append("        public ").append(getJavaClassName()).append(" build() {\n");
-        builder.append("            return new ").append(getJavaClassName()).append("() {\n");
+        builder.append("        public ").append(getClassName()).append(" build() {\n");
+        builder.append("            return new ").append(getClassName()).append("() {\n");
         for (TemplateFieldDefinition fieldDef : fields) {
             builder.append("\n").append(fieldDef.getInterfaceBuilderBuildMethodSource(4, imports)).append("\n");
         }
@@ -262,7 +281,11 @@ class TemplateDefinition {
         return javaSource;
     }
 
-    public String getJavaClassName() {
+    private String getJavaPackageName() {
+        return javaPackageName;
+    }
+
+    private String getJavaClassName() {
         if (javaClassNamePrefix == null) {
             javaClassNamePrefix = "";
         }
@@ -293,6 +316,47 @@ class TemplateDefinition {
         }
 
         return builder.toString();
+    }
+
+    private List<TemplateFieldDefinition> getImplementedTemplateFieldDefinitions() {
+
+        List<TemplateFieldDefinition> implementedFieldDefs = new ArrayList<>();
+
+        for (TemplateDefinition td : templateDefinitions.get()) {
+
+            for (TemplateFieldDefinition tfd : td.getFields()) {
+
+                Set<TemplateFieldType> fieldValueTypes = tfd.getFieldValueTypes();
+                // TODO: Should actually implement equals/hashCode rather than relying on Object impl.
+                if (fieldValueTypes.size() > 1 && fieldValueTypes.contains(this)) {
+                    implementedFieldDefs.add(tfd);
+                }
+            }
+        }
+
+        return implementedFieldDefs;
+    }
+
+    private String getImplementedTemplateFieldDefinitions(Set<String> imports) {
+
+        List<String> classNames = new ArrayList<>();
+
+        for (TemplateFieldDefinition fieldDef : getImplementedTemplateFieldDefinitions()) {
+
+            if (fieldDef instanceof TemplateFieldType) {
+
+                TemplateFieldType fieldType = (TemplateFieldType) fieldDef;
+
+                if (!this.hasSamePackageAs(fieldType)) {
+                    // add its parent's fully qualified class name
+                    imports.add(fieldDef.getParentTemplate().getFullyQualifiedClassName());
+                }
+
+                classNames.add(fieldType.getClassName());
+            }
+        }
+
+        return classNames.isEmpty() ? "" : " extends " + classNames.stream().sorted().collect(Collectors.joining(", "));
     }
 
     /**

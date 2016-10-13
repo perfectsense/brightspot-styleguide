@@ -2,16 +2,16 @@ package com.psddev.styleguide;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class TemplateFieldDefinitionList extends TemplateFieldDefinition {
+import com.psddev.dari.util.StringUtils;
 
-    private String listItemJavaType;
+class TemplateFieldDefinitionList extends TemplateFieldDefinition implements TemplateFieldType {
+
     private Set<String> listItemTypes;
     private JsonObjectType effectiveListValueType;
 
@@ -32,7 +32,6 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             }
         });
 
-        listItemJavaType = "Object";
         listItemTypes = new LinkedHashSet<>();
 
         if (!listValueTypes.isEmpty()) {
@@ -55,23 +54,19 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
             }
 
             if (effectiveListValueType == JsonObjectType.BOOLEAN) {
-                listItemJavaType = "?";
                 listItemTypes.add("java.lang.Boolean");
 
             } else if (effectiveListValueType == JsonObjectType.STRING) {
-                listItemJavaType = "?";
                 listItemTypes.add("java.lang.String");
 
             } else if (effectiveListValueType == JsonObjectType.NUMBER) {
-                listItemJavaType = "?";
                 listItemTypes.add("java.lang.Number");
 
             } else if (effectiveListValueType == JsonObjectType.LIST) {
-                listItemJavaType = "?";
+                // TODO: Should we allow nested JSON arrays at all?
                 listItemTypes.add("java.util.Collection");
 
             } else if (effectiveListValueType == JsonObjectType.TEMPLATE_OBJECT) {
-                listItemJavaType = "?";
 
                 values.forEach((value) -> {
                     if (value instanceof JsonList) {
@@ -94,47 +89,73 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
     }
 
     @Override
+    public String getFullyQualifiedClassName() {
+        TemplateDefinition parentTemplateDef = templateDefinitions.getByName(parentTemplate);
+        return parentTemplateDef.getFullyQualifiedClassName() + "." + StyleguideStringUtils.toJavaClassCase(name);
+    }
+
+    @Override
     public String getJavaFieldType(Set<String> imports) {
         imports.add(Collection.class.getName());
-        return "Collection<" + listItemJavaType + ">";
+
+        String genericArgument;
+
+        TemplateFieldType effectiveFieldValueType = getEffectiveValueType();
+
+        if (effectiveFieldValueType == null || effectiveFieldValueType == NativeJavaTemplateFieldType.OBJECT) {
+            genericArgument = "?";
+
+        } else {
+            // if the effective type lives in a different package, then import it.
+            if (!this.hasSamePackageAs(effectiveFieldValueType)) {
+                imports.add(effectiveFieldValueType.getFullyQualifiedClassName());
+            }
+
+            genericArgument = "? extends " + effectiveFieldValueType.getLocalClassName();
+        }
+
+        return "Collection<" + genericArgument + ">";
     }
 
     public String getJavaFieldTypeForBuilder(Set<String> imports) {
         imports.add(Collection.class.getName());
-        return "Collection<" + ("?".equals(listItemJavaType) ? "Object" : listItemJavaType) + ">";
+
+        // Collection<?> --> Collection<Object>
+        // Collection<? extends Foo> --> Collection<Foo>
+        return getJavaFieldType(imports).replace("? extends ", "").replace("?", "Object");
     }
 
     @Override
-    public Set<String> getValueTypes() {
+    public Set<TemplateFieldType> getFieldValueTypes() {
 
-        Set<String> viewClassNames = new LinkedHashSet<>();
+        Set<TemplateFieldType> fieldTypes = new LinkedHashSet<>();
 
         if (!listItemTypes.isEmpty()) {
 
             if (effectiveListValueType == JsonObjectType.STRING) {
-                return Collections.singleton("java.lang.String");
+                fieldTypes.add(NativeJavaTemplateFieldType.STRING);
 
             } else if (effectiveListValueType == JsonObjectType.BOOLEAN) {
-                return Collections.singleton("java.lang.Boolean");
+                fieldTypes.add(NativeJavaTemplateFieldType.BOOLEAN);
 
             } else if (effectiveListValueType == JsonObjectType.NUMBER) {
-                return Collections.singleton("java.lang.Number");
+                fieldTypes.add(NativeJavaTemplateFieldType.NUMBER);
 
             } else if (effectiveListValueType == JsonObjectType.LIST) {
-                return Collections.singleton("java.util.Collection");
+                fieldTypes.add(NativeJavaTemplateFieldType.COLLECTION);
 
             } else {
                 for (String templateType : listItemTypes) {
 
-                    String className = templateDefinitions.getTemplateDefinitionRelativeClassName(templateType, parentTemplate);
-                    if (className != null) {
-                        viewClassNames.add(className);
+                    TemplateDefinition templateDef = templateDefinitions.getByName(templateType);
+                    if (templateDef != null) {
+                        fieldTypes.add(templateDef);
                     }
                 }
             }
         }
 
-        return viewClassNames;
+        return fieldTypes;
     }
 
     @Override
@@ -151,7 +172,13 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
         String nameView = name + "View";
         String nameModel = name + "Model";
         String nameModels = name + "Models";
-        String valueTypesJavaDocList = getValueTypesJavaDocList();
+
+        String valueTypesJavaDocList = getValueTypesJavadocsClassLinksJavadocSnippet();
+        if (valueTypesJavaDocList == null) {
+            valueTypesJavaDocList = "";
+        } else {
+            valueTypesJavaDocList = StringUtils.ensureStart(valueTypesJavaDocList, " ");
+        }
 
         StringBuilder notesJavaDoc = new StringBuilder();
         for (String note : notes) {
@@ -163,7 +190,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
                 indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
                 indent(indent) + " *\n",
-                indent(indent) + " * @param " + name + " Typically a Collection of " + valueTypesJavaDocList + ".\n",
+                indent(indent) + " * @param " + name + valueTypesJavaDocList + "\n",
                 indent(indent) + " * @return this builder.\n",
                 indent(indent) + " */\n",
                 indent(indent) + "public Builder " + name + "(" + getJavaFieldType(imports) + " " + name + ") {\n",
@@ -179,7 +206,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
          * @return this builder.
          */
         /*
-        public Builder addToAuthors(Object authors) {
+        public Builder addToAuthors(Object authors) { // OR if strictly typed --> public Builder addToAuthors(FigureView authors) {
             if (this.authors == null) {
                 this.authors = new ArrayList<>();
             }
@@ -192,10 +219,10 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
                 indent(indent) + " * <p>Adds a single item to the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
                 indent(indent) + " *\n",
-                indent(indent) + " * @param " + name + " the item to add, typically a " + valueTypesJavaDocList + ".\n",
+                indent(indent) + " * @param " + name + " the item to add." + valueTypesJavaDocList + "\n",
                 indent(indent) + " * @return this builder.\n",
                 indent(indent) + " */\n",
-                indent(indent) + "public Builder addTo" + StyleguideStringUtils.toJavaMethodCase(name) + "(Object " + name + ") {\n",
+                indent(indent) + "public Builder addTo" + StyleguideStringUtils.toJavaMethodCase(name) + "(" + getEffectiveValueType().getLocalClassName() + " " + name + ") {\n",
                 indent(indent + 1) + "if (this." + name + " == null) {\n",
                 indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
                 indent(indent + 1) + "}\n",
@@ -224,7 +251,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition {
                 indent(indent) + " * <p>Adds a Collection of items to the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
                 indent(indent) + " *\n",
-                indent(indent) + " * @param " + name + " the items to add, typically a " + valueTypesJavaDocList + ".\n",
+                indent(indent) + " * @param " + name + " the items to add." + valueTypesJavaDocList + "\n",
                 indent(indent) + " * @return this builder.\n",
                 indent(indent) + " */\n",
                 indent(indent) + "public Builder addAllTo" + StyleguideStringUtils.toJavaMethodCase(name) + "(" + getJavaFieldType(imports) + " " + name + ") {\n",

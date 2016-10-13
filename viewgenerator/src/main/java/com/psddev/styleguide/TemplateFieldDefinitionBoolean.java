@@ -16,7 +16,7 @@ class TemplateFieldDefinitionBoolean extends TemplateFieldDefinition {
     }
 
     @Override
-    public Set<String> getValueTypes() {
-        return Collections.singleton("java.lang.Boolean");
+    public Set<TemplateFieldType> getFieldValueTypes() {
+        return Collections.singleton(NativeJavaTemplateFieldType.BOOLEAN);
     }
 }

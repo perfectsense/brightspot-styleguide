@@ -63,6 +63,7 @@ class TemplateDefinitions {
 
             if (!mapTemplates.contains(name)) {
                 definitions.put(StringUtils.ensureStart(name, "/"), new TemplateDefinition(
+                        this,
                         // add the leading slash back when passing to the TemplateDefinition
                         StringUtils.ensureStart(name, "/"),
                         StringUtils.removeSurrounding(javaPackageName, "."),
@@ -112,61 +113,5 @@ class TemplateDefinitions {
     public TemplateDefinition getByName(String name) {
         resolveAllTemplateFieldDefinitions();
         return definitions.get(StringUtils.ensureStart(name, "/"));
-    }
-
-    /**
-     * Gets the java class name for a given {@code templateName} relative to
-     * another template such that if both templates live in the same java
-     * package, the simple class name is returned, otherwise the fully qualified
-     * class name is returned.
-     *
-     * @param templateName the name of the template to get a class name for.
-     * @param relativeTemplateName the name of a template relative to the desired one.
-     * @return an appropriate class name relative to another template's class.
-     */
-    String getTemplateDefinitionRelativeClassName(String templateName, String relativeTemplateName) {
-        TemplateDefinition templateDef = definitions.get(templateName);
-        if (templateDef != null) {
-
-            String packageName = templateDef.getJavaPackageName();
-            String className = templateDef.getJavaClassName();
-
-            TemplateDefinition relativeTemplateDef = definitions.get(relativeTemplateName);
-
-            if (relativeTemplateDef != null && packageName.equals(relativeTemplateDef.getJavaPackageName())) {
-                return className;
-            } else {
-                return packageName + "." + className;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    String getTemplateDefinitionFullyQualifiedClassName(String templateName) {
-        TemplateDefinition templateDefinition = definitions.get(templateName);
-        if (templateDefinition != null) {
-            return templateDefinition.getJavaPackageName() + "." + templateDefinition.getJavaClassName();
-        } else {
-            return null;
-        }
-    }
-
-    String getTemplateDefinitionClassName(String templateName) {
-        TemplateDefinition templateDefinition = definitions.get(templateName);
-        if (templateDefinition != null) {
-            return templateDefinition.getJavaClassName();
-        } else {
-            return null;
-        }
-    }
-
-    String getTemplateDefinitionPackageName(String templateName) {
-        TemplateDefinition templateDefinition = definitions.get(templateName);
-        if (templateDefinition != null) {
-            return templateDefinition.getJavaPackageName();
-        } else {
-            return null;
-        }
     }
 }

@@ -18,6 +18,8 @@ abstract class TemplateFieldDefinition {
     protected Set<String> mapTemplates;
     protected Set<String> notes;
     protected String javaClassNamePrefix;
+    protected boolean isDefaulted;
+    protected boolean isStrictlyTyped;
 
     public static TemplateFieldDefinition createInstance(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
 
@@ -84,11 +86,23 @@ abstract class TemplateFieldDefinition {
             }
         });
         this.javaClassNamePrefix = javaClassNamePrefix;
+        // TODO: Eventually pass these values as parameters to the constructor so the behavior can be configured.
+        this.isDefaulted = false;
+        this.isStrictlyTyped = true;
     }
 
     @Override
     public String toString() {
-        return getJavaFieldType() + " " + name + " : " + getValueTypes();
+        return getEffectiveValueType().getFullyQualifiedClassName()
+                + " " + name + " : ["
+                + getFieldValueTypes().stream()
+                        .map(TemplateFieldType::getFullyQualifiedClassName)
+                        .collect(Collectors.joining(", "))
+                + "]";
+    }
+
+    public TemplateDefinition getParentTemplate() {
+        return templateDefinitions.getByName(parentTemplate);
     }
 
     public String getName() {
@@ -103,7 +117,30 @@ abstract class TemplateFieldDefinition {
         return getJavaFieldType(new HashSet<>());
     }
 
-    public abstract Set<String> getValueTypes();
+    /** Never null. */
+    public abstract Set<TemplateFieldType> getFieldValueTypes();
+
+    /** Never null. */
+    protected TemplateFieldType getEffectiveValueType() {
+
+        Set<TemplateFieldType> fieldValueTypes = getFieldValueTypes();
+
+        if (fieldValueTypes.size() == 1) {
+            return isStrictlyTyped ? fieldValueTypes.iterator().next() : NativeJavaTemplateFieldType.OBJECT;
+
+        } else if (fieldValueTypes.size() > 1) {
+
+            if (isStrictlyTyped && this instanceof TemplateFieldType) {
+                return (TemplateFieldType) this;
+
+            } else {
+                return NativeJavaTemplateFieldType.OBJECT;
+            }
+
+        } else {
+            return NativeJavaTemplateFieldType.OBJECT;
+        }
+    }
 
     public abstract String getJavaFieldType(Set<String> imports);
 
@@ -122,77 +159,87 @@ abstract class TemplateFieldDefinition {
         return methodNamePrefix + StyleguideStringUtils.toJavaMethodCase(name);
     }
 
-    public final String getValueTypesJavaDocList() {
-        List<String> types = getValueTypes().stream()
-                .sorted()
-                .map(type -> {
+    /**
+     * @return the value types javadocs snippet as a pretty comma delimited String.
+     */
+    protected final String getValueTypesJavadocsClassLinksJavadocSnippet() {
 
-                    // "java.lang.String" -> "java.lang.String"
-                    // "BarView" -> "BarView"
-                    // "com.psddev.FooView" -> "com.psddev.FooView FooView"
-                    if (!type.startsWith("java") && type.contains(".")) {
+        List<JavadocsClassLink> javadocsClassLinks = getValueTypesJavadocsClassLinks();
 
-                        int lastDotAt = type.lastIndexOf('.');
-                        if (lastDotAt >= 0 && lastDotAt < type.length() - 1) {
-                            return type + " " + type.substring(lastDotAt + 1);
+        if (!javadocsClassLinks.isEmpty()) {
 
-                        } else {
-                            return type;
-                        }
+            StringBuilder builder = new StringBuilder();
 
-                    } else {
-                        return type;
-                    }
-                })
-                .collect(Collectors.toList());
-        if (types.size() > 1) {
+            if (isStrictlyTyped) {
+                builder.append("A ");
+            } else {
+                builder.append("Typically a ");
+            }
 
-            List<String> firstTypes = types.subList(0, types.size() - 1);
-            String lastType = types.get(types.size() - 1);
+            if (this instanceof TemplateFieldDefinitionList) {
+                builder.append("Collection of ");
+            }
 
-            return firstTypes.stream()
-                    .map((viewClass) -> "{@link " + viewClass + "}")
-                    .collect(Collectors.joining(", ")) + " or {@link " + lastType + "}";
+            builder.append(javadocsClassLinks
+                    .stream()
+                    // get the snippet for each
+                    .map(JavadocsClassLink::toJavadocLinkSnippet)
+                    // join them with commas
+                    .collect(Collectors.joining(", "))
+                    // isolate the last comma in the String and replace it with " or"
+                    .replaceFirst("(.*),([^,]+$)", "$1 or$2"));
 
-        } else if (types.size() == 1) {
-            return "{@link " + types.get(0) + "}";
+            builder.append(".");
+
+            return builder.toString();
 
         } else {
             return null;
         }
     }
 
+    /**
+     * @return a List of JavadocsClassLink representing the value types expected
+     *      to be returned for this field.
+     */
+    private List<JavadocsClassLink> getValueTypesJavadocsClassLinks() {
+        return getFieldValueTypes().stream()
+                .map(fieldValueType -> new JavadocsClassLink(getParentTemplate(), fieldValueType))
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
     public String getInterfaceMethodDeclarationSource(int indent, Set<String> imports) {
 
         String methodJavaDoc = "";
 
-        String valueTypesJavaDocList = getValueTypesJavaDocList();
-        if (valueTypesJavaDocList != null) {
-            String valueTypesJavaDocListPrefix;
-
-            if (this instanceof TemplateFieldDefinitionList) {
-                valueTypesJavaDocListPrefix = "Typically a Collection of ";
-            } else {
-                valueTypesJavaDocListPrefix = "Typically a ";
-            }
+        String valueTypesJavaDocList = getValueTypesJavadocsClassLinksJavadocSnippet();
+        if (valueTypesJavaDocList != null || !notes.isEmpty()) {
 
             StringBuilder notesSource = new StringBuilder();
             for (String note : notes) {
                 notesSource.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
             }
 
+            String valueTypesJavadocSource = "";
+            if (valueTypesJavaDocList != null) {
+                valueTypesJavadocSource += indent(indent) + " * <p>" + valueTypesJavaDocList + "</p>\n";
+            }
+
             methodJavaDoc = Arrays.stream(new String[] {
                     indent(indent) + "/**\n",
                     notesSource.toString(),
-                    indent(indent) + " * <p>" + valueTypesJavaDocListPrefix + valueTypesJavaDocList + ".</p>\n",
+                    valueTypesJavadocSource,
                     indent(indent) + " */\n"
             }).collect(Collectors.joining(""));
         }
 
-        return methodJavaDoc
-                + indent(indent) + "default " + getJavaFieldType(imports) + " " + getJavaInterfaceMethodName() + "() {\n"
+        String methodBody = !isDefaulted ? ";" : (" {\n"
                 + indent(indent + 1) + "return null;\n"
-                + indent(indent) + "}";
+                + indent(indent) + "}");
+
+        return methodJavaDoc
+                + indent(indent) + (isDefaulted ? "default " : "") + getJavaFieldType(imports) + " " + getJavaInterfaceMethodName() + "()" + methodBody;
     }
 
     public String getInterfaceStaticStringVariableDeclaration(int indent, String suffix) {
@@ -232,21 +279,10 @@ abstract class TemplateFieldDefinition {
             notesJavaDoc.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
         }
 
-        String parameterJavadoc;
-        String valueTypesJavaDocList = getValueTypesJavaDocList();
+        String parameterJavadoc = "The " + name + " to set.";
+        String valueTypesJavaDocList = getValueTypesJavadocsClassLinksJavadocSnippet();
         if (valueTypesJavaDocList != null) {
-            String valueTypesJavaDocListPrefix;
-
-            if (this instanceof TemplateFieldDefinitionList) {
-                valueTypesJavaDocListPrefix = "Typically a Collection of ";
-            } else {
-                valueTypesJavaDocListPrefix = "Typically a ";
-            }
-
-            parameterJavadoc = valueTypesJavaDocListPrefix + valueTypesJavaDocList;
-
-        } else {
-            parameterJavadoc = "the " + name + " to set";
+            parameterJavadoc += " " + valueTypesJavaDocList;
         }
 
         String methodJavaDoc = Arrays.stream(new String[] {
@@ -254,7 +290,7 @@ abstract class TemplateFieldDefinition {
                 indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
                 notesJavaDoc.toString(),
                 indent(indent) + " *\n",
-                indent(indent) + " * @param " + name + " " + parameterJavadoc + ".\n",
+                indent(indent) + " * @param " + name + " " + parameterJavadoc + "\n",
                 indent(indent) + " * @return this builder.\n",
                 indent(indent) + " */\n"
         }).collect(Collectors.joining(""));

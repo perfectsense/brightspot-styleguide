@@ -125,16 +125,12 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
         } else {
             if (!removeDeprecations) {
                 builder.append("\n\n");
-                String methodJavaDoc = "";
 
-                String valueTypesJavaDocList = getValueTypesJavadocsClassLinksJavadocSnippet();
-                if (valueTypesJavaDocList != null) {
-                    methodJavaDoc = Arrays.stream(new String[]{
-                            indent(indent) + "/**\n",
-                            indent(indent) + " * @deprecated no replacement\n",
-                            indent(indent) + " */\n"
-                    }).collect(Collectors.joining(""));
-                }
+                String methodJavaDoc = Arrays.stream(new String[]{
+                        indent(indent) + "/**\n",
+                        indent(indent) + " * @deprecated no replacement\n",
+                        indent(indent) + " */\n"
+                }).collect(Collectors.joining(""));
 
                 String[] method = {
                         methodJavaDoc,

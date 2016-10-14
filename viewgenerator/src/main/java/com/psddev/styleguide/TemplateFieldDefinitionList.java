@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.psddev.dari.util.StringUtils;
-
 class TemplateFieldDefinitionList extends TemplateFieldDefinition implements TemplateFieldType {
 
     private Set<String> listItemTypes;
@@ -173,26 +171,15 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
         String nameModel = name + "Model";
         String nameModels = name + "Models";
 
-        String valueTypesJavaDocList = getValueTypesJavadocsClassLinksJavadocSnippet();
-        if (valueTypesJavaDocList == null) {
-            valueTypesJavaDocList = "";
-        } else {
-            valueTypesJavaDocList = StringUtils.ensureStart(valueTypesJavaDocList, " ");
-        }
-
-        StringBuilder notesJavaDoc = new StringBuilder();
-        for (String note : notes) {
-            notesJavaDoc.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
-        }
+        TemplateJavadocsBuilder method1Javadocs = new TemplateJavadocsBuilder();
+        method1Javadocs.addParagraph("Sets the " + name + " field.");
+        notes.forEach(method1Javadocs::addParagraph);
+        method1Javadocs.newLine();
+        method1Javadocs.addParameter(name).addCollectionFieldValueTypesSnippet(this).newLine();
+        method1Javadocs.addReturn().add("this builder.");
 
         String[] method1 = {
-                indent(indent) + "/**\n",
-                indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
-                notesJavaDoc.toString(),
-                indent(indent) + " *\n",
-                indent(indent) + " * @param " + name + valueTypesJavaDocList + "\n",
-                indent(indent) + " * @return this builder.\n",
-                indent(indent) + " */\n",
+                method1Javadocs.buildJavadocsSource(indent),
                 indent(indent) + "public Builder " + name + "(" + getJavaFieldType(imports) + " " + name + ") {\n",
                 indent(indent + 1) + "this." + name + " = " + name + " != null ? new ArrayList<>(" + name + ") : null;\n",
                 indent(indent + 1) + "return this;\n",
@@ -205,6 +192,12 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
          * @param articleBody the item to add, typically a {@link FigureView}.
          * @return this builder.
          */
+        TemplateJavadocsBuilder method2Javadocs = new TemplateJavadocsBuilder();
+        method2Javadocs.addParagraph("Adds a single item to the " + name + " field.");
+        notes.forEach(method2Javadocs::addParagraph);
+        method2Javadocs.newLine();
+        method2Javadocs.addParameter(name).add(" the item to add. ").addFieldValueTypesSnippet(this).newLine();
+        method2Javadocs.addReturn().add("this builder.");
         /*
         public Builder addToAuthors(Object authors) { // OR if strictly typed --> public Builder addToAuthors(FigureView authors) {
             if (this.authors == null) {
@@ -215,13 +208,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
         }
          */
         String[] method2 = {
-                indent(indent) + "/**\n",
-                indent(indent) + " * <p>Adds a single item to the " + name + " field.</p>\n",
-                notesJavaDoc.toString(),
-                indent(indent) + " *\n",
-                indent(indent) + " * @param " + name + " the item to add." + valueTypesJavaDocList + "\n",
-                indent(indent) + " * @return this builder.\n",
-                indent(indent) + " */\n",
+                method2Javadocs.buildJavadocsSource(indent),
                 indent(indent) + "public Builder addTo" + StyleguideStringUtils.toJavaMethodCase(name) + "(" + getEffectiveValueType().getLocalClassName() + " " + name + ") {\n",
                 indent(indent + 1) + "if (this." + name + " == null) {\n",
                 indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
@@ -231,12 +218,18 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
                 indent(indent) + "}"
         };
 
-        /**
+        /* **
          * Adds a Collection of items to the articleBody field.
          *
          * @param articleBody the items to add, typically a {@link FigureView}.
          * @return this builder.
          */
+        TemplateJavadocsBuilder method3Javadocs = new TemplateJavadocsBuilder();
+        method3Javadocs.addParagraph("Adds a Collection of items to the " + name + " field.");
+        notes.forEach(method3Javadocs::addParagraph);
+        method3Javadocs.newLine();
+        method3Javadocs.addParameter(name).add(" the items to add. ").addCollectionFieldValueTypesSnippet(this).newLine();
+        method3Javadocs.addReturn().add("this builder.");
         /*
         public Builder addAllToAuthors(Collection<?> authors) {
             if (this.authors == null) {
@@ -247,13 +240,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
         }
          */
         String[] method3 = {
-                indent(indent) + "/**\n",
-                indent(indent) + " * <p>Adds a Collection of items to the " + name + " field.</p>\n",
-                notesJavaDoc.toString(),
-                indent(indent) + " *\n",
-                indent(indent) + " * @param " + name + " the items to add." + valueTypesJavaDocList + "\n",
-                indent(indent) + " * @return this builder.\n",
-                indent(indent) + " */\n",
+                method3Javadocs.buildJavadocsSource(indent),
                 indent(indent) + "public Builder addAllTo" + StyleguideStringUtils.toJavaMethodCase(name) + "(" + getJavaFieldType(imports) + " " + name + ") {\n",
                 indent(indent + 1) + "if (this." + name + " == null) {\n",
                 indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
@@ -263,7 +250,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
                 indent(indent) + "}"
         };
 
-        /**
+        /* **
          * @deprecated Use {@link #addToArticleBody(Object)} instead.
          */
         /*

@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
 
+import static com.psddev.styleguide.StyleguideStringUtils.indent;
+import static com.psddev.styleguide.StyleguideStringUtils.NEW_LINE;
+
 class TemplateDefinition implements TemplateFieldType {
 
     private TemplateDefinitions templateDefinitions;
@@ -122,7 +125,7 @@ class TemplateDefinition implements TemplateFieldType {
 
     public String getJavaClassSource(boolean removeDeprecations) {
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder sourceBuilder = new StringBuilder();
 
         Set<String> imports = new LinkedHashSet<>();
 
@@ -146,36 +149,46 @@ class TemplateDefinition implements TemplateFieldType {
 
         imports.add(templateClassName);
 
-        builder.append("/* AUTO-GENERATED FILE.  DO NOT MODIFY.\n");
-        builder.append(" *\n");
-        builder.append(" * This class was automatically generated on ").append(new SimpleDateFormat(ViewClassGenerator.DATE_FORMAT).format(new Date())).append(" by the\n");
-        builder.append(" * Maven build tool based on JSON files it found. It should NOT be modified by hand.\n");
-        builder.append(" */\n");
-        builder.append("package ").append(javaPackageName).append(";\n");
-        builder.append("\n");
-        builder.append("${importsPlaceholder}");
-        builder.append("\n");
+        // Standard messaging for auto-generated file
+        sourceBuilder.append(new TemplateJavadocsBuilder()
+                .addLine("AUTO-GENERATED FILE.  DO NOT MODIFY.")
+                .newLine()
+                .add("This class was automatically generated on ")
+                .add(new SimpleDateFormat(ViewClassGenerator.DATE_FORMAT).format(new Date()))
+                .add(" by the")
+                .newLine()
+                .addLine("Maven build tool based on JSON files it found. It should NOT be modified by hand.")
+                .buildCommentsSource(0));
 
+        // Package declaration
+        sourceBuilder.append("package ").append(javaPackageName).append(";").append(NEW_LINE);
+        sourceBuilder.append(NEW_LINE);
+
+        // Imports - we collect them as we process, so this just a placeholder which we'll replace at the end.
+        sourceBuilder.append(TemplateImportsBuilder.PLACEHOLDER);
+        sourceBuilder.append(NEW_LINE);
+
+        // JSON generated class level javadocs
         if (!notes.isEmpty()) {
-            builder.append("/**\n");
-            for (String note : notes) {
-                builder.append(" * <p>").append(note).append("</p>\n");
-            }
-            builder.append(" */\n");
+            TemplateJavadocsBuilder classNotesBuilder = new TemplateJavadocsBuilder();
+            notes.forEach(classNotesBuilder::addParagraph);
+            sourceBuilder.append(classNotesBuilder.buildJavadocsSource(0));
         }
 
+        // Annotations
         if (classExists(viewInterfaceClassName)) {
-            builder.append("@").append(toSimpleClassName(viewInterfaceClassName)).append("\n");
+            sourceBuilder.append("@").append(toSimpleClassName(viewInterfaceClassName)).append(NEW_LINE);
         }
-
-        builder.append("@").append(toSimpleClassName(templateClassName));
+        sourceBuilder.append("@").append(toSimpleClassName(templateClassName));
         if (!isJsonFormat()) {
-            builder.append("(\"").append(StringUtils.removeStart(name, "/")).append("\")");
+            sourceBuilder.append("(\"").append(StringUtils.removeStart(name, "/")).append("\")");
         }
-        builder.append("\n");
+        sourceBuilder.append(NEW_LINE);
 
-        builder.append("public interface ").append(getClassName()).append(getImplementedTemplateFieldDefinitions(imports)).append(" {\n");
+        // Interface declaration
+        sourceBuilder.append("public interface ").append(getClassName()).append(getImplementedTemplateFieldDefinitions(imports)).append(" {").append(NEW_LINE);
 
+        // Static view type/element constants
         for (TemplateFieldDefinition fieldDef : fields) {
 
             if (fieldDef instanceof TemplateFieldDefinitionList
@@ -183,7 +196,7 @@ class TemplateDefinition implements TemplateFieldType {
                     || fieldDef instanceof TemplateFieldDefinitionString) {
 
                 String declaration = fieldDef.getInterfaceStaticStringVariableDeclaration(1, "_ELEMENT");
-                builder.append("\n").append(declaration).append("\n");
+                sourceBuilder.append(NEW_LINE).append(declaration).append(NEW_LINE);
             }
         }
 
@@ -195,84 +208,128 @@ class TemplateDefinition implements TemplateFieldType {
                         || fieldDef instanceof TemplateFieldDefinitionString) {
 
                     String declaration = fieldDef.getInterfaceStaticStringVariableDeclarationDeprecated(1, "_TYPE", "_ELEMENT");
-                    builder.append("\n").append(declaration).append("\n");
+                    sourceBuilder.append(NEW_LINE).append(declaration).append(NEW_LINE);
                 }
             }
         }
 
+        // Interface method declarations
         for (TemplateFieldDefinition fieldDef : fields) {
-            builder.append("\n").append(fieldDef.getInterfaceMethodDeclarationSource(1, imports)).append("\n");
+            sourceBuilder.append(NEW_LINE);
+            sourceBuilder.append(fieldDef.getInterfaceMethodDeclarationSource(1, imports));
+            sourceBuilder.append(NEW_LINE);
         }
 
-        // Field level interfaces
+        sourceBuilder.append(NEW_LINE);
 
+        // Field level interfaces
         for (TemplateFieldDefinition fieldDef : fields) {
 
             Set<TemplateFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
 
+            // Only create the view field level interface if there's more than one field value type
             if (fieldValueTypes.size() > 1 && fieldDef instanceof TemplateFieldType) {
-                builder.append("\n    /**");
-                builder.append("\n     * <p>").append(fieldDef.getValueTypesJavadocsClassLinksJavadocSnippet()).append("</p>");
-                builder.append("\n     */");
-                builder.append("\n    interface ").append(((TemplateFieldType) fieldDef).getLocalClassName()).append(" {\n    }\n");
+
+                // Adds javadocs if it exists (which it should).
+                sourceBuilder.append(new TemplateJavadocsBuilder()
+                        .startParagraph()
+                        .addFieldValueTypesSnippet(fieldDef)
+                        .endParagraph()
+                        .buildJavadocsSource(1));
+
+                // field level interface declaration
+                sourceBuilder.append(indent(1)).append("interface ").append(((TemplateFieldType) fieldDef).getLocalClassName()).append(" {").append(NEW_LINE);
+                sourceBuilder.append(indent(1)).append("}").append(NEW_LINE);
             }
         }
 
-        // static inner Builder class.
+        // Builder class
+        sourceBuilder.append(NEW_LINE);
 
-        builder.append("\n");
-        builder.append("    /**\n");
-        builder.append("     * <p>Builder of ").append("{@link ").append(getClassName()).append("}").append(" objects.</p>\n");
-        builder.append("     */\n");
-        builder.append("    class Builder {\n");
-        if (!removeDeprecations) {
-            builder.append("\n");
-            builder.append("        @Deprecated\n");
-            builder.append("        private ViewRequest request;\n");
-        }
-        if (!fields.isEmpty()) {
+        // Builder class javadocs
+        sourceBuilder.append(new TemplateJavadocsBuilder()
+                .startParagraph()
+                .add("Builder of ")
+                .addLink(getClassName())
+                .add(" objects.")
+                .endParagraph()
+                .buildJavadocsSource(1));
+
+        // Builder class declaration
+        sourceBuilder.append(indent(1)).append("class Builder {").append(NEW_LINE);
+        {
+            if (!removeDeprecations) {
+                sourceBuilder.append(NEW_LINE);
+                sourceBuilder.append(indent(2)).append("@Deprecated").append(NEW_LINE);
+                sourceBuilder.append(indent(2)).append("private ViewRequest request;").append(NEW_LINE);
+            }
+            if (!fields.isEmpty()) {
+                for (TemplateFieldDefinition fieldDef : fields) {
+                    sourceBuilder.append(NEW_LINE).append(fieldDef.getInterfaceBuilderFieldDeclarationSource(2, imports));
+                }
+                sourceBuilder.append(NEW_LINE);
+            }
+
+            // Builder class constructor javadocs
+            sourceBuilder.append(NEW_LINE);
+            sourceBuilder.append(new TemplateJavadocsBuilder()
+                    .startParagraph()
+                    .add("Creates a builder for ").addLink(getClassName()).add(" objects.")
+                    .endParagraph()
+                    .buildJavadocsSource(2));
+
+            // Builder class constructor declaration
+            sourceBuilder.append(indent(2)).append("public Builder() {").append(NEW_LINE);
+            sourceBuilder.append(indent(2)).append("}").append(NEW_LINE);
+
+            // Builder class deprecated ViewRequest constructor
+            if (!removeDeprecations) {
+                sourceBuilder.append(NEW_LINE);
+                sourceBuilder.append(new TemplateJavadocsBuilder()
+                        .addLine("@deprecated use {@link #Builder()} instead.")
+                        .buildJavadocsSource(2));
+                sourceBuilder.append(indent(2)).append("@Deprecated").append(NEW_LINE);
+                sourceBuilder.append(indent(2)).append("public Builder(ViewRequest request) {").append(NEW_LINE);
+                {
+                    sourceBuilder.append(indent(3)).append("this.request = request;").append(NEW_LINE);
+                }
+                sourceBuilder.append(indent(2)).append("}").append(NEW_LINE);
+            }
+
+            // Builder class builder methods for each field
             for (TemplateFieldDefinition fieldDef : fields) {
-                builder.append("\n").append(fieldDef.getInterfaceBuilderFieldDeclarationSource(2, imports));
+                sourceBuilder.append(NEW_LINE);
+                sourceBuilder.append(fieldDef.getInterfaceBuilderMethodImplementationSource(2, imports, removeDeprecations));
+                sourceBuilder.append(NEW_LINE);
             }
-            builder.append("\n");
-        }
-        builder.append("\n");
-        builder.append("        /**\n");
-        builder.append("         * <p>Creates a builder for ").append("{@link ").append(getClassName()).append("}").append(" objects.</p>\n");
-        builder.append("         */\n");
-        builder.append("        public Builder() {\n");
-        builder.append("        }\n");
-        if (!removeDeprecations) {
-            builder.append("\n");
-            builder.append("        /**\n");
-            builder.append("         * @deprecated use {@link #Builder()} instead.\n");
-            builder.append("         */\n");
-            builder.append("        @Deprecated\n");
-            builder.append("        public Builder(ViewRequest request) {\n");
-            builder.append("            this.request = request;\n");
-            builder.append("        }\n");
-        }
-        for (TemplateFieldDefinition fieldDef : fields) {
-            builder.append("\n").append(fieldDef.getInterfaceBuilderMethodImplementationSource(2, imports, removeDeprecations)).append("\n");
-        }
 
-        builder.append("\n");
-        builder.append("        /**\n");
-        builder.append("         * Builds the {@link ").append(getClassName()).append("}.\n");
-        builder.append("         *\n");
-        builder.append("         * @return the fully built {@link ").append(getClassName()).append("}.\n");
-        builder.append("         */\n");
-        builder.append("        public ").append(getClassName()).append(" build() {\n");
-        builder.append("            return new ").append(getClassName()).append("() {\n");
-        for (TemplateFieldDefinition fieldDef : fields) {
-            builder.append("\n").append(fieldDef.getInterfaceBuilderBuildMethodSource(4, imports)).append("\n");
-        }
-        builder.append("            };\n");
-        builder.append("        }\n");
-        builder.append("    }\n");
-        builder.append("}\n");
+            sourceBuilder.append(NEW_LINE);
 
-        String javaSource = builder.toString();
+            // Javadocs for the Builder build method.
+            sourceBuilder.append(new TemplateJavadocsBuilder()
+                    .startParagraph().add("Builds the ").addLink(getClassName()).add(".").endParagraph()
+                    .newLine()
+                    .addReturn().add("The fully built ").addLink(getClassName()).add(".")
+                    .buildJavadocsSource(2));
+
+            sourceBuilder.append(indent(2)).append("public ").append(getClassName()).append(" build() {\n");
+            {
+                sourceBuilder.append(indent(3)).append("return new ").append(getClassName()).append("() {\n");
+                for (TemplateFieldDefinition fieldDef : fields) {
+                    sourceBuilder.append(NEW_LINE).append(fieldDef.getInterfaceBuilderBuildMethodSource(4, imports)).append(NEW_LINE);
+                }
+                sourceBuilder.append(indent(3)).append("};").append(NEW_LINE);
+            }
+            // End of build method
+            sourceBuilder.append(indent(2)).append("};").append(NEW_LINE);
+        }
+        // End of Builder class
+        sourceBuilder.append(indent(1)).append("};").append(NEW_LINE);
+
+        // Enf of view interface class
+        sourceBuilder.append(indent(0)).append("};").append(NEW_LINE);
+
+        String javaSource = sourceBuilder.toString();
 
         String importsSource = getJavaImportStatements(imports);
 

@@ -159,86 +159,27 @@ abstract class TemplateFieldDefinition {
         return methodNamePrefix + StyleguideStringUtils.toJavaMethodCase(name);
     }
 
-    /**
-     * @return the value types javadocs snippet as a pretty comma delimited String.
-     */
-    protected final String getValueTypesJavadocsClassLinksJavadocSnippet() {
+    String getInterfaceMethodDeclarationSource(int indent, Set<String> imports) {
 
-        List<JavadocsClassLink> javadocsClassLinks = getValueTypesJavadocsClassLinks();
+        // collect the methods' javadocs
+        TemplateJavadocsBuilder methodJavadocs = new TemplateJavadocsBuilder();
 
-        if (!javadocsClassLinks.isEmpty()) {
+        notes.forEach(methodJavadocs::addParagraph);
 
-            StringBuilder builder = new StringBuilder();
-
-            if (isStrictlyTyped) {
-                builder.append("A ");
-            } else {
-                builder.append("Typically a ");
-            }
-
-            if (this instanceof TemplateFieldDefinitionList) {
-                builder.append("Collection of ");
-            }
-
-            builder.append(javadocsClassLinks
-                    .stream()
-                    // get the snippet for each
-                    .map(JavadocsClassLink::toJavadocLinkSnippet)
-                    // join them with commas
-                    .collect(Collectors.joining(", "))
-                    // isolate the last comma in the String and replace it with " or"
-                    .replaceFirst("(.*),([^,]+$)", "$1 or$2"));
-
-            builder.append(".");
-
-            return builder.toString();
-
+        methodJavadocs.startParagraph();
+        if (this instanceof TemplateFieldDefinitionList) {
+            methodJavadocs.addCollectionFieldValueTypesSnippet(this);
         } else {
-            return null;
+            methodJavadocs.addFieldValueTypesSnippet(this);
         }
-    }
+        methodJavadocs.endParagraph();
 
-    /**
-     * @return a List of JavadocsClassLink representing the value types expected
-     *      to be returned for this field.
-     */
-    private List<JavadocsClassLink> getValueTypesJavadocsClassLinks() {
-        return getFieldValueTypes().stream()
-                .map(fieldValueType -> new JavadocsClassLink(getParentTemplate(), fieldValueType))
-                .sorted()
-                .collect(Collectors.toList());
-    }
-
-    public String getInterfaceMethodDeclarationSource(int indent, Set<String> imports) {
-
-        String methodJavaDoc = "";
-
-        String valueTypesJavaDocList = getValueTypesJavadocsClassLinksJavadocSnippet();
-        if (valueTypesJavaDocList != null || !notes.isEmpty()) {
-
-            StringBuilder notesSource = new StringBuilder();
-            for (String note : notes) {
-                notesSource.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
-            }
-
-            String valueTypesJavadocSource = "";
-            if (valueTypesJavaDocList != null) {
-                valueTypesJavadocSource += indent(indent) + " * <p>" + valueTypesJavaDocList + "</p>\n";
-            }
-
-            methodJavaDoc = Arrays.stream(new String[] {
-                    indent(indent) + "/**\n",
-                    notesSource.toString(),
-                    valueTypesJavadocSource,
-                    indent(indent) + " */\n"
-            }).collect(Collectors.joining(""));
-        }
-
+        // if it's a default interface method just make the body return null;
         String methodBody = !isDefaulted ? ";" : (" {\n"
                 + indent(indent + 1) + "return null;\n"
                 + indent(indent) + "}");
 
-        return methodJavaDoc
+        return methodJavadocs.buildJavadocsSource(indent)
                 + indent(indent) + (isDefaulted ? "default " : "") + getJavaFieldType(imports) + " " + getJavaInterfaceMethodName() + "()" + methodBody;
     }
 
@@ -274,29 +215,18 @@ abstract class TemplateFieldDefinition {
 
     public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports, boolean removeDeprecations) {
 
-        StringBuilder notesJavaDoc = new StringBuilder();
-        for (String note : notes) {
-            notesJavaDoc.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
-        }
+        TemplateJavadocsBuilder methodJavadocs = new TemplateJavadocsBuilder();
 
-        String parameterJavadoc = "The " + name + " to set.";
-        String valueTypesJavaDocList = getValueTypesJavadocsClassLinksJavadocSnippet();
-        if (valueTypesJavaDocList != null) {
-            parameterJavadoc += " " + valueTypesJavaDocList;
-        }
+        methodJavadocs.addParagraph("Sets the " + name + " field.");
+        notes.forEach(methodJavadocs::addParagraph);
+        methodJavadocs.newLine();
+        methodJavadocs.addParameter(name).addFieldAwareValueTypesSnippet(this).newLine();
+        methodJavadocs.addReturn().add("this builder.");
 
-        String methodJavaDoc = Arrays.stream(new String[] {
-                indent(indent) + "/**\n",
-                indent(indent) + " * <p>Sets the " + name + " field.</p>\n",
-                notesJavaDoc.toString(),
-                indent(indent) + " *\n",
-                indent(indent) + " * @param " + name + " " + parameterJavadoc + "\n",
-                indent(indent) + " * @return this builder.\n",
-                indent(indent) + " */\n"
-        }).collect(Collectors.joining(""));
+        methodJavadocs.buildJavadocsSource(indent);
 
         String[] method = {
-                methodJavaDoc,
+                methodJavadocs.buildJavadocsSource(indent),
                 indent(indent) + "public Builder " + name + "(" + getJavaFieldType(imports) + " " + name + ") {\n",
                 indent(indent + 1) + "this." + name + " = " + name + ";\n",
                 indent(indent + 1) + "return this;\n",

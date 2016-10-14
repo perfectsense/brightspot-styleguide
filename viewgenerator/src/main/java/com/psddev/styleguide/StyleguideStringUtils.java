@@ -1,8 +1,12 @@
 package com.psddev.styleguide;
 
+import java.util.Arrays;
+
 import com.psddev.dari.util.StringUtils;
 
 class StyleguideStringUtils {
+
+    public static final String NEW_LINE = "\n";
 
     /** Converts a java field name into its method equivalent minus the get/set/add prefix */
     public static String toJavaMethodCase(String string) {
@@ -28,5 +32,12 @@ class StyleguideStringUtils {
         } else {
             return string;
         }
+    }
+
+    /** Adds 4 spaces for each indent. */
+    public static String indent(int indent) {
+        char[] spaces = new char[indent * 4];
+        Arrays.fill(spaces, ' ');
+        return new String(spaces);
     }
 }

@@ -375,8 +375,12 @@ class TemplateDefinition implements TemplateFieldType {
             for (TemplateFieldDefinition tfd : td.getFields()) {
 
                 Set<TemplateFieldType> fieldValueTypes = tfd.getFieldValueTypes();
-                // TODO: Should actually implement equals/hashCode rather than relying on Object impl.
-                if (fieldValueTypes.size() > 1 && fieldValueTypes.contains(this)) {
+                if (fieldValueTypes.size() > 1 && fieldValueTypes.stream()
+                        .map(TemplateFieldType::getFullyQualifiedClassName)
+                        .filter(cn -> cn.equals(this.getFullyQualifiedClassName()))
+                        .findAny()
+                        .isPresent()) {
+
                     implementedFieldDefs.add(tfd);
                 }
             }

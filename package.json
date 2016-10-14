@@ -38,6 +38,8 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
+    "del": "2.2.2",
+    "gulp-bower": "0.0.13",
     "mocha": "2.5.3"
   }
 }

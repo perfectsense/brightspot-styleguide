@@ -411,16 +411,4 @@ class TemplateDefinition implements TemplateFieldType {
         return jsonTemplateObjects != null
             && jsonTemplateObjects.stream().allMatch(template -> template.getTemplateFormat() == JsonTemplateObject.TemplateFormat.Json);
     }
-
-    // Helper method to convert the String "com.package.name.ClassName" --> "ClassName"
-    private static String toSimpleClassName(String className) {
-
-        int lastDotAt = className.lastIndexOf('.');
-
-        if (lastDotAt >= 0) {
-            className = className.substring(lastDotAt + 1);
-        }
-
-        return className;
-    }
 }

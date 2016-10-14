@@ -123,7 +123,68 @@ class TemplateDefinition implements TemplateFieldType {
         }
     }
 
-    public String getJavaClassSource() {
+    public List<ViewClassSource> getViewClassSources() {
+        List<ViewClassSource> sources = new ArrayList<>();
+        sources.addAll(getFieldLevelInterfaceSources());
+        sources.add(getViewClassSource());
+        return sources;
+    }
+
+    // Standard messaging for auto-generated file header.
+    private String getSourceCodeHeaderComment() {
+        return new TemplateJavadocsBuilder()
+                .addLine("AUTO-GENERATED FILE.  DO NOT MODIFY.")
+                .newLine()
+                .add("This class was automatically generated on ")
+                .add(new SimpleDateFormat(ViewClassGenerator.DATE_FORMAT).format(new Date()))
+                .add(" by the")
+                .newLine()
+                .addLine("Maven build tool based on JSON files it found. It should NOT be modified by hand.")
+                .buildCommentsSource(0);
+    }
+
+    private List<ViewClassSource> getFieldLevelInterfaceSources() {
+
+        List<ViewClassSource> fieldLevelInterfaceSources = new ArrayList<>();
+
+        // Field level interfaces
+        for (TemplateFieldDefinition fieldDef : fields) {
+
+            Set<TemplateFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
+
+            // Only create the view field level interface if there's more than one field value type
+            if (fieldValueTypes.size() > 1 && fieldDef instanceof TemplateFieldType) {
+
+                StringBuilder sourceBuilder = new StringBuilder();
+
+                sourceBuilder.append(getSourceCodeHeaderComment());
+
+                // Package declaration
+                sourceBuilder.append("package ").append(javaPackageName).append(";").append(NEW_LINE);
+                sourceBuilder.append(NEW_LINE);
+
+                // Adds javadocs if it exists (which it should).
+                sourceBuilder.append(new TemplateJavadocsBuilder()
+                        .startParagraph()
+                        .addFieldValueTypesSnippet(fieldDef)
+                        .endParagraph()
+                        .buildJavadocsSource(0));
+
+                // field level interface declaration
+                sourceBuilder.append(indent(0)).append("public interface ").append(((TemplateFieldType) fieldDef).getClassName()).append(" {").append(NEW_LINE);
+                sourceBuilder.append(indent(0)).append("}").append(NEW_LINE);
+
+                fieldLevelInterfaceSources.add(new ViewClassSource(
+                        getPackageName(),
+                        ((TemplateFieldType) fieldDef).getClassName(),
+                        sourceBuilder.toString()));
+            }
+        }
+
+        return fieldLevelInterfaceSources;
+    }
+
+    private ViewClassSource getViewClassSource() {
 
         StringBuilder sourceBuilder = new StringBuilder();
 
@@ -144,16 +205,7 @@ class TemplateDefinition implements TemplateFieldType {
 
         imports.add(templateClassName);
 
-        // Standard messaging for auto-generated file
-        sourceBuilder.append(new TemplateJavadocsBuilder()
-                .addLine("AUTO-GENERATED FILE.  DO NOT MODIFY.")
-                .newLine()
-                .add("This class was automatically generated on ")
-                .add(new SimpleDateFormat(ViewClassGenerator.DATE_FORMAT).format(new Date()))
-                .add(" by the")
-                .newLine()
-                .addLine("Maven build tool based on JSON files it found. It should NOT be modified by hand.")
-                .buildCommentsSource(0));
+        sourceBuilder.append(getSourceCodeHeaderComment());
 
         // Package declaration
         sourceBuilder.append("package ").append(javaPackageName).append(";").append(NEW_LINE);
@@ -200,29 +252,6 @@ class TemplateDefinition implements TemplateFieldType {
             sourceBuilder.append(NEW_LINE);
             sourceBuilder.append(fieldDef.getInterfaceMethodDeclarationSource(1, imports));
             sourceBuilder.append(NEW_LINE);
-        }
-
-        sourceBuilder.append(NEW_LINE);
-
-        // Field level interfaces
-        for (TemplateFieldDefinition fieldDef : fields) {
-
-            Set<TemplateFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
-
-            // Only create the view field level interface if there's more than one field value type
-            if (fieldValueTypes.size() > 1 && fieldDef instanceof TemplateFieldType) {
-
-                // Adds javadocs if it exists (which it should).
-                sourceBuilder.append(new TemplateJavadocsBuilder()
-                        .startParagraph()
-                        .addFieldValueTypesSnippet(fieldDef)
-                        .endParagraph()
-                        .buildJavadocsSource(1));
-
-                // field level interface declaration
-                sourceBuilder.append(indent(1)).append("interface ").append(((TemplateFieldType) fieldDef).getLocalClassName()).append(" {").append(NEW_LINE);
-                sourceBuilder.append(indent(1)).append("}").append(NEW_LINE);
-            }
         }
 
         // Builder class
@@ -298,7 +327,7 @@ class TemplateDefinition implements TemplateFieldType {
 
         javaSource = javaSource.replace("${importsPlaceholder}", importsSource);
 
-        return javaSource;
+        return new ViewClassSource(getPackageName(), getClassName(), javaSource);
     }
 
     private String getJavaPackageName() {
@@ -369,7 +398,7 @@ class TemplateDefinition implements TemplateFieldType {
 
                 if (!this.hasSamePackageAs(fieldType)) {
                     // add its parent's fully qualified class name
-                    imports.add(fieldDef.getParentTemplate().getFullyQualifiedClassName());
+                    imports.add(fieldType.getFullyQualifiedClassName());
                 }
 
                 classNames.add(fieldType.getClassName());

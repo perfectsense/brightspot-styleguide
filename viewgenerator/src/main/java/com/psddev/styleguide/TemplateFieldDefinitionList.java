@@ -89,7 +89,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
     @Override
     public String getFullyQualifiedClassName() {
         TemplateDefinition parentTemplateDef = templateDefinitions.getByName(parentTemplate);
-        return parentTemplateDef.getFullyQualifiedClassName() + "." + StyleguideStringUtils.toJavaClassCase(name) + "FieldView";
+        return parentTemplateDef.getFullyQualifiedClassName() + StyleguideStringUtils.toJavaClassCase(name) + "Field";
     }
 
     @Override

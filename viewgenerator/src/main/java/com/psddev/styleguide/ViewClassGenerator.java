@@ -168,13 +168,17 @@ public class ViewClassGenerator {
                 .sorted((td1, td2) -> ObjectUtils.compare(td1.getName(), td2.getName(), true))
                 .collect(Collectors.toList())) {
 
-            String packageName = templateDef.getPackageName();
-            Path sourceDirectory = Paths.get(javaSourceDirectory.toString(), packageName.split("\\x2e"));
+            List<ViewClassSource> sources = templateDef.getViewClassSources();
+            for (ViewClassSource source : sources) {
 
-            String classSource = templateDef.getJavaClassSource();
-            Path classFile = sourceDirectory.resolve(templateDef.getClassName() + ".java");
+                String packageName = source.getPackageName();
+                Path sourceDirectory = Paths.get(javaSourceDirectory.toString(), packageName.split("\\x2e"));
 
-            generated.put(classFile, classSource);
+                String sourceCode = source.getSourceCode();
+                Path classFile = sourceDirectory.resolve(source.getClassName() + ".java");
+
+                generated.put(classFile, sourceCode);
+            }
         }
 
         return generated;

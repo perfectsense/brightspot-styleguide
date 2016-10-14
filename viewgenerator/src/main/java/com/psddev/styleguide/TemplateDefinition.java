@@ -165,7 +165,7 @@ class TemplateDefinition implements TemplateFieldType {
         sourceBuilder.append(NEW_LINE);
 
         // Imports - we collect them as we process, so this just a placeholder which we'll replace at the end.
-        sourceBuilder.append(TemplateImportsBuilder.PLACEHOLDER);
+        sourceBuilder.append("${importsPlaceholder}");
         sourceBuilder.append(NEW_LINE);
 
         // JSON generated class level javadocs

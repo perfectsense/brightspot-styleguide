@@ -67,11 +67,11 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports, boolean removeDeprecations) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports, removeDeprecations));
+        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports));
 
         if (isStringMap()) {
             builder.append("\n\n");
@@ -121,28 +121,6 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
             };
 
             builder.append(Arrays.stream(method).collect(Collectors.joining("")));
-
-        } else {
-            if (!removeDeprecations) {
-                builder.append("\n\n");
-
-                String methodJavaDoc = Arrays.stream(new String[]{
-                        indent(indent) + "/**\n",
-                        indent(indent) + " * @deprecated no replacement\n",
-                        indent(indent) + " */\n"
-                }).collect(Collectors.joining(""));
-
-                String[] method = {
-                        methodJavaDoc,
-                        indent(indent) + "@Deprecated\n",
-                        indent(indent) + "public Builder " + name + "(Class<?> " + name + "ViewClass, Object " + name + "Model) {\n",
-                        indent(indent + 1) + "this." + name + " = request.createView(" + name + "ViewClass, " + name + "Model);\n",
-                        indent(indent + 1) + "return this;\n",
-                        indent(indent) + "}"
-                };
-
-                builder.append(Arrays.stream(method).collect(Collectors.joining("")));
-            }
         }
 
         return builder.toString();

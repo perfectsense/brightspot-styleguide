@@ -157,14 +157,11 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports, boolean removeDeprecations) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
 
         StringBuilder builder = new StringBuilder();
 
         imports.add("java.util.ArrayList");
-        if (!removeDeprecations) {
-            imports.add("java.util.stream.Collectors");
-        }
 
         String nameViewClass = name + "ViewClass";
         String nameView = name + "View";
@@ -335,15 +332,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
 
         builder.append(Arrays.stream(method2).collect(Collectors.joining(""))).append("\n\n");
 
-        builder.append(Arrays.stream(method3).collect(Collectors.joining(""))).append(removeDeprecations ? "" : "\n\n");
-
-        if (!removeDeprecations) {
-            builder.append(Arrays.stream(method4).collect(Collectors.joining(""))).append("\n\n");
-
-            builder.append(Arrays.stream(method5).collect(Collectors.joining(""))).append("\n\n");
-
-            builder.append(Arrays.stream(method6).collect(Collectors.joining("")));
-        }
+        builder.append(Arrays.stream(method3).collect(Collectors.joining("")));
 
         return builder.toString();
     }

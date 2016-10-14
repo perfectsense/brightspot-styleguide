@@ -123,13 +123,12 @@ class TemplateDefinition implements TemplateFieldType {
         }
     }
 
-    public String getJavaClassSource(boolean removeDeprecations) {
+    public String getJavaClassSource() {
 
         StringBuilder sourceBuilder = new StringBuilder();
 
         Set<String> imports = new LinkedHashSet<>();
 
-        final String viewRequestClassName = "com.psddev.cms.view.ViewRequest";
         final String viewInterfaceClassName = "com.psddev.cms.view.ViewInterface";
         final String handlebarsTemplateClassName = "com.psddev.handlebars.HandlebarsTemplate";
         final String jsonTemplateClassName = "com.psddev.cms.view.JsonView";
@@ -137,10 +136,6 @@ class TemplateDefinition implements TemplateFieldType {
 
         if (isJsonFormat()) {
             templateClassName = jsonTemplateClassName;
-        }
-
-        if (!removeDeprecations) {
-            imports.add(viewRequestClassName);
         }
 
         if (classExists(viewInterfaceClassName)) {
@@ -200,19 +195,6 @@ class TemplateDefinition implements TemplateFieldType {
             }
         }
 
-        if (!removeDeprecations) {
-            for (TemplateFieldDefinition fieldDef : fields) {
-
-                if (fieldDef instanceof TemplateFieldDefinitionList
-                        || fieldDef instanceof TemplateFieldDefinitionObject
-                        || fieldDef instanceof TemplateFieldDefinitionString) {
-
-                    String declaration = fieldDef.getInterfaceStaticStringVariableDeclarationDeprecated(1, "_TYPE", "_ELEMENT");
-                    sourceBuilder.append(NEW_LINE).append(declaration).append(NEW_LINE);
-                }
-            }
-        }
-
         // Interface method declarations
         for (TemplateFieldDefinition fieldDef : fields) {
             sourceBuilder.append(NEW_LINE);
@@ -258,11 +240,6 @@ class TemplateDefinition implements TemplateFieldType {
         // Builder class declaration
         sourceBuilder.append(indent(1)).append("class Builder {").append(NEW_LINE);
         {
-            if (!removeDeprecations) {
-                sourceBuilder.append(NEW_LINE);
-                sourceBuilder.append(indent(2)).append("@Deprecated").append(NEW_LINE);
-                sourceBuilder.append(indent(2)).append("private ViewRequest request;").append(NEW_LINE);
-            }
             if (!fields.isEmpty()) {
                 for (TemplateFieldDefinition fieldDef : fields) {
                     sourceBuilder.append(NEW_LINE).append(fieldDef.getInterfaceBuilderFieldDeclarationSource(2, imports));
@@ -282,24 +259,10 @@ class TemplateDefinition implements TemplateFieldType {
             sourceBuilder.append(indent(2)).append("public Builder() {").append(NEW_LINE);
             sourceBuilder.append(indent(2)).append("}").append(NEW_LINE);
 
-            // Builder class deprecated ViewRequest constructor
-            if (!removeDeprecations) {
-                sourceBuilder.append(NEW_LINE);
-                sourceBuilder.append(new TemplateJavadocsBuilder()
-                        .addLine("@deprecated use {@link #Builder()} instead.")
-                        .buildJavadocsSource(2));
-                sourceBuilder.append(indent(2)).append("@Deprecated").append(NEW_LINE);
-                sourceBuilder.append(indent(2)).append("public Builder(ViewRequest request) {").append(NEW_LINE);
-                {
-                    sourceBuilder.append(indent(3)).append("this.request = request;").append(NEW_LINE);
-                }
-                sourceBuilder.append(indent(2)).append("}").append(NEW_LINE);
-            }
-
             // Builder class builder methods for each field
             for (TemplateFieldDefinition fieldDef : fields) {
                 sourceBuilder.append(NEW_LINE);
-                sourceBuilder.append(fieldDef.getInterfaceBuilderMethodImplementationSource(2, imports, removeDeprecations));
+                sourceBuilder.append(fieldDef.getInterfaceBuilderMethodImplementationSource(2, imports));
                 sourceBuilder.append(NEW_LINE);
             }
 

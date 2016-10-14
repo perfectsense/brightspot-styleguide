@@ -25,11 +25,11 @@ class TemplateFieldDefinitionMap extends TemplateFieldDefinition {
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports, boolean removeDeprecations) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports, removeDeprecations));
+        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports));
         builder.append("\n\n");
 
         imports.add("java.util.LinkedHashMap");

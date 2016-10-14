@@ -22,7 +22,6 @@ class ViewClassGeneratorCliArguments {
     private static final String MAP_TEMPLATES_PREFIX =       "--map-templates=";
     private static final String IGNORE_FILES_PREFIX =        "--ignore-files=";
     private static final String CLASS_NAME_PREFIX_PREFIX =   "--class-name-prefix=";
-    private static final String REMOVE_DEPRECATIONS_PREIFX = "--remove-deprecations=";
     private static final String WATCH_PREFIX =               "--watch=";
 
     // default argument values
@@ -40,7 +39,6 @@ class ViewClassGeneratorCliArguments {
     private Set<String> mapTemplates = new LinkedHashSet<>();
     private Set<Path> ignoredFileNames = new HashSet<>();
     private String classNamePrefix = null;
-    private boolean removeDeprecations = true;
     private boolean watch = false;
 
     public ViewClassGeneratorCliArguments(String[] args) {
@@ -73,9 +71,6 @@ class ViewClassGeneratorCliArguments {
 
                 } else if (arg.startsWith(CLASS_NAME_PREFIX_PREFIX)) {
                     classNamePrefix = processStringArgument(CLASS_NAME_PREFIX_PREFIX, arg);
-
-                } else if (arg.startsWith(REMOVE_DEPRECATIONS_PREIFX)) {
-                    removeDeprecations = ObjectUtils.to(boolean.class, processStringArgument(REMOVE_DEPRECATIONS_PREIFX, arg));
 
                 } else if (arg.startsWith(WATCH_PREFIX)) {
                     watch = ObjectUtils.to(boolean.class, processStringArgument(WATCH_PREFIX, arg));
@@ -133,10 +128,6 @@ class ViewClassGeneratorCliArguments {
 
     public String getClassNamePrefix() {
         return classNamePrefix;
-    }
-
-    public boolean isRemoveDeprecations() {
-        return removeDeprecations;
     }
 
     public boolean isWatch() {

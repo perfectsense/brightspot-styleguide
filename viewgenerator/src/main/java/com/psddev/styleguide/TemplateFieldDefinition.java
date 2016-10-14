@@ -213,7 +213,7 @@ abstract class TemplateFieldDefinition {
         return indent(indent) + "private " + getJavaFieldTypeForBuilder(imports) + " " + name + ";";
     }
 
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports, boolean removeDeprecations) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
 
         TemplateJavadocsBuilder methodJavadocs = new TemplateJavadocsBuilder();
 

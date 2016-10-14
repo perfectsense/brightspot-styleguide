@@ -76,7 +76,6 @@ public class ViewClassGenerator {
     private Set<String> mapBasedTemplates;
     private Set<Path> ignoredFileNames;
     private String classNamePrefix;
-    private boolean removeDeprecations = true;
 
     private CliLogger logger = CliLogger.getLogger();
 
@@ -89,7 +88,6 @@ public class ViewClassGenerator {
         this.mapBasedTemplates = Collections.emptySet();
         this.ignoredFileNames = Collections.emptySet();
         this.classNamePrefix = null;
-        this.removeDeprecations = true;
     }
 
     private ViewClassGenerator(ViewClassGeneratorCliArguments arguments) {
@@ -99,7 +97,6 @@ public class ViewClassGenerator {
         this.mapBasedTemplates = arguments.getMapTemplates();
         this.ignoredFileNames = arguments.getIgnoredFileNames();
         this.classNamePrefix = arguments.getClassNamePrefix();
-        this.removeDeprecations = arguments.isRemoveDeprecations();
     }
 
     public void disableLogColors() {
@@ -130,12 +127,19 @@ public class ViewClassGenerator {
         this.classNamePrefix = classNamePrefix;
     }
 
+    /**
+     * @deprecated No replacement
+     */
+    @Deprecated
     public boolean isRemoveDeprecations() {
-        return removeDeprecations;
+        return true;
     }
 
+    /**
+     * @deprecated No replacement
+     */
+    @Deprecated
     public void setRemoveDeprecations(boolean removeDeprecations) {
-        this.removeDeprecations = removeDeprecations;
     }
 
     public void printGeneratedClasses() {
@@ -167,7 +171,7 @@ public class ViewClassGenerator {
             String packageName = templateDef.getPackageName();
             Path sourceDirectory = Paths.get(javaSourceDirectory.toString(), packageName.split("\\x2e"));
 
-            String classSource = templateDef.getJavaClassSource(removeDeprecations);
+            String classSource = templateDef.getJavaClassSource();
             Path classFile = sourceDirectory.resolve(templateDef.getClassName() + ".java");
 
             generated.put(classFile, classSource);

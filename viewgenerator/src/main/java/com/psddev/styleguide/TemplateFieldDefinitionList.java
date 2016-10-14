@@ -193,7 +193,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
         method2Javadocs.addParagraph("Adds a single item to the " + name + " field.");
         notes.forEach(method2Javadocs::addParagraph);
         method2Javadocs.newLine();
-        method2Javadocs.addParameter(name).add(" the item to add. ").addFieldValueTypesSnippet(this).newLine();
+        method2Javadocs.addParameter(name).add("the item to add. ").addFieldValueTypesSnippet(this).newLine();
         method2Javadocs.addReturn().add("this builder.");
         /*
         public Builder addToAuthors(Object authors) { // OR if strictly typed --> public Builder addToAuthors(FigureView authors) {
@@ -225,7 +225,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
         method3Javadocs.addParagraph("Adds a Collection of items to the " + name + " field.");
         notes.forEach(method3Javadocs::addParagraph);
         method3Javadocs.newLine();
-        method3Javadocs.addParameter(name).add(" the items to add. ").addCollectionFieldValueTypesSnippet(this).newLine();
+        method3Javadocs.addParameter(name).add("the items to add. ").addCollectionFieldValueTypesSnippet(this).newLine();
         method3Javadocs.addReturn().add("this builder.");
         /*
         public Builder addAllToAuthors(Collection<?> authors) {

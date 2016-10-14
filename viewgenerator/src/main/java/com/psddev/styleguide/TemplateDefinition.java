@@ -187,27 +187,35 @@ class TemplateDefinition implements TemplateFieldType {
         return fieldLevelInterfaceSources;
     }
 
+    private String getViewRendererAnnotation(TemplateImportsBuilder importsBuilder) {
+
+        StringBuilder builder = new StringBuilder();
+
+        final String handlebarsTemplateClassName = "com.psddev.handlebars.HandlebarsTemplate";
+        final String jsonTemplateClassName = "com.psddev.cms.view.JsonView";
+
+        if (isJsonFormat()) {
+            importsBuilder.add(jsonTemplateClassName);
+            builder.append("@");
+            builder.append(TemplateFieldType.from(jsonTemplateClassName).getClassName());
+            builder.append(NEW_LINE);
+        } else {
+            importsBuilder.add(handlebarsTemplateClassName);
+            builder.append("@");
+            builder.append(TemplateFieldType.from(handlebarsTemplateClassName).getClassName());
+            builder.append("(\"").append(StringUtils.removeStart(name, "/")).append("\")");
+            builder.append(NEW_LINE);
+        }
+
+        return builder.toString();
+    }
+
     private ViewClassSource getViewClassSource() {
 
         StringBuilder sourceBuilder = new StringBuilder();
+        TemplateImportsBuilder importsBuilder = new TemplateImportsBuilder(this);
 
-        Set<String> imports = new LinkedHashSet<>();
-
-        final String viewInterfaceClassName = "com.psddev.cms.view.ViewInterface";
-        final String handlebarsTemplateClassName = "com.psddev.handlebars.HandlebarsTemplate";
-        final String jsonTemplateClassName = "com.psddev.cms.view.JsonView";
-        String templateClassName = handlebarsTemplateClassName;
-
-        if (isJsonFormat()) {
-            templateClassName = jsonTemplateClassName;
-        }
-
-        if (classExists(viewInterfaceClassName)) {
-            imports.add(viewInterfaceClassName);
-        }
-
-        imports.add(templateClassName);
-
+        // File header
         sourceBuilder.append(getSourceCodeHeaderComment());
 
         // Package declaration
@@ -215,7 +223,7 @@ class TemplateDefinition implements TemplateFieldType {
         sourceBuilder.append(NEW_LINE);
 
         // Imports - we collect them as we process, so this just a placeholder which we'll replace at the end.
-        sourceBuilder.append("${importsPlaceholder}");
+        sourceBuilder.append(TemplateImportsBuilder.PLACEHOLDER);
         sourceBuilder.append(NEW_LINE);
 
         // JSON generated class level javadocs
@@ -226,17 +234,16 @@ class TemplateDefinition implements TemplateFieldType {
         }
 
         // Annotations
-        if (classExists(viewInterfaceClassName)) {
-            sourceBuilder.append("@").append(toSimpleClassName(viewInterfaceClassName)).append(NEW_LINE);
+        // ViewInterface annotation
+        final String viewInterfaceClassName = "com.psddev.cms.view.ViewInterface";
+        if (importsBuilder.addIfExists(viewInterfaceClassName)) {
+            sourceBuilder.append("@").append(TemplateFieldType.from(viewInterfaceClassName).getClassName()).append(NEW_LINE);
         }
-        sourceBuilder.append("@").append(toSimpleClassName(templateClassName));
-        if (!isJsonFormat()) {
-            sourceBuilder.append("(\"").append(StringUtils.removeStart(name, "/")).append("\")");
-        }
-        sourceBuilder.append(NEW_LINE);
+        // ViewRenderer annotation
+        sourceBuilder.append(getViewRendererAnnotation(importsBuilder));
 
         // Interface declaration
-        sourceBuilder.append("public interface ").append(getClassName()).append(getImplementedTemplateFieldDefinitions(imports)).append(" {").append(NEW_LINE);
+        sourceBuilder.append("public interface ").append(getClassName()).append(getImplementedTemplateFieldDefinitions(importsBuilder)).append(" {").append(NEW_LINE);
 
         // Static view type/element constants
         for (TemplateFieldDefinition fieldDef : fields) {
@@ -253,7 +260,7 @@ class TemplateDefinition implements TemplateFieldType {
         // Interface method declarations
         for (TemplateFieldDefinition fieldDef : fields) {
             sourceBuilder.append(NEW_LINE);
-            sourceBuilder.append(fieldDef.getInterfaceMethodDeclarationSource(1, imports));
+            sourceBuilder.append(fieldDef.getInterfaceMethodDeclarationSource(1, importsBuilder));
             sourceBuilder.append(NEW_LINE);
         }
 
@@ -274,7 +281,7 @@ class TemplateDefinition implements TemplateFieldType {
         {
             if (!fields.isEmpty()) {
                 for (TemplateFieldDefinition fieldDef : fields) {
-                    sourceBuilder.append(NEW_LINE).append(fieldDef.getInterfaceBuilderFieldDeclarationSource(2, imports));
+                    sourceBuilder.append(NEW_LINE).append(fieldDef.getInterfaceBuilderFieldDeclarationSource(2, importsBuilder));
                 }
                 sourceBuilder.append(NEW_LINE);
             }
@@ -294,7 +301,7 @@ class TemplateDefinition implements TemplateFieldType {
             // Builder class builder methods for each field
             for (TemplateFieldDefinition fieldDef : fields) {
                 sourceBuilder.append(NEW_LINE);
-                sourceBuilder.append(fieldDef.getInterfaceBuilderMethodImplementationSource(2, imports));
+                sourceBuilder.append(fieldDef.getInterfaceBuilderMethodImplementationSource(2, importsBuilder));
                 sourceBuilder.append(NEW_LINE);
             }
 
@@ -311,7 +318,7 @@ class TemplateDefinition implements TemplateFieldType {
             {
                 sourceBuilder.append(indent(3)).append("return new ").append(getClassName()).append("() {\n");
                 for (TemplateFieldDefinition fieldDef : fields) {
-                    sourceBuilder.append(NEW_LINE).append(fieldDef.getInterfaceBuilderBuildMethodSource(4, imports)).append(NEW_LINE);
+                    sourceBuilder.append(NEW_LINE).append(fieldDef.getInterfaceBuilderBuildMethodSource(4, importsBuilder)).append(NEW_LINE);
                 }
                 sourceBuilder.append(indent(3)).append("};").append(NEW_LINE);
             }
@@ -326,7 +333,7 @@ class TemplateDefinition implements TemplateFieldType {
 
         String javaSource = sourceBuilder.toString();
 
-        String importsSource = getJavaImportStatements(imports);
+        String importsSource = importsBuilder.getImportStatements();
 
         javaSource = javaSource.replace("${importsPlaceholder}", importsSource);
 
@@ -359,17 +366,6 @@ class TemplateDefinition implements TemplateFieldType {
         return javaClassNamePrefix + StyleguideStringUtils.toJavaClassCase(className) + "View";
     }
 
-    private String getJavaImportStatements(Set<String> imports) {
-
-        StringBuilder builder = new StringBuilder();
-
-        for (String importClass : imports) {
-            builder.append("import ").append(importClass).append(";\n");
-        }
-
-        return builder.toString();
-    }
-
     private List<TemplateFieldDefinition> getImplementedTemplateFieldDefinitions() {
 
         List<TemplateFieldDefinition> implementedFieldDefs = new ArrayList<>();
@@ -389,7 +385,7 @@ class TemplateDefinition implements TemplateFieldType {
         return implementedFieldDefs;
     }
 
-    private String getImplementedTemplateFieldDefinitions(Set<String> imports) {
+    private String getImplementedTemplateFieldDefinitions(TemplateImportsBuilder importsBuilder) {
 
         List<String> classNames = new ArrayList<>();
 
@@ -399,10 +395,7 @@ class TemplateDefinition implements TemplateFieldType {
 
                 TemplateFieldType fieldType = (TemplateFieldType) fieldDef;
 
-                if (!this.hasSamePackageAs(fieldType)) {
-                    // add its parent's fully qualified class name
-                    imports.add(fieldType.getFullyQualifiedClassName());
-                }
+                importsBuilder.add(fieldType);
 
                 classNames.add(fieldType.getClassName());
             }
@@ -429,15 +422,5 @@ class TemplateDefinition implements TemplateFieldType {
         }
 
         return className;
-    }
-
-    // Checks if a class exists for the given className.
-    private static boolean classExists(String className) {
-        try {
-            Class.forName(className);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 }

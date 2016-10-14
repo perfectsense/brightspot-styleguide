@@ -107,4 +107,8 @@ interface TemplateFieldType {
     default String getPackageRelativeClassName(TemplateFieldType relativeFieldType) {
         return hasSamePackageAs(relativeFieldType) ? getClassName() : getFullyQualifiedClassName();
     }
+
+    static TemplateFieldType from(String fullyQualifiedClassName) {
+        return () -> fullyQualifiedClassName;
+    }
 }

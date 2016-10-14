@@ -2,6 +2,7 @@ package com.psddev.styleguide;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,8 +15,8 @@ class TemplateFieldDefinitionMap extends TemplateFieldDefinition {
     }
 
     @Override
-    public String getJavaFieldType(Set<String> imports) {
-        imports.add(Map.class.getName());
+    public String getJavaFieldType(TemplateImportsBuilder importsBuilder) {
+        importsBuilder.add(Map.class.getName());
         return "Map<String, Object>";
     }
 
@@ -25,14 +26,14 @@ class TemplateFieldDefinitionMap extends TemplateFieldDefinition {
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, TemplateImportsBuilder importsBuilder) {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports));
+        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, importsBuilder));
         builder.append("\n\n");
 
-        imports.add("java.util.LinkedHashMap");
+        importsBuilder.add(LinkedHashMap.class.getName());
 
         StringBuilder notesJavaDoc = new StringBuilder();
         for (String note : notes) {

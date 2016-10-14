@@ -1,6 +1,7 @@
 package com.psddev.styleguide;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,17 +34,14 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
     }
 
     @Override
-    public String getJavaFieldType(Set<String> imports) {
+    public String getJavaFieldType(TemplateImportsBuilder importsBuilder) {
         if (isStringMap()) {
-            imports.add(Map.class.getName());
+            importsBuilder.add(Map.class.getName());
             return "Map<String, String>";
 
         } else {
             TemplateFieldType fieldType = getEffectiveValueType();
-            if (fieldType instanceof TemplateDefinition) {
-                imports.add(fieldType.getFullyQualifiedClassName());
-            }
-
+            importsBuilder.add(fieldType);
             return fieldType.getLocalClassName();
         }
     }
@@ -67,15 +65,15 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, TemplateImportsBuilder importsBuilder) {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, imports));
+        builder.append(super.getInterfaceBuilderMethodImplementationSource(indent, importsBuilder));
 
         if (isStringMap()) {
             builder.append("\n\n");
-            imports.add("java.util.LinkedHashMap");
+            importsBuilder.add(LinkedHashMap.class.getName());
 
             StringBuilder notesJavaDoc = new StringBuilder();
             for (String note : notes) {

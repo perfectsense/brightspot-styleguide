@@ -1,5 +1,6 @@
 package com.psddev.styleguide;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -93,8 +94,8 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
     }
 
     @Override
-    public String getJavaFieldType(Set<String> imports) {
-        imports.add(Collection.class.getName());
+    public String getJavaFieldType(TemplateImportsBuilder importsBuilder) {
+        importsBuilder.add(Collection.class.getName());
 
         String genericArgument;
 
@@ -106,7 +107,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
         } else {
             // if the effective type lives in a different package, then import it.
             if (!this.hasSamePackageAs(effectiveFieldValueType)) {
-                imports.add(effectiveFieldValueType.getFullyQualifiedClassName());
+                importsBuilder.add(effectiveFieldValueType);
             }
 
             genericArgument = "? extends " + effectiveFieldValueType.getLocalClassName();
@@ -115,12 +116,12 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
         return "Collection<" + genericArgument + ">";
     }
 
-    public String getJavaFieldTypeForBuilder(Set<String> imports) {
-        imports.add(Collection.class.getName());
+    public String getJavaFieldTypeForBuilder(TemplateImportsBuilder importsBuilder) {
+        importsBuilder.add(Collection.class.getName());
 
         // Collection<?> --> Collection<Object>
         // Collection<? extends Foo> --> Collection<Foo>
-        return getJavaFieldType(imports).replace("? extends ", "").replace("?", "Object");
+        return getJavaFieldType(importsBuilder).replace("? extends ", "").replace("?", "Object");
     }
 
     @Override
@@ -157,16 +158,11 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, Set<String> imports) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, TemplateImportsBuilder importsBuilder) {
 
         StringBuilder builder = new StringBuilder();
 
-        imports.add("java.util.ArrayList");
-
-        String nameViewClass = name + "ViewClass";
-        String nameView = name + "View";
-        String nameModel = name + "Model";
-        String nameModels = name + "Models";
+        importsBuilder.add(ArrayList.class.getName());
 
         TemplateJavadocsBuilder method1Javadocs = new TemplateJavadocsBuilder();
         method1Javadocs.addParagraph("Sets the " + name + " field.");
@@ -177,7 +173,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
 
         String[] method1 = {
                 method1Javadocs.buildJavadocsSource(indent),
-                indent(indent) + "public Builder " + name + "(" + getJavaFieldType(imports) + " " + name + ") {\n",
+                indent(indent) + "public Builder " + name + "(" + getJavaFieldType(importsBuilder) + " " + name + ") {\n",
                 indent(indent + 1) + "this." + name + " = " + name + " != null ? new ArrayList<>(" + name + ") : null;\n",
                 indent(indent + 1) + "return this;\n",
                 indent(indent) + "}"
@@ -238,7 +234,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
          */
         String[] method3 = {
                 method3Javadocs.buildJavadocsSource(indent),
-                indent(indent) + "public Builder addAllTo" + StyleguideStringUtils.toJavaMethodCase(name) + "(" + getJavaFieldType(imports) + " " + name + ") {\n",
+                indent(indent) + "public Builder addAllTo" + StyleguideStringUtils.toJavaMethodCase(name) + "(" + getJavaFieldType(importsBuilder) + " " + name + ") {\n",
                 indent(indent + 1) + "if (this." + name + " == null) {\n",
                 indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
                 indent(indent + 1) + "}\n",

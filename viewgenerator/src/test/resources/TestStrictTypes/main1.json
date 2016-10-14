@@ -6,6 +6,11 @@
     "stringList": [ "alpha", "beta", "gamma" ],
     "numberList": [ 0, 1, 2 ],
     "booleanList": [ true, false, true ],
+    "extraAttributes": {
+        "key1": "value1",
+        "key2": "value2",
+        "key3": "value3"
+    },
     "singleTemplateTypeSamePackageValue": {
         "_template": "templates/Alpha"
     },

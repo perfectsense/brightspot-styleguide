@@ -166,6 +166,9 @@ class TemplateDefinition implements TemplateFieldType {
                 // Adds javadocs if it exists (which it should).
                 sourceBuilder.append(new TemplateJavadocsBuilder()
                         .startParagraph()
+                        .add("Field level interface for the return type of ")
+                        .addLink(fieldDef.getParentTemplate().getClassName() + "#" + fieldDef.getJavaInterfaceMethodName() + "()")
+                        .add(". ")
                         .addFieldValueTypesSnippet(fieldDef)
                         .endParagraph()
                         .buildJavadocsSource(0));

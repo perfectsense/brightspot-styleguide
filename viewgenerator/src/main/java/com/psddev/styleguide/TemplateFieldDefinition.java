@@ -148,7 +148,7 @@ abstract class TemplateFieldDefinition {
         return getJavaFieldType();
     }
 
-    public String getJavaInterfaceMethodName() {
+    String getJavaInterfaceMethodName() {
 
         String methodNamePrefix = "get";
 

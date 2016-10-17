@@ -2,6 +2,7 @@ package com.psddev.styleguide;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -169,6 +170,7 @@ class TemplateDefinition implements TemplateFieldType {
                         .add("Field level interface for the return type of ")
                         .addLink(fieldDef.getParentTemplate().getClassName() + "#" + fieldDef.getJavaInterfaceMethodName() + "()")
                         .add(". ")
+                        .newLine()
                         .addFieldValueTypesSnippet(fieldDef)
                         .endParagraph()
                         .buildJavadocsSource(0));
@@ -242,8 +244,8 @@ class TemplateDefinition implements TemplateFieldType {
         // ViewRenderer annotation
         sourceBuilder.append(getViewRendererAnnotation(importsBuilder));
 
-        // Interface declaration
-        sourceBuilder.append("public interface ").append(getClassName()).append(getImplementedTemplateFieldDefinitions(importsBuilder)).append(" {").append(NEW_LINE);
+        // Interface declaration / Ex: public interface ExampleView extends .... {
+        sourceBuilder.append(getViewInterfaceDeclaration(importsBuilder));
 
         // Static view type/element constants
         for (TemplateFieldDefinition fieldDef : fields) {
@@ -389,7 +391,7 @@ class TemplateDefinition implements TemplateFieldType {
         return implementedFieldDefs;
     }
 
-    private String getImplementedTemplateFieldDefinitions(TemplateImportsBuilder importsBuilder) {
+    private String getViewInterfaceDeclaration(TemplateImportsBuilder importsBuilder) {
 
         List<String> classNames = new ArrayList<>();
 
@@ -405,7 +407,24 @@ class TemplateDefinition implements TemplateFieldType {
             }
         }
 
-        return classNames.isEmpty() ? "" : " extends " + classNames.stream().sorted().collect(Collectors.joining(", "));
+        StringBuilder builder = new StringBuilder();
+        builder.append("public interface ");
+        builder.append(getClassName());
+
+        if (!classNames.isEmpty()) {
+            builder.append(" extends ");
+
+            char[] spaces = new char[builder.length()];
+            Arrays.fill(spaces, ' ');
+            String indent = new String(spaces);
+
+            builder.append(classNames.stream().sorted().collect(Collectors.joining("," + NEW_LINE + indent)));
+        }
+
+        builder.append(" {");
+        builder.append(NEW_LINE);
+
+        return builder.toString();
     }
 
     /**

@@ -152,7 +152,7 @@ class TemplateJavadocsBuilder {
         builder.append(javadocLinks
                 .stream()
                 // join them with commas
-                .collect(Collectors.joining(", "))
+                .collect(Collectors.joining("," + NEW_LINE))
                 // isolate the last comma in the String and replace it with the operator " and" or " or"
                 .replaceFirst("(.*),([^,]+$)", "$1 " + operator + "$2"));
 

@@ -10,6 +10,14 @@ module.exports.styles = function (path) {
     })
 }
 
-module.exports.scripts = function () {
+module.exports.scripts = function (config) {
+    var defaultConfig = 'systemjs.config.js'
+    var builderConfig = config || defaultConfig
+
     var builder = new Builder()
+    builder.loadConfig(builderConfig)
+        .then(function() {
+            console.log('loaded config');
+            // ready to build
+        });
 }

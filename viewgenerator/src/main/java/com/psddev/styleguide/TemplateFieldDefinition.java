@@ -21,7 +21,7 @@ abstract class TemplateFieldDefinition {
     protected boolean isDefaulted;
     protected boolean isStrictlyTyped;
 
-    public static TemplateFieldDefinition createInstance(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
+    public static TemplateFieldDefinition createInstance(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
 
         JsonObjectType effectiveValueType;
 
@@ -30,10 +30,11 @@ abstract class TemplateFieldDefinition {
         values.forEach((value) -> valueTypes.add(value.getType()));
 
         if (valueTypes.size() == 1
-                || valueTypes.size() == 2 && valueTypes.contains(JsonObjectType.TEMPLATE_OBJECT) && valueTypes.contains(JsonObjectType.STRING)) {
+                || (!isStrictlyTyped && valueTypes.size() == 2
+                        && valueTypes.containsAll(Arrays.asList(JsonObjectType.TEMPLATE_OBJECT, JsonObjectType.STRING)))) {
 
             if (valueTypes.size() == 2) {
-                // We allow Strings and Objects to co-exist and just treat them as if it is Object
+                // If not strictly typed, we allow Strings and Objects to co-exist and just treat them as if it is Object
                 effectiveValueType = JsonObjectType.TEMPLATE_OBJECT;
 
             } else {
@@ -41,22 +42,22 @@ abstract class TemplateFieldDefinition {
             }
 
             if (effectiveValueType == JsonObjectType.BOOLEAN) {
-                return new TemplateFieldDefinitionBoolean(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionBoolean(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else if (effectiveValueType == JsonObjectType.STRING) {
-                return new TemplateFieldDefinitionString(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionString(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else if (effectiveValueType == JsonObjectType.NUMBER) {
-                return new TemplateFieldDefinitionNumber(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionNumber(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else if (effectiveValueType == JsonObjectType.LIST) {
-                return new TemplateFieldDefinitionList(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionList(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else if (effectiveValueType == JsonObjectType.MAP) {
-                return new TemplateFieldDefinitionMap(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionMap(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else if (effectiveValueType == JsonObjectType.TEMPLATE_OBJECT) {
-                return new TemplateFieldDefinitionObject(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+                return new TemplateFieldDefinitionObject(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else {
                 throw new IllegalArgumentException("ERROR: (" + parentTemplate + " - " + name
@@ -72,7 +73,15 @@ abstract class TemplateFieldDefinition {
         }
     }
 
-    public TemplateFieldDefinition(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
+    public TemplateFieldDefinition(TemplateDefinitions templateDefinitions,
+                                   String parentTemplate,
+                                   String name,
+                                   List<JsonObject> values,
+                                   Set<String> mapTemplates,
+                                   String javaClassNamePrefix,
+                                   boolean isDefaulted,
+                                   boolean isStrictlyTyped) {
+
         this.templateDefinitions = templateDefinitions;
         this.parentTemplate = parentTemplate;
         this.name = name;
@@ -86,9 +95,8 @@ abstract class TemplateFieldDefinition {
             }
         });
         this.javaClassNamePrefix = javaClassNamePrefix;
-        // TODO: Eventually pass these values as parameters to the constructor so the behavior can be configured.
-        this.isDefaulted = false;
-        this.isStrictlyTyped = true;
+        this.isDefaulted = isDefaulted;
+        this.isStrictlyTyped = isStrictlyTyped;
     }
 
     @Override

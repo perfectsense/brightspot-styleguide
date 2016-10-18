@@ -112,7 +112,9 @@ class TemplateDefinition implements TemplateFieldType {
                             entry.getKey(),
                             entry.getValue(),
                             mapTemplates,
-                            javaClassNamePrefix))
+                            javaClassNamePrefix,
+                            /* isDefaulted */ false,
+                            /* isStrictlyTyped */ true))
 
                     .sorted((tfd1, tfd2) -> ObjectUtils.compare(tfd1.getName(), tfd2.getName(), true))
 

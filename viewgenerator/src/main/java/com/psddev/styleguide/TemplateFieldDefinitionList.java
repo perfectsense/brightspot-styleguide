@@ -14,8 +14,8 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
     private Set<String> listItemTypes;
     private JsonObjectType effectiveListValueType;
 
-    public TemplateFieldDefinitionList(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix) {
-        super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix);
+    public TemplateFieldDefinitionList(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
+        super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
         Set<JsonObjectType> listValueTypes = new HashSet<>();
 
@@ -37,10 +37,10 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
 
             if (listValueTypes.size() > 1) {
 
-                if (listValueTypes.size() == 2
-                        && listValueTypes.contains(JsonObjectType.TEMPLATE_OBJECT) && listValueTypes.contains(JsonObjectType.STRING)) {
+                if (!isStrictlyTyped && listValueTypes.size() == 2
+                        && listValueTypes.containsAll(Arrays.asList(JsonObjectType.TEMPLATE_OBJECT, JsonObjectType.STRING))) {
 
-                    // We allow Strings and Objects to co-exist and just treat them as if it is Object
+                    // If not strictly typed, we allow Strings and Objects to co-exist and just treat them as if it is Object
                     effectiveListValueType = JsonObjectType.TEMPLATE_OBJECT;
 
                 } else {

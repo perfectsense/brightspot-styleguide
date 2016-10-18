@@ -1,11 +1,9 @@
-module.exports = function () {
-    // Precompiles the stylesheets
-    gulp.task('compile:styles', function(callback) {
-        return
-    });
+const Builder = require('systemjs-builder')
 
-    // Transpiles the scripts
-    gulp.task('compile:scripts', function(callback) {
-        return
-    });
+module.exports.styles = function () {
+    return
+}
+
+module.exports.scripts = function () {
+    var builder = new Builder()
 }

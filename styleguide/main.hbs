@@ -6,11 +6,34 @@
         <script type="text/javascript" src="/node-modules/codemirror/lib/codemirror.js"></script>
         <script type="text/javascript" src="/node-modules/codemirror/mode/javascript/javascript.js"></script>
         <script type="text/javascript" src="/node-modules/iframe-resizer/js/iframeResizer.min.js"></script>
+        <script type="text/javascript">
+        $(document).ready( function(){
 
+        });
+
+
+
+        </script>
         <script type="text/javascript">
             (function () {
+                /*
+                *   Fetch Content for json files
+                */
+                function fetchContent (url){
+                    $.ajax({
+                        url: url
+                    })
+                    .done(function(data){
+                        $('.sg-content').html(data).trigger( "sg:contentLoaded" );
 
-                $(window).on('load', function() {
+                    })
+                    .fail(function(){
+                        console.log('something went wront with the fetch content');
+                    });
+                }
+
+                $(document).on('sg:contentLoaded', function () {
+
                     $('.sg-file-body > iframe').iFrameResize({
                         log: false,
                         heightCalculationMethod: 'max',
@@ -26,9 +49,7 @@
                             $(iframe).contents().find('html', 'body').css('height', 'auto');
                         }
                     });
-                });
 
-                $(document).ready(function () {
                     $('.sg-menu').stick_in_parent();
 
                     $('.sg-file').each(function () {
@@ -101,6 +122,37 @@
                         }
                     });
                 });
+
+                $(document).ready(function(){
+
+                    $('.sg-example-name, .sg-group-name').on('click', function(event){
+                        event.preventDefault();
+
+                        var $self = $(this);
+                        var $parentNode = $self.parents('li');
+
+                        $parentNode.siblings().removeAttr('data-listOpen')
+                            .find('.sg-example-file-name').removeAttr('data-listActive');
+                        //toggle the navigation
+                        if ($parentNode.attr('data-listOpen') === "true"){
+                           $parentNode.removeAttr('data-listOpen');
+                        }else {
+                           $parentNode.attr('data-listOpen','true');
+                        }
+                   });
+                    $('.sg-example-list-children .sg-example-file-name').on('click', function(event){
+                        event.preventDefault();
+
+                        var $self = $(this);
+                        $self.attr('data-listActive','true')
+                            .parents('.sg-example').siblings().find('.sg-example-file-name').removeAttr('data-listActive');
+
+                        fetchContent($self.attr('href'));
+                    });
+                    // trigger event content loaded when app initializes
+                    $('.sg-content').trigger('sg:contentLoaded');
+                })
+
             })();
         </script>
     {{/inline}}

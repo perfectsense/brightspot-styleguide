@@ -76,6 +76,9 @@ a {
 }
 
 .sg-menu {
+    position: fixed;
+    overflow: auto;
+    height: 100vh;
     box-sizing: border-box;
     float: left;
     padding: 12px 12px 12px 24px;
@@ -90,6 +93,15 @@ a {
     }
 }
 
+.sg-group {
+    border-top: 1px solid #e0e0e0;
+    &[data-listOpen] {
+        .sg-example-list {
+            max-height: 40000px;
+        }
+   }
+}
+
 .sg-group-list {
     list-style: none;
     margin: 0 0 12px 0;
@@ -98,19 +110,47 @@ a {
 
 .sg-group-name {
     font-weight: bold;
-    margin-bottom: 12px;
+    margin: 12px 0;
 }
+.sg-example {
+    &-name,
+    &-file-name {
+        display: block;
+        padding-left: 14px;
+        &[data-listActive] {
+            padding-left: 11px;
+            border-left: 3px solid #38b5dc;
+        }
+    }
 
+    &[data-listOpen] {
+        color: #259acd;
+        .sg-example-list-children{
+            max-height: 4000px;
+        }
+
+        .sg-example-name, {
+            padding-left: 11px;
+            border-left: 3px solid #38b5dc;
+        }
+    }
+}
 .sg-example-list {
     list-style: none;
-    margin: 0 0 12px 0;
+    margin: 0;
     padding: 0;
-
+    max-height: 0;
+    overflow: hidden;
     ul {
        list-style: none;
        margin: 0 0 12px 12px;
        padding: 0;
     }
+}
+
+.sg-example-list-children{
+    max-height: 0;
+    overflow: hidden;
 }
 
 .sg-content {

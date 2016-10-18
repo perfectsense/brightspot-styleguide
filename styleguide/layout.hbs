@@ -49,14 +49,6 @@
             </div>
         </header>
         <div class="sg-menu">
-            <form class="sg-library-list">
-                <select onchange="window.location.href = $(this).val();">
-                    {{#each availableLibraries}}
-                        <option value="{{library.urlPrefix}}"{{#if selected}} selected{{/if}}>{{library.name}}</option>
-                    {{/each}}
-                </select>
-            </form>
-
             <ul class="sg-group-list">
                 {{#each groups}}
                     <li class="sg-group">
@@ -64,7 +56,18 @@
                         <ul class="sg-example-list">
                             {{#each examples}}
                                 <li class="sg-example">
-                                    <a href="{{url}}">{{name}}</a>
+                                    {{#if children}}
+                                        <span class="sg-example-name">{{name}}</span>
+                                        <ul class="sg-example-list-children">
+                                            {{#each children}}
+                                                <li class="sg-example">
+                                                    <a href="{{url}}" class="sg-example-file-name">{{name}}</a>
+                                                </li>
+                                            {{/each}}
+                                        </ul>
+                                    {{else}}
+                                        <a href="{{url}}">{{name}}</a>
+                                    {{/if}}
                                 </li>
                             {{/each}}
                         </ul>

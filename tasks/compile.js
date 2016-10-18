@@ -1,6 +1,4 @@
-
-
-module.exports = function(gulp){
+module.exports = function () {
     // Precompiles the stylesheets
     gulp.task('compile:styles', function(callback) {
         return

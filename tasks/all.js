@@ -1,4 +1,3 @@
-
 var Styleguide = function () {}
 
 Styleguide.prototype.clean = require('./clean.js')

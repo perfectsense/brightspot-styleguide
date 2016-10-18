@@ -1,8 +1,8 @@
-var Styleguide = function () {}
+var Styleguide = function () {};
 
-Styleguide.prototype.clean = require('./clean.js')
-Styleguide.prototype.install = require('./install.js')
-Styleguide.prototype.compileScripts = require('./compile.js').scripts
-Styleguide.prototype.compileStyles = require('./compile.js').styles
+Styleguide.prototype.clean = require('./clean.js');
+Styleguide.prototype.bower = require('./bower.js').bower;
+Styleguide.prototype.compileScripts = require('./compile.js').scripts;
+Styleguide.prototype.compileStyles = require('./compile.js').styles;
 
-module.exports = new Styleguide()
+module.exports = new Styleguide();

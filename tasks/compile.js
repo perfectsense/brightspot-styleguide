@@ -1,7 +1,13 @@
-const Builder = require('systemjs-builder')
+const Builder   = require('systemjs-builder')
+const less      = require('gulp-less');
 
-module.exports.styles = function () {
-    return
+module.exports.styles = function (path) {
+    if (!path) {
+        path = [ '_build' ];
+    }
+    return less({
+      paths: path
+    })
 }
 
 module.exports.scripts = function () {

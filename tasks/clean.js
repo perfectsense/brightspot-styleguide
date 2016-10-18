@@ -1,5 +1,8 @@
-const del = require('del')
+const del = require('del');
 
 module.exports = function (src) {
-    return del(src)
+    if (!src) {
+        src = ['_dist/**/*', '_build/**/*'];
+    }
+    return del(src);
 }

@@ -1,5 +1,6 @@
-const Builder   = require('systemjs-builder')
-const less      = require('gulp-less');
+const less = require('gulp-less');
+const SystemjsBuilder = require('gulp-systemjs-builder')
+//const systemjsConfig = require('./systemjs.config.js')
 
 module.exports.styles = function (path) {
     if (!path) {
@@ -11,13 +12,14 @@ module.exports.styles = function (path) {
 }
 
 module.exports.scripts = function (config) {
-    var defaultConfig = 'systemjs.config.js'
-    var builderConfig = config || defaultConfig
+    // Config API: https://github.com/systemjs/systemjs/blob/master/docs/config-api.md
+    var builder = new SystemjsBuilder('_build/', {
+        minify: false,
+        mangle: true,
+        runtime: false,
+        defaultJSExtensions: true,
+        globalDefs: { DEBUG: false, ENV: 'production' }
+    })
 
-    var builder = new Builder()
-    builder.loadConfig(builderConfig)
-        .then(function() {
-            console.log('loaded config');
-            // ready to build
-        });
+    return builder.buildStatic('All.js', 'All.min.js')
 }

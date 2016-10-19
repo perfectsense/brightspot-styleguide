@@ -1,6 +1,8 @@
+const gulp = require('gulp');
 const less = require('gulp-less');
-const SystemjsBuilder = require('gulp-systemjs-builder')
-//const systemjsConfig = require('./systemjs.config.js')
+const uglify = require('gulp-uglify');
+const rename = require("gulp-rename");
+const SystemjsBuilder = require('gulp-systemjs-builder');
 
 module.exports.styles = function (path) {
     if (!path) {
@@ -12,14 +14,23 @@ module.exports.styles = function (path) {
 }
 
 module.exports.scripts = function (config) {
-    // Config API: https://github.com/systemjs/systemjs/blob/master/docs/config-api.md
-    var builder = new SystemjsBuilder('_build/', {
+    var builderConfig = config || {
         minify: false,
-        mangle: true,
-        runtime: false,
-        defaultJSExtensions: true,
-        globalDefs: { DEBUG: false, ENV: 'production' }
-    })
+        mangle: false
+    }
 
-    return builder.buildStatic('All.js', 'All.min.js')
+    var systemConfig = {
+        defaultJSExtensions: true
+    }
+
+    // SystemJS Config API: https://github.com/systemjs/systemjs/blob/master/docs/config-api.md
+    var builder = new SystemjsBuilder('./_build', systemConfig)
+
+    // SystemJS Builder API: https://github.com/systemjs/builder
+    return builder
+            .buildStatic('All.js', builderConfig)
+            .pipe(gulp.dest('_dist'))
+            .pipe(uglify())
+            .pipe(rename({extname: '.min.js'}))
+            .pipe(gulp.dest('_dist'))
 }

@@ -76,6 +76,8 @@ public class ViewClassGenerator {
     private Set<String> mapBasedTemplates;
     private Set<Path> ignoredFileNames;
     private String classNamePrefix;
+    private boolean generateDefaultMethods;
+    private boolean generateStrictTypes;
 
     private CliLogger logger = CliLogger.getLogger();
 
@@ -88,6 +90,8 @@ public class ViewClassGenerator {
         this.mapBasedTemplates = Collections.emptySet();
         this.ignoredFileNames = Collections.emptySet();
         this.classNamePrefix = null;
+        this.generateDefaultMethods = false;
+        this.generateStrictTypes = true;
     }
 
     private ViewClassGenerator(ViewClassGeneratorCliArguments arguments) {
@@ -97,6 +101,8 @@ public class ViewClassGenerator {
         this.mapBasedTemplates = arguments.getMapTemplates();
         this.ignoredFileNames = arguments.getIgnoredFileNames();
         this.classNamePrefix = arguments.getClassNamePrefix();
+        this.generateDefaultMethods = arguments.isDefaultMethods();
+        this.generateStrictTypes = arguments.isStrictTypes();
     }
 
     public void disableLogColors() {

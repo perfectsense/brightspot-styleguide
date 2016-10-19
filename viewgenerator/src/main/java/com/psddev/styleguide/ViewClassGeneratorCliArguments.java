@@ -23,6 +23,8 @@ class ViewClassGeneratorCliArguments {
     private static final String IGNORE_FILES_PREFIX =        "--ignore-files=";
     private static final String CLASS_NAME_PREFIX_PREFIX =   "--class-name-prefix=";
     private static final String WATCH_PREFIX =               "--watch=";
+    private static final String DEFAULT_METHODS_PREFIX =     "--default-methods=";
+    private static final String STRICT_TYPES_PREFIX =        "--script-types=";
 
     // default argument values
     private static final Path DEFAULT_JSON_DIRECTORY = Paths.get(System.getProperty("user.dir"), "styleguide");
@@ -40,6 +42,8 @@ class ViewClassGeneratorCliArguments {
     private Set<Path> ignoredFileNames = new HashSet<>();
     private String classNamePrefix = null;
     private boolean watch = false;
+    private boolean isDefaultMethods = false;
+    private boolean isStrictTypes = true;
 
     public ViewClassGeneratorCliArguments(String[] args) {
 
@@ -74,6 +78,12 @@ class ViewClassGeneratorCliArguments {
 
                 } else if (arg.startsWith(WATCH_PREFIX)) {
                     watch = ObjectUtils.to(boolean.class, processStringArgument(WATCH_PREFIX, arg));
+
+                } else if (arg.startsWith(DEFAULT_METHODS_PREFIX)) {
+                    isDefaultMethods = ObjectUtils.to(boolean.class, processStringArgument(DEFAULT_METHODS_PREFIX, arg));
+
+                } else if (arg.startsWith(STRICT_TYPES_PREFIX)) {
+                    isStrictTypes = ObjectUtils.to(boolean.class, processStringArgument(STRICT_TYPES_PREFIX, arg));
                 }
             }
         }
@@ -132,6 +142,14 @@ class ViewClassGeneratorCliArguments {
 
     public boolean isWatch() {
         return watch;
+    }
+
+    public boolean isDefaultMethods() {
+        return isDefaultMethods;
+    }
+
+    public boolean isStrictTypes() {
+        return isStrictTypes;
     }
 
     private String processStringArgument(String argName, String argValue) {

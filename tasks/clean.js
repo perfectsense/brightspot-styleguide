@@ -10,6 +10,6 @@ module.exports.clean = function (src) {
 }
 
 module.exports.copySrc = function () {
-    return gulp.src(['!_build/**', '!gulpfile.js', './**/*.{js,less,css}'])
+    return gulp.src(['!_build/**', '!node_modules/**', '!gulpfile.js', './**/*.{js,less,css}'])
         .pipe(gulp.dest('./_build/'));
 }

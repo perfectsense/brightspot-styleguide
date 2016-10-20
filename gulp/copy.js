@@ -2,6 +2,7 @@ const paths = require('./paths.js');
 const gulp = require('gulp');
 
 module.exports.copySrc = function () {
-    return gulp.src(['!' + paths.buildRoot + '/**', '!node_modules/**', '!gulpfile.js', './**/*.{js,less,css,hbs}'])
-        .pipe(gulp.dest(paths.buildRoot));
+    return gulp
+            .src(['./**/*.{js,less,css}', '!_build/**/*', '!_dist/**/*', '!node_modules/**/*', '!bower_components/**/*', '!gulpfile.js'])
+            .pipe(gulp.dest(paths.buildRoot));
 }

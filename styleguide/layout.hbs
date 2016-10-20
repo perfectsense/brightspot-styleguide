@@ -19,7 +19,7 @@
             <div class="sg-header-title">
                 Styleguide{{#each names}}: {{this}}{{/each}}
 
-                <a href="{{seedUrl}}">#{{seed}}</a>
+                <a href="{{seedUrl}}" data-seedUrl="{{seed}}">#{{seed}}</a>
 
                 {{#with randomizeUrl}}
                     - <a href="{{this}}"><i class="fa fa-refresh"></i> Randomize</a>
@@ -56,17 +56,15 @@
                         <ul class="sg-example-list">
                             {{#each examples}}
                                 <li class="sg-example">
+                                        <a class="sg-example-name"  href="{{url}}" title="{{name}}">{{name}}</a>
                                     {{#if children}}
-                                        <span class="sg-example-name">{{name}}</span>
                                         <ul class="sg-example-list-children">
                                             {{#each children}}
                                                 <li class="sg-example">
-                                                    <a href="{{url}}" class="sg-example-file-name">{{name}}</a>
+                                                    <a href="{{url}}" class="sg-example-file-name" title="{{name}}">{{name}}</a>
                                                 </li>
                                             {{/each}}
                                         </ul>
-                                    {{else}}
-                                        <a href="{{url}}">{{name}}</a>
                                     {{/if}}
                                 </li>
                             {{/each}}

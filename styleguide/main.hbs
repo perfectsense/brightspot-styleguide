@@ -6,33 +6,37 @@
         <script type="text/javascript" src="/node-modules/codemirror/lib/codemirror.js"></script>
         <script type="text/javascript" src="/node-modules/codemirror/mode/javascript/javascript.js"></script>
         <script type="text/javascript" src="/node-modules/iframe-resizer/js/iframeResizer.min.js"></script>
-        <script type="text/javascript">
-        $(document).ready( function(){
+        <script type="text/javascript" src="/node-modules/history.js/scripts/compressed/history.js"></script>
+        <script type="text/javascript" src="/node-modules/history.js/scripts/compressed/history.adapter.jquery.js"></script>
 
+        <script type="text/javascript">
+
+        History.Adapter.bind(window, 'statechange', function() { // Note: We are using statechange instead of popstate
+            var State = History.getState(); // Note: We are using History.getState() instead of event.state
+            fetchContent(State.url);
         });
+        /*
+        *   Fetch Content for json files
+        */
+        function fetchContent (url){
+            $.ajax({
+                url: url
+            })
+            .done(function(data){
+                $('.sg-content').html(data).trigger( "sg:contentLoaded" );
+            })
+            .fail(function(){
+                console.log('something went wront with the fetch content');
+            });
+        }
 
-
-
-        </script>
-        <script type="text/javascript">
-            (function () {
-                /*
-                *   Fetch Content for json files
-                */
-                function fetchContent (url){
-                    $.ajax({
-                        url: url
-                    })
-                    .done(function(data){
-                        $('.sg-content').html(data).trigger( "sg:contentLoaded" );
-
-                    })
-                    .fail(function(){
-                        console.log('something went wront with the fetch content');
-                    });
-                }
-
+            (function (window,undefined) {
                 $(document).on('sg:contentLoaded', function () {
+                    //props open navigation on content load
+                    $('.sg-example-file-name[href$="' + document.location.pathname + document.location.search + '"]').attr('data-listActive','true')
+                        .parents('.sg-example').attr('data-listOpen','true')
+                        .siblings().find('.sg-example-file-name').removeAttr('data-listActive').end().end()
+                        .parents('.sg-group').attr('data-listOpen','true').siblings().removeAttr('data-listOpen');
 
                     $('.sg-file-body > iframe').iFrameResize({
                         log: false,
@@ -144,10 +148,10 @@
                         event.preventDefault();
 
                         var $self = $(this);
+                        var url = $self.attr('href');
                         $self.attr('data-listActive','true')
                             .parents('.sg-example').siblings().find('.sg-example-file-name').removeAttr('data-listActive');
-
-                        fetchContent($self.attr('href'));
+                        History.pushState(null, url, url);
                     });
                     // trigger event content loaded when app initializes
                     $('.sg-content').trigger('sg:contentLoaded');
@@ -163,7 +167,7 @@
                 <div class="sg-file">
                     <div class="sg-file-header">
                         <div class="sg-file-name">
-                            <a href="{{url}}?seed={{../seed}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}">{{name}}</a>
+                            <a href="{{url}}?full&seed={{../seed}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}">{{name}}</a>
                         </div>
 
                         <form class="sg-file-form">
@@ -198,13 +202,13 @@
 
                                     <iframe
                                         style="height: {{device.height}}px; width: {{device.width}}px;"
-                                        src="{{../../url}}?device=true&amp;seed={{../../../seed}}{{#if ../../../selectedStyleSheet}}&amp;ss={{../../../selectedStyleSheet.idx}}{{/if}}">
+                                        src="{{../../url}}?full&device=true&amp;seed={{../../../seed}}{{#if ../../../selectedStyleSheet}}&amp;ss={{../../../selectedStyleSheet.idx}}{{/if}}">
                                     </iframe>
                                 </div>
                             {{/each}}
 
                         {{else}}
-                            <iframe src="{{url}}?seed={{../seed}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}"></iframe>
+                            <iframe src="{{url}}?full&seed={{../seed}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}"></iframe>
                         {{/with}}
                     </div>
                 </div>

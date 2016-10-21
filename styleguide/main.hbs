@@ -32,11 +32,14 @@
 
             (function (window,undefined) {
                 $(document).on('sg:contentLoaded', function () {
+
                     //props open navigation on content load
-                    $('.sg-example-file-name[href$="' + document.location.pathname + document.location.search + '"]').attr('data-listActive','true')
+                    $('.sg-example-name[href$="' + document.location.pathname + document.location.search + '"]').attr('data-listActive','true')
                         .parents('.sg-example').attr('data-listOpen','true')
-                        .siblings().find('.sg-example-file-name').removeAttr('data-listActive').end().end()
-                        .parents('.sg-group').attr('data-listOpen','true').siblings().removeAttr('data-listOpen');
+                        .siblings().removeAttr('data-listOpen')
+                        .find('.sg-example-name').removeAttr('data-listActive').end().end()
+                        .parents('.sg-group, .sg-example').attr('data-listOpen','true')
+                        .siblings().removeAttr('data-listOpen');
 
                     $('.sg-file-body > iframe').iFrameResize({
                         log: false,
@@ -133,26 +136,23 @@
                         event.preventDefault();
 
                         var $self = $(this);
-                        var $parentNode = $self.parents('li');
+                        var url = $self.attr('href');
+                        var $parentNode = $self.parent('li');
 
-                        $parentNode.siblings().removeAttr('data-listOpen')
-                            .find('.sg-example-file-name').removeAttr('data-listActive');
                         //toggle the navigation
                         if ($parentNode.attr('data-listOpen') === "true"){
                            $parentNode.removeAttr('data-listOpen');
                         }else {
                            $parentNode.attr('data-listOpen','true');
+                           $parentNode.siblings().removeAttr('data-listOpen').find('.sg-example').removeAttr('data-listOpen').find('.sg-example-name').removeAttr('data-listActive');
                         }
-                   });
-                    $('.sg-example-list-children .sg-example-file-name').on('click', function(event){
-                        event.preventDefault();
+                        if(!url) {
+                            return;
+                        }
 
-                        var $self = $(this);
-                        var url = $self.attr('href');
-                        $self.attr('data-listActive','true')
-                            .parents('.sg-example').siblings().find('.sg-example-file-name').removeAttr('data-listActive');
                         History.pushState(null, url, url);
-                    });
+                   });
+
                     // trigger event content loaded when app initializes
                     $('.sg-content').trigger('sg:contentLoaded');
                 })

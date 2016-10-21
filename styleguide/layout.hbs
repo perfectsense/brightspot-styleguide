@@ -54,7 +54,7 @@
                     <li class="sg-group">
                         <div class="sg-group-name">{{name}}</div>
                         <ul class="sg-example-list">
-                            {{#each examples}}
+                            {{#each children}}
                                 <li class="sg-example">
                                         <a class="sg-example-name"  href="{{url}}" title="{{name}}">{{name}}</a>
                                     {{#if children}}
@@ -68,6 +68,26 @@
                                     {{/if}}
                                 </li>
                             {{/each}}
+                        </ul>
+                    </li>
+                {{/each}}
+                {{#*inline 'list'}}
+                    {{#each children}}
+                        <li class="sg-example">
+                            <a class="sg-example-name" {{#if url}}href="{{url}}"{{/if}} title="{{name}}">{{name}}</a>
+                            {{#if children}}
+                                <ul class="sg-example-list">
+                                    {{> list}} {{! Recursively render the partial }}
+                                </ul>
+                            {{/if}}
+                        </li>
+                    {{/each}}
+                {{/inline}}
+                {{#each examples}}
+                    <li class="sg-group">
+                        <div class="sg-group-name">{{name}}</div>
+                        <ul class="sg-example-list">
+                            {{> list}}
                         </ul>
                     </li>
                 {{/each}}

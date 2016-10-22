@@ -1,0 +1,4 @@
+{
+    "javaPackage": "foo.bar.baz",
+    "templateEngine": "hbs"
+}

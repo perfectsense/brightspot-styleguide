@@ -1,0 +1,21 @@
+{
+    "_template": "Main.hbs",
+    "direct": {
+        "_dataUrl": "data/Data.json"
+    },
+    "directWithThis": {
+        "_dataUrl": "./data/Data.json"
+    },
+    "directoryRelative": {
+        "_dataUrl": "/data/Data.json"
+    },
+    "upAndBackDownRelative": {
+        "_dataUrl": "../../resources/TestDataUrlSimple/data/Data.json"
+    },
+    "upAndBackDownAbsolute": {
+        "_dataUrl": "/../../resources/../resources/TestDataUrlSimple/data/Data.json"
+    },
+    "templateTest": {
+        "_template": "Main.hbs"
+    }
+}

@@ -1,0 +1,4 @@
+{
+    "javaPackage": "one.two.three",
+    "templateEngine": "hbs"
+}

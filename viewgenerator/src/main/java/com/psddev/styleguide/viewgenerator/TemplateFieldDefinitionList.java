@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.psddev.styleguide.*;
+import com.psddev.styleguide.JsonObject;
+import com.psddev.styleguide.JsonObjectType;
+import com.psddev.styleguide.JsonTemplateObject;
 
 public class TemplateFieldDefinitionList extends TemplateFieldDefinition implements TemplateFieldType {
 

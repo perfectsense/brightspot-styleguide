@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.psddev.styleguide.*;
+import com.psddev.styleguide.JsonObject;
 
 public class TemplateFieldDefinitionString extends TemplateFieldDefinition {
 

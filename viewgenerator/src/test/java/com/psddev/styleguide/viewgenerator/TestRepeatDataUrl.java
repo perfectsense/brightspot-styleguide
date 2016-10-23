@@ -5,13 +5,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.psddev.styleguide.*;
-import com.psddev.styleguide.viewgenerator.TemplateDefinition;
-import com.psddev.styleguide.viewgenerator.TemplateDefinitions;
-import com.psddev.styleguide.viewgenerator.TemplateFieldDefinition;
-import com.psddev.styleguide.viewgenerator.TemplateFieldDefinitionList;
-import com.psddev.styleguide.viewgenerator.ViewClassGenerator;
-
 import static org.junit.Assert.*;
 
 public class TestRepeatDataUrl {
@@ -19,7 +12,7 @@ public class TestRepeatDataUrl {
     @Test
     public void testRepeatDataUrl() throws Exception {
         // get a default test view class generator
-        ViewClassGenerator generator = com.psddev.styleguide.TestUtils.getDefaultGeneratorForClass(getClass());
+        ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
 
         // generate the template definitions
         TemplateDefinitions definitions = generator.getTemplateDefinitions();

@@ -11,17 +11,21 @@ class TemplateViewKey extends ViewKey {
 
     private TemplateType templateType;
 
+    private TemplateViewConfiguration templateConfig;
+
     /**
      * Creates a new template based view key.
      *
      * @param name the name of the view key.
      * @param templatePath the path to the template.
      * @param templateType the type of template referenced by the templatePath.
+     * @param templateConfig the configuration for this template.
      */
-    public TemplateViewKey(String name, Path templatePath, TemplateType templateType) {
-        super(name);
+    public TemplateViewKey(String name, Path templatePath, TemplateType templateType, TemplateViewConfiguration templateConfig) {
+        super(name != null ? name : templatePath.toString());
         this.templatePath = templatePath;
         this.templateType = templateType;
+        this.templateConfig = templateConfig;
     }
 
     /**
@@ -40,6 +44,15 @@ class TemplateViewKey extends ViewKey {
      */
     public TemplateType getTemplateType() {
         return templateType;
+    }
+
+    /**
+     * Gets the template configuration. Can be null.
+     *
+     * @return the template configuration. Can be null.
+     */
+    public TemplateViewConfiguration getTemplateConfig() {
+        return templateConfig;
     }
 
     @Override

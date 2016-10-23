@@ -167,14 +167,14 @@ class JsonFileResolver {
         Path templateDirectory = templatePath.getParent();
         String templateName = templatePath.getName(templatePath.getNameCount() - 1).toString();
 
+        // find the configuration file
+        TemplateViewConfiguration templateConfig = file.getBaseDirectory().getTemplateViewConfiguration(templateDirectory);
+
         TemplateType templateType = null;
 
         int lastDotAt = templateName.lastIndexOf('.');
         // if there is no extension, find it
         if (lastDotAt < 0) {
-
-            // find the configuration file
-            TemplateViewConfiguration templateConfig = file.getBaseDirectory().getTemplateViewConfiguration(templateDirectory);
 
             if (templateConfig != null) {
                 templateType = templateConfig.getTemplateType();
@@ -211,7 +211,7 @@ class JsonFileResolver {
         }
 
         if (templateType != null) {
-            return new TemplateViewKey(viewKey != null ? viewKey.toRawValue() : null, templatePath, templateType);
+            return new TemplateViewKey(viewKey != null ? viewKey.toRawValue() : null, templatePath, templateType, templateConfig);
         } else {
             return null;
         }

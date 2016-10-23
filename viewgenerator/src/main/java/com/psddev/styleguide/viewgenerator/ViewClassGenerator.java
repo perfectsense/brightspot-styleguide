@@ -74,7 +74,6 @@ public class ViewClassGenerator {
     private String javaPackageName;
     private Path javaSourceDirectory;
 
-    private Set<String> mapBasedTemplates;
     private Set<Path> ignoredFileNames;
     private String classNamePrefix;
     private boolean generateDefaultMethods;
@@ -88,7 +87,6 @@ public class ViewClassGenerator {
         this.javaPackageName = javaPackageName;
 
         // TODO: Need to expose these somehow.
-        this.mapBasedTemplates = Collections.emptySet();
         this.ignoredFileNames = Collections.emptySet();
         this.classNamePrefix = null;
         this.generateDefaultMethods = false;
@@ -99,7 +97,6 @@ public class ViewClassGenerator {
         this.jsonDirectories = arguments.getJsonDirectories();
         this.javaPackageName = arguments.getJavaPackageName();
         this.javaSourceDirectory = arguments.getBuildDirectory();
-        this.mapBasedTemplates = arguments.getMapTemplates();
         this.ignoredFileNames = arguments.getIgnoredFileNames();
         this.classNamePrefix = arguments.getClassNamePrefix();
         this.generateDefaultMethods = arguments.isDefaultMethods();
@@ -108,14 +105,6 @@ public class ViewClassGenerator {
 
     public void disableLogColors() {
         logger = CliLogger.getColorlessLogger();
-    }
-
-    public Set<String> getMapBasedTemplates() {
-        return mapBasedTemplates;
-    }
-
-    public void setMapBasedTemplates(Set<String> mapBasedTemplates) {
-        this.mapBasedTemplates = mapBasedTemplates;
     }
 
     public Set<Path> getIgnoredFileNames() {
@@ -134,21 +123,6 @@ public class ViewClassGenerator {
         this.classNamePrefix = classNamePrefix;
     }
 
-    /**
-     * @deprecated No replacement
-     */
-    @Deprecated
-    public boolean isRemoveDeprecations() {
-        return true;
-    }
-
-    /**
-     * @deprecated No replacement
-     */
-    @Deprecated
-    public void setRemoveDeprecations(boolean removeDeprecations) {
-    }
-
     public void printGeneratedClasses() {
         getGeneratedClasses().forEach((file, source) -> {
             String fileName = file.toString();
@@ -158,7 +132,7 @@ public class ViewClassGenerator {
     }
 
     JsonDataFiles getJsonDataFiles() {
-        return new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates, javaPackageName, classNamePrefix);
+        return new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, Collections.emptySet(), javaPackageName, classNamePrefix);
     }
 
     public TemplateDefinitions getTemplateDefinitions() {

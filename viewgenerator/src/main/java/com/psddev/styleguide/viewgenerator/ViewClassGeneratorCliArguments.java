@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.psddev.dari.util.ObjectUtils;
-import com.psddev.dari.util.StringUtils;
 
 /**
  * Processes the command line arguments for the view class generator command line application.
@@ -19,7 +18,6 @@ public class ViewClassGeneratorCliArguments {
     private static final String JSON_DIRECTORY_PREFIX =      "--json-dir=";
     private static final String JAVA_PACKAGE_PREFIX =        "--java-package-prefix=";
     private static final String BUILD_DIRECTORY_PREFIX =     "--build-dir=";
-    private static final String MAP_TEMPLATES_PREFIX =       "--map-templates=";
     private static final String IGNORE_FILES_PREFIX =        "--ignore-files=";
     private static final String CLASS_NAME_PREFIX_PREFIX =   "--class-name-prefix=";
     private static final String WATCH_PREFIX =               "--watch=";
@@ -38,7 +36,6 @@ public class ViewClassGeneratorCliArguments {
     private Set<Path> jsonDirectories = new LinkedHashSet<>();
     private String javaPackageName;
     private Path buildDirectory;
-    private Set<String> mapTemplates = new LinkedHashSet<>();
     private Set<Path> ignoredFileNames = new HashSet<>();
     private String classNamePrefix = null;
     private boolean watch = false;
@@ -62,11 +59,6 @@ public class ViewClassGeneratorCliArguments {
 
                 } else if (arg.startsWith(BUILD_DIRECTORY_PREFIX)) {
                     buildDirectory = Paths.get(processStringArgument(BUILD_DIRECTORY_PREFIX, arg));
-
-                } else if (arg.startsWith(MAP_TEMPLATES_PREFIX)) {
-                    processStringSetArgument(MAP_TEMPLATES_PREFIX, arg).stream()
-                            .map(template -> StringUtils.ensureStart(template, "/"))
-                            .forEach(mapTemplates::add);
 
                 } else if (arg.startsWith(IGNORE_FILES_PREFIX)) {
                     processStringSetArgument(IGNORE_FILES_PREFIX, arg).stream()
@@ -111,7 +103,6 @@ public class ViewClassGeneratorCliArguments {
         validateJsonDirectories();
         validateJavaPackageName();
         validateBuildDirectory();
-        validateMapTemplates();
         validateIgnoredFileNames();
         validateClassNamePrefix();
     }
@@ -126,10 +117,6 @@ public class ViewClassGeneratorCliArguments {
 
     public Path getBuildDirectory() {
         return buildDirectory;
-    }
-
-    public Set<String> getMapTemplates() {
-        return mapTemplates;
     }
 
     public Set<Path> getIgnoredFileNames() {
@@ -189,10 +176,6 @@ public class ViewClassGeneratorCliArguments {
     }
 
     private void validateBuildDirectory() {
-        // nothing to do yet...
-    }
-
-    private void validateMapTemplates() {
         // nothing to do yet...
     }
 

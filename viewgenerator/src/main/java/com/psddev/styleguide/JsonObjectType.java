@@ -3,7 +3,7 @@ package com.psddev.styleguide;
 import java.util.List;
 import java.util.Map;
 
-enum JsonObjectType {
+public enum JsonObjectType {
 
     BOOLEAN,
     NUMBER,

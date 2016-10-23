@@ -1,6 +1,6 @@
 package com.psddev.styleguide;
 
-class ViewClassSource {
+public class ViewClassSource {
 
     private String packageName;
     private String className;

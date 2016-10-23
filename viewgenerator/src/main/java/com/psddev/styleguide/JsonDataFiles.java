@@ -21,7 +21,7 @@ import com.psddev.dari.util.IoUtils;
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
 
-class JsonDataFiles {
+public class JsonDataFiles {
 
     private Map<String, JsonDataFile> dataFilesByFile;
 

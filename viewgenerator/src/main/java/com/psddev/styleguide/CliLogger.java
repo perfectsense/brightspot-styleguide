@@ -2,7 +2,7 @@ package com.psddev.styleguide;
 
 import java.util.Arrays;
 
-class CliLogger {
+public class CliLogger {
 
     private static enum CliColor {
 
@@ -125,7 +125,7 @@ class CliLogger {
         return new MessageBuilder(this, color);
     }
 
-    static final class MessageBuilder {
+    public static final class MessageBuilder {
 
         private CliLogger logger;
 

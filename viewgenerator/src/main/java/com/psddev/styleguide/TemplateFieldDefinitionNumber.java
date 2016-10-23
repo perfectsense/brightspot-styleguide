@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-class TemplateFieldDefinitionNumber extends TemplateFieldDefinition {
+public class TemplateFieldDefinitionNumber extends TemplateFieldDefinition {
 
     public TemplateFieldDefinitionNumber(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
         super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import com.psddev.dari.util.StringUtils;
 
-abstract class TemplateFieldDefinition {
+public abstract class TemplateFieldDefinition {
 
     protected TemplateDefinitions templateDefinitions;
     protected String parentTemplate;

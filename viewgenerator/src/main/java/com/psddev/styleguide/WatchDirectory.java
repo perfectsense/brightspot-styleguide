@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-class WatchDirectory {
+public class WatchDirectory {
 
     private final WatchService watcher;
     private final Map<WatchKey, Path> watchKeys;

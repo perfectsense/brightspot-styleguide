@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements TemplateFieldType {
+public class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements TemplateFieldType {
 
     private Set<String> templateTypes = new LinkedHashSet<>();
 

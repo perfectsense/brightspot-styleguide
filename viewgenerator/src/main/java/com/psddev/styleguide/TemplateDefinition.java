@@ -15,7 +15,7 @@ import com.psddev.dari.util.StringUtils;
 import static com.psddev.styleguide.StyleguideStringUtils.indent;
 import static com.psddev.styleguide.StyleguideStringUtils.NEW_LINE;
 
-class TemplateDefinition implements TemplateFieldType {
+public class TemplateDefinition implements TemplateFieldType {
 
     private TemplateDefinitions templateDefinitions;
 

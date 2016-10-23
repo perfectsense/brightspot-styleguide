@@ -9,7 +9,7 @@ import java.util.Set;
 
 import com.psddev.dari.util.StringUtils;
 
-class TemplateDefinitions {
+public class TemplateDefinitions {
 
     private Map<String, TemplateDefinition> definitions;
 

@@ -3,7 +3,7 @@ package com.psddev.styleguide;
 import java.util.Collections;
 import java.util.Set;
 
-class JsonString extends JsonObject {
+public class JsonString extends JsonObject {
 
     private String value;
     private String notes;

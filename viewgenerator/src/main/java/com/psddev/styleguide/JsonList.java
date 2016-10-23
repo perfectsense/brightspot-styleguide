@@ -5,7 +5,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
-class JsonList extends JsonObject {
+public class JsonList extends JsonObject {
 
     private List<JsonObject> values;
     private JsonObjectType valuesType;

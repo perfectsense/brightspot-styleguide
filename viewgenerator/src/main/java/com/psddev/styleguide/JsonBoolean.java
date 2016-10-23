@@ -3,7 +3,7 @@ package com.psddev.styleguide;
 import java.util.Collections;
 import java.util.Set;
 
-class JsonBoolean extends JsonObject {
+public class JsonBoolean extends JsonObject {
 
     private Boolean value;
     private String notes;

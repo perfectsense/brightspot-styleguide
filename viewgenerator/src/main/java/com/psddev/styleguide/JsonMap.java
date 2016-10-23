@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-class JsonMap extends JsonObject {
+public class JsonMap extends JsonObject {
 
     private Map<String, ?> value;
     private String notes;

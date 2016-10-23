@@ -10,7 +10,7 @@ import java.util.Set;
 
 import com.psddev.dari.util.ObjectUtils;
 
-class JsonTemplateObject extends JsonObject {
+public class JsonTemplateObject extends JsonObject {
 
     public static final String TEMPLATE_KEY = "_template";
     public static final String JSON_VIEW_KEY = "_view";

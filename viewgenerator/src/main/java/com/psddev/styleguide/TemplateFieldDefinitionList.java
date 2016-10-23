@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class TemplateFieldDefinitionList extends TemplateFieldDefinition implements TemplateFieldType {
+public class TemplateFieldDefinitionList extends TemplateFieldDefinition implements TemplateFieldType {
 
     private Set<String> listItemTypes;
     private JsonObjectType effectiveListValueType;

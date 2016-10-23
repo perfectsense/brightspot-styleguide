@@ -174,10 +174,10 @@ class JsonFileResolver {
         if (lastDotAt < 0) {
 
             // find the configuration file
-            ViewConfiguration viewConfig = file.getBaseDirectory().getViewConfiguration(templateDirectory);
+            TemplateViewConfiguration templateConfig = file.getBaseDirectory().getTemplateViewConfiguration(templateDirectory);
 
-            if (viewConfig != null) {
-                templateType = viewConfig.getTemplateType();
+            if (templateConfig != null) {
+                templateType = templateConfig.getTemplateType();
 
                 // append the file extension
                 templateName = templateName + "." + templateType.getExtension();

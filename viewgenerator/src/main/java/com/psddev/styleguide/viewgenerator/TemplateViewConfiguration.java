@@ -13,7 +13,7 @@ import com.psddev.dari.util.ObjectUtils;
  * A configuration for a view/template that specifies how a particular view
  * interface should be generated.
  */
-class ViewConfiguration {
+class TemplateViewConfiguration {
 
     public static final String JAVA_PACKAGE_KEY = "javaPackage";
     public static final String TEMPLATE_TYPE_KEY = "templateEngine";
@@ -24,7 +24,7 @@ class ViewConfiguration {
 
     private TemplateType templateType;
 
-    public ViewConfiguration(Path configFilePath) throws IOException {
+    public TemplateViewConfiguration(Path configFilePath) throws IOException {
 
         String configFileData = IoUtils.toString(configFilePath.toFile(), StandardCharsets.UTF_8);
 
@@ -81,7 +81,7 @@ class ViewConfiguration {
 
     @Override
     public String toString() {
-        return "ViewConfiguration{"
+        return "TemplateViewConfiguration{"
                 + "javaPackage='" + javaPackage + '\''
                 + ", templateType=" + templateType
                 + '}';

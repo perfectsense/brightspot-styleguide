@@ -12,7 +12,7 @@ public class TestNoViewConfiguration {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        ViewConfiguration config = jsonDir.getViewConfiguration(Paths.get("foo/bar/baz/qux"));
+        TemplateViewConfiguration config = jsonDir.getTemplateViewConfiguration(Paths.get("foo/bar/baz/qux"));
 
         Assert.assertNull(config);
     }

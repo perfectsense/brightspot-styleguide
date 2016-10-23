@@ -132,16 +132,16 @@ class JsonDirectory {
     }
 
     /**
-     * Gets the view configuration nearest to the normalized path, by first
-     * checking its directory for a config file, and traversing up the directory
-     * structure until it finds one, stopping at the root of the base directory.
-     * If the normalized path is null, it just checks the root of the base
-     * directory.
+     * Gets the template view configuration nearest to the normalized path, by
+     * first checking its directory for a config file, and traversing up the
+     * directory structure until it finds one, stopping at the root of the base
+     * directory. If the normalized path is null, it just checks the root of
+     * the base directory.
      *
      * @param normalizedPath the normalized path to start the search.
      * @return the nearest view configuration to the normalized path.
      */
-    public ViewConfiguration getViewConfiguration(Path normalizedPath) {
+    public TemplateViewConfiguration getTemplateViewConfiguration(Path normalizedPath) {
 
         if (normalizedPath != null) {
 
@@ -166,7 +166,7 @@ class JsonDirectory {
             File configFile = configFilePath.toFile();
             if (configFile.exists()) {
                 try {
-                    return new ViewConfiguration(configFilePath);
+                    return new TemplateViewConfiguration(configFilePath);
 
                 } catch (IOException e) {
                     e.printStackTrace();

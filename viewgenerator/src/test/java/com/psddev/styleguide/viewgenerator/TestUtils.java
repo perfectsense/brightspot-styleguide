@@ -36,6 +36,21 @@ public class TestUtils {
                 .collect(Collectors.toSet());
     }
 
+    public static ViewClassGenerator getDefaultGeneratorForClass(Class<?> klass) {
+
+        Set<Path> jsonDirectories = getJsonDirectoriesForClasses(klass);
+        String javaPackageName = DEFAULT_JAVA_PACKAGE_NAME;
+
+        ViewClassGenerator generator = new ViewClassGenerator(
+                jsonDirectories,
+                jsonDirectories.stream().findFirst().orElse(null).resolve("output"),
+                javaPackageName);
+
+        generator.disableLogColors();
+
+        return generator;
+    }
+
     private static Path getTestResourcesPath() {
 
         Path modulePath;

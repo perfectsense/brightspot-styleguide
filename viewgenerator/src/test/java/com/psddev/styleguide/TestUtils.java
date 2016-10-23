@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import com.psddev.styleguide.viewgenerator.ViewClassGenerator;
 
-class TestUtils {
+public class TestUtils {
 
     private static final String TEST_RESOURCES_DIRECTORY = "src/test/resources";
 

@@ -1,10 +1,11 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.nio.file.Paths;
 import java.util.Collections;
 
 import org.junit.Test;
 
+import com.psddev.styleguide.*;
 import com.psddev.styleguide.viewgenerator.TemplateDefinitions;
 import com.psddev.styleguide.viewgenerator.ViewClassGenerator;
 
@@ -14,7 +15,7 @@ public class TestStrictTypes {
     public void testStrictTypes() throws Exception {
 
         // get a default test view class generator
-        ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
+        ViewClassGenerator generator = com.psddev.styleguide.TestUtils.getDefaultGeneratorForClass(getClass());
         generator.setIgnoredFileNames(Collections.singleton(Paths.get("_config.json")));
 
         // generate the template definitions

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 /**
  * TODO: Javadocs
  */
-public final class PathUtils {
+final class PathUtils {
 
     public static final String SLASH = System.getProperty("file.separator");
 

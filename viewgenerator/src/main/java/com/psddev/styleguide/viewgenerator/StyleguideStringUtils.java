@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import com.psddev.dari.util.StringUtils;
 
-public class StyleguideStringUtils {
+class StyleguideStringUtils {
 
     public static final String NEW_LINE = "\n";
 

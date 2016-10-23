@@ -13,7 +13,7 @@ import com.psddev.styleguide.JsonObject;
 import com.psddev.styleguide.JsonObjectType;
 import com.psddev.styleguide.JsonTemplateObject;
 
-public class TemplateFieldDefinitionList extends TemplateFieldDefinition implements TemplateFieldType {
+class TemplateFieldDefinitionList extends TemplateFieldDefinition implements TemplateFieldType {
 
     private Set<String> listItemTypes;
     private JsonObjectType effectiveListValueType;

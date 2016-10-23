@@ -2,7 +2,7 @@ package com.psddev.styleguide.viewgenerator;
 
 import java.util.Arrays;
 
-public class CliLogger {
+class CliLogger {
 
     private static enum CliColor {
 

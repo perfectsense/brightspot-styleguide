@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import com.psddev.styleguide.JsonObject;
 import com.psddev.styleguide.JsonTemplateObject;
 
-public class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements TemplateFieldType {
+class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements TemplateFieldType {
 
     private Set<String> templateTypes = new LinkedHashSet<>();
 

@@ -2,7 +2,7 @@ package com.psddev.styleguide.viewgenerator;
 
 import com.psddev.dari.util.StringUtils;
 
-public interface TemplateFieldType {
+interface TemplateFieldType {
 
     /**
      * Examples:

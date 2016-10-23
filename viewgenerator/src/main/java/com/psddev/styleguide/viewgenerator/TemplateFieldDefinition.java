@@ -11,7 +11,7 @@ import com.psddev.dari.util.StringUtils;
 import com.psddev.styleguide.JsonObject;
 import com.psddev.styleguide.JsonObjectType;
 
-public abstract class TemplateFieldDefinition {
+abstract class TemplateFieldDefinition {
 
     protected TemplateDefinitions templateDefinitions;
     protected String parentTemplate;

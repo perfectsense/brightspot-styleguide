@@ -1,6 +1,6 @@
 package com.psddev.styleguide.viewgenerator;
 
-public enum NativeJavaTemplateFieldType implements TemplateFieldType {
+enum NativeJavaTemplateFieldType implements TemplateFieldType {
 
     OBJECT("java.lang.Object"),
     STRING("java.lang.String"),

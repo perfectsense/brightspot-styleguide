@@ -1,10 +1,11 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 
+import com.psddev.styleguide.*;
 import com.psddev.styleguide.viewgenerator.TemplateDefinition;
 import com.psddev.styleguide.viewgenerator.TemplateDefinitions;
 import com.psddev.styleguide.viewgenerator.TemplateFieldDefinition;
@@ -18,7 +19,7 @@ public class TestRepeatDataUrl {
     @Test
     public void testRepeatDataUrl() throws Exception {
         // get a default test view class generator
-        ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
+        ViewClassGenerator generator = com.psddev.styleguide.TestUtils.getDefaultGeneratorForClass(getClass());
 
         // generate the template definitions
         TemplateDefinitions definitions = generator.getTemplateDefinitions();

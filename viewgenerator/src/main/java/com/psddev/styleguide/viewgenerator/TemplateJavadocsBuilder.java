@@ -12,7 +12,7 @@ import static com.psddev.styleguide.viewgenerator.StyleguideStringUtils.NEW_LINE
 /**
  * Utility class for generating Javadocs source.
  */
-public class TemplateJavadocsBuilder {
+class TemplateJavadocsBuilder {
 
     private StringBuilder javadocsBuilder = new StringBuilder();
 

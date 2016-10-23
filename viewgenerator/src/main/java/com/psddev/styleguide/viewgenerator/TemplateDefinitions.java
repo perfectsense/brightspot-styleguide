@@ -10,7 +10,7 @@ import java.util.Set;
 import com.psddev.dari.util.StringUtils;
 import com.psddev.styleguide.JsonTemplateObject;
 
-public class TemplateDefinitions {
+class TemplateDefinitions {
 
     private Map<String, TemplateDefinition> definitions;
 

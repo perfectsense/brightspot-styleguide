@@ -12,7 +12,7 @@ import com.psddev.dari.util.ObjectUtils;
 /**
  * Processes the command line arguments for the view class generator command line application.
  */
-public class ViewClassGeneratorCliArguments {
+class ViewClassGeneratorCliArguments {
 
     // argument prefixes
     private static final String JSON_DIRECTORY_PREFIX =      "--json-dir=";

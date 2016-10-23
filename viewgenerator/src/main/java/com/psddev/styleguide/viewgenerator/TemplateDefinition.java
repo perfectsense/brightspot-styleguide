@@ -17,7 +17,7 @@ import com.psddev.styleguide.JsonTemplateObject;
 import static com.psddev.styleguide.viewgenerator.StyleguideStringUtils.indent;
 import static com.psddev.styleguide.viewgenerator.StyleguideStringUtils.NEW_LINE;
 
-public class TemplateDefinition implements TemplateFieldType {
+class TemplateDefinition implements TemplateFieldType {
 
     private TemplateDefinitions templateDefinitions;
 

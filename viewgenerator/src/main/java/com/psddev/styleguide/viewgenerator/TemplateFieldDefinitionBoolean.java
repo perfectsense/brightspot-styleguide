@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.psddev.styleguide.JsonObject;
 
-public class TemplateFieldDefinitionBoolean extends TemplateFieldDefinition {
+class TemplateFieldDefinitionBoolean extends TemplateFieldDefinition {
 
     public TemplateFieldDefinitionBoolean(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
         super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);

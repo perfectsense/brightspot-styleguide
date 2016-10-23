@@ -6,7 +6,7 @@ import java.util.TreeSet;
 /**
  * Manages all of the imports that need to be included in the generated view class.
  */
-public class TemplateImportsBuilder {
+class TemplateImportsBuilder {
 
     public static final String PLACEHOLDER = "${importsPlaceholder}";
 

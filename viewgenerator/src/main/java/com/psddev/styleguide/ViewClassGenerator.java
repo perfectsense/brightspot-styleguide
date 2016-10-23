@@ -265,6 +265,8 @@ public class ViewClassGenerator {
 
             watchDirectory.setProcessChangeFunction((path, watchEventKind) -> {
 
+                boolean changed = false;
+
                 if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
 
                     String eventType = null;
@@ -286,22 +288,42 @@ public class ViewClassGenerator {
                                 .reset().and("\" ", eventType, ".\n")
                                 .log();
 
-                        generator.get();
+                        changed = true;
+                    }
+                } else if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
 
-                        @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-                        RuntimeException error = generationError.getAndSet(null);
-                        if (error != null) {
-                            logger.red("Failed to generate classes: ", error.getMessage());
+                    if (watchEventKind == StandardWatchEventKinds.ENTRY_MODIFY) {
 
-                        } else if (!viewsChanged.getAndSet(false)) {
-                            logger.cyan("No views affected by changes...");
-                        }
+                        logger.green().and(">>")
+                                .reset().and(" Directory \"")
+                                .green().and(path)
+                                .reset().and("\" modified.\n")
+                                .log();
 
-                        return true;
+                        changed = true;
                     }
                 }
 
-                return false;
+                if (changed) {
+                    generator.get();
+
+                    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+                    RuntimeException error = generationError.getAndSet(null);
+                    if (error != null) {
+                        String errorMessage = error.getMessage();
+                        logger.red("Failed to generate classes: ", error.getMessage());
+                        if (errorMessage == null) {
+                            error.printStackTrace();
+                        }
+
+                    } else if (!viewsChanged.getAndSet(false)) {
+                        logger.cyan("No views affected by changes...");
+                    }
+                    return true;
+
+                } else {
+                    return false;
+                }
             });
 
             for (Path jsonDirectory : jsonDirectories) {

@@ -22,7 +22,7 @@ public class ViewClassGeneratorCliArguments {
     private static final String CLASS_NAME_PREFIX_PREFIX =   "--class-name-prefix=";
     private static final String WATCH_PREFIX =               "--watch=";
     private static final String DEFAULT_METHODS_PREFIX =     "--default-methods=";
-    private static final String STRICT_TYPES_PREFIX =        "--script-types=";
+    private static final String STRICT_TYPES_PREFIX =        "--strict-types=";
 
     // default argument values
     private static final Path DEFAULT_JSON_DIRECTORY = Paths.get(System.getProperty("user.dir"), "styleguide");

@@ -160,7 +160,7 @@ public class ViewClassGenerator {
         return new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, mapBasedTemplates, javaPackageName, classNamePrefix);
     }
 
-    TemplateDefinitions getTemplateDefinitions() {
+    public TemplateDefinitions getTemplateDefinitions() {
         return getJsonDataFiles().getTemplateDefinitions();
     }
 

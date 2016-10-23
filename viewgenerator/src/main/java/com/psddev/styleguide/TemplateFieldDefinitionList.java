@@ -83,7 +83,7 @@ public class TemplateFieldDefinitionList extends TemplateFieldDefinition impleme
         }
     }
 
-    Set<String> getListItemTypes() {
+    public Set<String> getListItemTypes() {
         return listItemTypes;
     }
 

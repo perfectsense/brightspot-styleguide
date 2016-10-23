@@ -1,4 +1,4 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +28,7 @@ import com.google.common.base.Suppliers;
 import com.psddev.dari.util.IoUtils;
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
+import com.psddev.styleguide.JsonDataFiles;
 
 public class ViewClassGenerator {
 

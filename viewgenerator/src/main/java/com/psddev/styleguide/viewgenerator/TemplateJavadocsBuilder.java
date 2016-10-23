@@ -1,4 +1,4 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.psddev.styleguide.StyleguideStringUtils.indent;
-import static com.psddev.styleguide.StyleguideStringUtils.NEW_LINE;
+import static com.psddev.styleguide.viewgenerator.StyleguideStringUtils.indent;
+import static com.psddev.styleguide.viewgenerator.StyleguideStringUtils.NEW_LINE;
 
 /**
  * Utility class for generating Javadocs source.

@@ -8,6 +8,11 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import com.psddev.styleguide.viewgenerator.TemplateDefinition;
+import com.psddev.styleguide.viewgenerator.TemplateDefinitions;
+import com.psddev.styleguide.viewgenerator.TemplateFieldDefinition;
+import com.psddev.styleguide.viewgenerator.ViewClassGenerator;
+
 import static org.junit.Assert.assertEquals;
 
 public class TestDataUrlOverrides {

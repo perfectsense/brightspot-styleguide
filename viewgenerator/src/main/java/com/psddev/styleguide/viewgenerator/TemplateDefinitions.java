@@ -1,4 +1,4 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.psddev.dari.util.StringUtils;
+import com.psddev.styleguide.JsonTemplateObject;
 
 public class TemplateDefinitions {
 

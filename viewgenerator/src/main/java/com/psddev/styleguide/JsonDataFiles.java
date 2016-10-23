@@ -20,6 +20,8 @@ import org.apache.commons.io.FileUtils;
 import com.psddev.dari.util.IoUtils;
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
+import com.psddev.styleguide.viewgenerator.PathUtils;
+import com.psddev.styleguide.viewgenerator.TemplateDefinitions;
 
 public class JsonDataFiles {
 

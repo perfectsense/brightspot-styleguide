@@ -1,4 +1,4 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.psddev.styleguide.JsonObject;
+import com.psddev.styleguide.JsonTemplateObject;
 
 public class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements TemplateFieldType {
 

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
+import com.psddev.styleguide.viewgenerator.PathUtils;
 
 public class JsonDataFile {
 

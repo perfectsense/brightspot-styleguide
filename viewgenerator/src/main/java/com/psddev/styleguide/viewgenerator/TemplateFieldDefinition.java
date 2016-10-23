@@ -1,4 +1,4 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.psddev.dari.util.StringUtils;
+import com.psddev.styleguide.JsonObject;
+import com.psddev.styleguide.JsonObjectType;
 
 public abstract class TemplateFieldDefinition {
 

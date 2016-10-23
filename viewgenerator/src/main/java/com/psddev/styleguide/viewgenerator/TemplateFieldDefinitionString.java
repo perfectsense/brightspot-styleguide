@@ -1,8 +1,10 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import com.psddev.styleguide.*;
 
 public class TemplateFieldDefinitionString extends TemplateFieldDefinition {
 
@@ -12,8 +14,8 @@ public class TemplateFieldDefinitionString extends TemplateFieldDefinition {
         super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
         values.forEach((value) -> {
-            if (value instanceof JsonString) {
-                String string = ((JsonString) value).getValue();
+            if (value instanceof com.psddev.styleguide.JsonString) {
+                String string = ((com.psddev.styleguide.JsonString) value).getValue();
 
                 // ignoring this for now...
                 if (string.startsWith("{{")) {

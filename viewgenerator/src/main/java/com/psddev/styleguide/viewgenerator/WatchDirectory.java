@@ -1,4 +1,4 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;

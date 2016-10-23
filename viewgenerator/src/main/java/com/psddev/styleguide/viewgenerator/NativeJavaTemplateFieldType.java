@@ -1,4 +1,4 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 public enum NativeJavaTemplateFieldType implements TemplateFieldType {
 

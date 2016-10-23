@@ -1,4 +1,4 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +8,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.psddev.styleguide.*;
 
 public class TemplateFieldDefinitionList extends TemplateFieldDefinition implements TemplateFieldType {
 
@@ -20,9 +22,9 @@ public class TemplateFieldDefinitionList extends TemplateFieldDefinition impleme
         Set<JsonObjectType> listValueTypes = new HashSet<>();
 
         values.forEach((value) -> {
-            if (value instanceof JsonList) {
+            if (value instanceof com.psddev.styleguide.JsonList) {
 
-                JsonList list = (JsonList) value;
+                com.psddev.styleguide.JsonList list = (com.psddev.styleguide.JsonList) value;
 
                 JsonObjectType listValueType = list.getValuesType();
                 if (listValueType != null) {
@@ -68,9 +70,9 @@ public class TemplateFieldDefinitionList extends TemplateFieldDefinition impleme
             } else if (effectiveListValueType == JsonObjectType.TEMPLATE_OBJECT) {
 
                 values.forEach((value) -> {
-                    if (value instanceof JsonList) {
+                    if (value instanceof com.psddev.styleguide.JsonList) {
 
-                        JsonList list = (JsonList) value;
+                        com.psddev.styleguide.JsonList list = (com.psddev.styleguide.JsonList) value;
 
                         list.getValues().forEach((itemValue) -> {
                             if (itemValue instanceof JsonTemplateObject) {

@@ -5,6 +5,9 @@ import java.util.Collections;
 
 import org.junit.Test;
 
+import com.psddev.styleguide.viewgenerator.TemplateDefinitions;
+import com.psddev.styleguide.viewgenerator.ViewClassGenerator;
+
 public class TestStrictTypes {
 
     @Test

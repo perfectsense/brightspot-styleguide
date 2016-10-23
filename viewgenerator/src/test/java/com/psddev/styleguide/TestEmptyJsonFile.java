@@ -1,6 +1,9 @@
 package com.psddev.styleguide;
 
 import org.junit.Test;
+
+import com.psddev.styleguide.viewgenerator.ViewClassGenerator;
+
 import static org.junit.Assert.*;
 
 public class TestEmptyJsonFile {

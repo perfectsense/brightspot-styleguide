@@ -1,4 +1,4 @@
-package com.psddev.styleguide;
+package com.psddev.styleguide.viewgenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,9 +11,11 @@ import java.util.stream.Collectors;
 
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
+import com.psddev.styleguide.JsonObject;
+import com.psddev.styleguide.JsonTemplateObject;
 
-import static com.psddev.styleguide.StyleguideStringUtils.indent;
-import static com.psddev.styleguide.StyleguideStringUtils.NEW_LINE;
+import static com.psddev.styleguide.viewgenerator.StyleguideStringUtils.indent;
+import static com.psddev.styleguide.viewgenerator.StyleguideStringUtils.NEW_LINE;
 
 public class TemplateDefinition implements TemplateFieldType {
 

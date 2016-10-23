@@ -1,11 +1,12 @@
 package com.psddev.styleguide;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.psddev.styleguide.viewgenerator.ViewClassGenerator;
 
 class TestUtils {
 

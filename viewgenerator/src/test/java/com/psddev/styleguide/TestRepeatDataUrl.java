@@ -4,6 +4,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+
+import com.psddev.styleguide.viewgenerator.TemplateDefinition;
+import com.psddev.styleguide.viewgenerator.TemplateDefinitions;
+import com.psddev.styleguide.viewgenerator.TemplateFieldDefinition;
+import com.psddev.styleguide.viewgenerator.TemplateFieldDefinitionList;
+import com.psddev.styleguide.viewgenerator.ViewClassGenerator;
+
 import static org.junit.Assert.*;
 
 public class TestRepeatDataUrl {

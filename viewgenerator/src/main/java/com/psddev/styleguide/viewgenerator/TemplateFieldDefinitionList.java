@@ -168,7 +168,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
 
         importsBuilder.add(ArrayList.class.getName());
 
-        TemplateJavadocsBuilder method1Javadocs = new TemplateJavadocsBuilder();
+        ViewClassJavadocsBuilder method1Javadocs = new ViewClassJavadocsBuilder();
         method1Javadocs.addParagraph("Sets the " + name + " field.");
         notes.forEach(method1Javadocs::addParagraph);
         method1Javadocs.newLine();
@@ -189,7 +189,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
          * @param articleBody the item to add, typically a {@link FigureView}.
          * @return this builder.
          */
-        TemplateJavadocsBuilder method2Javadocs = new TemplateJavadocsBuilder();
+        ViewClassJavadocsBuilder method2Javadocs = new ViewClassJavadocsBuilder();
         method2Javadocs.addParagraph("Adds a single item to the " + name + " field.");
         notes.forEach(method2Javadocs::addParagraph);
         method2Javadocs.newLine();
@@ -221,7 +221,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
          * @param articleBody the items to add, typically a {@link FigureView}.
          * @return this builder.
          */
-        TemplateJavadocsBuilder method3Javadocs = new TemplateJavadocsBuilder();
+        ViewClassJavadocsBuilder method3Javadocs = new ViewClassJavadocsBuilder();
         method3Javadocs.addParagraph("Adds a Collection of items to the " + name + " field.");
         notes.forEach(method3Javadocs::addParagraph);
         method3Javadocs.newLine();

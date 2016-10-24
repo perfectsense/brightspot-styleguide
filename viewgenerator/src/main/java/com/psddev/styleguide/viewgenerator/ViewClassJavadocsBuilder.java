@@ -12,7 +12,7 @@ import static com.psddev.styleguide.viewgenerator.StyleguideStringUtils.NEW_LINE
 /**
  * Utility class for generating Javadocs source.
  */
-class TemplateJavadocsBuilder {
+class ViewClassJavadocsBuilder {
 
     private StringBuilder javadocsBuilder = new StringBuilder();
 
@@ -27,32 +27,32 @@ class TemplateJavadocsBuilder {
         }
     }
 
-    public TemplateJavadocsBuilder add(String text) {
+    public ViewClassJavadocsBuilder add(String text) {
         appendToBuilder(text);
         return this;
     }
 
-    public TemplateJavadocsBuilder addLine(String line) {
+    public ViewClassJavadocsBuilder addLine(String line) {
         add(line).add(NEW_LINE);
         return this;
     }
 
-    public TemplateJavadocsBuilder newLine() {
+    public ViewClassJavadocsBuilder newLine() {
         addLine("");
         return this;
     }
 
-    public TemplateJavadocsBuilder addParagraph(String paragraph) {
+    public ViewClassJavadocsBuilder addParagraph(String paragraph) {
         addLine("<p>" + paragraph + "</p>");
         return this;
     }
 
-    public TemplateJavadocsBuilder startParagraph() {
+    public ViewClassJavadocsBuilder startParagraph() {
         paragraphStarted = true;
         return this;
     }
 
-    public TemplateJavadocsBuilder endParagraph() {
+    public ViewClassJavadocsBuilder endParagraph() {
         paragraphStarted = false;
         if (paragraphBuilder.length() > 0) {
             addParagraph(paragraphBuilder.toString());
@@ -61,22 +61,22 @@ class TemplateJavadocsBuilder {
         return this;
     }
 
-    public TemplateJavadocsBuilder addParameter(String parameterName) {
+    public ViewClassJavadocsBuilder addParameter(String parameterName) {
         add("@param " + parameterName + " ");
         return this;
     }
 
-    public TemplateJavadocsBuilder addReturn() {
+    public ViewClassJavadocsBuilder addReturn() {
         add("@return ");
         return this;
     }
 
-    public TemplateJavadocsBuilder addLink(String link) {
+    public ViewClassJavadocsBuilder addLink(String link) {
         addLink(link, null);
         return this;
     }
 
-    public TemplateJavadocsBuilder addLink(String link, String label) {
+    public ViewClassJavadocsBuilder addLink(String link, String label) {
         add("{@link ");
         add(link);
         if (label != null) {
@@ -87,17 +87,17 @@ class TemplateJavadocsBuilder {
         return this;
     }
 
-    public TemplateJavadocsBuilder addFieldValueTypesSnippet(TemplateFieldDefinition fieldDef) {
+    public ViewClassJavadocsBuilder addFieldValueTypesSnippet(TemplateFieldDefinition fieldDef) {
         fieldValueTypesSnippetHelper(fieldDef, false);
         return this;
     }
 
-    public TemplateJavadocsBuilder addCollectionFieldValueTypesSnippet(TemplateFieldDefinition fieldDef) {
+    public ViewClassJavadocsBuilder addCollectionFieldValueTypesSnippet(TemplateFieldDefinition fieldDef) {
         fieldValueTypesSnippetHelper(fieldDef, true);
         return this;
     }
 
-    public TemplateJavadocsBuilder addFieldAwareValueTypesSnippet(TemplateFieldDefinition fieldDef) {
+    public ViewClassJavadocsBuilder addFieldAwareValueTypesSnippet(TemplateFieldDefinition fieldDef) {
         fieldValueTypesSnippetHelper(fieldDef, fieldDef instanceof TemplateFieldDefinitionList);
         return this;
     }

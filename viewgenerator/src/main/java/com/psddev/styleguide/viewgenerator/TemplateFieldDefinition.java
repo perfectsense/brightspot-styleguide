@@ -172,7 +172,7 @@ abstract class TemplateFieldDefinition {
     String getInterfaceMethodDeclarationSource(int indent, TemplateImportsBuilder importsBuilder) {
 
         // collect the methods' javadocs
-        TemplateJavadocsBuilder methodJavadocs = new TemplateJavadocsBuilder();
+        ViewClassJavadocsBuilder methodJavadocs = new ViewClassJavadocsBuilder();
 
         notes.forEach(methodJavadocs::addParagraph);
 
@@ -225,7 +225,7 @@ abstract class TemplateFieldDefinition {
 
     public String getInterfaceBuilderMethodImplementationSource(int indent, TemplateImportsBuilder importsBuilder) {
 
-        TemplateJavadocsBuilder methodJavadocs = new TemplateJavadocsBuilder();
+        ViewClassJavadocsBuilder methodJavadocs = new ViewClassJavadocsBuilder();
 
         methodJavadocs.addParagraph("Sets the " + name + " field.");
         notes.forEach(methodJavadocs::addParagraph);

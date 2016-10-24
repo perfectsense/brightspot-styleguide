@@ -14,8 +14,8 @@ import com.psddev.dari.util.StringUtils;
 import com.psddev.styleguide.JsonObject;
 import com.psddev.styleguide.JsonTemplateObject;
 
-import static com.psddev.styleguide.viewgenerator.StyleguideStringUtils.indent;
-import static com.psddev.styleguide.viewgenerator.StyleguideStringUtils.NEW_LINE;
+import static com.psddev.styleguide.viewgenerator.ViewClassStringUtils.indent;
+import static com.psddev.styleguide.viewgenerator.ViewClassStringUtils.NEW_LINE;
 
 class TemplateDefinition implements TemplateFieldType {
 
@@ -365,7 +365,7 @@ class TemplateDefinition implements TemplateFieldType {
             }
         }
 
-        return javaClassNamePrefix + StyleguideStringUtils.toJavaClassCase(className) + "View";
+        return javaClassNamePrefix + ViewClassStringUtils.toJavaClassCase(className) + "View";
     }
 
     private List<TemplateFieldDefinition> getImplementedTemplateFieldDefinitions() {

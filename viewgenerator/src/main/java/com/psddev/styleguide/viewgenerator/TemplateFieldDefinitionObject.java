@@ -33,7 +33,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
     @Override
     public String getFullyQualifiedClassName() {
         TemplateDefinition parentTemplateDef = templateDefinitions.getByName(parentTemplate);
-        return parentTemplateDef.getFullyQualifiedClassName() + StyleguideStringUtils.toJavaClassCase(name) + "Field";
+        return parentTemplateDef.getFullyQualifiedClassName() + ViewClassStringUtils.toJavaClassCase(name) + "Field";
     }
 
     @Override
@@ -110,7 +110,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
                     indent(indent) + " * @param value the value at the associated key.\n",
                     indent(indent) + " * @return this builder.\n",
                     indent(indent) + " */\n",
-                    indent(indent) + "public Builder add" + StyleguideStringUtils.toJavaMethodCase(name) + "(String key, String value) {\n",
+                    indent(indent) + "public Builder add" + ViewClassStringUtils.toJavaMethodCase(name) + "(String key, String value) {\n",
                     indent(indent + 1) + "if (this." + name + " == null) {\n",
                     indent(indent + 2) + "this." + name + " = new LinkedHashMap<>();\n",
                     indent(indent + 1) + "}\n",

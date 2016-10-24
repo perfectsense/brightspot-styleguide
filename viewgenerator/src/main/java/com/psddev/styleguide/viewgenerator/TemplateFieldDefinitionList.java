@@ -94,7 +94,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
     @Override
     public String getFullyQualifiedClassName() {
         TemplateDefinition parentTemplateDef = templateDefinitions.getByName(parentTemplate);
-        return parentTemplateDef.getFullyQualifiedClassName() + StyleguideStringUtils.toJavaClassCase(name) + "Field";
+        return parentTemplateDef.getFullyQualifiedClassName() + ViewClassStringUtils.toJavaClassCase(name) + "Field";
     }
 
     @Override
@@ -206,7 +206,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
          */
         String[] method2 = {
                 method2Javadocs.buildJavadocsSource(indent),
-                indent(indent) + "public Builder addTo" + StyleguideStringUtils.toJavaMethodCase(name) + "(" + getEffectiveValueType().getLocalClassName() + " " + name + ") {\n",
+                indent(indent) + "public Builder addTo" + ViewClassStringUtils.toJavaMethodCase(name) + "(" + getEffectiveValueType().getLocalClassName() + " " + name + ") {\n",
                 indent(indent + 1) + "if (this." + name + " == null) {\n",
                 indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
                 indent(indent + 1) + "}\n",
@@ -238,7 +238,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
          */
         String[] method3 = {
                 method3Javadocs.buildJavadocsSource(indent),
-                indent(indent) + "public Builder addAllTo" + StyleguideStringUtils.toJavaMethodCase(name) + "(" + getJavaFieldType(importsBuilder) + " " + name + ") {\n",
+                indent(indent) + "public Builder addAllTo" + ViewClassStringUtils.toJavaMethodCase(name) + "(" + getJavaFieldType(importsBuilder) + " " + name + ") {\n",
                 indent(indent + 1) + "if (this." + name + " == null) {\n",
                 indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
                 indent(indent + 1) + "}\n",

@@ -166,7 +166,7 @@ abstract class TemplateFieldDefinition {
             methodNamePrefix = "is";
         }
 
-        return methodNamePrefix + StyleguideStringUtils.toJavaMethodCase(name);
+        return methodNamePrefix + ViewClassStringUtils.toJavaMethodCase(name);
     }
 
     String getInterfaceMethodDeclarationSource(int indent, ViewClassImportsBuilder importsBuilder) {

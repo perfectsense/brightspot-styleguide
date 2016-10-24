@@ -26,7 +26,7 @@ class TemplateFieldDefinitionString extends TemplateFieldDefinition {
     }
 
     @Override
-    public String getJavaFieldType(TemplateImportsBuilder importsBuilder) {
+    public String getJavaFieldType(ViewClassImportsBuilder importsBuilder) {
         return isStrictlyTyped ? "String" : "Object";
     }
 

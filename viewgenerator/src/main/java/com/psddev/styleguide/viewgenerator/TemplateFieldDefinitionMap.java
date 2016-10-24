@@ -17,7 +17,7 @@ class TemplateFieldDefinitionMap extends TemplateFieldDefinition {
     }
 
     @Override
-    public String getJavaFieldType(TemplateImportsBuilder importsBuilder) {
+    public String getJavaFieldType(ViewClassImportsBuilder importsBuilder) {
         importsBuilder.add(Map.class.getName());
         return "Map<String, Object>";
     }
@@ -28,7 +28,7 @@ class TemplateFieldDefinitionMap extends TemplateFieldDefinition {
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, TemplateImportsBuilder importsBuilder) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, ViewClassImportsBuilder importsBuilder) {
 
         StringBuilder builder = new StringBuilder();
 

@@ -124,7 +124,7 @@ abstract class TemplateFieldDefinition {
     }
 
     public String getJavaFieldType() {
-        return getJavaFieldType(new TemplateImportsBuilder(getParentTemplate()));
+        return getJavaFieldType(new ViewClassImportsBuilder(getParentTemplate()));
     }
 
     /** Never null. */
@@ -152,9 +152,9 @@ abstract class TemplateFieldDefinition {
         }
     }
 
-    public abstract String getJavaFieldType(TemplateImportsBuilder importsBuilder);
+    public abstract String getJavaFieldType(ViewClassImportsBuilder importsBuilder);
 
-    public String getJavaFieldTypeForBuilder(TemplateImportsBuilder importsBuilder) {
+    public String getJavaFieldTypeForBuilder(ViewClassImportsBuilder importsBuilder) {
         return getJavaFieldType();
     }
 
@@ -169,7 +169,7 @@ abstract class TemplateFieldDefinition {
         return methodNamePrefix + StyleguideStringUtils.toJavaMethodCase(name);
     }
 
-    String getInterfaceMethodDeclarationSource(int indent, TemplateImportsBuilder importsBuilder) {
+    String getInterfaceMethodDeclarationSource(int indent, ViewClassImportsBuilder importsBuilder) {
 
         // collect the methods' javadocs
         ViewClassJavadocsBuilder methodJavadocs = new ViewClassJavadocsBuilder();
@@ -219,11 +219,11 @@ abstract class TemplateFieldDefinition {
         return declaration;
     }
 
-    public String getInterfaceBuilderFieldDeclarationSource(int indent, TemplateImportsBuilder importsBuilder) {
+    public String getInterfaceBuilderFieldDeclarationSource(int indent, ViewClassImportsBuilder importsBuilder) {
         return indent(indent) + "private " + getJavaFieldTypeForBuilder(importsBuilder) + " " + name + ";";
     }
 
-    public String getInterfaceBuilderMethodImplementationSource(int indent, TemplateImportsBuilder importsBuilder) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, ViewClassImportsBuilder importsBuilder) {
 
         ViewClassJavadocsBuilder methodJavadocs = new ViewClassJavadocsBuilder();
 
@@ -246,7 +246,7 @@ abstract class TemplateFieldDefinition {
         return Arrays.stream(method).collect(Collectors.joining(""));
     }
 
-    public String getInterfaceBuilderBuildMethodSource(int indent, TemplateImportsBuilder importsBuilder) {
+    public String getInterfaceBuilderBuildMethodSource(int indent, ViewClassImportsBuilder importsBuilder) {
         String[] method = {
                 indent(indent) + "@Override\n",
                 indent(indent) + "public " + getJavaFieldType(importsBuilder) + " " + getJavaInterfaceMethodName() + "() {\n",

@@ -13,7 +13,7 @@ class TemplateFieldDefinitionBoolean extends TemplateFieldDefinition {
     }
 
     @Override
-    public String getJavaFieldType(TemplateImportsBuilder importsBuilder) {
+    public String getJavaFieldType(ViewClassImportsBuilder importsBuilder) {
         return "Boolean";
     }
 

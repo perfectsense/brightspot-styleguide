@@ -98,7 +98,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
     }
 
     @Override
-    public String getJavaFieldType(TemplateImportsBuilder importsBuilder) {
+    public String getJavaFieldType(ViewClassImportsBuilder importsBuilder) {
         importsBuilder.add(Collection.class.getName());
 
         String genericArgument;
@@ -120,7 +120,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
         return "Collection<" + genericArgument + ">";
     }
 
-    public String getJavaFieldTypeForBuilder(TemplateImportsBuilder importsBuilder) {
+    public String getJavaFieldTypeForBuilder(ViewClassImportsBuilder importsBuilder) {
         importsBuilder.add(Collection.class.getName());
 
         // Collection<?> --> Collection<Object>
@@ -162,7 +162,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, TemplateImportsBuilder importsBuilder) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, ViewClassImportsBuilder importsBuilder) {
 
         StringBuilder builder = new StringBuilder();
 

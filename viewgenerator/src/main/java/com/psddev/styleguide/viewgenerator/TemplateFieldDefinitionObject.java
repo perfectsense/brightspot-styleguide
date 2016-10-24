@@ -37,7 +37,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
     }
 
     @Override
-    public String getJavaFieldType(TemplateImportsBuilder importsBuilder) {
+    public String getJavaFieldType(ViewClassImportsBuilder importsBuilder) {
         if (isStringMap()) {
             importsBuilder.add(Map.class.getName());
             return "Map<String, String>";
@@ -68,7 +68,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
     }
 
     @Override
-    public String getInterfaceBuilderMethodImplementationSource(int indent, TemplateImportsBuilder importsBuilder) {
+    public String getInterfaceBuilderMethodImplementationSource(int indent, ViewClassImportsBuilder importsBuilder) {
 
         StringBuilder builder = new StringBuilder();
 

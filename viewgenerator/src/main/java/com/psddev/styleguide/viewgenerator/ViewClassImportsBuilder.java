@@ -6,7 +6,7 @@ import java.util.TreeSet;
 /**
  * Manages all of the imports that need to be included in the generated view class.
  */
-class TemplateImportsBuilder {
+class ViewClassImportsBuilder {
 
     public static final String PLACEHOLDER = "${importsPlaceholder}";
 
@@ -14,7 +14,7 @@ class TemplateImportsBuilder {
 
     private Set<String> imports = new TreeSet<>();
 
-    public TemplateImportsBuilder(TemplateDefinition viewDefinition) {
+    public ViewClassImportsBuilder(TemplateDefinition viewDefinition) {
         this.viewDefinition = viewDefinition;
     }
 

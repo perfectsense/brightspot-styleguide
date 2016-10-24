@@ -189,7 +189,7 @@ class TemplateDefinition implements TemplateFieldType {
         return fieldLevelInterfaceSources;
     }
 
-    private String getViewRendererAnnotation(TemplateImportsBuilder importsBuilder) {
+    private String getViewRendererAnnotation(ViewClassImportsBuilder importsBuilder) {
 
         StringBuilder builder = new StringBuilder();
 
@@ -215,7 +215,7 @@ class TemplateDefinition implements TemplateFieldType {
     private ViewClassSource getViewClassSource() {
 
         StringBuilder sourceBuilder = new StringBuilder();
-        TemplateImportsBuilder importsBuilder = new TemplateImportsBuilder(this);
+        ViewClassImportsBuilder importsBuilder = new ViewClassImportsBuilder(this);
 
         // File header
         sourceBuilder.append(getSourceCodeHeaderComment());
@@ -225,7 +225,7 @@ class TemplateDefinition implements TemplateFieldType {
         sourceBuilder.append(NEW_LINE);
 
         // Imports - we collect them as we process, so this just a placeholder which we'll replace at the end.
-        sourceBuilder.append(TemplateImportsBuilder.PLACEHOLDER);
+        sourceBuilder.append(ViewClassImportsBuilder.PLACEHOLDER);
         sourceBuilder.append(NEW_LINE);
 
         // JSON generated class level javadocs
@@ -391,7 +391,7 @@ class TemplateDefinition implements TemplateFieldType {
         return implementedFieldDefs;
     }
 
-    private String getViewInterfaceDeclaration(TemplateImportsBuilder importsBuilder) {
+    private String getViewInterfaceDeclaration(ViewClassImportsBuilder importsBuilder) {
 
         List<String> classNames = new ArrayList<>();
 

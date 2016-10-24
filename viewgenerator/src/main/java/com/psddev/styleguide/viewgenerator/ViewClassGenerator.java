@@ -48,8 +48,7 @@ public class ViewClassGenerator {
             +  "|  |  | | -_| | | |  |  |  | -_|   | -_|  _| .'|  _| . |  _| \n"
             + " \\___/|_|___|_____|  |_____|___|_|_|___|_| |__,|_| |___|_|   \n";
 
-    static final String DATE_FORMAT = "EEE MMM dd kk:mm:ss zzz yyyy";
-    private static final String DATE_FORMAT_PATTERN = "\\w{3} \\w{3} \\d{2} \\d{2}:\\d{2}:\\d{2} \\w{3} \\d{4}";
+    private static final String DATE_FORMAT = "EEE MMM dd kk:mm:ss zzz yyyy";
 
     /**
      * Main method that can be invoked from the command line
@@ -319,8 +318,8 @@ public class ViewClassGenerator {
             try {
                 String existingClassSource = IoUtils.toString(classFile.toFile(), StandardCharsets.UTF_8);
 
-                String existingHash = StringUtils.hex(StringUtils.md5(existingClassSource.replaceFirst(DATE_FORMAT_PATTERN, "")));
-                String newHash = StringUtils.hex(StringUtils.md5(classSource.replaceFirst(DATE_FORMAT_PATTERN, "")));
+                String existingHash = StringUtils.hex(StringUtils.md5(existingClassSource));
+                String newHash = StringUtils.hex(StringUtils.md5(classSource));
 
                 return !newHash.equals(existingHash);
 

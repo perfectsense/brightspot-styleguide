@@ -11,9 +11,9 @@ import com.psddev.dari.util.StringUtils;
 import com.psddev.styleguide.JsonObject;
 import com.psddev.styleguide.JsonObjectType;
 
-abstract class TemplateFieldDefinition {
+abstract class ViewClassFieldDefinition {
 
-    protected TemplateDefinitions templateDefinitions;
+    protected ViewClassDefinitions templateDefinitions;
     protected String parentTemplate;
     protected String name;
     protected List<JsonObject> values;
@@ -23,7 +23,7 @@ abstract class TemplateFieldDefinition {
     protected boolean isDefaulted;
     protected boolean isStrictlyTyped;
 
-    public static TemplateFieldDefinition createInstance(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
+    public static ViewClassFieldDefinition createInstance(ViewClassDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
 
         JsonObjectType effectiveValueType;
 
@@ -44,22 +44,22 @@ abstract class TemplateFieldDefinition {
             }
 
             if (effectiveValueType == JsonObjectType.BOOLEAN) {
-                return new TemplateFieldDefinitionBoolean(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
+                return new ViewClassFieldDefinitionBoolean(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else if (effectiveValueType == JsonObjectType.STRING) {
-                return new TemplateFieldDefinitionString(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
+                return new ViewClassFieldDefinitionString(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else if (effectiveValueType == JsonObjectType.NUMBER) {
-                return new TemplateFieldDefinitionNumber(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
+                return new ViewClassFieldDefinitionNumber(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else if (effectiveValueType == JsonObjectType.LIST) {
-                return new TemplateFieldDefinitionList(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
+                return new ViewClassFieldDefinitionList(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else if (effectiveValueType == JsonObjectType.MAP) {
-                return new TemplateFieldDefinitionMap(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
+                return new ViewClassFieldDefinitionMap(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else if (effectiveValueType == JsonObjectType.TEMPLATE_OBJECT) {
-                return new TemplateFieldDefinitionObject(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
+                return new ViewClassFieldDefinitionObject(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
             } else {
                 throw new IllegalArgumentException("ERROR: (" + parentTemplate + " - " + name
@@ -75,14 +75,14 @@ abstract class TemplateFieldDefinition {
         }
     }
 
-    public TemplateFieldDefinition(TemplateDefinitions templateDefinitions,
-                                   String parentTemplate,
-                                   String name,
-                                   List<JsonObject> values,
-                                   Set<String> mapTemplates,
-                                   String javaClassNamePrefix,
-                                   boolean isDefaulted,
-                                   boolean isStrictlyTyped) {
+    public ViewClassFieldDefinition(ViewClassDefinitions templateDefinitions,
+                                    String parentTemplate,
+                                    String name,
+                                    List<JsonObject> values,
+                                    Set<String> mapTemplates,
+                                    String javaClassNamePrefix,
+                                    boolean isDefaulted,
+                                    boolean isStrictlyTyped) {
 
         this.templateDefinitions = templateDefinitions;
         this.parentTemplate = parentTemplate;
@@ -106,12 +106,12 @@ abstract class TemplateFieldDefinition {
         return getEffectiveValueType().getFullyQualifiedClassName()
                 + " " + name + " : ["
                 + getFieldValueTypes().stream()
-                        .map(TemplateFieldType::getFullyQualifiedClassName)
+                        .map(ViewClassFieldType::getFullyQualifiedClassName)
                         .collect(Collectors.joining(", "))
                 + "]";
     }
 
-    public TemplateDefinition getParentTemplate() {
+    public ViewClassDefinition getParentTemplate() {
         return templateDefinitions.getByName(parentTemplate);
     }
 
@@ -128,27 +128,27 @@ abstract class TemplateFieldDefinition {
     }
 
     /** Never null. */
-    public abstract Set<TemplateFieldType> getFieldValueTypes();
+    public abstract Set<ViewClassFieldType> getFieldValueTypes();
 
     /** Never null. */
-    protected TemplateFieldType getEffectiveValueType() {
+    protected ViewClassFieldType getEffectiveValueType() {
 
-        Set<TemplateFieldType> fieldValueTypes = getFieldValueTypes();
+        Set<ViewClassFieldType> fieldValueTypes = getFieldValueTypes();
 
         if (fieldValueTypes.size() == 1) {
-            return isStrictlyTyped ? fieldValueTypes.iterator().next() : NativeJavaTemplateFieldType.OBJECT;
+            return isStrictlyTyped ? fieldValueTypes.iterator().next() : ViewClassFieldNativeJavaType.OBJECT;
 
         } else if (fieldValueTypes.size() > 1) {
 
-            if (isStrictlyTyped && this instanceof TemplateFieldType) {
-                return (TemplateFieldType) this;
+            if (isStrictlyTyped && this instanceof ViewClassFieldType) {
+                return (ViewClassFieldType) this;
 
             } else {
-                return NativeJavaTemplateFieldType.OBJECT;
+                return ViewClassFieldNativeJavaType.OBJECT;
             }
 
         } else {
-            return NativeJavaTemplateFieldType.OBJECT;
+            return ViewClassFieldNativeJavaType.OBJECT;
         }
     }
 
@@ -177,7 +177,7 @@ abstract class TemplateFieldDefinition {
         notes.forEach(methodJavadocs::addParagraph);
 
         methodJavadocs.startParagraph();
-        if (this instanceof TemplateFieldDefinitionList) {
+        if (this instanceof ViewClassFieldDefinitionList) {
             methodJavadocs.addCollectionFieldValueTypesSnippet(this);
         } else {
             methodJavadocs.addFieldValueTypesSnippet(this);

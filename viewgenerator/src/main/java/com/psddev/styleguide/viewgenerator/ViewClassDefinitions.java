@@ -10,13 +10,13 @@ import java.util.Set;
 import com.psddev.dari.util.StringUtils;
 import com.psddev.styleguide.JsonTemplateObject;
 
-public class TemplateDefinitions {
+public class ViewClassDefinitions {
 
-    private Map<String, TemplateDefinition> definitions;
+    private Map<String, ViewClassDefinition> definitions;
 
     private boolean isTemplateFieldDefinitionsResolved = false;
 
-    public TemplateDefinitions(
+    public ViewClassDefinitions(
             Set<JsonTemplateObject> jsonTemplateObjects,
             Set<String> mapTemplates,
             String javaPackagePrefix,
@@ -63,7 +63,7 @@ public class TemplateDefinitions {
             String javaPackageName = generateJavaPackageName(javaPackagePrefix, namePath);
 
             if (!mapTemplates.contains(name)) {
-                definitions.put(StringUtils.ensureStart(name, "/"), new TemplateDefinition(
+                definitions.put(StringUtils.ensureStart(name, "/"), new ViewClassDefinition(
                         this,
                         // add the leading slash back when passing to the TemplateDefinition
                         StringUtils.ensureStart(name, "/"),
@@ -98,7 +98,7 @@ public class TemplateDefinitions {
 
         if (!isTemplateFieldDefinitionsResolved) {
 
-            for (TemplateDefinition templateDef : definitions.values()) {
+            for (ViewClassDefinition templateDef : definitions.values()) {
                 templateDef.resolveFields(this);
             }
 
@@ -106,12 +106,12 @@ public class TemplateDefinitions {
         }
     }
 
-    public Collection<TemplateDefinition> get() {
+    public Collection<ViewClassDefinition> get() {
         resolveAllTemplateFieldDefinitions();
         return definitions.values();
     }
 
-    public TemplateDefinition getByName(String name) {
+    public ViewClassDefinition getByName(String name) {
         resolveAllTemplateFieldDefinitions();
         return definitions.get(StringUtils.ensureStart(name, "/"));
     }

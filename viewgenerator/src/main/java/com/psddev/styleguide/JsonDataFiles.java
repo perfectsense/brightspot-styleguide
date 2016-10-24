@@ -21,7 +21,7 @@ import com.psddev.dari.util.IoUtils;
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
 import com.psddev.styleguide.viewgenerator.PathUtils;
-import com.psddev.styleguide.viewgenerator.TemplateDefinitions;
+import com.psddev.styleguide.viewgenerator.ViewClassDefinitions;
 
 public class JsonDataFiles {
 
@@ -29,7 +29,7 @@ public class JsonDataFiles {
 
     private Map<String, List<JsonDataFile>> dataFilesByTemplate;
 
-    private TemplateDefinitions templateDefinitions;
+    private ViewClassDefinitions templateDefinitions;
 
     private boolean isDataFilesResolved = false;
 
@@ -112,7 +112,7 @@ public class JsonDataFiles {
         return byTemplate != null ? new ArrayList<>(byTemplate) : null;
     }
 
-    public TemplateDefinitions getTemplateDefinitions() {
+    public ViewClassDefinitions getTemplateDefinitions() {
         resolveAllDataFileTemplates();
         return templateDefinitions;
     }
@@ -131,7 +131,7 @@ public class JsonDataFiles {
                 jsonTemplateObjects.addAll(jsonTemplateObject.getIdentityTemplateObjects());
             }
 
-            templateDefinitions = new TemplateDefinitions(jsonTemplateObjects, mapTemplates, javaPackagePrefix, javaClassNamePrefix);
+            templateDefinitions = new ViewClassDefinitions(jsonTemplateObjects, mapTemplates, javaPackagePrefix, javaClassNamePrefix);
 
             isDataFilesResolved = true;
         }

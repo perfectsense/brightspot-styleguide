@@ -15,21 +15,21 @@ public class TestRepeatDataUrl {
         ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
 
         // generate the template definitions
-        TemplateDefinitions definitions = generator.getTemplateDefinitions();
+        ViewClassDefinitions definitions = generator.getTemplateDefinitions();
 
         // verify there's a definition for the list template
-        TemplateDefinition itemDef = definitions.getByName("templates/list");
+        ViewClassDefinition itemDef = definitions.getByName("templates/list");
 
         // get its fields
-        List<TemplateFieldDefinition> fields = itemDef.getFields();
+        List<ViewClassFieldDefinition> fields = itemDef.getFields();
 
         // find a field named "items"
-        TemplateFieldDefinition itemsFieldDef = fields.stream().filter(field -> "items".equals(field.getName())).findFirst().get();
+        ViewClassFieldDefinition itemsFieldDef = fields.stream().filter(field -> "items".equals(field.getName())).findFirst().get();
 
         // verify it's a list
-        assertTrue(itemsFieldDef instanceof TemplateFieldDefinitionList);
+        assertTrue(itemsFieldDef instanceof ViewClassFieldDefinitionList);
 
-        TemplateFieldDefinitionList itemsListFieldDef = (TemplateFieldDefinitionList) itemsFieldDef;
+        ViewClassFieldDefinitionList itemsListFieldDef = (ViewClassFieldDefinitionList) itemsFieldDef;
 
         // get the list item types
         Set<String> listItemTypes = itemsListFieldDef.getListItemTypes();

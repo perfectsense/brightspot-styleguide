@@ -135,7 +135,7 @@ public class ViewClassGenerator {
         return new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, Collections.emptySet(), javaPackageName, classNamePrefix);
     }
 
-    public TemplateDefinitions getTemplateDefinitions() {
+    public ViewClassDefinitions getTemplateDefinitions() {
         return getJsonDataFiles().getTemplateDefinitions();
     }
 
@@ -143,9 +143,9 @@ public class ViewClassGenerator {
 
         Map<Path, String> generated = new LinkedHashMap<>();
 
-        TemplateDefinitions templateDefinitions = getTemplateDefinitions();
+        ViewClassDefinitions templateDefinitions = getTemplateDefinitions();
 
-        for (TemplateDefinition templateDef : templateDefinitions.get().stream()
+        for (ViewClassDefinition templateDef : templateDefinitions.get().stream()
                 .sorted((td1, td2) -> ObjectUtils.compare(td1.getName(), td2.getName(), true))
                 .collect(Collectors.toList())) {
 

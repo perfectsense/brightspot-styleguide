@@ -1,6 +1,6 @@
 package com.psddev.styleguide.viewgenerator;
 
-enum NativeJavaTemplateFieldType implements TemplateFieldType {
+enum ViewClassFieldNativeJavaType implements ViewClassFieldType {
 
     OBJECT("java.lang.Object"),
     STRING("java.lang.String"),
@@ -11,7 +11,7 @@ enum NativeJavaTemplateFieldType implements TemplateFieldType {
 
     private String fullyQualifiedClassName;
 
-    NativeJavaTemplateFieldType(String fullyQualifiedClassName) {
+    ViewClassFieldNativeJavaType(String fullyQualifiedClassName) {
         this.fullyQualifiedClassName = fullyQualifiedClassName;
     }
 

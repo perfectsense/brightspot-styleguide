@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 import com.psddev.styleguide.JsonObject;
 import com.psddev.styleguide.JsonTemplateObject;
 
-class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements TemplateFieldType {
+class ViewClassFieldDefinitionObject extends ViewClassFieldDefinition implements ViewClassFieldType {
 
     private Set<String> templateTypes = new LinkedHashSet<>();
 
-    public TemplateFieldDefinitionObject(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
+    public ViewClassFieldDefinitionObject(ViewClassDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
         super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
         values.forEach((value) -> {
@@ -32,7 +32,7 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
 
     @Override
     public String getFullyQualifiedClassName() {
-        TemplateDefinition parentTemplateDef = templateDefinitions.getByName(parentTemplate);
+        ViewClassDefinition parentTemplateDef = templateDefinitions.getByName(parentTemplate);
         return parentTemplateDef.getFullyQualifiedClassName() + ViewClassStringUtils.toJavaClassCase(name) + "Field";
     }
 
@@ -43,21 +43,21 @@ class TemplateFieldDefinitionObject extends TemplateFieldDefinition implements T
             return "Map<String, String>";
 
         } else {
-            TemplateFieldType fieldType = getEffectiveValueType();
+            ViewClassFieldType fieldType = getEffectiveValueType();
             importsBuilder.add(fieldType);
             return fieldType.getLocalClassName();
         }
     }
 
     @Override
-    public Set<TemplateFieldType> getFieldValueTypes() {
+    public Set<ViewClassFieldType> getFieldValueTypes() {
 
-        Set<TemplateFieldType> fieldTypes = new LinkedHashSet<>();
+        Set<ViewClassFieldType> fieldTypes = new LinkedHashSet<>();
 
         if (!isStringMap()) {
             for (String templateType : templateTypes) {
 
-                TemplateDefinition templateDef = templateDefinitions.getByName(templateType);
+                ViewClassDefinition templateDef = templateDefinitions.getByName(templateType);
                 if (templateDef != null) {
                     fieldTypes.add(templateDef);
                 }

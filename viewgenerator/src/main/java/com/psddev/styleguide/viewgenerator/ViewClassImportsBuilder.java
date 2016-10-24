@@ -10,11 +10,11 @@ class ViewClassImportsBuilder {
 
     public static final String PLACEHOLDER = "${importsPlaceholder}";
 
-    private TemplateDefinition viewDefinition;
+    private ViewClassDefinition viewDefinition;
 
     private Set<String> imports = new TreeSet<>();
 
-    public ViewClassImportsBuilder(TemplateDefinition viewDefinition) {
+    public ViewClassImportsBuilder(ViewClassDefinition viewDefinition) {
         this.viewDefinition = viewDefinition;
     }
 
@@ -24,7 +24,7 @@ class ViewClassImportsBuilder {
         }
     }
 
-    public void add(TemplateFieldType fieldType) {
+    public void add(ViewClassFieldType fieldType) {
         add(fieldType.getFullyQualifiedClassName());
     }
 
@@ -48,7 +48,7 @@ class ViewClassImportsBuilder {
         return builder.toString();
     }
 
-    private boolean isSamePackage(TemplateFieldType fieldType) {
+    private boolean isSamePackage(ViewClassFieldType fieldType) {
         return viewDefinition.getPackageName().equals(fieldType.getPackageName());
     }
 

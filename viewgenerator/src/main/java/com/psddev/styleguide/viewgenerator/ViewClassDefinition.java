@@ -17,9 +17,9 @@ import com.psddev.styleguide.JsonTemplateObject;
 import static com.psddev.styleguide.viewgenerator.ViewClassStringUtils.indent;
 import static com.psddev.styleguide.viewgenerator.ViewClassStringUtils.NEW_LINE;
 
-class TemplateDefinition implements TemplateFieldType {
+class ViewClassDefinition implements ViewClassFieldType {
 
-    private TemplateDefinitions templateDefinitions;
+    private ViewClassDefinitions templateDefinitions;
 
     private String name;
     private String javaPackageName;
@@ -28,7 +28,7 @@ class TemplateDefinition implements TemplateFieldType {
     private List<JsonTemplateObject> jsonTemplateObjects;
     private Set<String> mapTemplates;
 
-    private List<TemplateFieldDefinition> fields = new ArrayList<>();
+    private List<ViewClassFieldDefinition> fields = new ArrayList<>();
     private Set<String> notes = new LinkedHashSet<>();
 
     private boolean isFieldsResolved;
@@ -39,7 +39,7 @@ class TemplateDefinition implements TemplateFieldType {
      * @param mapTemplates list of template names that are actually just String key/value pairs,
      *                     and should be treated as a Map of String ot String instead of a fielded Object.
      */
-    public TemplateDefinition(TemplateDefinitions templateDefinitions, String name, String javaPackageName, List<JsonTemplateObject> jsonTemplateObjects, Set<String> mapTemplates, String javaClassNamePrefix) {
+    public ViewClassDefinition(ViewClassDefinitions templateDefinitions, String name, String javaPackageName, List<JsonTemplateObject> jsonTemplateObjects, Set<String> mapTemplates, String javaClassNamePrefix) {
         this.templateDefinitions = templateDefinitions;
         this.name = name;
         this.javaPackageName = javaPackageName;
@@ -57,7 +57,7 @@ class TemplateDefinition implements TemplateFieldType {
         return name;
     }
 
-    public List<TemplateFieldDefinition> getFields() {
+    public List<ViewClassFieldDefinition> getFields() {
         resolveFields(templateDefinitions);
         return new ArrayList<>(fields);
     }
@@ -71,7 +71,7 @@ class TemplateDefinition implements TemplateFieldType {
         StringBuilder builder = new StringBuilder();
 
         builder.append("--- ").append(name).append(" ---\n");
-        for (TemplateFieldDefinition fieldDef : fields) {
+        for (ViewClassFieldDefinition fieldDef : fields) {
             builder.append(fieldDef).append("\n");
         }
         builder.append("\n");
@@ -84,7 +84,7 @@ class TemplateDefinition implements TemplateFieldType {
         return getJavaPackageName() + "." + getJavaClassName();
     }
 
-    public void resolveFields(TemplateDefinitions templateDefinitions) {
+    public void resolveFields(ViewClassDefinitions templateDefinitions) {
 
         if (!isFieldsResolved) {
 
@@ -108,7 +108,7 @@ class TemplateDefinition implements TemplateFieldType {
             }
 
             fieldInstances.entrySet().stream()
-                    .map((entry) -> TemplateFieldDefinition.createInstance(
+                    .map((entry) -> ViewClassFieldDefinition.createInstance(
                             templateDefinitions,
                             getName(),
                             entry.getKey(),
@@ -149,12 +149,12 @@ class TemplateDefinition implements TemplateFieldType {
         List<ViewClassSource> fieldLevelInterfaceSources = new ArrayList<>();
 
         // Field level interfaces
-        for (TemplateFieldDefinition fieldDef : fields) {
+        for (ViewClassFieldDefinition fieldDef : fields) {
 
-            Set<TemplateFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
+            Set<ViewClassFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
 
             // Only create the view field level interface if there's more than one field value type
-            if (fieldValueTypes.size() > 1 && fieldDef instanceof TemplateFieldType) {
+            if (fieldValueTypes.size() > 1 && fieldDef instanceof ViewClassFieldType) {
 
                 StringBuilder sourceBuilder = new StringBuilder();
 
@@ -176,12 +176,12 @@ class TemplateDefinition implements TemplateFieldType {
                         .buildJavadocsSource(0));
 
                 // field level interface declaration
-                sourceBuilder.append(indent(0)).append("public interface ").append(((TemplateFieldType) fieldDef).getClassName()).append(" {").append(NEW_LINE);
+                sourceBuilder.append(indent(0)).append("public interface ").append(((ViewClassFieldType) fieldDef).getClassName()).append(" {").append(NEW_LINE);
                 sourceBuilder.append(indent(0)).append("}").append(NEW_LINE);
 
                 fieldLevelInterfaceSources.add(new ViewClassSource(
                         getPackageName(),
-                        ((TemplateFieldType) fieldDef).getClassName(),
+                        ((ViewClassFieldType) fieldDef).getClassName(),
                         sourceBuilder.toString()));
             }
         }
@@ -199,12 +199,12 @@ class TemplateDefinition implements TemplateFieldType {
         if (isJsonFormat()) {
             importsBuilder.add(jsonTemplateClassName);
             builder.append("@");
-            builder.append(TemplateFieldType.from(jsonTemplateClassName).getClassName());
+            builder.append(ViewClassFieldType.from(jsonTemplateClassName).getClassName());
             builder.append(NEW_LINE);
         } else {
             importsBuilder.add(handlebarsTemplateClassName);
             builder.append("@");
-            builder.append(TemplateFieldType.from(handlebarsTemplateClassName).getClassName());
+            builder.append(ViewClassFieldType.from(handlebarsTemplateClassName).getClassName());
             builder.append("(\"").append(StringUtils.removeStart(name, "/")).append("\")");
             builder.append(NEW_LINE);
         }
@@ -239,7 +239,7 @@ class TemplateDefinition implements TemplateFieldType {
         // ViewInterface annotation
         final String viewInterfaceClassName = "com.psddev.cms.view.ViewInterface";
         if (importsBuilder.addIfExists(viewInterfaceClassName)) {
-            sourceBuilder.append("@").append(TemplateFieldType.from(viewInterfaceClassName).getClassName()).append(NEW_LINE);
+            sourceBuilder.append("@").append(ViewClassFieldType.from(viewInterfaceClassName).getClassName()).append(NEW_LINE);
         }
         // ViewRenderer annotation
         sourceBuilder.append(getViewRendererAnnotation(importsBuilder));
@@ -248,11 +248,11 @@ class TemplateDefinition implements TemplateFieldType {
         sourceBuilder.append(getViewInterfaceDeclaration(importsBuilder));
 
         // Static view type/element constants
-        for (TemplateFieldDefinition fieldDef : fields) {
+        for (ViewClassFieldDefinition fieldDef : fields) {
 
-            if (fieldDef instanceof TemplateFieldDefinitionList
-                    || fieldDef instanceof TemplateFieldDefinitionObject
-                    || fieldDef instanceof TemplateFieldDefinitionString) {
+            if (fieldDef instanceof ViewClassFieldDefinitionList
+                    || fieldDef instanceof ViewClassFieldDefinitionObject
+                    || fieldDef instanceof ViewClassFieldDefinitionString) {
 
                 String declaration = fieldDef.getInterfaceStaticStringVariableDeclaration(1, "_ELEMENT");
                 sourceBuilder.append(NEW_LINE).append(declaration).append(NEW_LINE);
@@ -260,7 +260,7 @@ class TemplateDefinition implements TemplateFieldType {
         }
 
         // Interface method declarations
-        for (TemplateFieldDefinition fieldDef : fields) {
+        for (ViewClassFieldDefinition fieldDef : fields) {
             sourceBuilder.append(NEW_LINE);
             sourceBuilder.append(fieldDef.getInterfaceMethodDeclarationSource(1, importsBuilder));
             sourceBuilder.append(NEW_LINE);
@@ -282,7 +282,7 @@ class TemplateDefinition implements TemplateFieldType {
         sourceBuilder.append(indent(1)).append("class Builder {").append(NEW_LINE);
         {
             if (!fields.isEmpty()) {
-                for (TemplateFieldDefinition fieldDef : fields) {
+                for (ViewClassFieldDefinition fieldDef : fields) {
                     sourceBuilder.append(NEW_LINE).append(fieldDef.getInterfaceBuilderFieldDeclarationSource(2, importsBuilder));
                 }
                 sourceBuilder.append(NEW_LINE);
@@ -301,7 +301,7 @@ class TemplateDefinition implements TemplateFieldType {
             sourceBuilder.append(indent(2)).append("}").append(NEW_LINE);
 
             // Builder class builder methods for each field
-            for (TemplateFieldDefinition fieldDef : fields) {
+            for (ViewClassFieldDefinition fieldDef : fields) {
                 sourceBuilder.append(NEW_LINE);
                 sourceBuilder.append(fieldDef.getInterfaceBuilderMethodImplementationSource(2, importsBuilder));
                 sourceBuilder.append(NEW_LINE);
@@ -319,7 +319,7 @@ class TemplateDefinition implements TemplateFieldType {
             sourceBuilder.append(indent(2)).append("public ").append(getClassName()).append(" build() {\n");
             {
                 sourceBuilder.append(indent(3)).append("return new ").append(getClassName()).append("() {\n");
-                for (TemplateFieldDefinition fieldDef : fields) {
+                for (ViewClassFieldDefinition fieldDef : fields) {
                     sourceBuilder.append(NEW_LINE).append(fieldDef.getInterfaceBuilderBuildMethodSource(4, importsBuilder)).append(NEW_LINE);
                 }
                 sourceBuilder.append(indent(3)).append("};").append(NEW_LINE);
@@ -368,17 +368,17 @@ class TemplateDefinition implements TemplateFieldType {
         return javaClassNamePrefix + ViewClassStringUtils.toJavaClassCase(className) + "View";
     }
 
-    private List<TemplateFieldDefinition> getImplementedTemplateFieldDefinitions() {
+    private List<ViewClassFieldDefinition> getImplementedTemplateFieldDefinitions() {
 
-        List<TemplateFieldDefinition> implementedFieldDefs = new ArrayList<>();
+        List<ViewClassFieldDefinition> implementedFieldDefs = new ArrayList<>();
 
-        for (TemplateDefinition td : templateDefinitions.get()) {
+        for (ViewClassDefinition td : templateDefinitions.get()) {
 
-            for (TemplateFieldDefinition tfd : td.getFields()) {
+            for (ViewClassFieldDefinition tfd : td.getFields()) {
 
-                Set<TemplateFieldType> fieldValueTypes = tfd.getFieldValueTypes();
+                Set<ViewClassFieldType> fieldValueTypes = tfd.getFieldValueTypes();
                 if (fieldValueTypes.size() > 1 && fieldValueTypes.stream()
-                        .map(TemplateFieldType::getFullyQualifiedClassName)
+                        .map(ViewClassFieldType::getFullyQualifiedClassName)
                         .filter(cn -> cn.equals(this.getFullyQualifiedClassName()))
                         .findAny()
                         .isPresent()) {
@@ -395,11 +395,11 @@ class TemplateDefinition implements TemplateFieldType {
 
         List<String> classNames = new ArrayList<>();
 
-        for (TemplateFieldDefinition fieldDef : getImplementedTemplateFieldDefinitions()) {
+        for (ViewClassFieldDefinition fieldDef : getImplementedTemplateFieldDefinitions()) {
 
-            if (fieldDef instanceof TemplateFieldType) {
+            if (fieldDef instanceof ViewClassFieldType) {
 
-                TemplateFieldType fieldType = (TemplateFieldType) fieldDef;
+                ViewClassFieldType fieldType = (ViewClassFieldType) fieldDef;
 
                 importsBuilder.add(fieldType);
 

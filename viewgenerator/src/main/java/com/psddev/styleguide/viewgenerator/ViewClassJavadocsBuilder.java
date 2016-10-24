@@ -87,36 +87,36 @@ class ViewClassJavadocsBuilder {
         return this;
     }
 
-    public ViewClassJavadocsBuilder addFieldValueTypesSnippet(TemplateFieldDefinition fieldDef) {
+    public ViewClassJavadocsBuilder addFieldValueTypesSnippet(ViewClassFieldDefinition fieldDef) {
         fieldValueTypesSnippetHelper(fieldDef, false);
         return this;
     }
 
-    public ViewClassJavadocsBuilder addCollectionFieldValueTypesSnippet(TemplateFieldDefinition fieldDef) {
+    public ViewClassJavadocsBuilder addCollectionFieldValueTypesSnippet(ViewClassFieldDefinition fieldDef) {
         fieldValueTypesSnippetHelper(fieldDef, true);
         return this;
     }
 
-    public ViewClassJavadocsBuilder addFieldAwareValueTypesSnippet(TemplateFieldDefinition fieldDef) {
-        fieldValueTypesSnippetHelper(fieldDef, fieldDef instanceof TemplateFieldDefinitionList);
+    public ViewClassJavadocsBuilder addFieldAwareValueTypesSnippet(ViewClassFieldDefinition fieldDef) {
+        fieldValueTypesSnippetHelper(fieldDef, fieldDef instanceof ViewClassFieldDefinitionList);
         return this;
     }
 
-    private void fieldValueTypesSnippetHelper(TemplateFieldDefinition fieldDef, boolean isCollection) {
+    private void fieldValueTypesSnippetHelper(ViewClassFieldDefinition fieldDef, boolean isCollection) {
 
-        Set<TemplateFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
-        TemplateDefinition parentTemplateDef = fieldDef.getParentTemplate();
+        Set<ViewClassFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
+        ViewClassDefinition parentTemplateDef = fieldDef.getParentTemplate();
 
         List<String> javadocLinks = new ArrayList<>();
 
-        fieldValueTypes.stream().sorted(Comparator.comparing(TemplateFieldType::getClassName)).forEach(fieldType -> {
+        fieldValueTypes.stream().sorted(Comparator.comparing(ViewClassFieldType::getClassName)).forEach(fieldType -> {
 
             // TODO: Add logic to detect whether it really needs to be fully qualified or not
             StringBuilder javadocLinkBuilder = new StringBuilder();
 
             javadocLinkBuilder.append("{@link ");
 
-            if (fieldType instanceof NativeJavaTemplateFieldType) {
+            if (fieldType instanceof ViewClassFieldNativeJavaType) {
                 javadocLinkBuilder.append(fieldType.getFullyQualifiedClassName());
 
             } else {

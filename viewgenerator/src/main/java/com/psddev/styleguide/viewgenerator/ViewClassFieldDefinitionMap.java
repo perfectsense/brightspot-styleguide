@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 import com.psddev.styleguide.JsonObject;
 
-class TemplateFieldDefinitionMap extends TemplateFieldDefinition {
+class ViewClassFieldDefinitionMap extends ViewClassFieldDefinition {
 
-    public TemplateFieldDefinitionMap(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
+    public ViewClassFieldDefinitionMap(ViewClassDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
         super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
     }
 
@@ -23,8 +23,8 @@ class TemplateFieldDefinitionMap extends TemplateFieldDefinition {
     }
 
     @Override
-    public Set<TemplateFieldType> getFieldValueTypes() {
-        return Collections.singleton(NativeJavaTemplateFieldType.MAP);
+    public Set<ViewClassFieldType> getFieldValueTypes() {
+        return Collections.singleton(ViewClassFieldNativeJavaType.MAP);
     }
 
     @Override

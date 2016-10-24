@@ -2,7 +2,7 @@ package com.psddev.styleguide.viewgenerator;
 
 import com.psddev.dari.util.StringUtils;
 
-interface TemplateFieldType {
+interface ViewClassFieldType {
 
     /**
      * Examples:
@@ -85,7 +85,7 @@ interface TemplateFieldType {
      * @return true if this TemplateFieldType has the same {@link #getPackageName()
      *      package} as {@code relativeFieldType}.
      */
-    default boolean hasSamePackageAs(TemplateFieldType relativeFieldType) {
+    default boolean hasSamePackageAs(ViewClassFieldType relativeFieldType) {
         return getPackageName().equals(relativeFieldType.getPackageName());
     }
 
@@ -104,11 +104,11 @@ interface TemplateFieldType {
      *      returns the {@link #getFullyQualifiedClassName() fully qualified class}
      *      name otherwise.
      */
-    default String getPackageRelativeClassName(TemplateFieldType relativeFieldType) {
+    default String getPackageRelativeClassName(ViewClassFieldType relativeFieldType) {
         return hasSamePackageAs(relativeFieldType) ? getClassName() : getFullyQualifiedClassName();
     }
 
-    static TemplateFieldType from(String fullyQualifiedClassName) {
+    static ViewClassFieldType from(String fullyQualifiedClassName) {
         return () -> fullyQualifiedClassName;
     }
 }

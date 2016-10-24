@@ -19,15 +19,15 @@ public class TestDataUrlOverrides {
         ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
 
         // generate the template definitions
-        TemplateDefinitions definitions = generator.getTemplateDefinitions();
+        ViewClassDefinitions definitions = generator.getTemplateDefinitions();
 
         // verify there's a definition for the "child" template
-        TemplateDefinition itemDef = definitions.getByName("templates/child");
+        ViewClassDefinition itemDef = definitions.getByName("templates/child");
 
         // get its fields
-        List<TemplateFieldDefinition> fields = itemDef.getFields();
+        List<ViewClassFieldDefinition> fields = itemDef.getFields();
 
-        Set<String> fieldNames = fields.stream().map(TemplateFieldDefinition::getName).collect(Collectors.toSet());
+        Set<String> fieldNames = fields.stream().map(ViewClassFieldDefinition::getName).collect(Collectors.toSet());
 
         // verify that the names are foo1-5
         assertEquals(new HashSet<>(Arrays.asList("foo1", "foo2", "foo3", "foo4", "foo5")), fieldNames);

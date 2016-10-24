@@ -13,12 +13,12 @@ import com.psddev.styleguide.JsonObject;
 import com.psddev.styleguide.JsonObjectType;
 import com.psddev.styleguide.JsonTemplateObject;
 
-class TemplateFieldDefinitionList extends TemplateFieldDefinition implements TemplateFieldType {
+class ViewClassFieldDefinitionList extends ViewClassFieldDefinition implements ViewClassFieldType {
 
     private Set<String> listItemTypes;
     private JsonObjectType effectiveListValueType;
 
-    public TemplateFieldDefinitionList(TemplateDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
+    public ViewClassFieldDefinitionList(ViewClassDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
         super(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
 
         Set<JsonObjectType> listValueTypes = new HashSet<>();
@@ -93,7 +93,7 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
 
     @Override
     public String getFullyQualifiedClassName() {
-        TemplateDefinition parentTemplateDef = templateDefinitions.getByName(parentTemplate);
+        ViewClassDefinition parentTemplateDef = templateDefinitions.getByName(parentTemplate);
         return parentTemplateDef.getFullyQualifiedClassName() + ViewClassStringUtils.toJavaClassCase(name) + "Field";
     }
 
@@ -103,9 +103,9 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
 
         String genericArgument;
 
-        TemplateFieldType effectiveFieldValueType = getEffectiveValueType();
+        ViewClassFieldType effectiveFieldValueType = getEffectiveValueType();
 
-        if (effectiveFieldValueType == null || effectiveFieldValueType == NativeJavaTemplateFieldType.OBJECT) {
+        if (effectiveFieldValueType == null || effectiveFieldValueType == ViewClassFieldNativeJavaType.OBJECT) {
             genericArgument = "?";
 
         } else {
@@ -129,28 +129,28 @@ class TemplateFieldDefinitionList extends TemplateFieldDefinition implements Tem
     }
 
     @Override
-    public Set<TemplateFieldType> getFieldValueTypes() {
+    public Set<ViewClassFieldType> getFieldValueTypes() {
 
-        Set<TemplateFieldType> fieldTypes = new LinkedHashSet<>();
+        Set<ViewClassFieldType> fieldTypes = new LinkedHashSet<>();
 
         if (!listItemTypes.isEmpty()) {
 
             if (effectiveListValueType == JsonObjectType.STRING) {
-                fieldTypes.add(NativeJavaTemplateFieldType.STRING);
+                fieldTypes.add(ViewClassFieldNativeJavaType.STRING);
 
             } else if (effectiveListValueType == JsonObjectType.BOOLEAN) {
-                fieldTypes.add(NativeJavaTemplateFieldType.BOOLEAN);
+                fieldTypes.add(ViewClassFieldNativeJavaType.BOOLEAN);
 
             } else if (effectiveListValueType == JsonObjectType.NUMBER) {
-                fieldTypes.add(NativeJavaTemplateFieldType.NUMBER);
+                fieldTypes.add(ViewClassFieldNativeJavaType.NUMBER);
 
             } else if (effectiveListValueType == JsonObjectType.LIST) {
-                fieldTypes.add(NativeJavaTemplateFieldType.COLLECTION);
+                fieldTypes.add(ViewClassFieldNativeJavaType.COLLECTION);
 
             } else {
                 for (String templateType : listItemTypes) {
 
-                    TemplateDefinition templateDef = templateDefinitions.getByName(templateType);
+                    ViewClassDefinition templateDef = templateDefinitions.getByName(templateType);
                     if (templateDef != null) {
                         fieldTypes.add(templateDef);
                     }

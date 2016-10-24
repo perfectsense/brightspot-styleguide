@@ -15,7 +15,7 @@ public class TestStrictTypes {
         generator.setIgnoredFileNames(Collections.singleton(Paths.get("_config.json")));
 
         // generate the template definitions
-        TemplateDefinitions definitions = generator.getTemplateDefinitions();
+        ViewClassDefinitions definitions = generator.getTemplateDefinitions();
 
         // Just ensures there's no error for now...
 

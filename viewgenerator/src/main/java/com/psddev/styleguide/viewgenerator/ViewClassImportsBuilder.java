@@ -40,7 +40,6 @@ class ViewClassImportsBuilder {
     public String getImportStatements() {
         StringBuilder builder = new StringBuilder();
 
-        // TODO: Sort!
         for (String importClass : imports) {
             builder.append("import ").append(importClass).append(";\n");
         }

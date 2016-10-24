@@ -81,7 +81,7 @@ public class ViewClassGenerator {
 
     private CliLogger logger = CliLogger.getLogger();
 
-    public ViewClassGenerator(Set<Path> jsonDirectories, Path javaSourceDirectory, String javaPackageName) {
+    ViewClassGenerator(Set<Path> jsonDirectories, Path javaSourceDirectory, String javaPackageName) {
         this.jsonDirectories = jsonDirectories;
         this.javaSourceDirectory = javaSourceDirectory;
         this.javaPackageName = javaPackageName;
@@ -103,27 +103,27 @@ public class ViewClassGenerator {
         this.generateStrictTypes = arguments.isStrictTypes();
     }
 
-    public void disableLogColors() {
+    void disableLogColors() {
         logger = CliLogger.getColorlessLogger();
     }
 
-    public Set<Path> getIgnoredFileNames() {
+    Set<Path> getIgnoredFileNames() {
         return ignoredFileNames;
     }
 
-    public void setIgnoredFileNames(Set<Path> ignoredFileNames) {
+    void setIgnoredFileNames(Set<Path> ignoredFileNames) {
         this.ignoredFileNames = ignoredFileNames;
     }
 
-    public String getClassNamePrefix() {
+    String getClassNamePrefix() {
         return classNamePrefix;
     }
 
-    public void setClassNamePrefix(String classNamePrefix) {
+    void setClassNamePrefix(String classNamePrefix) {
         this.classNamePrefix = classNamePrefix;
     }
 
-    public void printGeneratedClasses() {
+    void printGeneratedClasses() {
         getGeneratedClasses().forEach((file, source) -> {
             String fileName = file.toString();
             String underline = new String(new char[fileName.length()]).replace("\0", "-");
@@ -135,11 +135,11 @@ public class ViewClassGenerator {
         return new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, Collections.emptySet(), javaPackageName, classNamePrefix);
     }
 
-    public ViewClassDefinitions getTemplateDefinitions() {
+    ViewClassDefinitions getTemplateDefinitions() {
         return getJsonDataFiles().getTemplateDefinitions();
     }
 
-    public Map<Path, String> getGeneratedClasses() {
+    Map<Path, String> getGeneratedClasses() {
 
         Map<Path, String> generated = new LinkedHashMap<>();
 
@@ -165,7 +165,7 @@ public class ViewClassGenerator {
         return generated;
     }
 
-    public List<Path> generateClasses() {
+    List<Path> generateClasses() {
 
         printLogo();
 
@@ -214,7 +214,7 @@ public class ViewClassGenerator {
         return generatedFiles;
     }
 
-    public void watch() {
+    void watch() {
 
         printLogo();
 

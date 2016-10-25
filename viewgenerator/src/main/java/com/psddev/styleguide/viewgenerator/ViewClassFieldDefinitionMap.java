@@ -37,10 +37,13 @@ class ViewClassFieldDefinitionMap extends ViewClassFieldDefinition {
 
         importsBuilder.add(LinkedHashMap.class.getName());
 
-        StringBuilder notesJavaDoc = new StringBuilder();
-        for (String note : notes) {
-            notesJavaDoc.append(indent(indent)).append(" * <p>").append(note).append("</p>\n");
-        }
+        ViewClassJavadocsBuilder javadocsBuilder = new ViewClassJavadocsBuilder();
+        javadocsBuilder.add("Adds an entry to the " + name + " field .").addLink("java.util.Map").addLine(".");
+        notes.forEach(javadocsBuilder::addParagraph);
+        javadocsBuilder.newLine();
+        javadocsBuilder.addParameter("key").addLine("the key to add.");
+        javadocsBuilder.addParameter("value").addLine("the value at the associated key.");
+        javadocsBuilder.addReturn().add("this builder.");
 
         /*
          * <p>Adds an entry to the attributes field {@link java.util.Map}.</p>
@@ -61,14 +64,7 @@ class ViewClassFieldDefinitionMap extends ViewClassFieldDefinition {
         }
         */
         String[] method = {
-                indent(indent) + "/**\n",
-                indent(indent) + " * <p>Adds an entry to the " + name + " field {@link java.util.Map}.</p>\n",
-                notesJavaDoc.toString(),
-                indent(indent) + " *\n",
-                indent(indent) + " * @param key the key to add.\n",
-                indent(indent) + " * @param value the value at the associated key.\n",
-                indent(indent) + " * @return this builder.\n",
-                indent(indent) + " */\n",
+                javadocsBuilder.buildJavadocsSource(indent),
                 indent(indent) + "public Builder add" + ViewClassStringUtils.toJavaMethodCase(name) + "(String key, Object value) {\n",
                 indent(indent + 1) + "if (this." + name + " == null) {\n",
                 indent(indent + 2) + "this." + name + " = new LinkedHashMap<>();\n",

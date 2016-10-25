@@ -21,6 +21,10 @@ var Styleguide = function(config) {
     this.config = _.extend({ }, JSON.parse(configFile), config);
 }
 
+Styleguide.prototype.srcPath = function() {
+    return 'src'
+};
+
 Styleguide.prototype.distPath = function() {
     return '_dist'
 };

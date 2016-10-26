@@ -20,7 +20,6 @@ import org.apache.commons.io.FileUtils;
 import com.psddev.dari.util.IoUtils;
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
-import com.psddev.styleguide.viewgenerator.PathUtils;
 import com.psddev.styleguide.viewgenerator.ViewClassDefinitions;
 
 public class JsonDataFiles {
@@ -172,6 +171,6 @@ public class JsonDataFiles {
     }
 
     private static String fileToName(File file, String baseFilePath) {
-        return StringUtils.ensureStart(file.getAbsolutePath().replace(baseFilePath, ""), PathUtils.SLASH);
+        return StringUtils.ensureStart(file.getAbsolutePath().replace(baseFilePath, ""), System.getProperty("file.separator"));
     }
 }

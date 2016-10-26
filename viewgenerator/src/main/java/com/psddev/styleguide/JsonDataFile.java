@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
-import com.psddev.styleguide.viewgenerator.PathUtils;
 
 public class JsonDataFile {
 
@@ -60,7 +59,7 @@ public class JsonDataFile {
 
         String fileNamePath = getFileName();
 
-        int lastSlashAt = fileNamePath.lastIndexOf(PathUtils.SLASH);
+        int lastSlashAt = fileNamePath.lastIndexOf(System.getProperty("file.separator"));
         if (lastSlashAt >= 0) {
             fileNamePath = fileNamePath.substring(0, lastSlashAt);
         } else {
@@ -111,7 +110,9 @@ public class JsonDataFile {
             }
         }
 
-        return jsonDataFiles.getByFileName(StringUtils.ensureStart(PathUtils.replaceAllWithSlash(dataUrl, "/"), PathUtils.SLASH));
+        String slash = System.getProperty("file.separator");
+
+        return jsonDataFiles.getByFileName(StringUtils.ensureStart(dataUrl.replaceAll("/", "\\".equals(slash) ? "\\\\" : slash), slash));
     }
 
     private Set<String> jsonMapKeys() {

@@ -49,14 +49,6 @@
             </div>
         </header>
         <div class="sg-menu">
-            <form class="sg-project-list">
-                <select onchange="window.location.href = $(this).val();">
-                    {{#each availableLibraries}}
-                        <option value="{{project.urlPrefix}}"{{#if selected}} selected{{/if}}>{{project.name}}</option>
-                    {{/each}}
-                </select>
-            </form>
-
             <ul class="sg-group-list">
                 {{#each groups}}
                     <li class="sg-group">

@@ -242,11 +242,11 @@
 
                         History.pushState(null, url, url);
                    });
-                   $('.sg-header a').on('click', function(event){
+                   $('.sg-header a, .sg-control-available-stylesheet-list').on('click, change', function(event){
                        event.preventDefault();
                        var $self = $(this);
                        var docPath = document.location.pathname;
-                       var docSearch = $self.attr('href');
+                       var docSearch = $self.attr('href')? $self.attr('href') : $self.find(':selected').val();
                        var query = null;
 
                        if(docSearch.indexOf('?') > 0){
@@ -254,7 +254,6 @@
                        }
                        document.location.href = docPath + (query ? '?' + query: '');
                    });
-
                     // trigger event content loaded when app initializes
                     $('.sg-content').trigger('sg:contentLoaded');
                 })
@@ -289,7 +288,7 @@
 
                 {{#with availableStylesheets}}
                     <form class="sg-control-available-stylesheet-list">
-                        <select onchange="window.location.href = $(this).val();">
+                        <select>
                             {{#each this}}
                                 <option value="{{url}}"{{#if selected}} selected{{/if}}>{{name}}</option>
                             {{/each}}

@@ -49,10 +49,10 @@
             </div>
         </header>
         <div class="sg-menu">
-            <form class="sg-library-list">
+            <form class="sg-project-list">
                 <select onchange="window.location.href = $(this).val();">
                     {{#each availableLibraries}}
-                        <option value="{{library.urlPrefix}}"{{#if selected}} selected{{/if}}>{{library.name}}</option>
+                        <option value="{{project.urlPrefix}}"{{#if selected}} selected{{/if}}>{{project.name}}</option>
                     {{/each}}
                 </select>
             </form>

@@ -1,1 +1,198 @@
-{{> content}}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Styleguide{{#each names}}: {{this}}{{/each}}</title>
+
+        <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/x-icon">
+
+        <link rel="stylesheet" type="text/css" href="/node-modules/normalize.css/normalize.css">
+        <link rel="stylesheet" type="text/css" href="/node-modules/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="/opensans-bold,opensans-bolditalic,opensans-italic,opensans-regular/fonts.css">
+        <link rel="stylesheet" type="text/css" href="/node-modules/codemirror/lib/codemirror.css">
+        <link rel="stylesheet" type="text/css" href="/styleguide.css">
+
+        <script type="text/javascript" src="/node-modules/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript" src="/node-modules/codemirror/lib/codemirror.js"></script>
+
+        <script type="text/javascript" src="/node-modules/sticky-kit/dist/sticky-kit.min.js"></script>
+        <script type="text/javascript" src="/node-modules/codemirror/mode/javascript/javascript.js"></script>
+        <script type="text/javascript" src="/node-modules/iframe-resizer/js/iframeResizer.min.js"></script>
+        <script type="text/javascript" src="/node-modules/history.js/scripts/compressed/history.js"></script>
+        <script type="text/javascript" src="/node-modules/history.js/scripts/compressed/history.adapter.jquery.js"></script>
+
+        <script type="text/javascript">
+
+            (function (window,undefined) {
+                $(document).on('ready', function () {
+
+                    $('.sg-file-body > iframe').iFrameResize({
+                        log: false,
+                        heightCalculationMethod: 'max',
+                        autoResize: true,
+                        scrolling: true,
+                        {{#if example.exampleMinHeight}}
+                          minHeight: {{example.exampleMinHeight}},
+                        {{/if}}
+                        {{#if example.exampleMaxHeight}}
+                          maxHeight: {{example.exampleMaxHeight}},
+                        {{/if}}
+                        initCallback: function(iframe) {
+                            $(iframe).contents().find('html', 'body', 'div').css('height', 'auto');
+                        }
+                    });
+
+                    $('.sg-file').each(function () {
+                        var $file = $(this);
+                        var $name = $file.find('.sg-file-name');
+                        var $form = $file.find('.sg-file-form');
+
+                        $name.append(' - ');
+                        $name.append($('<a/>', {
+                            href: '#',
+                            text: 'Toggle Edit',
+                            click: function () {
+                                $file.toggleClass('sg-file--hide');
+                                return false;
+                            }
+                        }));
+
+                        $form.find('textarea').each(function () {
+                            CodeMirror.fromTextArea(this, {
+                                lineNumbers: true,
+                                mode: 'json'
+                            });
+                        });
+
+                        var $message = $('<span/>', {
+                            'class': 'sg-file-form-message'
+                        });
+
+                        $form.find('button').after($message);
+
+                        $form.on('submit', function () {
+                            $message.text('Saving...');
+
+                            $.post('/save', $form.serialize()).
+
+                                done(function (data) {
+                                    $message.text('Saved successfully!');
+
+                                    $form.closest('.sg-file').find('iframe').each(function () {
+                                        this.contentWindow.location.reload();
+                                    });
+                                }).
+
+                                fail(function () {
+                                    $message.text('Unable to save ' + $form.find('input[name="path"]').val());
+                                });
+
+                            return false;
+                        });
+
+                        $file.addClass('sg-file--hide');
+
+                        // $file.find('.sg-file-header').stick_in_parent({
+                        //     offset_top: 48
+                        // });
+                    });
+
+                    $('.sg-file-body').each(function () {
+                        var $body = $(this);
+                        var $devices = $body.find('> .sg-device');
+
+                        if ($devices.length > 0) {
+                            var width = 50;
+
+                            $devices.each(function () {
+                                width += $(this).outerWidth(true);
+                            });
+
+                            $body.outerWidth(width);
+                        }
+                    });
+
+/*
+*VARIABLES
+*/
+                    $('.sg-design').each(function () {
+                        var $design = $(this);
+                        var $name = $design.find('.sg-design-name');
+                        var $form = $design.find('.sg-design-form');
+
+                        $name.append(' - ');
+                        $name.append($('<a/>', {
+                            href: '#',
+                            text: 'Toggle Edit',
+                            click: function () {
+                                $design.toggleClass('sg-design--hide');
+                                return false;
+                            }
+                        }));
+
+                        $form.find('textarea').each(function () {
+                            CodeMirror.fromTextArea(this, {
+                                lineNumbers: true,
+                                mode: 'json'
+                            });
+                        });
+
+                        var $message = $('<span/>', {
+                            'class': 'sg-design-form-message'
+                        });
+
+                        $form.find('button').after($message);
+
+                        $form.on('submit', function () {
+                            $message.text('Saving...');
+
+                            $.post('/save', $form.serialize()).
+
+                                done(function (data) {
+                                    $message.text('Saved successfully!');
+
+                                    $form.closest('.sg-design').find('iframe').each(function () {
+                                        this.contentWindow.location.reload();
+                                    });
+                                }).
+
+                                fail(function () {
+                                    $message.text('Unable to save ' + $form.find('input[name="path"]').val());
+                                });
+
+                            return false;
+                        });
+
+                        $design.addClass('sg-design--hide');
+
+                        $design.find('.sg-design-header').stick_in_parent({
+                            offset_top: 48
+                        });
+                    });
+
+                    $('.sg-file-body').each(function () {
+                        var $body = $(this);
+                        var $devices = $body.find('> .sg-device');
+
+                        if ($devices.length > 0) {
+                            var width = 50;
+
+                            $devices.each(function () {
+                                width += $(this).outerWidth(true);
+                            });
+
+                            $body.outerWidth(width);
+                        }
+                    });
+
+
+                });
+
+            })();
+        </script>
+
+        {{> head}}
+    </head>
+    <body>
+        {{> content}}
+    </body>
+</html>

@@ -15,9 +15,11 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     line-height: 24px;
-    margin: 54px 0 20px 0;
     padding: 0;
     .clearfix();
+    &.sg-body {
+        margin: 54px 0 20px 0;
+    }
 }
 
 a {
@@ -155,6 +157,11 @@ a {
 .sg-content {
     margin: 0 0 0 @menu-width;
     padding: 12px 24px 12px 12px;
+    iframe {
+        border: none;
+        display: block;
+        width: 100%;
+    }
 }
 
 .sg-file-header,

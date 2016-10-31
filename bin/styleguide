@@ -20,6 +20,8 @@ if (config._.length > 0) {
     config['project-path'] = config._[0];
 }
 
+config['legacy-project'] = true;
+
 var configFile = fs.readFileSync(path.join(__dirname, '..', 'styleguide', '_config.json'), "utf8");
 
 // Merge the command line args onto the _config file

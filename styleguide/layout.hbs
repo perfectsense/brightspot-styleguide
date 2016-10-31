@@ -8,14 +8,11 @@
         <link rel="stylesheet" type="text/css" href="/node-modules/normalize.css/normalize.css">
         <link rel="stylesheet" type="text/css" href="/node-modules/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="/opensans-bold,opensans-bolditalic,opensans-italic,opensans-regular/fonts.css">
-        <link rel="stylesheet" type="text/css" href="/node-modules/codemirror/lib/codemirror.css">
         <link rel="stylesheet" type="text/css" href="/styleguide.css">
 
         <script type="text/javascript" src="/node-modules/jquery/dist/jquery.min.js"></script>
-        <script type="text/javascript" src="/node-modules/codemirror/lib/codemirror.js"></script>
 
         <script type="text/javascript" src="/node-modules/sticky-kit/dist/sticky-kit.min.js"></script>
-        <script type="text/javascript" src="/node-modules/codemirror/mode/javascript/javascript.js"></script>
         <script type="text/javascript" src="/node-modules/iframe-resizer/js/iframeResizer.min.js"></script>
         <script type="text/javascript" src="/node-modules/history.js/scripts/compressed/history.js"></script>
         <script type="text/javascript" src="/node-modules/history.js/scripts/compressed/history.adapter.jquery.js"></script>
@@ -37,7 +34,6 @@
                         .find('.sg-example-name').removeAttr('data-listActive').end().end()
                         .parents('.sg-group, .sg-example').attr('data-listOpen','true')
                         .siblings().removeAttr('data-listOpen');
-
                 });
 
                 $(document).ready(function(){
@@ -61,15 +57,13 @@
                     });
 
                     $('.sg-example-name, .sg-group-name').on('click', function(event){
-                        // event.preventDefault();
+                        event.preventDefault();
 
                         var $self = $(this);
                         var url = $self.attr('href');
-                        if (url){
-                            url = url.replace('&content=true', '');
-                        }
+                        var contentUrl;
+                        var $target = $('[name='+$self.attr('target')+']');
 
-                        console.log(url)
                         var $parentNode = $self.parent('li');
 
                         //toggle the navigation
@@ -77,11 +71,16 @@
                            $parentNode.removeAttr('data-listOpen');
                         }else {
                            $parentNode.attr('data-listOpen','true');
-                           $parentNode.siblings().removeAttr('data-listOpen').find('.sg-example').removeAttr('data-listOpen').find('.sg-example-name').removeAttr('data-listActive');
+                           $parentNode.siblings().removeAttr('data-listOpen')
+                            .find('.sg-example').removeAttr('data-listOpen').end()
+                            .find('.sg-example-name').removeAttr('data-listActive');
                         }
                         if(!url) {
                             return;
                         }
+
+                        contentUrl = (url.indexOf('?') > 0)? url+'&content' : url+'?content';
+                        $target.attr('src', contentUrl);
 
                         History.pushState(null, url, url);
                    });
@@ -148,12 +147,12 @@
                         <ul class="sg-example-list">
                             {{#each children}}
                                 <li class="sg-example">
-                                        <a class="sg-example-name"  href="{{url}}" title="{{name}}">{{name}}</a>
+                                        <a class="sg-example-name"  href="{{url}}" title="{{name}}" target="sg-content-iframe">{{name}}</a>
                                     {{#if children}}
                                         <ul class="sg-example-list-children">
                                             {{#each children}}
                                                 <li class="sg-example">
-                                                    <a href="{{url}}" class="sg-example-file-name" title="{{name}}">{{name}}</a>
+                                                    <a href="{{url}}" class="sg-example-file-name" title="{{name}}" target="sg-content-iframe">{{name}}</a>
                                                 </li>
                                             {{/each}}
                                         </ul>
@@ -166,7 +165,7 @@
                 {{#*inline 'list'}}
                     {{#each children}}
                         <li class="sg-example">
-                            <a class="sg-example-name" {{#if url}}href="{{url}}&content=true"{{/if}} title="{{name}}" target="sg-content-iframe">{{name}}</a>
+                            <a class="sg-example-name" {{#if url}}href="{{url}}"{{/if}} title="{{name}}" target="sg-content-iframe">{{name}}</a>
                             {{#if children}}
                                 <ul class="sg-example-list">
                                     {{> list}} {{! Recursively render the partial }}
@@ -187,7 +186,7 @@
         </div>
 
         <div class="sg-content">
-            <iframe src="{{reqPath}}{{originalUrlSearch}}&content=true" name="sg-content-iframe"></iframe>
+            <iframe src="{{reqPath}}?content&{{#if contentQueryString}}{{contentQueryString}} {{/if}}" name="sg-content-iframe"></iframe>
         </div>
     </body>
 </html>

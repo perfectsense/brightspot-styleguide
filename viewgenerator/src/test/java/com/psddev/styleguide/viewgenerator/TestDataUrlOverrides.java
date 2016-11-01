@@ -22,7 +22,7 @@ public class TestDataUrlOverrides {
         List<ViewClassDefinition> definitions = generator.getViewClassDefinitions();
 
         // verify there's a definition for the "child" template
-        ViewClassDefinition itemDef = definitions.stream().filter(classDef -> classDef.getViewKey().getName().equals("/templates/child")).findFirst().get();
+        ViewClassDefinition itemDef = definitions.stream().filter(classDef -> classDef.getViewKey().getName().equals("templates/child.hbs")).findFirst().get();
 
         // get its fields
         List<ViewClassFieldDefinition> fields = itemDef.getFieldDefinitions();

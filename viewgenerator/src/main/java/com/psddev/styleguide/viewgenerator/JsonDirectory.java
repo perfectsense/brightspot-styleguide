@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +45,22 @@ class JsonDirectory {
     public JsonDirectory(ViewClassGeneratorContext context, Path path) {
         this.context = context;
         this.path = path;
+    }
+
+    /**
+     * Creates a new JsonDirectory using the common parent of the set of paths
+     * as the official base directory, and then adds
+     *
+     * @param context
+     * @param paths
+     */
+    public JsonDirectory(ViewClassGeneratorContext context, Set<Path> paths) {
+        this(context, findCommonParentPath(paths));
+    }
+
+    private static Path findCommonParentPath(Set<Path> paths) {
+        // TODO: Still need to implement
+        return null;
     }
 
     /**
@@ -206,7 +225,7 @@ class JsonDirectory {
             checkForErrors(files);
 
             // parse each file
-            getFiles().forEach(JsonFile::parse);
+            files.forEach(JsonFile::parse);
 
             // check for errors
             checkForErrors(files);
@@ -258,23 +277,53 @@ class JsonDirectory {
 
         // TODO: Improve this to support both names and paths
         // Make sure to only use the filename part of the path (for now)
-        Set<Path> ignoredFileNames = context.getIgnoredFileNames().stream()
-                .map(Path::getFileName)
+        Set<String> ignoredFileNames = context.getExcludedPathNames().stream()
                 .collect(Collectors.toSet());
 
         // ignore config files
-        ignoredFileNames.add(Paths.get(CONFIG_FILE_NAME));
+        ignoredFileNames.add(CONFIG_FILE_NAME);
+
+        Set<Path> includedPaths = new HashSet<>();
+        Set<Path> excludedPaths = new HashSet<>();
+
+        Set<String> excludedDirectoryNames = new HashSet<>(ignoredFileNames);
+        Set<String> excludedFileNames = new HashSet<>(ignoredFileNames);
+
+        if (!includedPaths.isEmpty()) {
+            // TODO: Still need to implement
+        }
 
         // get each json file in this directory
-        return FileUtils.listFiles(path.toFile(), new String[] { "json" }, true).stream()
-                // remove ignored files
-                .filter(file -> !ignoredFileNames.contains(Paths.get(file.getName())))
+
+        return getSearchablePaths().stream()
+                // convert each path to a File object representing a directory
+                .map(Path::toFile)
+                // recursively list all of the files in the directory
+                .map(dir -> FileUtils.listFiles(dir, new String[] { "json" }, true))
+                // flatten the list of list of files
+                .flatMap(Collection::stream)
+                .peek((file) -> {
+                    System.out.println("file.getAbsolutePath(): " + file.getAbsolutePath());
+                })
+                // remove ignored file names
+                .filter(file -> !excludedFileNames.contains(file.getName()))
                 // ignore files beginning with an underscore
                 .filter(file -> !file.getName().startsWith("_"))
                 // convert the file to a path
                 .map(file -> Paths.get(file.toURI()))
                 // add each file to the set
                 .collect(Collectors.toSet());
+    }
+
+    /*
+     * This is normally just the base directory path, but for backward compatibility
+     */
+    private Set<Path> getSearchablePaths() {
+        // TODO: Still need to implement
+
+        Set<Path> includedPaths = new HashSet<>();
+
+        return Collections.singleton(path);
     }
 
     /*
@@ -345,6 +394,8 @@ class JsonDirectory {
                         builder.append(" - Cause: ");
                         builder.append(cause.getMessage());
                     }
+
+                    throwable.printStackTrace();
                 }
 
                 JsonDataLocation location = error.getLocation();

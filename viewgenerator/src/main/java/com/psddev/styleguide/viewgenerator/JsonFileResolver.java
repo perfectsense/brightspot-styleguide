@@ -145,7 +145,9 @@ class JsonFileResolver {
                 }
 
             } else {
-                return new ViewKey(viewKey.toRawValue());
+                return new ViewKey(
+                        file.getBaseDirectory().getContext(),
+                        viewKey.toRawValue());
             }
         } else {
             addError("Must specify the view via the " + JsonFile.VIEW_KEY + " key or " + JsonFile.TEMPLATE_KEY + " key!", jsonMap);
@@ -211,7 +213,12 @@ class JsonFileResolver {
         }
 
         if (templateType != null) {
-            return new TemplateViewKey(viewKey != null ? viewKey.toRawValue() : null, templatePath, templateType, templateConfig);
+            return new TemplateViewKey(
+                    file.getBaseDirectory().getContext(),
+                    viewKey != null ? viewKey.toRawValue() : null,
+                    templatePath,
+                    templateType,
+                    templateConfig);
         } else {
             return null;
         }

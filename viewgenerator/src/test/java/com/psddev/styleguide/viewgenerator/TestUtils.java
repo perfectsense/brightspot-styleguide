@@ -41,10 +41,13 @@ public class TestUtils {
         Set<Path> jsonDirectories = getJsonDirectoriesForClasses(klass);
         String javaPackageName = DEFAULT_JAVA_PACKAGE_NAME;
 
-        ViewClassGenerator generator = new ViewClassGenerator(
-                jsonDirectories,
-                jsonDirectories.stream().findFirst().orElse(null).resolve("output"),
-                javaPackageName);
+        ViewClassGeneratorContext context = new ViewClassGeneratorContext();
+        context.setJsonDirectory(jsonDirectories.iterator().next());
+
+        context.setJavaSourceDirectory(jsonDirectories.stream().findFirst().orElse(null).resolve("output"));
+        context.setDefaultJavaPackagePrefix(javaPackageName);
+
+        ViewClassGenerator generator = new ViewClassGenerator(context);
 
         generator.disableLogColors();
 

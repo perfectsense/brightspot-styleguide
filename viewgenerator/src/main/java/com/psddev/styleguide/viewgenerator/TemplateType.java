@@ -9,14 +9,16 @@ import com.psddev.dari.util.StringUtils;
  */
 enum TemplateType {
 
-    FREEMARKER("ftl"),
-    HANDLEBARS("hbs"),
-    JSP("jsp");
+    FREEMARKER("ftl", /* Not yet implemented */ null),
+    HANDLEBARS("hbs", "com.psddev.handlebars.HandlebarsTemplate"),
+    JSP("jsp", /* Not yet implemented */ null);
 
     private String extension;
+    private String annotationClass;
 
-    TemplateType(String extension) {
+    TemplateType(String extension, String annotationClass) {
         this.extension = extension;
+        this.annotationClass = annotationClass;
     }
 
     /**
@@ -26,6 +28,15 @@ enum TemplateType {
      */
     public String getExtension() {
         return extension;
+    }
+
+    /**
+     * Gets the view renderer annotation class name for this template type.
+     *
+     * @return the view renderer annotation class name for this template type.
+     */
+    public String getAnnotationClass() {
+        return annotationClass;
     }
 
     /**

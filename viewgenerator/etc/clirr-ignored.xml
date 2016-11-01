@@ -85,4 +85,24 @@
         <method>void watch()</method>
     </difference>
 
+    <difference>
+        <className>com/psddev/styleguide/DataUrlTemplateOverrideException</className>
+        <differenceType>8001</differenceType>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/JsonTemplateObject$TemplateFormat</className>
+        <differenceType>8001</differenceType>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/MissingDataReferenceException</className>
+        <differenceType>8001</differenceType>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/MissingTemplateException</className>
+        <differenceType>8001</differenceType>
+    </difference>
+
 </differences>

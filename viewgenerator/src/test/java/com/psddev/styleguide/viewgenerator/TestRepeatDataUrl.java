@@ -15,29 +15,27 @@ public class TestRepeatDataUrl {
         ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
 
         // generate the template definitions
-        ViewClassDefinitions definitions = generator.getTemplateDefinitions();
+        List<ViewClassDefinition> definitions = generator.getViewClassDefinitions();
 
         // verify there's a definition for the list template
-        ViewClassDefinition itemDef = definitions.getByName("templates/list");
+        ViewClassDefinition itemDef = definitions.stream().filter(classDef -> classDef.getViewKey().getName().equals("/templates/list")).findFirst().get();
 
         // get its fields
-        List<ViewClassFieldDefinition> fields = itemDef.getFields();
+        List<ViewClassFieldDefinition> fields = itemDef.getFieldDefinitions();
 
         // find a field named "items"
-        ViewClassFieldDefinition itemsFieldDef = fields.stream().filter(field -> "items".equals(field.getName())).findFirst().get();
+        ViewClassFieldDefinition itemsFieldDef = fields.stream().filter(field -> "items".equals(field.getFieldName())).findFirst().get();
 
         // verify it's a list
-        assertTrue(itemsFieldDef instanceof ViewClassFieldDefinitionList);
-
-        ViewClassFieldDefinitionList itemsListFieldDef = (ViewClassFieldDefinitionList) itemsFieldDef;
+        assertTrue(itemsFieldDef.getEffectiveType() == JsonList.class);
 
         // get the list item types
-        Set<String> listItemTypes = itemsListFieldDef.getListItemTypes();
+        Set<ViewClassFieldType> listItemTypes = itemsFieldDef.getFieldValueTypes();
 
         // verify there's only 1 type
         assertEquals(1, listItemTypes.size());
 
         // verify the type is "item"
-        assertEquals("/templates/item", listItemTypes.stream().findFirst().get());
+        assertEquals("templates.Item", listItemTypes.stream().findFirst().get().getFullyQualifiedClassName());
     }
 }

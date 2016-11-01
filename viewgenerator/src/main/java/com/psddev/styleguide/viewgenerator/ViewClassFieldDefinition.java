@@ -1,137 +1,193 @@
 package com.psddev.styleguide.viewgenerator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.psddev.dari.util.StringUtils;
-import com.psddev.styleguide.JsonObject;
-import com.psddev.styleguide.JsonObjectType;
+class ViewClassFieldDefinition implements ViewClassFieldType {
 
-abstract class ViewClassFieldDefinition {
+    private ViewClassDefinition viewClassDef;
 
-    protected ViewClassDefinitions templateDefinitions;
-    protected String parentTemplate;
-    protected String name;
-    protected List<JsonObject> values;
-    protected Set<String> mapTemplates;
-    protected Set<String> notes;
-    protected String javaClassNamePrefix;
-    protected boolean isDefaulted;
-    protected boolean isStrictlyTyped;
+    private String fieldName;
 
-    public static ViewClassFieldDefinition createInstance(ViewClassDefinitions templateDefinitions, String parentTemplate, String name, List<JsonObject> values, Set<String> mapTemplates, String javaClassNamePrefix, boolean isDefaulted, boolean isStrictlyTyped) {
+    private Set<Map.Entry<JsonKey, JsonValue>> fieldKeyValues;
 
-        JsonObjectType effectiveValueType;
+    private Set<ViewClassFieldType> fieldValueTypes;
 
-        Set<JsonObjectType> valueTypes = new HashSet<>();
+    // The type of the field
+    private Class<? extends JsonValue> effectiveType;
 
-        values.forEach((value) -> valueTypes.add(value.getType()));
+    private boolean validated = false;
+    private List<ViewClassDefinitionError> errors = new ArrayList<>();
+
+    public ViewClassFieldDefinition(ViewClassDefinition viewClassDef,
+                                     String fieldName,
+                                     Set<Map.Entry<JsonKey, JsonValue>> fieldKeyValues) {
+
+        this.viewClassDef = viewClassDef;
+        this.fieldName = fieldName;
+        this.fieldKeyValues = fieldKeyValues;
+    }
+
+    public ViewClassDefinition getClassDefinition() {
+        return viewClassDef;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public Set<String> getNotes() {
+        return fieldKeyValues.stream()
+                .map(entry -> entry.getKey().getNotes())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
+    public void validate() {
+
+        if (validated) {
+            return;
+        }
+
+        effectiveType = validateValueTypes(fieldKeyValues.stream()
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toCollection(ArrayList::new)));
+
+        validated = true;
+    }
+
+    /*
+     * Validates that the values have a consistent type, and returns it. If
+     * there is more than one, an error is added to this field definition and
+     * null is returned.
+     */
+    private Class<? extends JsonValue> validateValueTypes(Collection<JsonValue> values) {
+
+        Set<Class<? extends JsonValue>> valueTypes = values.stream()
+                .map(JsonValue::getClass)
+                .collect(Collectors.toCollection(HashSet::new));
+
+        // ignore nulls
+        valueTypes.remove(JsonNull.class);
+
+        Class<? extends JsonValue> effectiveValueType;
 
         if (valueTypes.size() == 1
-                || (!isStrictlyTyped && valueTypes.size() == 2
-                        && valueTypes.containsAll(Arrays.asList(JsonObjectType.TEMPLATE_OBJECT, JsonObjectType.STRING)))) {
+                || (!viewClassDef.getContext().isGenerateStrictTypes() && valueTypes.size() == 2
+                && valueTypes.containsAll(Arrays.asList(JsonViewMap.class, JsonString.class)))) {
 
             if (valueTypes.size() == 2) {
-                // If not strictly typed, we allow Strings and Objects to co-exist and just treat them as if it is Object
-                effectiveValueType = JsonObjectType.TEMPLATE_OBJECT;
-
+                // If not strictly typed, we allow Strings and Objects to co-exist and just treat them as if it is an Object.
+                effectiveValueType = JsonViewMap.class;
             } else {
                 effectiveValueType = valueTypes.iterator().next();
             }
 
-            if (effectiveValueType == JsonObjectType.BOOLEAN) {
-                return new ViewClassFieldDefinitionBoolean(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
-
-            } else if (effectiveValueType == JsonObjectType.STRING) {
-                return new ViewClassFieldDefinitionString(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
-
-            } else if (effectiveValueType == JsonObjectType.NUMBER) {
-                return new ViewClassFieldDefinitionNumber(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
-
-            } else if (effectiveValueType == JsonObjectType.LIST) {
-                return new ViewClassFieldDefinitionList(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
-
-            } else if (effectiveValueType == JsonObjectType.MAP) {
-                return new ViewClassFieldDefinitionMap(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
-
-            } else if (effectiveValueType == JsonObjectType.TEMPLATE_OBJECT) {
-                return new ViewClassFieldDefinitionObject(templateDefinitions, parentTemplate, name, values, mapTemplates, javaClassNamePrefix, isDefaulted, isStrictlyTyped);
-
-            } else {
-                throw new IllegalArgumentException("ERROR: (" + parentTemplate + " - " + name
-                        + ") Unknown field value type [" + effectiveValueType + "]!");
+            // Recurse on list values, since they have to all be the same as well.
+            // And we don't have to worry about List of Lists since that is caught during the JSON parse phase.
+            if (effectiveValueType == JsonList.class) {
+                validateValueTypes(values.stream()
+                        // ignore nulls
+                        .filter(value -> !(value instanceof JsonNull))
+                        // the rest should be Lists
+                        .map(value -> (JsonList) value)
+                        // get the values in list
+                        .map(JsonList::getValues)
+                        // flatten it out
+                        .flatMap(Collection::stream)
+                        // add them to a set
+                        .collect(Collectors.toList()));
             }
 
-        } else if (valueTypes.size() == 0) {
-            throw new IllegalArgumentException("ERROR: (" + parentTemplate + " - " + name + ") A field must have at least 1 value type!");
+            return effectiveValueType;
 
-        } else {
-            throw new IllegalArgumentException("ERROR: (" + parentTemplate + " - " + name
-                    + ") A field can only have a single value type but has " + valueTypes + " instead!");
+        } else if (valueTypes.size() > 1) {
+            addError("A field can only have a single value type but has " + valueTypes + " instead!");
         }
+
+        return null;
     }
 
-    public ViewClassFieldDefinition(ViewClassDefinitions templateDefinitions,
-                                    String parentTemplate,
-                                    String name,
-                                    List<JsonObject> values,
-                                    Set<String> mapTemplates,
-                                    String javaClassNamePrefix,
-                                    boolean isDefaulted,
-                                    boolean isStrictlyTyped) {
+    public Set<ViewClassFieldType> getFieldValueTypes() {
+        validate();
+        return getFieldValueTypes(fieldKeyValues.stream()
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toCollection(ArrayList::new)));
+    }
 
-        this.templateDefinitions = templateDefinitions;
-        this.parentTemplate = parentTemplate;
-        this.name = name;
-        this.values = values;
-        this.mapTemplates = mapTemplates;
-        this.notes = new LinkedHashSet<>();
-        values.forEach((value) -> {
-            String valueNotes = value.getNotes();
-            if (valueNotes != null) {
-                notes.add(valueNotes);
+    private Set<ViewClassFieldType> getFieldValueTypes(Collection<JsonValue> values) {
+
+        Set<Class<? extends JsonValue>> valueTypes = values.stream()
+                // filter out nulls
+                .filter(value -> !(value instanceof JsonNull))
+                // get the class
+                .map(JsonValue::getClass)
+                // add it to the set
+                .collect(Collectors.toCollection(HashSet::new));
+
+        Class<? extends JsonValue> effectiveValueType;
+
+        if (valueTypes.size() == 1
+                || (!viewClassDef.getContext().isGenerateStrictTypes() && valueTypes.size() == 2
+                && valueTypes.containsAll(Arrays.asList(JsonViewMap.class, JsonString.class)))) {
+
+            if (valueTypes.size() == 2) {
+                // If not strictly typed, we allow Strings and Objects to co-exist and just treat them as if it is an Object.
+                effectiveValueType = JsonViewMap.class;
+            } else {
+                effectiveValueType = valueTypes.iterator().next();
             }
-        });
-        this.javaClassNamePrefix = javaClassNamePrefix;
-        this.isDefaulted = isDefaulted;
-        this.isStrictlyTyped = isStrictlyTyped;
+
+            // Recurse on list values, since they have to all be the same as well.
+            // And we don't have to worry about List of Lists since that is caught during the JSON parse phase.
+            if (effectiveValueType == JsonList.class) {
+                return getFieldValueTypes(values.stream()
+                        // ignore nulls
+                        .filter(value -> !(value instanceof JsonNull))
+                        // the rest should be Lists
+                        .map(value -> (JsonList) value)
+                        // get the values in list
+                        .map(JsonList::getValues)
+                        // flatten it out
+                        .flatMap(Collection::stream)
+                        // add them to a set
+                        .collect(Collectors.toList()));
+
+            } else if (effectiveValueType == JsonViewMap.class) {
+                return values.stream()
+                        .filter(value -> (value instanceof JsonViewMap))
+                        .map(value -> (JsonViewMap) value)
+                        .map(JsonViewMap::getViewKey)
+                        .collect(Collectors.toSet());
+
+            } else if (effectiveValueType == JsonBoolean.class) {
+                return Collections.singleton(ViewClassFieldNativeJavaType.BOOLEAN);
+
+            } else if (effectiveValueType == JsonNumber.class) {
+                return Collections.singleton(ViewClassFieldNativeJavaType.NUMBER);
+
+            } else if (effectiveValueType == JsonString.class) {
+                return Collections.singleton(ViewClassFieldNativeJavaType.STRING);
+
+            } else if (effectiveValueType == JsonMap.class) {
+                return Collections.singleton(ViewClassFieldNativeJavaType.MAP);
+            }
+        }
+
+        return Collections.emptySet();
     }
 
-    @Override
-    public String toString() {
-        return getEffectiveValueType().getFullyQualifiedClassName()
-                + " " + name + " : ["
-                + getFieldValueTypes().stream()
-                        .map(ViewClassFieldType::getFullyQualifiedClassName)
-                        .collect(Collectors.joining(", "))
-                + "]";
-    }
-
-    public ViewClassDefinition getParentTemplate() {
-        return templateDefinitions.getByName(parentTemplate);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Set<String> getNotes() {
-        return notes;
-    }
-
-    public String getJavaFieldType() {
-        return getJavaFieldType(new ViewClassImportsBuilder(getParentTemplate()));
-    }
-
-    /** Never null. */
-    public abstract Set<ViewClassFieldType> getFieldValueTypes();
-
-    /** Never null. */
     protected ViewClassFieldType getEffectiveValueType() {
+
+        boolean isStrictlyTyped = getClassDefinition().getContext().isGenerateStrictTypes();
 
         Set<ViewClassFieldType> fieldValueTypes = getFieldValueTypes();
 
@@ -140,126 +196,38 @@ abstract class ViewClassFieldDefinition {
 
         } else if (fieldValueTypes.size() > 1) {
 
-            if (isStrictlyTyped && this instanceof ViewClassFieldType) {
-                return (ViewClassFieldType) this;
+            if (isStrictlyTyped) {
+                return this;
 
             } else {
                 return ViewClassFieldNativeJavaType.OBJECT;
             }
 
         } else {
+            // TODO: Probably should never get here...
             return ViewClassFieldNativeJavaType.OBJECT;
         }
     }
 
-    public abstract String getJavaFieldType(ViewClassImportsBuilder importsBuilder);
-
-    public String getJavaFieldTypeForBuilder(ViewClassImportsBuilder importsBuilder) {
-        return getJavaFieldType();
+    public Class<? extends JsonValue> getEffectiveType() {
+        validate();
+        return effectiveType;
     }
 
-    String getJavaInterfaceMethodName() {
-
-        String methodNamePrefix = "get";
-
-        if ("boolean".equals(getJavaFieldType())) {
-            methodNamePrefix = "is";
-        }
-
-        return methodNamePrefix + ViewClassStringUtils.toJavaMethodCase(name);
+    @Override
+    public String getFullyQualifiedClassName() {
+        return getClassDefinition().getFullyQualifiedClassName() + ViewClassStringUtils.toJavaClassCase(fieldName) + "Field";
     }
 
-    String getInterfaceMethodDeclarationSource(int indent, ViewClassImportsBuilder importsBuilder) {
-
-        // collect the methods' javadocs
-        ViewClassJavadocsBuilder methodJavadocs = new ViewClassJavadocsBuilder();
-
-        notes.forEach(methodJavadocs::addParagraph);
-
-        methodJavadocs.startParagraph();
-        if (this instanceof ViewClassFieldDefinitionList) {
-            methodJavadocs.addCollectionFieldValueTypesSnippet(this);
-        } else {
-            methodJavadocs.addFieldValueTypesSnippet(this);
-        }
-        methodJavadocs.endParagraph();
-
-        // if it's a default interface method just make the body return null;
-        String methodBody = !isDefaulted ? ";" : (" {\n"
-                + indent(indent + 1) + "return null;\n"
-                + indent(indent) + "}");
-
-        return methodJavadocs.buildJavadocsSource(indent)
-                + indent(indent) + (isDefaulted ? "default " : "") + getJavaFieldType(importsBuilder) + " " + getJavaInterfaceMethodName() + "()" + methodBody;
+    private void addError(String message) {
+        errors.add(new ViewClassDefinitionError(this, message));
     }
 
-    public String getInterfaceStaticStringVariableDeclaration(int indent, String suffix) {
-        return getInterfaceStaticStringVariableDeclarationHelper(indent, suffix, false, null);
+    public List<ViewClassDefinitionError> getErrors() {
+        return errors;
     }
 
-    public String getInterfaceStaticStringVariableDeclarationDeprecated(int indent, String suffix, String alternateSuffix) {
-        return getInterfaceStaticStringVariableDeclarationHelper(indent, suffix, true, alternateSuffix);
-    }
-
-    private String getInterfaceStaticStringVariableDeclarationHelper(int indent, String suffix, boolean isDeprecated, String alternateSuffix) {
-        String varName = StringUtils.toUnderscored(name).toUpperCase() + suffix;
-        String varValue = name;
-
-        String declaration = "";
-
-        if (isDeprecated) {
-            String deprecatedVarName = StringUtils.toUnderscored(name).toUpperCase() + alternateSuffix;
-            declaration += indent(indent) + "/**\n";
-            declaration += indent(indent) + " * @deprecated Use {@link #" + deprecatedVarName + "} instead.\n";
-            declaration += indent(indent) + " */\n";
-            declaration += indent(indent) + "@Deprecated\n";
-        }
-        declaration += indent(indent) + "static final String " + varName + " = \"" + varValue + "\";";
-
-        return declaration;
-    }
-
-    public String getInterfaceBuilderFieldDeclarationSource(int indent, ViewClassImportsBuilder importsBuilder) {
-        return indent(indent) + "private " + getJavaFieldTypeForBuilder(importsBuilder) + " " + name + ";";
-    }
-
-    public String getInterfaceBuilderMethodImplementationSource(int indent, ViewClassImportsBuilder importsBuilder) {
-
-        ViewClassJavadocsBuilder methodJavadocs = new ViewClassJavadocsBuilder();
-
-        methodJavadocs.addParagraph("Sets the " + name + " field.");
-        notes.forEach(methodJavadocs::addParagraph);
-        methodJavadocs.newLine();
-        methodJavadocs.addParameter(name).addFieldAwareValueTypesSnippet(this).newLine();
-        methodJavadocs.addReturn().add("this builder.");
-
-        methodJavadocs.buildJavadocsSource(indent);
-
-        String[] method = {
-                methodJavadocs.buildJavadocsSource(indent),
-                indent(indent) + "public Builder " + name + "(" + getJavaFieldType(importsBuilder) + " " + name + ") {\n",
-                indent(indent + 1) + "this." + name + " = " + name + ";\n",
-                indent(indent + 1) + "return this;\n",
-                indent(indent) + "}"
-        };
-
-        return Arrays.stream(method).collect(Collectors.joining(""));
-    }
-
-    public String getInterfaceBuilderBuildMethodSource(int indent, ViewClassImportsBuilder importsBuilder) {
-        String[] method = {
-                indent(indent) + "@Override\n",
-                indent(indent) + "public " + getJavaFieldType(importsBuilder) + " " + getJavaInterfaceMethodName() + "() {\n",
-                indent(indent + 1) + "return " + name + ";\n",
-                indent(indent) + "}"
-        };
-
-        return Arrays.stream(method).collect(Collectors.joining(""));
-    }
-
-    protected String indent(int indent) {
-        char[] spaces = new char[indent * 4];
-        Arrays.fill(spaces, ' ');
-        return new String(spaces);
+    public boolean hasAnyErrors() {
+        return !errors.isEmpty();
     }
 }

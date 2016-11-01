@@ -31,12 +31,12 @@ class ViewClassGeneratorCliArguments {
 
     private static final Path DEFAULT_BUILD_DIRECTORY = Paths.get(System.getProperty("user.dir"), "target", "generated-sources", "styleguide");
 
-    private static final Path[] DEFAULT_IGNORED_FILE_NAMES = { Paths.get("_config.json") };
+    private static final String[] DEFAULT_IGNORED_FILE_NAMES = { "_config.json" };
 
     private Set<Path> jsonDirectories = new LinkedHashSet<>();
     private String javaPackageName;
     private Path buildDirectory;
-    private Set<Path> ignoredFileNames = new HashSet<>();
+    private Set<String> ignoredFileNames = new HashSet<>();
     private String classNamePrefix = null;
     private boolean watch = false;
     private boolean isDefaultMethods = false;
@@ -62,7 +62,6 @@ class ViewClassGeneratorCliArguments {
 
                 } else if (arg.startsWith(IGNORE_FILES_PREFIX)) {
                     processStringSetArgument(IGNORE_FILES_PREFIX, arg).stream()
-                            .map(Paths::get)
                             .forEach(ignoredFileNames::add);
 
                 } else if (arg.startsWith(CLASS_NAME_PREFIX_PREFIX)) {
@@ -119,7 +118,7 @@ class ViewClassGeneratorCliArguments {
         return buildDirectory;
     }
 
-    public Set<Path> getIgnoredFileNames() {
+    public Set<String> getIgnoredFileNames() {
         return ignoredFileNames;
     }
 

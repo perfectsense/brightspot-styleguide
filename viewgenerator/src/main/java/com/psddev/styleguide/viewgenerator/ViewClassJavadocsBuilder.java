@@ -98,14 +98,14 @@ class ViewClassJavadocsBuilder {
     }
 
     public ViewClassJavadocsBuilder addFieldAwareValueTypesSnippet(ViewClassFieldDefinition fieldDef) {
-        fieldValueTypesSnippetHelper(fieldDef, fieldDef instanceof ViewClassFieldDefinitionList);
+        fieldValueTypesSnippetHelper(fieldDef, JsonList.class == fieldDef.getEffectiveType());
         return this;
     }
 
     private void fieldValueTypesSnippetHelper(ViewClassFieldDefinition fieldDef, boolean isCollection) {
 
         Set<ViewClassFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
-        ViewClassDefinition parentTemplateDef = fieldDef.getParentTemplate();
+        ViewClassDefinition parentTemplateDef = fieldDef.getClassDefinition();
 
         List<String> javadocLinks = new ArrayList<>();
 
@@ -137,7 +137,7 @@ class ViewClassJavadocsBuilder {
 
         StringBuilder builder = new StringBuilder();
 
-        if (fieldDef.isStrictlyTyped) {
+        if (fieldDef.getClassDefinition().getContext().isGenerateStrictTypes()) {
             builder.append("A ");
         } else {
             builder.append("Typically a ");

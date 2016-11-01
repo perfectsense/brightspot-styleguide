@@ -11,8 +11,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +29,7 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 
 import com.psddev.dari.util.IoUtils;
-import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
-import com.psddev.styleguide.JsonDataFiles;
 
 public class ViewClassGenerator {
 
@@ -69,57 +70,68 @@ public class ViewClassGenerator {
         }
     }
 
-    private Set<Path> jsonDirectories;
-    private String javaPackageName;
-    private Path javaSourceDirectory;
-
-    private Set<Path> ignoredFileNames;
-    private String classNamePrefix;
-    private boolean generateDefaultMethods;
-    private boolean generateStrictTypes;
-
     private CliLogger logger = CliLogger.getLogger();
 
-    ViewClassGenerator(Set<Path> jsonDirectories, Path javaSourceDirectory, String javaPackageName) {
-        this.jsonDirectories = jsonDirectories;
-        this.javaSourceDirectory = javaSourceDirectory;
-        this.javaPackageName = javaPackageName;
+    private ViewClassGeneratorContext context;
+    private Path tempDirectory;
 
-        // TODO: Need to expose these somehow.
-        this.ignoredFileNames = Collections.emptySet();
-        this.classNamePrefix = null;
-        this.generateDefaultMethods = false;
-        this.generateStrictTypes = true;
+    ViewClassGenerator(ViewClassGeneratorContext context) {
+        this.context = context;
     }
 
     private ViewClassGenerator(ViewClassGeneratorCliArguments arguments) {
-        this.jsonDirectories = arguments.getJsonDirectories();
-        this.javaPackageName = arguments.getJavaPackageName();
-        this.javaSourceDirectory = arguments.getBuildDirectory();
-        this.ignoredFileNames = arguments.getIgnoredFileNames();
-        this.classNamePrefix = arguments.getClassNamePrefix();
-        this.generateDefaultMethods = arguments.isDefaultMethods();
-        this.generateStrictTypes = arguments.isStrictTypes();
+
+        context = new ViewClassGeneratorContext();
+
+        Path jsonDir;
+
+        Set<Path> jsonDirs = arguments.getJsonDirectories();
+
+        if (jsonDirs.isEmpty()) {
+            // TODO: Still need to test
+            jsonDir = Paths.get(Paths.get(".").toAbsolutePath().normalize().toString());
+
+        } else if (jsonDirs.size() > 1) {
+            // TODO: Still need to implement
+            jsonDir = tempDirectory = createTempDirectory(jsonDirs);
+
+        } else {
+            jsonDir = jsonDirs.iterator().next();
+        }
+
+        context.setJsonDirectory(jsonDir);
+        context.setJavaSourceDirectory(arguments.getBuildDirectory());
+
+        context.setExcludedPathNames(arguments.getIgnoredFileNames());
+        // TODO: Support excluding specific paths too
+        context.setExcludedPaths(new HashSet<>());
+
+        context.setGenerateDefaultMethods(arguments.isDefaultMethods());
+        context.setGenerateStrictTypes(arguments.isStrictTypes());
+
+        context.setDefaultJavaPackagePrefix(arguments.getJavaPackageName());
+    }
+
+    private static Path createTempDirectory(Set<Path> jsonDirs) {
+
+        // TODO: Still need to implement
+
+        // 1. Copy the contents of each directory into a temporary directory
+        // 2. Try to find a src/main/webapp directory one level up from each JSON dir
+        // 3. Copy all HBS files, preserving directory structure, into the temporary directory
+        // 4. Ensure the directory is deleted after the build
+
+        return null;
+    }
+
+    private void deleteTempDirectory() {
+        if (tempDirectory != null) {
+            // TODO: Delete temporary directory
+        }
     }
 
     void disableLogColors() {
         logger = CliLogger.getColorlessLogger();
-    }
-
-    Set<Path> getIgnoredFileNames() {
-        return ignoredFileNames;
-    }
-
-    void setIgnoredFileNames(Set<Path> ignoredFileNames) {
-        this.ignoredFileNames = ignoredFileNames;
-    }
-
-    String getClassNamePrefix() {
-        return classNamePrefix;
-    }
-
-    void setClassNamePrefix(String classNamePrefix) {
-        this.classNamePrefix = classNamePrefix;
     }
 
     void printGeneratedClasses() {
@@ -130,35 +142,65 @@ public class ViewClassGenerator {
         });
     }
 
-    JsonDataFiles getJsonDataFiles() {
-        return new JsonDataFiles(new ArrayList<>(jsonDirectories), ignoredFileNames, Collections.emptySet(), javaPackageName, classNamePrefix);
-    }
+    List<ViewClassDefinition> getViewClassDefinitions() {
 
-    ViewClassDefinitions getTemplateDefinitions() {
-        return getJsonDataFiles().getTemplateDefinitions();
+        JsonDirectory directory;
+        Set<JsonViewMap> jsonViewMaps;
+        Map<ViewKey, Set<JsonViewMap>> jsonViewMapsByViewKey;
+
+        directory = new JsonDirectory(context, context.getJsonDirectory());
+
+        // can throw an exception
+        jsonViewMaps = directory.resolveViewMaps();
+
+        // Be able to lookup JSON view maps by view key name
+        jsonViewMapsByViewKey = new HashMap<>();
+
+        for (JsonViewMap jsonViewMap : jsonViewMaps) {
+
+            ViewKey viewKey = jsonViewMap.getViewKey();
+
+            Set<JsonViewMap> set = jsonViewMapsByViewKey.get(viewKey);
+            if (set == null) {
+                set = new HashSet<>();
+                jsonViewMapsByViewKey.put(viewKey, set);
+            }
+            set.add(jsonViewMap);
+        }
+
+        List<ViewClassDefinition> classDefinitions = jsonViewMapsByViewKey.entrySet().stream()
+                .map(entry -> context.createViewClassDefinition(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
+        // throws a RuntimeException if there are errors
+        checkForErrors(new HashSet<>(classDefinitions));
+
+        return classDefinitions;
     }
 
     Map<Path, String> getGeneratedClasses() {
 
+        List<ViewClassDefinition> classDefinitions = getViewClassDefinitions();
+
+        // throws a RuntimeException if there are errors
+        checkForErrors(new HashSet<>(classDefinitions));
+
+        List<ViewClassSource> sources = classDefinitions.stream()
+                .map(classDef -> new ViewClassSourceGenerator(context, classDef).generateSources())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
         Map<Path, String> generated = new LinkedHashMap<>();
 
-        ViewClassDefinitions templateDefinitions = getTemplateDefinitions();
+        for (ViewClassSource source : sources) {
 
-        for (ViewClassDefinition templateDef : templateDefinitions.get().stream()
-                .sorted((td1, td2) -> ObjectUtils.compare(td1.getName(), td2.getName(), true))
-                .collect(Collectors.toList())) {
+            String packageName = source.getPackageName();
+            Path sourceDirectory = Paths.get(context.getJavaSourceDirectory().toString(), packageName.split("\\x2e"));
 
-            List<ViewClassSource> sources = templateDef.getViewClassSources();
-            for (ViewClassSource source : sources) {
+            String sourceCode = source.getSourceCode();
+            Path classFile = sourceDirectory.resolve(source.getClassName() + ".java");
 
-                String packageName = source.getPackageName();
-                Path sourceDirectory = Paths.get(javaSourceDirectory.toString(), packageName.split("\\x2e"));
-
-                String sourceCode = source.getSourceCode();
-                Path classFile = sourceDirectory.resolve(source.getClassName() + ".java");
-
-                generated.put(classFile, sourceCode);
-            }
+            generated.put(classFile, sourceCode);
         }
 
         return generated;
@@ -168,9 +210,7 @@ public class ViewClassGenerator {
 
         printLogo();
 
-        for (Path jsonDirectory : jsonDirectories) {
-            logger.green().and("Scanning Directory: ").reset().and(jsonDirectory).log();
-        }
+        logger.green().and("Scanning Directory: ").reset().and(context.getJsonDirectory()).log();
 
         return generateClasses(true);
     }
@@ -194,7 +234,7 @@ public class ViewClassGenerator {
                     generatedFiles.add(classFile);
 
                     logger.green().and("Wrote file: ")
-                            .reset().and(PathUtils.getRelativeCommonPath(classFile, jsonDirectories))
+                            .reset().and(classFile)
                             .log();
 
                 } catch (IOException e) {
@@ -235,7 +275,7 @@ public class ViewClassGenerator {
         }, 1, TimeUnit.SECONDS);
 
         try {
-            WatchDirectory watchDirectory = new WatchDirectory(jsonDirectories);
+            WatchDirectory watchDirectory = new WatchDirectory(Collections.singleton(context.getJsonDirectory()));
 
             watchDirectory.setProcessChangeFunction((path, watchEventKind) -> {
 
@@ -300,9 +340,7 @@ public class ViewClassGenerator {
                 }
             });
 
-            for (Path jsonDirectory : jsonDirectories) {
-                logger.green().and("Watching Directory: ").reset().and(jsonDirectory).log();
-            }
+            logger.green().and("Watching Directory: ").reset().and(context.getJsonDirectory()).log();
 
             watchDirectory.start();
 
@@ -352,5 +390,45 @@ public class ViewClassGenerator {
                     .log();
         }
         logger.blue(VIEW_GENERATOR_ASCII);
+    }
+
+    /*
+     * Looks at each of the files to check if there were any errors detected
+     * in them, and logs and throws an error if there are any.
+     */
+    private void checkForErrors(Set<ViewClassDefinition> classDefs) {
+
+        // Validate each class definition
+        Set<ViewClassDefinition> errorClassDefs = classDefs.stream()
+                .peek(ViewClassDefinition::validate)
+                .filter(ViewClassDefinition::hasAnyErrors)
+                .collect(Collectors.toSet());
+
+        // if there are errors, log them and stop
+        if (!errorClassDefs.isEmpty()) {
+            logErrorDefinitions(errorClassDefs);
+        }
+    }
+
+    /*
+     * Logs all of the errors for each file and throws an exception with the details.
+     * TODO: Still need to implement
+     */
+    private void logErrorDefinitions(Set<ViewClassDefinition> classDefs) {
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("Error while validating view class definitions: \n");
+
+        for (ViewClassDefinition classDef : classDefs) {
+
+            List<ViewClassDefinitionError> errors = classDef.getErrors();
+
+            for (ViewClassDefinitionError error : errors) {
+                // TODO: Still need to implement
+            }
+        }
+
+        throw new RuntimeException(builder.toString());
     }
 }

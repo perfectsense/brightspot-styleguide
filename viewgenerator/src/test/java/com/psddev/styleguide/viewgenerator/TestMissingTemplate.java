@@ -2,11 +2,9 @@ package com.psddev.styleguide.viewgenerator;
 
 import org.junit.Test;
 
-import com.psddev.styleguide.MissingTemplateException;
-
 public class TestMissingTemplate {
 
-    @Test(expected = MissingTemplateException.class)
+    @Test(expected = RuntimeException.class)
     public void testMissingTemplate() throws Exception {
         ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
 

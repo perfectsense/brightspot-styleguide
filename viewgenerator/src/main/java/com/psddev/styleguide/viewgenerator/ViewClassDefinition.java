@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,7 @@ class ViewClassDefinition implements ViewClassFieldType {
     public Set<String> getNotes() {
         return jsonViewMaps.stream()
                 .map(JsonViewMap::getNotes)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 

@@ -13,7 +13,6 @@
         <script type="text/javascript" src="/node-modules/jquery/dist/jquery.min.js"></script>
 
         <script type="text/javascript" src="/node-modules/sticky-kit/dist/sticky-kit.min.js"></script>
-        <script type="text/javascript" src="/node-modules/iframe-resizer/js/iframeResizer.min.js"></script>
         <script type="text/javascript" src="/node-modules/history.js/scripts/compressed/history.js"></script>
         <script type="text/javascript" src="/node-modules/history.js/scripts/compressed/history.adapter.jquery.js"></script>
 
@@ -39,22 +38,6 @@
                 $(document).ready(function(){
 
                     $('.sg-menu').stick_in_parent();
-
-                    $('.sg-content > iframe').iFrameResize({
-                        log: false,
-                        heightCalculationMethod: 'max',
-                        autoResize: true,
-                        scrolling: true,
-                        {{#if example.exampleMinHeight}}
-                          minHeight: {{example.exampleMinHeight}},
-                        {{/if}}
-                        {{#if example.exampleMaxHeight}}
-                          maxHeight: {{example.exampleMaxHeight}},
-                        {{/if}}
-                        initCallback: function(iframe) {
-                            $(iframe).contents().find('html', 'body', 'div').css('height', 'auto');
-                        }
-                    });
 
                     $('.sg-example-name, .sg-group-name').on('click', function(event){
                         event.preventDefault();
@@ -186,7 +169,7 @@
         </div>
 
         <div class="sg-content">
-            <iframe src="{{reqPath}}?content&{{contentQueryString}}" name="sg-content-iframe"></iframe>
+            <iframe src="{{reqPath}}?content{{#if contentQueryString}}&{{contentQueryString}}{{/if}}" name="sg-content-iframe" id="sg-iframe-content"></iframe>
         </div>
     </body>
 </html>

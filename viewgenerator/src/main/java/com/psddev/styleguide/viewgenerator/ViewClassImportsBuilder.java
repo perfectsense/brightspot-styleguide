@@ -28,15 +28,6 @@ class ViewClassImportsBuilder {
         add(fieldType.getFullyQualifiedClassName());
     }
 
-    public boolean addIfExists(String fullyQualifiedClassName) {
-        if (classExists(fullyQualifiedClassName)) {
-            add(fullyQualifiedClassName);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public String getImportStatements() {
         StringBuilder builder = new StringBuilder();
 
@@ -53,15 +44,5 @@ class ViewClassImportsBuilder {
 
     private boolean isSamePackage(String fullyQualifiedClassName) {
         return isSamePackage(() -> fullyQualifiedClassName);
-    }
-
-    // Checks if a class exists for the given className.
-    private boolean classExists(String className) {
-        try {
-            Class.forName(className);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 }

@@ -108,11 +108,12 @@ class ViewClassSourceGenerator {
         }
 
         // Annotations
+
         // ViewInterface annotation
         final String viewInterfaceClassName = "com.psddev.cms.view.ViewInterface";
-        if (importsBuilder.addIfExists(viewInterfaceClassName)) {
-            sourceBuilder.append("@").append(ViewClassFieldType.from(viewInterfaceClassName).getClassName()).append(NEW_LINE);
-        }
+        importsBuilder.add(viewInterfaceClassName);
+        sourceBuilder.append("@").append(ViewClassFieldType.from(viewInterfaceClassName).getClassName()).append(NEW_LINE);
+
         // ViewRenderer annotation
         sourceBuilder.append(getViewRendererAnnotation());
 

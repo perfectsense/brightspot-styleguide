@@ -204,8 +204,7 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             }
 
         } else {
-            // TODO: Probably should never get here...
-            return ViewClassFieldNativeJavaType.OBJECT;
+            return null;
         }
     }
 

@@ -39,6 +39,6 @@ public class TestMultipleJsonDirectories {
 
         generator.disableLogColors();
 
-        generator.printGeneratedClasses();
+        generator.getGeneratedClasses();
     }
 }

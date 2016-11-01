@@ -1,6 +1,7 @@
 package com.psddev.styleguide.viewgenerator;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +28,10 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 
 import com.psddev.dari.util.IoUtils;
 import com.psddev.dari.util.StringUtils;
@@ -73,13 +78,12 @@ public class ViewClassGenerator {
     private CliLogger logger = CliLogger.getLogger();
 
     private ViewClassGeneratorContext context;
-    private Path tempDirectory;
 
     ViewClassGenerator(ViewClassGeneratorContext context) {
         this.context = context;
     }
 
-    private ViewClassGenerator(ViewClassGeneratorCliArguments arguments) {
+    ViewClassGenerator(ViewClassGeneratorCliArguments arguments) {
 
         context = new ViewClassGeneratorContext();
 
@@ -88,12 +92,20 @@ public class ViewClassGenerator {
         Set<Path> jsonDirs = arguments.getJsonDirectories();
 
         if (jsonDirs.isEmpty()) {
-            // TODO: Still need to test
-            jsonDir = Paths.get(Paths.get(".").toAbsolutePath().normalize().toString());
+            throw new RuntimeException("No JSON directory specified!");
 
         } else if (jsonDirs.size() > 1) {
-            // TODO: Still need to implement
-            jsonDir = tempDirectory = createTempDirectory(jsonDirs);
+
+            // To support backward compatibility
+
+            try {
+                jsonDir = createTempDirectory(jsonDirs);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            context.setRelativePaths(false);
+            context.setDefaultTemplateExtension(TemplateType.HANDLEBARS.getExtension());
 
         } else {
             jsonDir = jsonDirs.iterator().next();
@@ -112,22 +124,45 @@ public class ViewClassGenerator {
         context.setDefaultJavaPackagePrefix(arguments.getJavaPackageName());
     }
 
-    private static Path createTempDirectory(Set<Path> jsonDirs) {
+    /*
+     * To support backward compatibility, this method takes multiple directories
+     * and copies the contents of each of them into a temp directory. It also
+     * searches for a template directory relative to it based on the standard
+     * maven project directory structure, and copies the contents of that
+     * directory too if it exists. This puts all templates and JSON files into
+     * a single directory so that the view generator can correctly resolve
+     * the template paths.
+     */
+    private Path createTempDirectory(Set<Path> jsonDirs) throws IOException {
 
-        // TODO: Still need to implement
+        Path tempDir = Files.createTempDirectory("view-class-generator-");
+        logger.yellow("Created temp directory [", tempDir, "]");
 
-        // 1. Copy the contents of each directory into a temporary directory
-        // 2. Try to find a src/main/webapp directory one level up from each JSON dir
-        // 3. Copy all HBS files, preserving directory structure, into the temporary directory
-        // 4. Ensure the directory is deleted after the build
+        tempDir.toFile().deleteOnExit();
 
-        return null;
-    }
+        // Create a filter for directories and handlebars files
+        FileFilter templateFilter = FileFilterUtils.or(
+                DirectoryFileFilter.DIRECTORY,
+                FileFilterUtils.and(
+                        FileFileFilter.FILE,
+                        FileFilterUtils.suffixFileFilter("." + TemplateType.HANDLEBARS.getExtension())));
 
-    private void deleteTempDirectory() {
-        if (tempDirectory != null) {
-            // TODO: Delete temporary directory
+        for (Path jsonDir : jsonDirs) {
+
+            // Copy the entire JSON directory using the filter
+            FileUtils.copyDirectory(jsonDir.toFile(), tempDir.toFile());
+            logger.yellow("Copied [", jsonDir, "] to temp directory.");
+
+            // Copy the template directory if it exists
+            Path templateDir = jsonDir.resolve("../src/main/webapp");
+            if (templateDir.toFile().exists()) {
+
+                FileUtils.copyDirectory(templateDir.toFile(), tempDir.toFile(), templateFilter);
+                logger.yellow("Copied templates from [", templateDir, "] to temp directory.");
+            }
         }
+
+        return tempDir;
     }
 
     void disableLogColors() {

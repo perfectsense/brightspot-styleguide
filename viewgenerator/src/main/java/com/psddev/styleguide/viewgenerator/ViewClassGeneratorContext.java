@@ -93,9 +93,27 @@ class ViewClassGeneratorContext {
         return Collections.unmodifiableList(classDefinitions);
     }
 
-    // To support backward compatibility
+    /*
+     * To support backward compatibility
+     */
+    @Deprecated
+    private boolean relativePaths = true;
+
     @Deprecated
     private String defaultJavaPackagePrefix;
+
+    @Deprecated
+    private String defaultTemplateExtension;
+
+    @Deprecated
+    public boolean isRelativePaths() {
+        return relativePaths;
+    }
+
+    @Deprecated
+    public void setRelativePaths(boolean relativePaths) {
+        this.relativePaths = relativePaths;
+    }
 
     @Deprecated
     public String getDefaultJavaPackagePrefix() {
@@ -105,5 +123,15 @@ class ViewClassGeneratorContext {
     @Deprecated
     public void setDefaultJavaPackagePrefix(String defaultJavaPackagePrefix) {
         this.defaultJavaPackagePrefix = defaultJavaPackagePrefix;
+    }
+
+    @Deprecated
+    public String getDefaultTemplateExtension() {
+        return defaultTemplateExtension;
+    }
+
+    @Deprecated
+    public void setDefaultTemplateExtension(String defaultTemplateExtension) {
+        this.defaultTemplateExtension = defaultTemplateExtension;
     }
 }

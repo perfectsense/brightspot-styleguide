@@ -138,7 +138,7 @@ class TemplateViewKey extends ViewKey {
 
         if (templateType == TemplateType.HANDLEBARS) {
             Map<String, String> args = new LinkedHashMap<>();
-            args.put("value", templatePath.toString());
+            args.put("value", StringUtils.removeEnd(templatePath.toString(), "." + templateType.getExtension()));
             return args;
 
         } else {

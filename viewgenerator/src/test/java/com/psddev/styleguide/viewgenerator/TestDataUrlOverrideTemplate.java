@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class TestDataUrlOverrideTemplate {
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testDataUrlOverrides() throws Exception {
 
         // get a default test view class generator

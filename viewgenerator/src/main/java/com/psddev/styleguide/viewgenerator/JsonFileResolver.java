@@ -178,11 +178,32 @@ class JsonFileResolver {
         // if there is no extension, find it
         if (lastDotAt < 0) {
 
+            String templateExtension = null;
+            String missingTemplateExtensionErrorMessage = null;
+
             if (templateConfig != null) {
                 templateType = templateConfig.getTemplateType();
 
+                if (templateType != null) {
+                    templateExtension = templateType.getExtension();
+
+                } else {
+                    missingTemplateExtensionErrorMessage = "Could not find [templateExtension] setting in view configuration to determine template extension.";
+                }
+
+            } else {
+                missingTemplateExtensionErrorMessage = "Could not find view configuration to determine template extension.";
+            }
+
+            if (templateExtension == null) {
+                templateExtension = file.getBaseDirectory().getContext().getDefaultTemplateExtension();
+                templateType = TemplateType.findByExtension(templateExtension);
+            }
+
+            if (templateExtension != null) {
+
                 // append the file extension
-                templateName = templateName + "." + templateType.getExtension();
+                templateName = templateName + "." + templateExtension;
 
                 if (templateDirectory != null) {
                     templatePath = templateDirectory.resolve(templateName);
@@ -190,8 +211,9 @@ class JsonFileResolver {
                     // template is at the root of the base directory.
                     templatePath = Paths.get(templateName);
                 }
+
             } else {
-                addError("Could not find view configuration to determine template extension", template);
+                addError(missingTemplateExtensionErrorMessage, template);
             }
 
         } else {

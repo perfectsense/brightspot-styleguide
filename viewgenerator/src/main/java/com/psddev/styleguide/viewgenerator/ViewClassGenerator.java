@@ -158,7 +158,7 @@ public class ViewClassGenerator {
             if (templateDir.toFile().exists()) {
 
                 FileUtils.copyDirectory(templateDir.toFile(), tempDir.toFile(), templateFilter);
-                logger.yellow("Copied templates from [", templateDir, "] to temp directory.");
+                logger.yellow("Copied templates from [", templateDir.normalize(), "] to temp directory.");
             }
         }
 

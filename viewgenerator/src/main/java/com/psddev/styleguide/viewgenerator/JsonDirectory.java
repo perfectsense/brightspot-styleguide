@@ -48,22 +48,6 @@ class JsonDirectory {
     }
 
     /**
-     * Creates a new JsonDirectory using the common parent of the set of paths
-     * as the official base directory, and then adds
-     *
-     * @param context
-     * @param paths
-     */
-    public JsonDirectory(ViewClassGeneratorContext context, Set<Path> paths) {
-        this(context, findCommonParentPath(paths));
-    }
-
-    private static Path findCommonParentPath(Set<Path> paths) {
-        // TODO: Still need to implement
-        return null;
-    }
-
-    /**
      * Gets the view generator context.
      *
      * @return the view generator context.

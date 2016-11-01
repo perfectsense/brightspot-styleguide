@@ -12,8 +12,7 @@ class ViewClassGeneratorContext {
     private Path jsonDirectory;
     private Path javaSourceDirectory;
 
-    private Set<Path> excludedPaths;
-    private Set<String> excludedPathNames;
+    private Set<String> excludedPaths;
 
     private boolean generateDefaultMethods = false;
     private boolean generateStrictTypes = true;
@@ -44,26 +43,15 @@ class ViewClassGeneratorContext {
         this.javaSourceDirectory = javaSourceDirectory;
     }
 
-    public Set<Path> getExcludedPaths() {
+    public Set<String> getExcludedPaths() {
         if (excludedPaths == null) {
             excludedPaths = new HashSet<>();
         }
         return excludedPaths;
     }
 
-    public void setExcludedPaths(Set<Path> excludedPaths) {
+    public void setExcludedPaths(Set<String> excludedPaths) {
         this.excludedPaths = excludedPaths;
-    }
-
-    public Set<String> getExcludedPathNames() {
-        if (excludedPathNames == null) {
-            excludedPathNames = new HashSet<>();
-        }
-        return excludedPathNames;
-    }
-
-    public void setExcludedPathNames(Set<String> excludedPathNames) {
-        this.excludedPathNames = excludedPathNames;
     }
 
     public boolean isGenerateDefaultMethods() {

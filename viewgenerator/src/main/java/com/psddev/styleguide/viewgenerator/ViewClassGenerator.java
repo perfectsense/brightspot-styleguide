@@ -114,9 +114,7 @@ public class ViewClassGenerator {
         context.setJsonDirectory(jsonDir);
         context.setJavaSourceDirectory(arguments.getBuildDirectory());
 
-        context.setExcludedPathNames(arguments.getIgnoredFileNames());
-        // TODO: Support excluding specific paths too
-        context.setExcludedPaths(new HashSet<>());
+        context.setExcludedPaths(arguments.getIgnoredFileNames());
 
         context.setGenerateDefaultMethods(arguments.isDefaultMethods());
         context.setGenerateStrictTypes(arguments.isStrictTypes());
@@ -447,7 +445,6 @@ public class ViewClassGenerator {
 
     /*
      * Logs all of the errors for each file and throws an exception with the details.
-     * TODO: Still need to implement
      */
     private void logErrorDefinitions(Set<ViewClassDefinition> classDefs) {
 

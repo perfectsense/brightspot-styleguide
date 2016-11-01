@@ -2,7 +2,6 @@ package com.psddev.styleguide.viewgenerator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -30,8 +29,6 @@ class ViewClassGeneratorCliArguments {
     private static final String DEFAULT_JAVA_PACKAGE = "com.psddev.styleguide.view";
 
     private static final Path DEFAULT_BUILD_DIRECTORY = Paths.get(System.getProperty("user.dir"), "target", "generated-sources", "styleguide");
-
-    private static final String[] DEFAULT_IGNORED_FILE_NAMES = { "_config.json" };
 
     private Set<Path> jsonDirectories = new LinkedHashSet<>();
     private String javaPackageName;
@@ -92,11 +89,6 @@ class ViewClassGeneratorCliArguments {
         if (buildDirectory == null) {
             logger.yellow("No build directory specified with [", BUILD_DIRECTORY_PREFIX, "], defaulting to [", DEFAULT_BUILD_DIRECTORY, "].");
             buildDirectory = DEFAULT_BUILD_DIRECTORY;
-        }
-
-        if (ignoredFileNames.isEmpty()) {
-            logger.yellow("No ignored files specified with [", IGNORE_FILES_PREFIX, "], defaulting to ", Arrays.asList(DEFAULT_IGNORED_FILE_NAMES), ".");
-            Arrays.stream(DEFAULT_IGNORED_FILE_NAMES).forEach(ignoredFileNames::add);
         }
 
         validateJsonDirectories();

@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -14,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.io.FileUtils;
 
@@ -25,6 +24,7 @@ import com.psddev.dari.util.StringUtils;
 class JsonDirectory {
 
     private static final String CONFIG_FILE_NAME = "_config.json";
+    private static final String BOWER_COMPONENTS_DIRECTORY_NAME = "bower_components";
 
     private ViewClassGeneratorContext context;
 
@@ -259,52 +259,38 @@ class JsonDirectory {
      */
     public Set<Path> getFilePaths() {
 
-        // TODO: Improve this to support both names and paths
-        // Make sure to only use the filename part of the path (for now)
-        Set<String> ignoredFileNames = context.getExcludedPathNames().stream()
-                .collect(Collectors.toSet());
+        Set<String> excludedPaths = context.getExcludedPaths().stream().collect(Collectors.toCollection(HashSet::new));
 
-        // ignore config files
-        ignoredFileNames.add(CONFIG_FILE_NAME);
-
-        Set<Path> includedPaths = new HashSet<>();
-        Set<Path> excludedPaths = new HashSet<>();
-
-        Set<String> excludedDirectoryNames = new HashSet<>(ignoredFileNames);
-        Set<String> excludedFileNames = new HashSet<>(ignoredFileNames);
-
-        if (!includedPaths.isEmpty()) {
-            // TODO: Still need to implement
-        }
+        // exclude some well known paths
+        excludedPaths.add(CONFIG_FILE_NAME);
+        excludedPaths.add(BOWER_COMPONENTS_DIRECTORY_NAME);
 
         // get each json file in this directory
+        return FileUtils.listFiles(path.toFile(), new String[] { "json" }, true).stream()
 
-        return getSearchablePaths().stream()
-                // convert each path to a File object representing a directory
-                .map(Path::toFile)
-                // recursively list all of the files in the directory
-                .map(dir -> FileUtils.listFiles(dir, new String[] { "json" }, true))
-                // flatten the list of list of files
-                .flatMap(Collection::stream)
-                // remove ignored file names
-                .filter(file -> !excludedFileNames.contains(file.getName()))
                 // ignore files beginning with an underscore
                 .filter(file -> !file.getName().startsWith("_"))
+
                 // convert the file to a path
                 .map(file -> Paths.get(file.toURI()))
+
+                // remove excluded paths
+                .filter(path -> isPathExcluded(this.path.relativize(path), excludedPaths))
+
                 // add each file to the set
                 .collect(Collectors.toSet());
     }
 
     /*
-     * This is normally just the base directory path, but for backward compatibility
+     * This just does a String match on each path part with each excluded path.
+     * TODO: Need to come up with requirements for how excludes should work.
      */
-    private Set<Path> getSearchablePaths() {
-        // TODO: Still need to implement
-
-        Set<Path> includedPaths = new HashSet<>();
-
-        return Collections.singleton(path);
+    private static boolean isPathExcluded(Path path, Set<String> excludedPaths) {
+        return !IntStream.range(0, path.getNameCount())
+                .mapToObj(path::getName)
+                .map(Path::toString)
+                .anyMatch(name -> excludedPaths.stream()
+                        .anyMatch(pattern -> pattern.equals(name)));
     }
 
     /*

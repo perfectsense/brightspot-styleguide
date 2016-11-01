@@ -77,8 +77,8 @@ class JsonDirectory {
 
         Path normalizedPath;
         // resolve it relative to the json base directory
-        if (filePath.toString().startsWith("/")) {
-            normalizedPath = getPath().resolve(filePath.toString().substring(1)).normalize();
+        if (filePath.toString().startsWith("/") || !context.isRelativePaths()) {
+            normalizedPath = getPath().resolve(StringUtils.removeStart(filePath.toString(), "/")).normalize();
 
         } else {
             // resolve it relative to this file.

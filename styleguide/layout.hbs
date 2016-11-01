@@ -105,7 +105,7 @@
 
         {{> head}}
     </head>
-    <body class="sg-body">
+    <body>
         <header class="sg-header">
             <div class="sg-header-title">
                 Styleguide{{#each names}}: {{this}}{{/each}}
@@ -186,7 +186,7 @@
         </div>
 
         <div class="sg-content">
-            <iframe src="" name="sg-content-iframe"></iframe>
+            <iframe src="{{reqPath}}?content&{{contentQueryString}}" name="sg-content-iframe"></iframe>
         </div>
     </body>
 </html>

@@ -1,0 +1,8 @@
+{
+    "_template": "base/util/Image",
+    "src": "{{image(100, 100)}}",
+    "alt": "{{words}}",
+    "srcset": "",
+    "width": 100,
+    "height": 100
+}

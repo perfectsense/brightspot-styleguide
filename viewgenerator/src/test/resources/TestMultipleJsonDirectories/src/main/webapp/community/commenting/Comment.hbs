@@ -1,0 +1,18 @@
+{{#defineBlock "Comment"}}
+    {{#defineElement "author"}}
+        <div class="{{elementName}}">{{this}}</div>
+    {{/defineElement}}
+
+    {{#defineBlockContainer}}
+        <div class="{{blockName}}"
+             data-bsp-community-comment
+             itemscope itemtype="http://schema.org/Comment"
+            {{extraAttributes}}>
+
+            {{#defineBlockBody}}
+                {{element "author"}}
+            {{/defineBlockBody}}
+
+        </div>
+    {{/defineBlockContainer}}
+{{/defineBlock}}

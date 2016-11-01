@@ -1,0 +1,9 @@
+{
+    "_template": "base/Author",
+    "image": {
+        "_template": "base/util/Image",
+        "src": "{{image(50, 50)}}"
+    },
+    "name": "{{name}}",
+    "affiliation": "{{words([ 1, 3 ])}}"
+}

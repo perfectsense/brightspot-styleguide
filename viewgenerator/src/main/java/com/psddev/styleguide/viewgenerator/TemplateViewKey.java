@@ -78,13 +78,20 @@ class TemplateViewKey extends ViewKey {
             packagePrefix = "";
         }
 
-        String[] templatePathParts = new String[templatePath.getNameCount()];
-        for (int i = 0; i < templatePathParts.length - 1; i++) {
-            templatePathParts[i] = templatePath.getName(i).toString();
-        }
-        String packageSuffix = Arrays.stream(templatePathParts).collect(Collectors.joining("."));
+        String packageSuffix;
+        if (templatePath.getNameCount() > 1) {
 
-        for (char c : (packagePrefix + "." + packageSuffix).replaceAll("\\.+", ".").toCharArray()) {
+            String[] templatePathParts = new String[templatePath.getNameCount() - 1];
+            for (int i = 0; i < templatePathParts.length; i++) {
+                templatePathParts[i] = templatePath.getName(i).toString();
+            }
+            packageSuffix = Arrays.stream(templatePathParts).collect(Collectors.joining("."));
+
+        } else {
+            packageSuffix = "";
+        }
+
+        for (char c : (packagePrefix + "." + packageSuffix).toCharArray()) {
             // excludes characters that would be invalid in a java package name
             if (Character.isJavaIdentifierPart(c) || c == '.') {
                 builder.append(c);
@@ -93,12 +100,20 @@ class TemplateViewKey extends ViewKey {
 
         builder.append('.');
 
-        String templateName = templatePath.getName(templatePath.getNameCount()).toString();
+        // get just the template file name
+        String templateName = templatePath.getName(templatePath.getNameCount() - 1).toString();
 
+        // remove the template extension
+        templateName = StringUtils.removeEnd(templateName, "." + templateType.getExtension());
+
+        // convert the name to proper Java class name casing
         builder.append(ViewClassStringUtils.toJavaClassCase(templateName));
+
+        // append "View"
         builder.append("View");
 
-        return StringUtils.removeStart(builder.toString(), ".");
+        // clean up any extraneous dots before returning
+        return StringUtils.removeStart(builder.toString().replaceAll("\\.+", "."), ".");
     }
 
     private String getPackagePrefix() {

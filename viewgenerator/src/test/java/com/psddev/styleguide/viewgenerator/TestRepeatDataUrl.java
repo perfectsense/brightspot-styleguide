@@ -18,7 +18,7 @@ public class TestRepeatDataUrl {
         List<ViewClassDefinition> definitions = generator.getViewClassDefinitions();
 
         // verify there's a definition for the list template
-        ViewClassDefinition itemDef = definitions.stream().filter(classDef -> classDef.getViewKey().getName().equals("/templates/list")).findFirst().get();
+        ViewClassDefinition itemDef = definitions.stream().filter(classDef -> classDef.getViewKey().getName().equals("templates/list.hbs")).findFirst().get();
 
         // get its fields
         List<ViewClassFieldDefinition> fields = itemDef.getFieldDefinitions();
@@ -36,6 +36,6 @@ public class TestRepeatDataUrl {
         assertEquals(1, listItemTypes.size());
 
         // verify the type is "item"
-        assertEquals("templates.Item", listItemTypes.stream().findFirst().get().getFullyQualifiedClassName());
+        assertEquals("com.psddev.base.templates.ItemView", listItemTypes.stream().findFirst().get().getFullyQualifiedClassName());
     }
 }

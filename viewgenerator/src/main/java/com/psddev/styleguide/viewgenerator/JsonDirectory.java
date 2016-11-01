@@ -302,9 +302,6 @@ class JsonDirectory {
                 .map(dir -> FileUtils.listFiles(dir, new String[] { "json" }, true))
                 // flatten the list of list of files
                 .flatMap(Collection::stream)
-                .peek((file) -> {
-                    System.out.println("file.getAbsolutePath(): " + file.getAbsolutePath());
-                })
                 // remove ignored file names
                 .filter(file -> !excludedFileNames.contains(file.getName()))
                 // ignore files beginning with an underscore

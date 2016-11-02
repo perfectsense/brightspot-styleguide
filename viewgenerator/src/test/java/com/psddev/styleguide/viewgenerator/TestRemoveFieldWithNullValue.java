@@ -9,7 +9,7 @@ import org.junit.Test;
 public class TestRemoveFieldWithNullValue {
 
     @Test
-    public void testJsonDirectory() throws Exception {
+    public void testNull() throws Exception {
 
         ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
 

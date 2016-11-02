@@ -1,9 +1,6 @@
 {
   "name": "brightspot-styleguide",
   "version": "2.0.0",
-  "bin": {
-    "styleguide": "bin/styleguide"
-  },
   "dependencies": {
     "body-parser": "1.14.1",
     "chance": "^0.8.0",
@@ -35,7 +32,6 @@
     "xml2js": "^0.4.15"
   },
   "scripts": {
-    "build": "grunt",
     "test": "./node_modules/.bin/mocha -R spec"
   },
   "devDependencies": {

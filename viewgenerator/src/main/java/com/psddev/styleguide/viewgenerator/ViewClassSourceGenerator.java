@@ -101,11 +101,10 @@ class ViewClassSourceGenerator {
         sourceBuilder.append(NEW_LINE);
 
         // JSON generated class level javadocs
-        if (!classDef.getNotes().isEmpty()) {
-            ViewClassJavadocsBuilder classNotesBuilder = new ViewClassJavadocsBuilder();
-            classDef.getNotes().forEach(classNotesBuilder::addParagraph);
-            sourceBuilder.append(classNotesBuilder.buildJavadocsSource(0));
-        }
+        ViewClassJavadocsBuilder classNotesBuilder = new ViewClassJavadocsBuilder();
+        classNotesBuilder.addClassOccurrencesList(classDef);
+        classDef.getNotes().forEach(classNotesBuilder::addParagraph);
+        sourceBuilder.append(classNotesBuilder.buildJavadocsSource(0));
 
         // Annotations
 
@@ -198,13 +197,13 @@ class ViewClassSourceGenerator {
                 sourceBuilder.append(indent(3)).append("};").append(NEW_LINE);
             }
             // End of build method
-            sourceBuilder.append(indent(2)).append("};").append(NEW_LINE);
+            sourceBuilder.append(indent(2)).append("}").append(NEW_LINE);
         }
         // End of Builder class
-        sourceBuilder.append(indent(1)).append("};").append(NEW_LINE);
+        sourceBuilder.append(indent(1)).append("}").append(NEW_LINE);
 
         // Enf of view interface class
-        sourceBuilder.append(indent(0)).append("};").append(NEW_LINE);
+        sourceBuilder.append(indent(0)).append("}").append(NEW_LINE);
 
         String javaSource = sourceBuilder.toString();
 
@@ -359,6 +358,10 @@ class ViewClassSourceGenerator {
 
         methodJavadocs.endParagraph();
 
+        methodJavadocs.addFieldOccurrencesList(fieldDef);
+
+        methodJavadocs.addSampleStringValuesList(fieldDef, 5);
+
         boolean isDefaulted = context.isGenerateDefaultMethods();
 
         // if it's a default interface method just make the body return null;
@@ -454,6 +457,8 @@ class ViewClassSourceGenerator {
             ViewClassJavadocsBuilder method1Javadocs = new ViewClassJavadocsBuilder();
             method1Javadocs.addParagraph("Sets the " + name + " field.");
             notes.forEach(method1Javadocs::addParagraph);
+            method1Javadocs.addFieldOccurrencesList(fieldDef);
+            method1Javadocs.addSampleStringValuesList(fieldDef, 5);
             method1Javadocs.newLine();
             method1Javadocs.addParameter(name).addCollectionFieldValueTypesSnippet(fieldDef).newLine();
             method1Javadocs.addReturn().add("this builder.");
@@ -475,6 +480,8 @@ class ViewClassSourceGenerator {
             ViewClassJavadocsBuilder method2Javadocs = new ViewClassJavadocsBuilder();
             method2Javadocs.addParagraph("Adds a single item to the " + name + " field.");
             notes.forEach(method2Javadocs::addParagraph);
+            method2Javadocs.addFieldOccurrencesList(fieldDef);
+            method2Javadocs.addSampleStringValuesList(fieldDef, 5);
             method2Javadocs.newLine();
             method2Javadocs.addParameter(name).add("the item to add. ").addFieldValueTypesSnippet(fieldDef).newLine();
             method2Javadocs.addReturn().add("this builder.");
@@ -507,6 +514,8 @@ class ViewClassSourceGenerator {
             ViewClassJavadocsBuilder method3Javadocs = new ViewClassJavadocsBuilder();
             method3Javadocs.addParagraph("Adds a Collection of items to the " + name + " field.");
             notes.forEach(method3Javadocs::addParagraph);
+            method3Javadocs.addFieldOccurrencesList(fieldDef);
+            method3Javadocs.addSampleStringValuesList(fieldDef, 5);
             method3Javadocs.newLine();
             method3Javadocs.addParameter(name).add("the items to add. ").addCollectionFieldValueTypesSnippet(fieldDef).newLine();
             method3Javadocs.addReturn().add("this builder.");
@@ -543,6 +552,8 @@ class ViewClassSourceGenerator {
 
             methodJavadocs.addParagraph("Sets the " + name + " field.");
             notes.forEach(methodJavadocs::addParagraph);
+            methodJavadocs.addFieldOccurrencesList(fieldDef);
+            methodJavadocs.addSampleStringValuesList(fieldDef, 5);
             methodJavadocs.newLine();
             methodJavadocs.addParameter(name).addFieldAwareValueTypesSnippet(fieldDef).newLine();
             methodJavadocs.addReturn().add("this builder.");
@@ -569,6 +580,7 @@ class ViewClassSourceGenerator {
                 ViewClassJavadocsBuilder javadocsBuilder = new ViewClassJavadocsBuilder();
                 javadocsBuilder.add("Adds an entry to the " + name + " field .").addLink("java.util.Map").addLine(".");
                 notes.forEach(javadocsBuilder::addParagraph);
+                javadocsBuilder.addFieldOccurrencesList(fieldDef);
                 javadocsBuilder.newLine();
                 javadocsBuilder.addParameter("key").addLine("the key to add.");
                 javadocsBuilder.addParameter("value").addLine("the value at the associated key.");

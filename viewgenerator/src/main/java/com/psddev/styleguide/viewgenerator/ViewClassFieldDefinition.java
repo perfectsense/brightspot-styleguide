@@ -26,8 +26,8 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
     private List<ViewClassDefinitionError> errors = new ArrayList<>();
 
     public ViewClassFieldDefinition(ViewClassDefinition viewClassDef,
-                                     String fieldName,
-                                     Set<Map.Entry<JsonKey, JsonValue>> fieldKeyValues) {
+                                    String fieldName,
+                                    Set<Map.Entry<JsonKey, JsonValue>> fieldKeyValues) {
 
         this.viewClassDef = viewClassDef;
         this.fieldName = fieldName;
@@ -40,6 +40,10 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
 
     public String getFieldName() {
         return fieldName;
+    }
+
+    public Set<Map.Entry<JsonKey, JsonValue>> getFieldKeyValues() {
+        return fieldKeyValues;
     }
 
     public Set<String> getNotes() {
@@ -108,7 +112,9 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             return effectiveValueType;
 
         } else if (valueTypes.size() > 1) {
-            addError("A field can only have a single value type but has " + valueTypes + " instead!");
+            addError("A field can only have a single value type but has "
+                    + valueTypes.stream().map(Class::getSimpleName).collect(Collectors.toList())
+                    + " instead!");
         }
 
         return null;

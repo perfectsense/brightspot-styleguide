@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -460,8 +461,49 @@ public class ViewClassGenerator {
 
             List<ViewClassDefinitionError> errors = classDef.getErrors();
 
+            builder.append("    ");
+            builder.append(classDef.getViewKey().getName());
+            builder.append(" has ");
+            builder.append(errors.size());
+            builder.append(" error");
+            if (errors.size() != 1) {
+                builder.append("s");
+            }
+            builder.append(": \n");
+
             for (ViewClassDefinitionError error : errors) {
-                // TODO: Still need to implement
+                builder.append("        ");
+
+                ViewClassFieldDefinition fieldDef = error.getFieldDefinition();
+                if (fieldDef != null) {
+
+                    builder.append(fieldDef.getFieldName());
+                    builder.append(": ");
+                    builder.append(error.getMessage());
+                    builder.append("\n");
+
+                    List<JsonDataLocation> locations = fieldDef.getFieldKeyValues().stream()
+                            .map(entry -> entry.getKey().getLocation())
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+
+                    for (JsonDataLocation location : locations) {
+                        builder.append("             ");
+                        builder.append(location.getFile().getRelativePath());
+                        builder.append(" at (line=");
+                        builder.append(location.getLineNumber());
+                        builder.append(":, col=");
+                        builder.append(location.getColumnNumber());
+                        builder.append(", offset=");
+                        builder.append(location.getStreamOffset());
+                        builder.append(")");
+                        builder.append("\n");
+                    }
+
+                } else {
+                    builder.append(error.getMessage());
+                    builder.append("\n");
+                }
             }
         }
 

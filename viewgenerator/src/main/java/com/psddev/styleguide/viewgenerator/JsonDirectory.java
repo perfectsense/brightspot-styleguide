@@ -370,7 +370,7 @@ class JsonDirectory {
                     // Ex. at (line no=18, column no=45, offset=521)
                     builder.append(" at (line=");
                     builder.append(location.getLineNumber());
-                    builder.append(":, col=");
+                    builder.append(", col=");
                     builder.append(location.getColumnNumber());
                     builder.append(", offset=");
                     builder.append(location.getStreamOffset());

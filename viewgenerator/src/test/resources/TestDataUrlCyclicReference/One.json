@@ -1,0 +1,11 @@
+{
+    "_template": "Foo",
+    "field1": {
+        "_template": "Foo",
+        "field2": [
+            {
+                "_dataUrl": "Two.json"
+            }
+        ]
+    }
+}

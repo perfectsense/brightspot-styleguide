@@ -1,0 +1,14 @@
+{
+    "_template": "Foo",
+    "field5": {
+        "_template": "Foo",
+        "field6": {
+            "_template": "Foo",
+            "field7": [
+                {
+                    "_dataUrl": "One.json"
+                }
+            ]
+        }
+    }
+}

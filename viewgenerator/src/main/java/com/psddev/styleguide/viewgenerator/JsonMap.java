@@ -52,6 +52,38 @@ class JsonMap extends JsonValue {
     }
 
     /**
+     * Recursively checks if a given key is contained within the map, or any
+     * of the map's values.
+     *
+     * @param name the name of the JSON key.
+     * @return true if the key is contained anywhere in the map.
+     */
+    public boolean containsKeyAnywhere(String name) {
+        return keyMap.containsKey(name)
+                || getValues().values().stream().anyMatch(itemValue -> containsKeyAnywhere(name, itemValue));
+    }
+
+    /*
+     * Recursively checks if a given key is contained anywhere within value.
+     *
+     * @param name the name of the JSON key.
+     * @param value the value to check for the key
+     * @return true if the key is contained anywhere in the value.
+     */
+    private boolean containsKeyAnywhere(String name, JsonValue value) {
+
+        if (value instanceof JsonMap) {
+            return ((JsonMap) value).containsKeyAnywhere(name);
+
+        } else if (value instanceof JsonList) {
+            return ((JsonList) value).getValues().stream().anyMatch(itemValue -> containsKeyAnywhere(name, itemValue));
+
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Gets the JSON key for a given name.
      *
      * @param name the name of the JSON key.

@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +39,7 @@ class JsonFileResolver {
 
     private JsonViewMap resolveViewMap(JsonMap jsonMap) {
 
-        JsonMap resolved = resolveMap(jsonMap, true, new HashSet<>());
+        JsonMap resolved = resolveMap(jsonMap, true, new LinkedHashSet<>());
         if (resolved instanceof JsonViewMap) {
             return (JsonViewMap) resolved;
 
@@ -62,11 +63,11 @@ class JsonFileResolver {
         ViewKey viewKey = null;
         if (isViewExpected) {
             viewKey = requireViewKey(jsonMap);
-        }
 
-        for (JsonKey key : keys) {
-            key = new JsonKey(key.getName(), key.getLocation(), getNotes(key, jsonMap));
-            resolved.put(key, resolveValue(key, jsonMap.getValue(key), new HashSet<>(visitedDataUrlPaths)));
+            for (JsonKey key : keys) {
+                key = new JsonKey(key.getName(), key.getLocation(), getNotes(key, jsonMap));
+                resolved.put(key, resolveValue(key, jsonMap.getValue(key), new LinkedHashSet<>(visitedDataUrlPaths)));
+            }
         }
 
         if (viewKey != null) {
@@ -86,7 +87,7 @@ class JsonFileResolver {
 
             List<JsonValue> values = ((JsonList) value).getValues()
                     .stream()
-                    .map(jsonValue -> resolveValue(key, jsonValue, new HashSet<>(visitedDataUrlPaths)))
+                    .map(jsonValue -> resolveValue(key, jsonValue, new LinkedHashSet<>(visitedDataUrlPaths)))
                     .collect(Collectors.toList());
 
             if (values.stream().anyMatch(jsonValue -> jsonValue instanceof JsonList)) {
@@ -272,8 +273,8 @@ class JsonFileResolver {
         }
 
         // Prevent cyclic references by adding the path to the set. If it's already present error and return.
-        if (!visitedDataUrlPaths.add(dataUrlFile.getRelativePath())) {
-            addError(JsonFile.DATA_URL_KEY + " contains a cyclic reference: " + dataUrl, dataUrlValue);
+        if (visitedDataUrlPaths.contains(dataUrlFile.getRelativePath())) {
+            addError(JsonFile.DATA_URL_KEY + " contains a cyclic reference: " + visitedDataUrlPaths, dataUrlValue);
             return jsonMap;
         }
 
@@ -284,6 +285,13 @@ class JsonFileResolver {
         if (!(dataUrlContents instanceof JsonMap)) {
             addError("The contents of a " + JsonFile.DATA_URL_KEY + " must be a Map!", dataUrlContents);
             return jsonMap;
+        }
+
+        // Check if the dataUrl map contains another _dataUrl key anywhere inside of it.
+        // If it does then we need to track that we visited this file in case we encounter
+        // it again as we recurse down the tree.
+        if (((JsonMap) dataUrlContents).containsKeyAnywhere(JsonFile.DATA_URL_KEY)) {
+            visitedDataUrlPaths.add(dataUrlFile.getRelativePath());
         }
 
         // Finally, merge the values of the data url and the original map together.
@@ -301,8 +309,10 @@ class JsonFileResolver {
                         (value1, value2) -> value2,
                         () -> mergedValues));
 
+        JsonMap mergedMap = new JsonMap(jsonMap.getLocation(), mergedValues);
+
         // recurse in case the data url contained another data url
-        return tryFetchAndMergeDataUrl(new JsonMap(jsonMap.getLocation(), mergedValues), visitedDataUrlPaths);
+        return tryFetchAndMergeDataUrl(mergedMap, visitedDataUrlPaths);
     }
 
     /*

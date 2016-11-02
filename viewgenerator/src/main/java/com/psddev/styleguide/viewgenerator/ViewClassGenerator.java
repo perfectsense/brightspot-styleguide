@@ -150,18 +150,27 @@ public class ViewClassGenerator {
                         FileFileFilter.FILE,
                         FileFilterUtils.suffixFileFilter("." + TemplateType.HANDLEBARS.getExtension())));
 
+        final String[] additionalTemplateDirs = {
+                "../src/main/webapp",
+                "../src/main/resources" };
+
         for (Path jsonDir : jsonDirs) {
 
             // Copy the entire JSON directory using the filter
             FileUtils.copyDirectory(jsonDir.toFile(), tempDir.toFile());
             logger.yellow("Copied [", jsonDir, "] to temp directory.");
 
-            // Copy the template directory if it exists
-            Path templateDir = jsonDir.resolve("../src/main/webapp");
-            if (templateDir.toFile().exists()) {
+            for (String templateDirPath : new String[] {
+                    "../src/main/webapp",
+                    "../src/main/resources" }) {
 
-                FileUtils.copyDirectory(templateDir.toFile(), tempDir.toFile(), templateFilter);
-                logger.yellow("Copied templates from [", templateDir.normalize(), "] to temp directory.");
+                // Copy the template directory if it exists
+                Path templateDir = jsonDir.resolve(templateDirPath);
+                if (templateDir.toFile().exists()) {
+
+                    FileUtils.copyDirectory(templateDir.toFile(), tempDir.toFile(), templateFilter);
+                    logger.yellow("Copied templates from [", templateDir.normalize(), "] to temp directory.");
+                }
             }
         }
 

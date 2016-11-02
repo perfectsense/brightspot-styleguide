@@ -71,13 +71,17 @@ class JsonDirectory {
      *
      * @param ref the file to use to resolve relative paths.
      * @param filePath the path to normalize.
+     * @param refRelative true if paths not starting "/" or "." should be
+     *                    considered relative to the reference file, or false
+     *                    if they should be considered relative to the base
+     *                    directory.
      * @return the normalized path.
      */
-    public Path getNormalizedPath(JsonFile ref, Path filePath) {
+    public Path getNormalizedPath(JsonFile ref, Path filePath, boolean refRelative) {
 
         Path normalizedPath;
         // resolve it relative to the json base directory
-        if (filePath.toString().startsWith("/") || !context.isRelativePaths()) {
+        if (filePath.toString().startsWith("/") || (!refRelative && !filePath.toString().startsWith("."))) {
             normalizedPath = getPath().resolve(StringUtils.removeStart(filePath.toString(), "/")).normalize();
 
         } else {
@@ -104,7 +108,7 @@ class JsonDirectory {
     public JsonFile getNormalizedFile(JsonFile ref, Path filePath) {
 
         // get the normalized path.
-        Path normalizedPath = getNormalizedPath(ref, filePath);
+        Path normalizedPath = getNormalizedPath(ref, filePath, true);
 
         // ensure that it is within the scope of this directory.
         if (!"..".equals(normalizedPath.getName(0).toString())) {
@@ -150,7 +154,7 @@ class JsonDirectory {
 
             // calls getNormalizedPath after pre-pending a slash so it knows
             // to treat the path as relative to this directory.
-            normalizedPath = getNormalizedPath(null, Paths.get(StringUtils.ensureStart(normalizedPath.toString(), "/")));
+            normalizedPath = getNormalizedPath(null, Paths.get(StringUtils.ensureStart(normalizedPath.toString(), "/")), true);
 
             // If the path is outside of the directory, return null immediately
             if (normalizedPath.getName(0).startsWith("..")) {

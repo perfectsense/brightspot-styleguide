@@ -88,8 +88,12 @@ class JsonFileNormalizer {
 
                     String rawPath = ((JsonString) keyValue).toRawValue();
 
+                    // XXX: To support backward compatibility. Should be set to true by default.
+                    boolean resolveRelative = !JsonFile.TEMPLATE_KEY.equals(key.getName())
+                            || file.getBaseDirectory().getContext().isRelativePaths();
+
                     // Normalize the path.
-                    Path normalizedPath = file.getNormalizedPath(Paths.get(rawPath));
+                    Path normalizedPath = file.getNormalizedPath(Paths.get(rawPath), resolveRelative);
 
                     // If the file is outside the scope of the base directory, add an error.
                     if ("..".equals(normalizedPath.getName(0).toString())) {

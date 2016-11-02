@@ -83,17 +83,33 @@ class JsonFile {
 
     /**
      * Gets the normalized path of {@code other} where "normalized" is defined
-     * as the most direct path relative to the base directory.
+     * as the most direct path relative to the base directory. The path is
+     * interpreted as relative to this file unless it starts with a slash in
+     * which case it is considered to be relative to the base directory.
      *
-     * Gets the normalized path of {@code other} either to this file or this
-     * file's base directory depending on if {@code other} is a relative path
-     * or absolute respectively.
-     *
-     * @param other
-     * @return
+     * @param other the path to normalize.
+     * @return the normalized path.
      */
     public Path getNormalizedPath(Path other) {
-        return getBaseDirectory().getNormalizedPath(this, other);
+        return getNormalizedPath(other, true);
+    }
+
+    /**
+     * Gets the normalized path of {@code other} where "normalized" is defined
+     * as the most direct path relative to the base directory. The path is
+     * interpreted as relative to this file if {@code fileRelative} is true,
+     * otherwise it is interpreted as relative to the base directory unless
+     * it starts with a ".".
+     *
+     * @param other the path to normalize.
+     * @param fileRelative true if paths not starting "/" or "." should be
+     *                     considered relative to this file, or false if they
+     *                     should be considered relative to this file's base
+     *                     directory.
+     * @return the normalized path.
+     */
+    public Path getNormalizedPath(Path other, boolean fileRelative) {
+        return getBaseDirectory().getNormalizedPath(this, other, fileRelative);
     }
 
     /**

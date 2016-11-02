@@ -272,9 +272,6 @@ class JsonDirectory {
         // get each json file in this directory
         return FileUtils.listFiles(path.toFile(), new String[] { "json" }, true).stream()
 
-                // ignore files beginning with an underscore
-                .filter(file -> !file.getName().startsWith("_"))
-
                 // convert the file to a path
                 .map(file -> Paths.get(file.toURI()))
 

@@ -122,6 +122,10 @@ public class ViewClassGenerator {
         context.setDefaultJavaPackagePrefix(arguments.getJavaPackageName());
     }
 
+    ViewClassGeneratorContext getContext() {
+        return context;
+    }
+
     /*
      * To support backward compatibility, this method takes multiple directories
      * and copies the contents of each of them into a temp directory. It also

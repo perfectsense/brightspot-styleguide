@@ -55,7 +55,6 @@ class ViewClassDefinition implements ViewClassFieldType {
     }
 
     public void validate() {
-        List<ViewClassFieldDefinition> fieldDefs = getFieldDefinitions();
 
         viewKey.validate();
 
@@ -63,7 +62,7 @@ class ViewClassDefinition implements ViewClassFieldType {
             errors.addAll(viewKey.getErrors());
         }
 
-        for (ViewClassFieldDefinition fieldDef : fieldDefs) {
+        for (ViewClassFieldDefinition fieldDef : getFieldDefinitions()) {
 
             fieldDef.validate();
 
@@ -113,5 +112,16 @@ class ViewClassDefinition implements ViewClassFieldType {
         }
 
         return new ArrayList<>(fieldDefsByName.values());
+    }
+
+    /**
+     * Gets only the field definitions that are not effectively null.
+     *
+     * @return the non-null field definitions only
+     */
+    public List<ViewClassFieldDefinition> getNonNullFieldDefinitions() {
+        return getFieldDefinitions().stream()
+                .filter(fieldDef -> fieldDef.getEffectiveType() != null)
+                .collect(Collectors.toList());
     }
 }

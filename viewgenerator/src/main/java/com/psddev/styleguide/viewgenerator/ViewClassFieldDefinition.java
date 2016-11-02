@@ -19,8 +19,6 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
 
     private Set<Map.Entry<JsonKey, JsonValue>> fieldKeyValues;
 
-    private Set<ViewClassFieldType> fieldValueTypes;
-
     // The type of the field
     private Class<? extends JsonValue> effectiveType;
 

@@ -43,7 +43,7 @@ class ViewClassSourceGenerator {
         List<ViewClassSource> fieldLevelInterfaceSources = new ArrayList<>();
 
         // Field level interfaces
-        for (ViewClassFieldDefinition fieldDef : classDef.getFieldDefinitions()) {
+        for (ViewClassFieldDefinition fieldDef : classDef.getNonNullFieldDefinitions()) {
 
             Set<ViewClassFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
 
@@ -85,7 +85,7 @@ class ViewClassSourceGenerator {
 
     private ViewClassSource getViewClassSource() {
 
-        List<ViewClassFieldDefinition> fieldDefs = classDef.getFieldDefinitions();
+        List<ViewClassFieldDefinition> fieldDefs = classDef.getNonNullFieldDefinitions();
 
         StringBuilder sourceBuilder = new StringBuilder();
 
@@ -121,7 +121,7 @@ class ViewClassSourceGenerator {
         sourceBuilder.append(getViewInterfaceDeclaration());
 
         // Static view type/element constants
-        for (ViewClassFieldDefinition fieldDef : classDef.getFieldDefinitions()) {
+        for (ViewClassFieldDefinition fieldDef : fieldDefs) {
 
             Class<? extends JsonValue> effectiveType = fieldDef.getEffectiveType();
 
@@ -313,7 +313,7 @@ class ViewClassSourceGenerator {
 
         for (ViewClassDefinition classDef : context.getClassDefinitions()) {
 
-            for (ViewClassFieldDefinition fieldDef : classDef.getFieldDefinitions()) {
+            for (ViewClassFieldDefinition fieldDef : classDef.getNonNullFieldDefinitions()) {
 
                 Set<ViewClassFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
                 if (fieldValueTypes.size() > 1 && fieldValueTypes.stream()

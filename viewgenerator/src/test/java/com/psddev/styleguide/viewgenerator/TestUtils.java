@@ -39,13 +39,10 @@ public class TestUtils {
     public static ViewClassGenerator getDefaultGeneratorForClass(Class<?> klass) {
 
         Set<Path> jsonDirectories = getJsonDirectoriesForClasses(klass);
-        String javaPackageName = DEFAULT_JAVA_PACKAGE_NAME;
 
         ViewClassGeneratorContext context = new ViewClassGeneratorContext();
         context.setJsonDirectory(jsonDirectories.iterator().next());
-
         context.setJavaSourceDirectory(jsonDirectories.stream().findFirst().orElse(null).resolve("output"));
-        context.setDefaultJavaPackagePrefix(javaPackageName);
 
         ViewClassGenerator generator = new ViewClassGenerator(context);
 

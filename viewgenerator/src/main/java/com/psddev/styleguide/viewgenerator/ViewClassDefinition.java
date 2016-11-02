@@ -20,6 +20,7 @@ class ViewClassDefinition implements ViewClassFieldType {
     private Map<String, ViewClassFieldDefinition> fieldDefsByName;
 
     private List<ViewClassDefinitionError> errors = new ArrayList<>();
+    private boolean validated = false;
 
     public ViewClassDefinition(ViewClassGeneratorContext context,
                                 ViewKey viewKey,
@@ -56,6 +57,10 @@ class ViewClassDefinition implements ViewClassFieldType {
 
     public void validate() {
 
+        if (validated) {
+            return;
+        }
+
         viewKey.validate();
 
         if (viewKey.hasAnyErrors()) {
@@ -70,6 +75,8 @@ class ViewClassDefinition implements ViewClassFieldType {
                 errors.addAll(fieldDef.getErrors());
             }
         }
+
+        validated = true;
     }
 
     public boolean hasAnyErrors() {

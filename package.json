@@ -12,6 +12,9 @@
     "express": "^4.13.1",
     "font-awesome": "^4.4.0",
     "geopattern": "1.2.3",
+    "gulp-jsonlint": "1.1.2",
+    "gulp-lesshint": "2.0.0",
+    "gulp-standard": "8.0.2",
     "handlebars": "^4.0.3",
     "iframe-resizer": "3.5.0",
     "jquery": "2.1.4",
@@ -35,9 +38,6 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
-    "gulp-jsonlint": "1.1.2",
-    "gulp-lesshint": "2.0.0",
-    "gulp-standard": "8.0.2",
     "mocha": "2.5.3"
   },
   "main": "lib/styleguide.js"

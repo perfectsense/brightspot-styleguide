@@ -116,7 +116,7 @@ class JsonDirectory {
             if (normalizedFile == null) {
 
                 // create the file
-                normalizedFile = new JsonFile(this, Paths.get(normalizedPath.toUri()));
+                normalizedFile = new JsonFile(this, getPath().resolve(normalizedPath));
 
                 // reads, parses, and normalizes the file.
                 normalizedFile.normalize();

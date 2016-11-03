@@ -3,7 +3,7 @@ package com.psddev.styleguide.viewgenerator;
 import java.util.Collections;
 import java.util.Map;
 
-class DelegateViewKey extends ViewKey {
+final class DelegateViewKey extends ViewKey {
 
     public static final DelegateViewKey INSTANCE = new DelegateViewKey();
 

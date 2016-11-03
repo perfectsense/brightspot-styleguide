@@ -236,6 +236,11 @@ class JsonDirectory {
             // find all the nested view maps
             viewMaps = new LinkedHashSet<>();
             fileViewMaps.stream().forEach(viewMap -> populateNestedViewMaps(viewMaps, viewMap));
+
+            // Filter out delegate view keys
+            viewMaps = viewMaps.stream()
+                    .filter(jsonViewMap -> !DelegateViewKey.INSTANCE.contentEquals(jsonViewMap.getViewKey()))
+                    .collect(Collectors.toSet());
         }
 
         return viewMaps;

@@ -1,6 +1,8 @@
 package com.psddev.styleguide.viewgenerator;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.psddev.dari.util.ObjectUtils;
@@ -41,7 +43,23 @@ class JsonList extends JsonValue {
 
     @Override
     public String getTypeLabel() {
-        return "List";
+
+        StringBuilder builder = new StringBuilder();
+
+        // use tree set for sort consistency
+        Set<String> valueTypeLabels = getValues().stream()
+                .map(JsonValue::getTypeLabel)
+                .collect(Collectors.toCollection(TreeSet::new));
+
+        builder.append("List");
+
+        if (!valueTypeLabels.isEmpty()) {
+            builder.append("<");
+            builder.append(valueTypeLabels.stream().collect(Collectors.joining("|")));
+            builder.append(">");
+        }
+
+        return builder.toString();
     }
 
     @Override

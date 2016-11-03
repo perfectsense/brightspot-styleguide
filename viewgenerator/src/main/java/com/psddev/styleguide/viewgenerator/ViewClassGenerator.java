@@ -20,8 +20,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -491,13 +491,20 @@ public class ViewClassGenerator {
                     builder.append(error.getMessage());
                     builder.append("\n");
 
-                    List<JsonDataLocation> locations = fieldDef.getFieldKeyValues().stream()
-                            .map(entry -> entry.getKey().getLocation())
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toList());
+                    // tree map to sort and de-dupe based on json data location.
+                    Map<JsonDataLocation, Map.Entry<JsonKey, JsonValue>> locations = new TreeMap<>();
+                    for (Map.Entry<JsonKey, JsonValue> entry : fieldDef.getFieldKeyValues()) {
+                        locations.put(entry.getKey().getLocation(), entry);
+                    }
 
-                    for (JsonDataLocation location : locations) {
+                    for (Map.Entry<JsonKey, JsonValue> entry : locations.values()) {
+
+                        JsonDataLocation location = entry.getKey().getLocation();
+                        String typeLabel = entry.getValue().getTypeLabel();
+
                         builder.append("             ");
+                        builder.append(typeLabel);
+                        builder.append(": ");
                         builder.append(location.getFile().getRelativePath());
                         builder.append(" at (line=");
                         builder.append(location.getLineNumber());

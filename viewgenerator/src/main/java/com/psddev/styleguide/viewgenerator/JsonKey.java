@@ -68,7 +68,6 @@ class JsonKey {
      * JSON file and specific documentation notes about its purpose, so they
      * shouldn't be interchanged without regard for losing or changing that data.
      */
-
     @Override
     public boolean equals(Object o) {
 

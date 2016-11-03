@@ -266,7 +266,7 @@ class JsonDirectory {
     /*
      * Gets the list of file paths that should be discoverable within this directory.
      */
-    public Set<Path> getFilePaths() {
+    private Set<Path> getFilePaths() {
 
         Set<String> excludedPaths = context.getExcludedPaths().stream().collect(Collectors.toCollection(HashSet::new));
 

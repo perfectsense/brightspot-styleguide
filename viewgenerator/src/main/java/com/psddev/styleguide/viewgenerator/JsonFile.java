@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.psddev.dari.util.IoUtils;
 
@@ -13,13 +16,64 @@ import com.psddev.dari.util.IoUtils;
  */
 class JsonFile {
 
+    /**
+     * The standard prefix for all specialized JSON keys.
+     */
     public static final String SPECIAL_KEY_PREFIX = "_";
+
+    /**
+     * The JSON key used to name JSON based Views.
+     */
     public static final String VIEW_KEY = "_view";
+
+    /**
+     * The JSON key used to reference template based Views.
+     */
     public static final String TEMPLATE_KEY = "_template";
+
+    /**
+     * The JSON key for referencing another JSON file.
+     */
     public static final String DATA_URL_KEY = "_dataUrl";
+
+    /**
+     * The JSON key for denoting that a particular field's value can be ANY view.
+     */
     public static final String DELEGATE_KEY = "_delegate";
+
+    /**
+     * The JSON key for providing documentation for the view map it's contained in.
+     */
     public static final String NOTES_KEY = "_notes";
+
+    /**
+     * The JSON key pattern for providing documentation for a specific field within a view.
+     */
     public static final String FIELD_NOTES_KEY_PATTERN = "_%sNotes";
+
+    /**
+     * The JSON key denoting an unstructured map value of key/value pairs for FE display related options.
+     */
+    public static final String DISPLAY_OPTIONS_KEY = "displayOptions";
+
+    /**
+     * The JSON key denoting an unstructured map value of key/value pairs that are placed on an HTML element as attributes.
+     */
+    public static final String EXTRA_ATTRIBUTES_KEY = "extraAttributes";
+
+    /**
+     * The JSON key denoting an unstructured map value of key/value pairs that are used to construct a free-form JSON object.
+     */
+    public static final String JSON_OBJECT_KEY = "jsonObject";
+
+    /**
+     * Special (non-underscore-prefixed) keys that allow their values to be
+     * unstructured non-view/template based maps.
+     */
+    public static final Set<String> JSON_MAP_KEYS = new HashSet<>(Arrays.asList(
+            DISPLAY_OPTIONS_KEY,
+            EXTRA_ATTRIBUTES_KEY,
+            JSON_OBJECT_KEY));
 
     private JsonDirectory baseDirectory;
 

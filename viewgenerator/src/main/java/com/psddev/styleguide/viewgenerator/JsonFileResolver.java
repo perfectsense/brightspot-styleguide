@@ -3,8 +3,6 @@ package com.psddev.styleguide.viewgenerator;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,19 +10,33 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Resolves a JSON file by resolving template paths and verifying that the
+ * template exists and is valid as well as resolving data URLs that reference
+ * other JSON files and doing validation on the resulting data set.
+ */
 class JsonFileResolver {
-
-    private static final Set<String> JSON_MAP_KEYS = new HashSet<>(Arrays.asList(
-            "displayOptions",
-            "extraAttributes",
-            "jsonObject"));
 
     private JsonFile file;
 
+    /**
+     * Creates a new JSON file resolve for the given file.
+     *
+     * @param file the file to resolve.
+     */
     public JsonFileResolver(JsonFile file) {
         this.file = file;
     }
 
+    /**
+     * Resolves a JSON file into a JSON view map. It first
+     * {@link JsonFile#normalize() normalizes} the file and then resolves all
+     * the special keys and validates that all the data is valid. Specifically,
+     * it imports any data URL references to other JSON files, as well as
+     * validates that any template path references are valid.
+     *
+     * @return the resolved file as a JSON view map.
+     */
     public JsonViewMap resolve() {
 
         JsonValue value = file.normalize();
@@ -37,6 +49,9 @@ class JsonFileResolver {
         }
     }
 
+    /*
+     * Helper method for resolving JSON view maps.
+     */
     private JsonViewMap resolveViewMap(JsonMap jsonMap) {
 
         JsonMap resolved = resolveMap(jsonMap, true, new LinkedHashSet<>());
@@ -48,6 +63,9 @@ class JsonFileResolver {
         }
     }
 
+    /*
+     * Recursive helper method for resolving JSON maps.
+     */
     private JsonMap resolveMap(JsonMap jsonMap, boolean isViewExpected, Set<Path> visitedDataUrlPaths) {
 
         Map<JsonKey, JsonValue> resolved = new LinkedHashMap<>();
@@ -84,6 +102,11 @@ class JsonFileResolver {
         }
     }
 
+    /*
+     * Recursive helper method for resolving JSON values. This method prevents
+     * JSON lists from being directly nested (immediate child) within another
+     * list.
+     */
     private JsonValue resolveValue(JsonKey key, JsonValue value, Set<Path> visitedDataUrlPaths) {
 
         if (value instanceof JsonMap) {
@@ -107,6 +130,10 @@ class JsonFileResolver {
         }
     }
 
+    /*
+     * Verifies that the given JSON map contains a valid view or template key,
+     * adding an error to the file being resolved if it doesn't.
+     */
     private ViewKey requireViewKey(JsonMap jsonMap) {
 
         JsonString viewKey = null;
@@ -162,6 +189,11 @@ class JsonFileResolver {
         }
     }
 
+    /*
+     * Resolves a template path finding its template extension (if not present
+     * in the path) as well as its associated configuration file, and validates
+     * that it is in fact a valid template type.
+     */
     private TemplateViewKey resolveTemplateViewKey(JsonString viewKey, JsonString template) {
 
         // resolve the template path. It may or may not have an extension, i.e. templates/foo/Bar vs templates/foo/Bar.hbs
@@ -253,6 +285,15 @@ class JsonFileResolver {
         }
     }
 
+    /*
+     * Given a JSON map with a _dataUrl key, this method fetches the JSON file
+     * referenced by the key's value and inserts its values into the map. Any
+     * keys that were present in the map prior to fetching the _dataUrl are
+     * overlaid on top of the _dataUrl's key/values, effectively allowing you
+     * to override the values from the _dataUrl. This method will recursively
+     * fetch subsequent _dataUrls that are found in the resulting map while
+     * also preventing cyclic references that could result in a stack overflow.
+     */
     private JsonMap tryFetchAndMergeDataUrl(JsonMap jsonMap, Set<Path> visitedDataUrlPaths) {
 
         // if there's no data url key, just return the original
@@ -341,7 +382,7 @@ class JsonFileResolver {
      * the resulting map.
      */
     private boolean isMapBasedKey(JsonKey key) {
-        return JSON_MAP_KEYS.contains(key.getName());
+        return JsonFile.JSON_MAP_KEYS.contains(key.getName());
     }
 
     /*

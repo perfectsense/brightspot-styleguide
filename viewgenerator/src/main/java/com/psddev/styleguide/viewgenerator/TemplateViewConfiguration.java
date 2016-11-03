@@ -15,7 +15,16 @@ import com.psddev.dari.util.ObjectUtils;
  */
 class TemplateViewConfiguration {
 
+    /**
+     * The JSON key that specifies the java package prefix for the generated
+     * view.
+     */
     public static final String JAVA_PACKAGE_KEY = "javaPackage";
+
+    /**
+     * The JSON key that specifies the default template engine/type for a given
+     * template path if no file extension is provided
+     */
     public static final String TEMPLATE_TYPE_KEY = "templateEngine";
 
     private Map<String, Object> rawData;
@@ -24,6 +33,13 @@ class TemplateViewConfiguration {
 
     private TemplateType templateType;
 
+    /**
+     * Creates a new template view configuration by reading and parsing the
+     * file at the given path.
+     *
+     * @param configFilePath the path to the configuration file.
+     * @throws IOException if the configuration file cannot be read for any reason.
+     */
     public TemplateViewConfiguration(Path configFilePath) throws IOException {
 
         String configFileData = IoUtils.toString(configFilePath.toFile(), StandardCharsets.UTF_8);
@@ -42,7 +58,7 @@ class TemplateViewConfiguration {
             rawData = configFileMap;
 
         } else {
-            throw new IllegalArgumentException("Invalid configuration file format. Must be a valid JSON map.");
+            throw new IOException("Invalid configuration file format. Must be a valid JSON map.");
         }
     }
 

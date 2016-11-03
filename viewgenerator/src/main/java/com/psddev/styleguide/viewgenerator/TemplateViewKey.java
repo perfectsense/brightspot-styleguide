@@ -116,6 +116,11 @@ class TemplateViewKey extends ViewKey {
         return StringUtils.removeStart(builder.toString().replaceAll("\\.+", "."), ".");
     }
 
+    /*
+     * Helper method to get the effective package prefix by looking first at
+     * the template's config file, and then falling back to the legacy view
+     * generator context property that allows it to be specified globally.
+     */
     private String getPackagePrefix() {
 
         if (templateConfig != null) {

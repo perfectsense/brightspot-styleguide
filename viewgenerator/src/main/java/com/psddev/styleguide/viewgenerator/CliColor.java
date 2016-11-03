@@ -1,5 +1,8 @@
 package com.psddev.styleguide.viewgenerator;
 
+/**
+ * A text color for command line interface output.
+ */
 enum CliColor {
 
     BLACK("\u001B[30m"),
@@ -18,6 +21,11 @@ enum CliColor {
         this.controlSequence = controlSequence;
     }
 
+    /**
+     * Gets the control sequence for the color.
+     *
+     * @return the control sequence for the color.
+     */
     public String getControlSequence() {
         return controlSequence;
     }

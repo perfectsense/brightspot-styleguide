@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 class ViewClassFieldDefinition implements ViewClassFieldType {
@@ -168,22 +167,18 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
 
             } else if (effectiveValueType == JsonViewMap.class) {
 
-                AtomicBoolean containsDelegate = new AtomicBoolean(false);
-
                 Set<ViewClassFieldType> fieldValueTypes = values.stream()
                         .filter(value -> (value instanceof JsonViewMap))
                         .map(value -> (JsonViewMap) value)
                         .map(JsonViewMap::getViewKey)
-                        .peek(viewKey -> {
-                            if (viewKey == null) {
-                                containsDelegate.set(true);
-                            }
-                        })
-                        .filter(Objects::nonNull)
                         .collect(Collectors.toSet());
 
-                // if there's a delegate aka a JsonViewMap with no key, then there are no effective types.
-                return containsDelegate.get() ? Collections.emptySet() : fieldValueTypes;
+                // if there's a delegate view key, then that becomes the effective type, aka Object.
+                if (fieldValueTypes.contains(DelegateViewKey.INSTANCE)) {
+                    return Collections.singleton(DelegateViewKey.INSTANCE);
+                } else {
+                    return fieldValueTypes;
+                }
 
             } else if (effectiveValueType == JsonBoolean.class) {
                 return Collections.singleton(ViewClassFieldNativeJavaType.BOOLEAN);
@@ -221,7 +216,7 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             }
 
         } else {
-            return ViewClassFieldNativeJavaType.OBJECT;
+            return null;
         }
     }
 

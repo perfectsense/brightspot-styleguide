@@ -108,6 +108,10 @@ interface ViewClassFieldType {
         return hasSamePackageAs(relativeFieldType) ? getClassName() : getFullyQualifiedClassName();
     }
 
+    default boolean contentEquals(ViewClassFieldType other) {
+        return getFullyQualifiedClassName().equals(other.getFullyQualifiedClassName());
+    }
+
     static ViewClassFieldType from(String fullyQualifiedClassName) {
         return () -> fullyQualifiedClassName;
     }

@@ -407,7 +407,7 @@ class ViewClassSourceGenerator {
 
             ViewClassFieldType effectiveFieldValueType = fieldDef.getEffectiveValueType();
 
-            if (effectiveFieldValueType == null || effectiveFieldValueType == ViewClassFieldNativeJavaType.OBJECT) {
+            if (effectiveFieldValueType == null || effectiveFieldValueType.contentEquals(ViewClassFieldNativeJavaType.OBJECT)) {
                 genericArgument = "?";
 
             } else {

@@ -73,7 +73,11 @@ class JsonFileResolver {
         }
 
         if (viewKey != null || isDelegate) {
-            return new JsonViewMap(jsonMap.getLocation(), resolved, viewKey, getNotes(jsonMap));
+            return new JsonViewMap(
+                    jsonMap.getLocation(),
+                    resolved,
+                    isDelegate ? DelegateViewKey.INSTANCE : viewKey,
+                    getNotes(jsonMap));
 
         } else {
             return new JsonMap(jsonMap.getLocation(), resolved);

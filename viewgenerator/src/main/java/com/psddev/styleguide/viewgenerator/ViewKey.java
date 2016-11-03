@@ -87,7 +87,7 @@ class ViewKey implements ViewClassFieldType {
             packagePrefix = StringUtils.ensureEnd(packagePrefix, ".");
         }
 
-        return packagePrefix + StringUtils.removeSurrounding(name, ".");
+        return StringUtils.ensureEnd(packagePrefix + StringUtils.removeSurrounding(name, "."), "View");
     }
 
     /**

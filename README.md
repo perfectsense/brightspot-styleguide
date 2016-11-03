@@ -27,6 +27,23 @@ You can also run it on a different port:
 
 Add [example JSON files](example/styleguide) to the `styleguide` directory to see the pages at [http://localhost:3000](http://localhost:3000).
 
+## gulp
+
+* `styleguide.notify(message)`: desktop notification.
+* `styleguide.serve()`: runs the Styleguide web server.
+* `styleguide.watch()`: watches JS, JSON, and less files.
+
+### path
+
+* `styleguide.path.src(glob)`: returns the glob in the source directory.
+* `styleguide.path.build(glob)`: returns the glob in the build directory.
+
+### task
+
+* `styleguide.task.lint.js()`: returns the name of the task that lints JS files.
+* `styleguide.task.lint.json()`: returns the name of the task that lints JSON files.
+* `styleguide.task.lint.less()`: returns the name of the task that lints less files.
+
 ## Troubleshooting
 
 IFrame not resizing properly:

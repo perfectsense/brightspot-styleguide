@@ -15,9 +15,12 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     line-height: 24px;
-    margin: 54px 0 20px 0;
     padding: 0;
+    margin: 54px 0 20px 0;
     .clearfix();
+    &.sg-content-embed {
+        margin: 0;
+    }
 }
 
 a {
@@ -76,10 +79,30 @@ a {
 }
 
 .sg-menu {
+    overflow: auto;
+    height: 100vh;
     box-sizing: border-box;
     float: left;
     padding: 12px 12px 12px 24px;
     width: @menu-width;
+}
+
+
+.sg-library-list {
+    margin-bottom: 24px;
+
+    select {
+        width: 100%;
+    }
+}
+
+.sg-group {
+    border-top: 1px solid #e0e0e0;
+    &[data-listOpen] {
+        > .sg-example-list {
+            max-height: 40000px;
+        }
+   }
 }
 
 .sg-group-list {
@@ -89,18 +112,46 @@ a {
 }
 
 .sg-group-name {
+    cursor: pointer;
     font-weight: bold;
-    margin-bottom: 12px;
+    margin: 12px 0;
 }
+.sg-example {
+    &-name {
+        cursor: pointer;
+        display: block;
+        padding-left: 14px;
+        color: #262626;
+        &[data-listActive] {
+            padding-left: 11px;
+            border-left: 3px solid #38b5dc;
+        }
+    }
 
+    &[data-listOpen] {
+        .sg-example-name {
+            color: #259acd;
+        }
+
+        > .sg-example-list{
+            max-height: 4000px;
+        }
+
+        > .sg-example-name {
+            padding-left: 11px;
+            border-left: 3px solid #38b5dc;
+        }
+    }
+}
 .sg-example-list {
     list-style: none;
-    margin: 0 0 12px 0;
+    margin: 0;
     padding: 0;
-
+    max-height: 0;
+    overflow: hidden;
     ul {
        list-style: none;
-       margin: 0 0 12px 12px;
+       margin: 0 0 0 12px;
        padding: 0;
     }
 }
@@ -108,6 +159,12 @@ a {
 .sg-content {
     margin: 0 0 0 @menu-width;
     padding: 12px 24px 12px 12px;
+    iframe {
+        border: none;
+        display: block;
+        width: 100%;
+        height: 100vh;
+    }
 }
 
 .sg-file-header,

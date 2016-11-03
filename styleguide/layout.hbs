@@ -8,10 +8,84 @@
         <link rel="stylesheet" type="text/css" href="/node-modules/normalize.css/normalize.css">
         <link rel="stylesheet" type="text/css" href="/node-modules/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="/opensans-bold,opensans-bolditalic,opensans-italic,opensans-regular/fonts.css">
-
         <link rel="stylesheet" type="text/css" href="/styleguide.css">
 
         <script type="text/javascript" src="/node-modules/jquery/dist/jquery.min.js"></script>
+
+        <script type="text/javascript" src="/node-modules/sticky-kit/dist/sticky-kit.min.js"></script>
+        <script type="text/javascript" src="/node-modules/history.js/scripts/compressed/history.js"></script>
+        <script type="text/javascript" src="/node-modules/history.js/scripts/compressed/history.adapter.jquery.js"></script>
+
+        <script type="text/javascript">
+
+            History.Adapter.bind(window, 'statechange', function() { // Note: We are using statechange instead of popstate
+                var State = History.getState(); // Note: We are using History.getState() instead of event.state
+            });
+
+
+            (function (window,undefined) {
+
+                $(document).on('sg:contentLoaded', function () {
+                    //props open navigation on content load
+                    $('.sg-example-name[href$="' + document.location.pathname + document.location.search + '"]').attr('data-listActive','true')
+                        .parents('.sg-example').attr('data-listOpen','true')
+                        .siblings().removeAttr('data-listOpen')
+                        .find('.sg-example-name').removeAttr('data-listActive').end().end()
+                        .parents('.sg-group, .sg-example').attr('data-listOpen','true')
+                        .siblings().removeAttr('data-listOpen');
+                });
+
+                $(document).ready(function(){
+
+                    $('.sg-menu').stick_in_parent();
+
+                    $('.sg-example-name, .sg-group-name').on('click', function(event){
+                        event.preventDefault();
+
+                        var $self = $(this);
+                        var url = $self.attr('href');
+                        var contentUrl;
+                        var $target = $('[name='+$self.attr('target')+']');
+
+                        var $parentNode = $self.parent('li');
+
+                        //toggle the navigation
+                        if ($parentNode.attr('data-listOpen') === "true"){
+                           $parentNode.removeAttr('data-listOpen');
+                        }else {
+                           $parentNode.attr('data-listOpen','true');
+                           $parentNode.siblings().removeAttr('data-listOpen')
+                            .find('.sg-example').removeAttr('data-listOpen').end()
+                            .find('.sg-example-name').removeAttr('data-listActive');
+                        }
+                        if(!url) {
+                            return;
+                        }
+
+                        contentUrl = (url.indexOf('?') > 0)? url+'&content' : url+'?content';
+                        $target.attr('src', contentUrl);
+
+                        History.pushState(null, url, url);
+                   });
+                   $('.sg-header a, .sg-control-available-stylesheet-list').on('click, change', function(event){
+                       event.preventDefault();
+                       var $self = $(this);
+                       var docPath = document.location.pathname;
+                       var docSearch = $self.attr('href')? $self.attr('href') : $self.find(':selected').val();
+                       var query = null;
+
+                       if(docSearch.indexOf('?') > 0){
+                           query = docSearch.split('?').pop();
+                       }
+                       document.location.href = docPath + (query ? '?' + query: '');
+                   });
+                    // trigger event content loaded when app initializes
+                    $('.sg-content').trigger('sg:contentLoaded');
+                })
+
+            })();
+        </script>
+
         {{> head}}
     </head>
     <body>
@@ -19,7 +93,7 @@
             <div class="sg-header-title">
                 Styleguide{{#each names}}: {{this}}{{/each}}
 
-                <a href="{{seedUrl}}">#{{seed}}</a>
+                <a href="{{seedUrl}}" data-seedUrl="{{seed}}">#{{seed}}</a>
 
                 {{#with randomizeUrl}}
                     - <a href="{{this}}"><i class="fa fa-refresh"></i> Randomize</a>
@@ -39,7 +113,7 @@
 
                 {{#with availableStylesheets}}
                     <form class="sg-control-available-stylesheet-list">
-                        <select onchange="window.location.href = $(this).val();">
+                        <select>
                             {{#each this}}
                                 <option value="{{url}}"{{#if selected}} selected{{/if}}>{{name}}</option>
                             {{/each}}
@@ -54,11 +128,40 @@
                     <li class="sg-group">
                         <div class="sg-group-name">{{name}}</div>
                         <ul class="sg-example-list">
-                            {{#each examples}}
+                            {{#each children}}
                                 <li class="sg-example">
-                                    <a href="{{url}}">{{name}}</a>
+                                        <a class="sg-example-name"  href="{{url}}" title="{{name}}" target="sg-content-iframe">{{name}}</a>
+                                    {{#if children}}
+                                        <ul class="sg-example-list-children">
+                                            {{#each children}}
+                                                <li class="sg-example">
+                                                    <a href="{{url}}" class="sg-example-file-name" title="{{name}}" target="sg-content-iframe">{{name}}</a>
+                                                </li>
+                                            {{/each}}
+                                        </ul>
+                                    {{/if}}
                                 </li>
                             {{/each}}
+                        </ul>
+                    </li>
+                {{/each}}
+                {{#*inline 'list'}}
+                    {{#each children}}
+                        <li class="sg-example">
+                            <a class="sg-example-name" {{#if url}}href="{{url}}"{{/if}} title="{{name}}" target="sg-content-iframe">{{name}}</a>
+                            {{#if children}}
+                                <ul class="sg-example-list">
+                                    {{> list}} {{! Recursively render the partial }}
+                                </ul>
+                            {{/if}}
+                        </li>
+                    {{/each}}
+                {{/inline}}
+                {{#each examples}}
+                    <li class="sg-group">
+                        <div class="sg-group-name">{{name}}</div>
+                        <ul class="sg-example-list">
+                            {{> list}}
                         </ul>
                     </li>
                 {{/each}}
@@ -66,7 +169,7 @@
         </div>
 
         <div class="sg-content">
-            {{> content}}
+            <iframe src="{{reqPath}}?content{{#if contentQueryString}}&amp;{{contentQueryString}}{{/if}}" name="sg-content-iframe" id="sg-iframe-content"></iframe>
         </div>
     </body>
 </html>

@@ -17,6 +17,7 @@
     "gulp-notify": "2.2.0",
     "gulp-standard": "8.0.2",
     "handlebars": "^4.0.3",
+    "history.js": "browserstate/history.js#v1.8",
     "iframe-resizer": "3.5.0",
     "jquery": "2.1.4",
     "less": "^2.5.3",

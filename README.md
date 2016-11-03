@@ -25,7 +25,7 @@ You can also run it on a different port:
 
     $ gulp styleguide --port=3001
 
-Add [example JSON files](example/styleguide) to the `styleguide` directory to see the pages at [http://localhost:3000](http://localhost:3000).
+Add [example JSON files](docs/example-file-format.rst) to the `styleguide` directory to see the pages at [http://localhost:3000](http://localhost:3000).
 
 ## gulp
 

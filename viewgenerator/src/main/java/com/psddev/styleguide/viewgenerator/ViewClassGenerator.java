@@ -207,12 +207,15 @@ public class ViewClassGenerator {
 
             ViewKey viewKey = jsonViewMap.getViewKey();
 
-            Set<JsonViewMap> set = jsonViewMapsByViewKey.get(viewKey);
-            if (set == null) {
-                set = new HashSet<>();
-                jsonViewMapsByViewKey.put(viewKey, set);
+            // can only be null if it's a delegate field.
+            if (viewKey != null) {
+                Set<JsonViewMap> set = jsonViewMapsByViewKey.get(viewKey);
+                if (set == null) {
+                    set = new HashSet<>();
+                    jsonViewMapsByViewKey.put(viewKey, set);
+                }
+                set.add(jsonViewMap);
             }
-            set.add(jsonViewMap);
         }
 
         List<ViewClassDefinition> classDefinitions = jsonViewMapsByViewKey.entrySet().stream()

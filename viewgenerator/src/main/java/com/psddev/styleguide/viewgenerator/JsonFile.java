@@ -17,6 +17,7 @@ class JsonFile {
     public static final String VIEW_KEY = "_view";
     public static final String TEMPLATE_KEY = "_template";
     public static final String DATA_URL_KEY = "_dataUrl";
+    public static final String DELEGATE_KEY = "_delegate";
     public static final String NOTES_KEY = "_notes";
     public static final String FIELD_NOTES_KEY_PATTERN = "_%sNotes";
 

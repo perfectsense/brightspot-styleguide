@@ -60,8 +60,10 @@ class JsonFileResolver {
                 .filter(key -> !key.getName().startsWith(JsonFile.SPECIAL_KEY_PREFIX))
                 .collect(Collectors.toSet());
 
+        boolean isDelegate = keys.isEmpty() && jsonMap.containsKey(JsonFile.DELEGATE_KEY);
+
         ViewKey viewKey = null;
-        if (isViewExpected) {
+        if (isViewExpected && !isDelegate) {
             viewKey = requireViewKey(jsonMap);
 
             for (JsonKey key : keys) {
@@ -70,7 +72,7 @@ class JsonFileResolver {
             }
         }
 
-        if (viewKey != null) {
+        if (viewKey != null || isDelegate) {
             return new JsonViewMap(jsonMap.getLocation(), resolved, viewKey, getNotes(jsonMap));
 
         } else {

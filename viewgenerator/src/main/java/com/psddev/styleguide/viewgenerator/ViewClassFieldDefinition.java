@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 class ViewClassFieldDefinition implements ViewClassFieldType {
@@ -166,11 +167,23 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
                         .collect(Collectors.toList()));
 
             } else if (effectiveValueType == JsonViewMap.class) {
-                return values.stream()
+
+                AtomicBoolean containsDelegate = new AtomicBoolean(false);
+
+                Set<ViewClassFieldType> fieldValueTypes = values.stream()
                         .filter(value -> (value instanceof JsonViewMap))
                         .map(value -> (JsonViewMap) value)
                         .map(JsonViewMap::getViewKey)
+                        .peek(viewKey -> {
+                            if (viewKey == null) {
+                                containsDelegate.set(true);
+                            }
+                        })
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toSet());
+
+                // if there's a delegate aka a JsonViewMap with no key, then there are no effective types.
+                return containsDelegate.get() ? Collections.emptySet() : fieldValueTypes;
 
             } else if (effectiveValueType == JsonBoolean.class) {
                 return Collections.singleton(ViewClassFieldNativeJavaType.BOOLEAN);
@@ -208,7 +221,7 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             }
 
         } else {
-            return null;
+            return ViewClassFieldNativeJavaType.OBJECT;
         }
     }
 

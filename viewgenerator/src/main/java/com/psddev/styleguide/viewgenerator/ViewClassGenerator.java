@@ -33,6 +33,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import com.psddev.dari.util.IoUtils;
 import com.psddev.dari.util.StringUtils;
@@ -141,8 +142,6 @@ public class ViewClassGenerator {
         Path tempDir = Files.createTempDirectory("view-class-generator-");
         logger.yellow("Created temp directory [", tempDir, "]");
 
-        tempDir.toFile().deleteOnExit();
-
         // Create a filter for directories and handlebars files
         FileFilter templateFilter = FileFilterUtils.or(
                 DirectoryFileFilter.DIRECTORY,
@@ -173,6 +172,9 @@ public class ViewClassGenerator {
                 }
             }
         }
+
+        // Delete the temp directory and all sub-directories on exit
+        FileUtils.listFilesAndDirs(tempDir.toFile(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE).forEach(File::deleteOnExit);
 
         return tempDir;
     }

@@ -213,7 +213,8 @@ class ViewClassJavadocsBuilder {
         builder.append("<ul>");
         builder.append(NEW_LINE);
 
-        for (JsonDataLocation location : locations) {
+        // sort, then de-dupe preserving sort order
+        for (JsonDataLocation location : locations.stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))) {
             builder.append("<li>");
             builder.append(location);
             builder.append("</li>");

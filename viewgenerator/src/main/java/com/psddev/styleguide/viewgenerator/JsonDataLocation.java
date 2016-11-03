@@ -2,11 +2,13 @@ package com.psddev.styleguide.viewgenerator;
 
 import javax.json.stream.JsonLocation;
 
+import com.psddev.dari.util.ObjectUtils;
+
 /**
  * Contains location information for a piece of JSON data, such as the
  * originating file, and line number information.
  */
-class JsonDataLocation {
+class JsonDataLocation implements Comparable<JsonDataLocation> {
 
     private JsonFile file;
 
@@ -63,8 +65,60 @@ class JsonDataLocation {
     }
 
     @Override
+    public int compareTo(JsonDataLocation other) {
+
+        if (other == null) {
+            return 1;
+        }
+
+        int result = ObjectUtils.compare(file.getRelativePath().toString(), other.getFile().getRelativePath().toString(), true);
+
+        if (result == 0) {
+            result = ObjectUtils.compare(getLineNumber(), other.getLineNumber(), true);
+        }
+
+        if (result == 0) {
+            result = ObjectUtils.compare(getColumnNumber(), other.getColumnNumber(), true);
+        }
+
+        if (result == 0) {
+            result = ObjectUtils.compare(getStreamOffset(), other.getStreamOffset(), true);
+        }
+
+        return result;
+    }
+
+    @Override
     public String toString() {
         return String.format("%s at (line=%s, col=%s, offset=%s)",
                 file.getRelativePath(), getLineNumber(), getColumnNumber(), getStreamOffset());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        JsonDataLocation that = (JsonDataLocation) o;
+
+        return ObjectUtils.equals(file.getRelativePath().toString(), that.getFile().getRelativePath().toString())
+                && ObjectUtils.equals(getLineNumber(), that.getLineNumber())
+                && ObjectUtils.equals(getColumnNumber(), that.getColumnNumber())
+                && ObjectUtils.equals(getStreamOffset(), that.getStreamOffset());
+    }
+
+    @Override
+    public int hashCode() {
+        return ObjectUtils.hashCode(
+                file.getRelativePath().toString(),
+                getLineNumber(),
+                getColumnNumber(),
+                getStreamOffset());
     }
 }

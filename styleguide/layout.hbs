@@ -5,8 +5,7 @@
 
         <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/x-icon">
 
-        <link rel="stylesheet" type="text/css" href="/node-modules/normalize.css/normalize.css">
-        <link rel="stylesheet" type="text/css" href="/node-modules/font-awesome/css/font-awesome.min.css">
+
         <link rel="stylesheet" type="text/css" href="/opensans-bold,opensans-bolditalic,opensans-italic,opensans-regular/fonts.css">
         <link rel="stylesheet" type="text/css" href="/styleguide.css">
 
@@ -19,7 +18,7 @@
         <script type="text/javascript">
 
             History.Adapter.bind(window, 'statechange', function() { // Note: We are using statechange instead of popstate
-                var State = History.getState(); // Note: We are using History.getState() instead of event.state
+                $('.sg-content').trigger('sg:contentLoaded');
             });
 
 
@@ -37,7 +36,7 @@
 
                 $(document).ready(function(){
 
-                    $('.sg-menu').stick_in_parent();
+                    // $('.sg-menu').stick_in_parent();
 
                     $('.sg-example-name, .sg-group-name').on('click', function(event){
                         event.preventDefault();
@@ -64,10 +63,9 @@
 
                         contentUrl = (url.indexOf('?') > 0)? url+'&content' : url+'?content';
                         $target.attr('src', contentUrl);
-
-                        History.pushState(null, url, url);
+                        History.replaceState({}, $self.attr('title'), url);
                    });
-                   $('.sg-header a, .sg-control-available-stylesheet-list').on('click, change', function(event){
+                   $('.sg-header a, .sg-control-themes').on('click, change', function(event){
                        event.preventDefault();
                        var $self = $(this);
                        var docPath = document.location.pathname;
@@ -79,6 +77,18 @@
                        }
                        document.location.href = docPath + (query ? '?' + query: '');
                    });
+
+                   $('.sg-header-button').on('click', function(){
+                       var $self = $(this);
+                       $self.toggleClass('fa-bars fa-close');
+                       var navState = $('body').attr('data-navopen');
+                       if (navState === undefined){
+                           $('body').attr('data-navopen', '')
+                       }else {
+                           $('body').removeAttr('data-navopen');
+                       }
+                   });
+
                     // trigger event content loaded when app initializes
                     $('.sg-content').trigger('sg:contentLoaded');
                 })
@@ -90,86 +100,86 @@
     </head>
     <body>
         <header class="sg-header">
-            <div class="sg-header-title">
-                Styleguide{{#each names}}: {{this}}{{/each}}
-
-                <a href="{{seedUrl}}" data-seedUrl="{{seed}}">#{{seed}}</a>
-
-                {{#with randomizeUrl}}
-                    - <a href="{{this}}"><i class="fa fa-refresh"></i> Randomize</a>
-                {{/with}}
+            <div class="sg-header-left">
+                <button class="sg-header-button fa fa-bars"></button>
             </div>
+            <div class="sg-header-right">
+                <div class="sg-header-controlbar">
+                    {{#with availableDevices}}
+                        <div class="sg-control-available-device-list">
+                            <a href="{{../resetDisplayDevicesUrl}}" title="Reset Viewports"><i class="fa fa-ban"></i></a>
 
-            <div class="sg-header-controlbar">
-                {{#with availableDevices}}
-                    <div class="sg-control-available-device-list">
-                        <a href="{{../resetDisplayDevicesUrl}}"><i class="fa fa-ban"></i></a>
-
-                        {{#each this}}
-                            <a{{#if selected}} class="sg-control-available-device-selected"{{/if}} href="{{url}}"><i class="{{device.icon}}"></i></a>
-                        {{/each}}
-                    </div>
+                            {{#each this}}
+                                <a{{#if selected}} class="sg-control-available-device-selected"{{/if}} href="{{url}}" title="{{device.name}} - {{device.width}}x{{device.height}}"><i class="{{device.icon}}"></i></a>
+                            {{/each}}
+                        </div>
+                    {{/with}}
+                </div>
+                <div class="sg-randomize-button">
+                {{#with randomizeUrl}}
+                    <a href="{{this}}" class="sg-randomize-button-link"><i class="fa fa-random"></i>Randomize</a>
                 {{/with}}
-
+                    <a href="{{seedUrl}}" class="sg-randomize-button-seed">#{{seed}}</a>
+                </div>
+            </div>
+        </header>
+        <div class="sg-row">
+            <div class="sg-menu">
                 {{#with availableStylesheets}}
-                    <form class="sg-control-available-stylesheet-list">
-                        <select>
+                    <form class="sg-control-themes">
+                        <select class="sg-control-themes-options">
                             {{#each this}}
                                 <option value="{{url}}"{{#if selected}} selected{{/if}}>{{name}}</option>
                             {{/each}}
                         </select>
                     </form>
                 {{/with}}
-            </div>
-        </header>
-        <div class="sg-menu">
-            <ul class="sg-group-list">
-                {{#each groups}}
-                    <li class="sg-group">
-                        <div class="sg-group-name">{{name}}</div>
-                        <ul class="sg-example-list">
+                <div class="sg-menu-container">
+
+                    <ul class="sg-group-list">
+                        {{#each groups}}
+                            <li class="sg-group">
+                                <div class="sg-group-name">{{name}}</div>
+                                <ul class="sg-example-list">
+                                    {{#each children}}
+                                        <li class="sg-example">
+                                                <a class="sg-example-name"  href="{{url}}" title="{{name}}" target="sg-content-iframe">{{name}}</a>
+                                            {{#if children}}
+                                                <ul class="sg-example-list-children">
+                                                    {{#each children}}
+                                                        <li class="sg-example">
+                                                            <a href="{{url}}" class="sg-example-file-name" title="{{name}}" target="sg-content-iframe">{{name}}</a>
+                                                        </li>
+                                                    {{/each}}
+                                                </ul>
+                                            {{/if}}
+                                        </li>
+                                    {{/each}}
+                                </ul>
+                            </li>
+                        {{/each}}
+                        {{#*inline 'list'}}
                             {{#each children}}
                                 <li class="sg-example">
-                                        <a class="sg-example-name"  href="{{url}}" title="{{name}}" target="sg-content-iframe">{{name}}</a>
-                                    {{#if children}}
-                                        <ul class="sg-example-list-children">
-                                            {{#each children}}
-                                                <li class="sg-example">
-                                                    <a href="{{url}}" class="sg-example-file-name" title="{{name}}" target="sg-content-iframe">{{name}}</a>
-                                                </li>
-                                            {{/each}}
-                                        </ul>
-                                    {{/if}}
+                                    <a class="sg-example-name" {{#if url}}href="{{url}}"{{/if}} title="Styleguide: {{#if dirName}}{{dirName}} - {{/if}}{{name}}" target="sg-content-iframe">{{name}}</a>
                                 </li>
                             {{/each}}
-                        </ul>
-                    </li>
-                {{/each}}
-                {{#*inline 'list'}}
-                    {{#each children}}
-                        <li class="sg-example">
-                            <a class="sg-example-name" {{#if url}}href="{{url}}"{{/if}} title="{{name}}" target="sg-content-iframe">{{name}}</a>
-                            {{#if children}}
+                        {{/inline}}
+                        {{#each examples}}
+                            <li class="sg-group">
+                                <div class="sg-group-name">{{name}}</div>
                                 <ul class="sg-example-list">
-                                    {{> list}} {{! Recursively render the partial }}
+                                    {{> list}}
                                 </ul>
-                            {{/if}}
-                        </li>
-                    {{/each}}
-                {{/inline}}
-                {{#each examples}}
-                    <li class="sg-group">
-                        <div class="sg-group-name">{{name}}</div>
-                        <ul class="sg-example-list">
-                            {{> list}}
-                        </ul>
-                    </li>
-                {{/each}}
-            </ul>
-        </div>
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
 
-        <div class="sg-content">
-            <iframe src="{{reqPath}}?content{{#if contentQueryString}}&amp;{{contentQueryString}}{{/if}}" name="sg-content-iframe" id="sg-iframe-content"></iframe>
+            <div class="sg-content">
+                <iframe src="{{reqPath}}?content{{#if contentQueryString}}&amp;{{contentQueryString}}{{/if}}" name="sg-content-iframe" id="sg-iframe-content"></iframe>
+            </div>
         </div>
     </body>
 </html>

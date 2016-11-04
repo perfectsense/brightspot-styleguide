@@ -14,10 +14,10 @@
                     var $name = $design.find('.sg-design-name');
                     var $form = $design.find('.sg-design-form');
 
-                    $name.append(' - ');
                     $name.append($('<a/>', {
                         href: '#',
-                        text: 'Toggle Edit',
+                        text: 'Edit',
+                        class: 'sg-design-edit',
                         click: function () {
                             $design.toggleClass('sg-design--hide');
                             return false;
@@ -57,11 +57,6 @@
                         return false;
                     });
 
-                    $design.addClass('sg-design--hide');
-
-                    // $design.find('.sg-design-header').stick_in_parent({
-                    //     offset_top: 48
-                    // });
                 });
 
                 $('.sg-file-body').each(function () {
@@ -90,7 +85,7 @@
     {{#*inline 'content'}}
         <div class="sg-design">
             <div class="sg-design-header">
-                <div class="sg-design-name">{{name}}</div>
+                <div class="sg-design-name"><span class="sg-design-name-text">{{name}}</span></div>
 
                 <form class="sg-design-form">
                     <input type="hidden" name="grunt" value="true">

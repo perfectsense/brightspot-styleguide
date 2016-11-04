@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-* [Node.js](https://nodejs.org/en/)
+* [Node.js](https://nodejs.org/en/) (>=6.9.1)
 * [Yarn](https://yarnpkg.com/en/docs/install)
 
 ## Installation
@@ -30,7 +30,7 @@ Add [example JSON files](docs/example-file-format.rst) to the `styleguide` direc
 ## gulp
 
 * `styleguide.notify(message)`: desktop notification.
-* `styleguide.serve()`: runs the Styleguide web server.
+* `styleguide.serve(settings)`: runs the Styleguide web server.
 * `styleguide.watch()`: watches JS, JSON, and less files.
 
 ### path

@@ -6,7 +6,7 @@ import java.util.Arrays;
  * A custom System.out based logger that provides greater control over the color
  * of the resulting output.
  */
-class CliLogger {
+final class CliLogger {
 
     private boolean noColor;
 

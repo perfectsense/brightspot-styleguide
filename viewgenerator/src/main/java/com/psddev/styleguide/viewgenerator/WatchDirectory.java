@@ -19,6 +19,10 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+/**
+ * A directory that is being "watched" for changes by an instance of a
+ * {@link ViewClassGenerator}.
+ */
 class WatchDirectory {
 
     private final WatchService watcher;
@@ -30,6 +34,13 @@ class WatchDirectory {
     private Consumer<InterruptedException> onInterruptFunction;
     private Consumer<ClosedWatchServiceException> onServiceCloseFunction;
 
+    /**
+     * Creates a new watch directory for the collection of directory paths and
+     * registers each with the underlying watch service.
+     *
+     * @param directories the directories to watch.
+     * @throws IOException if any of the directories fail to be registered.
+     */
     public WatchDirectory(Collection<Path> directories) throws IOException {
 
         watcher = FileSystems.getDefault().newWatchService();
@@ -41,22 +52,48 @@ class WatchDirectory {
         }
     }
 
+    /**
+     * Sets a callback function to be executed whenever a change is detected.
+     *
+     * @param processChangeFunction the callback function.
+     */
     public void setProcessChangeFunction(BiFunction<Path, WatchEvent.Kind<Path>, Boolean> processChangeFunction) {
         this.processChangeFunction = processChangeFunction;
     }
 
+    /**
+     * Sets a callback function to be executed if the watch service is interrupted while waiting.
+     *
+     * @param onInterruptFunction the callback function.
+     */
     public void setOnInterruptFunction(Consumer<InterruptedException> onInterruptFunction) {
         this.onInterruptFunction = onInterruptFunction;
     }
 
+    /**
+     * Sets a callback function to be executed if the watch service is closed,
+     * or it is closed while waiting for the next key.
+     *
+     * @param onServiceCloseFunction the callback function.
+     */
     public void setOnServiceCloseFunction(Consumer<ClosedWatchServiceException> onServiceCloseFunction) {
         this.onServiceCloseFunction = onServiceCloseFunction;
     }
 
+    /**
+     * Enables debug mode.
+     */
     public void debug() {
         debug = true;
     }
 
+    /**
+     * Processes a change that was detected by the watch directory service.
+     *
+     * @param path the path that changed.
+     * @param watchEventKind the kind of change that was detected.
+     * @return true if change warrants a regeneration of the view classes.
+     */
     protected boolean processChange(Path path, WatchEvent.Kind<Path> watchEventKind) {
 
         if (processChangeFunction != null) {
@@ -97,6 +134,13 @@ class WatchDirectory {
         }
     }
 
+    /**
+     * Calls the onInterrupt function that was set via
+     * {@link #setOnInterruptFunction(Consumer)}. Sub-classes may override this
+     * method to change behavior on interrupt.
+     *
+     * @param e the exception that triggered the interrupt.
+     */
     protected void onInterrupt(InterruptedException e) {
         if (onInterruptFunction != null) {
             onInterruptFunction.accept(e);
@@ -105,6 +149,13 @@ class WatchDirectory {
         }
     }
 
+    /**
+     * Calls the onServiceClose function that was set via
+     * {@link #setOnServiceCloseFunction(Consumer)}. Sub-classes may override
+     * this method to change the behavior on service close.
+     *
+     * @param e the exception that triggered the close of the watch service.
+     */
     protected void onServiceClose(ClosedWatchServiceException e) {
         if (onServiceCloseFunction != null) {
             onServiceCloseFunction.accept(e);
@@ -113,6 +164,11 @@ class WatchDirectory {
         }
     }
 
+    /**
+     * Starts the directory watch service. This method never returns unless the
+     * service is interrupted, closed, or if all of the directories that are
+     * being watched are removed.
+     */
     public void start() {
 
         boolean changed = true;
@@ -193,6 +249,10 @@ class WatchDirectory {
         }
     }
 
+    /*
+     * Registers the given {@code directory} and all of its sub-directories with the
+     * given watch service on the given {@code watchKeys}.
+     */
     private static void registerAll(Path directory, WatchService watcher, Map<WatchKey, Path> watchKeys) throws IOException {
 
         // register directory and sub-directories

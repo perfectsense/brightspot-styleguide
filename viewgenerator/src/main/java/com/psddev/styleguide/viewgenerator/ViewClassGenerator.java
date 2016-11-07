@@ -38,6 +38,13 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import com.psddev.dari.util.IoUtils;
 import com.psddev.dari.util.StringUtils;
 
+/**
+ * The main view class source code generator. This is the entry point into the
+ * view generation APIs. This class can generate the source code in memory
+ * and/or write the files the disk. It can also be run in a "watch" mode, where
+ * it can detect changes to JSON files and re-generate the view class source
+ * code on the fly.
+ */
 public class ViewClassGenerator {
 
     private static final String BRIGHTSPOT_ASCII =

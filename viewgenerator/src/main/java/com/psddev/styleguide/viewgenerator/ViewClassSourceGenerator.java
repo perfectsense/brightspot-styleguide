@@ -3,6 +3,7 @@ package com.psddev.styleguide.viewgenerator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,12 +16,28 @@ import com.psddev.dari.util.StringUtils;
 import static com.psddev.styleguide.viewgenerator.ViewClassStringUtils.NEW_LINE;
 import static com.psddev.styleguide.viewgenerator.ViewClassStringUtils.indent;
 
+/**
+ * Responsible for generating the source code for a single view class
+ * definition. It's possible that a single view class definition results in
+ * multiple source files being generated in the case where field level
+ * interfaces are also needed.
+ */
 class ViewClassSourceGenerator {
 
     private ViewClassGeneratorContext context;
+
     private ViewClassDefinition classDef;
+
     private ViewClassImportsBuilder importsBuilder;
 
+    /**
+     * Creates a new view class source generator for the given {@code classDef}
+     * in the given {@code context}.
+     *
+     * @param context the view class generation context.
+     * @param classDef the view class definition that the source code will be
+     *                 generated from.
+     */
     public ViewClassSourceGenerator(ViewClassGeneratorContext context,
                                     ViewClassDefinition classDef) {
         this.context = context;
@@ -28,6 +45,12 @@ class ViewClassSourceGenerator {
         this.importsBuilder = new ViewClassImportsBuilder(classDef);
     }
 
+    /**
+     * Generates the list of view class source objects that represent the
+     * underlying view class definition for this generator.
+     *
+     * @return the list of sources.
+     */
     public List<ViewClassSource> generateSources() {
 
         List<ViewClassSource> sources = new ArrayList<>();
@@ -38,6 +61,10 @@ class ViewClassSourceGenerator {
         return sources;
     }
 
+    /*
+     * Generates the sources for all field level interfaces of the underlying
+     * view class definition.
+     */
     private List<ViewClassSource> getFieldLevelInterfaceSources() {
 
         List<ViewClassSource> fieldLevelInterfaceSources = new ArrayList<>();
@@ -83,6 +110,9 @@ class ViewClassSourceGenerator {
         return fieldLevelInterfaceSources;
     }
 
+    /*
+     * Generates the main source for the underlying view class definition.
+     */
     private ViewClassSource getViewClassSource() {
 
         List<ViewClassFieldDefinition> fieldDefs = classDef.getNonNullFieldDefinitions();
@@ -214,7 +244,9 @@ class ViewClassSourceGenerator {
         return new ViewClassSource(classDef.getPackageName(), classDef.getClassName(), javaSource);
     }
 
-    // Standard messaging for auto-generated file header.
+    /*
+     * Standard messaging for auto-generated file header.
+     */
     private String getSourceCodeHeaderComment() {
         return new ViewClassJavadocsBuilder()
                 .addLine("AUTO-GENERATED FILE.  DO NOT MODIFY.")
@@ -225,6 +257,9 @@ class ViewClassSourceGenerator {
                 .buildCommentsSource(0);
     }
 
+    /*
+     * Creates the view renderer annotation to be placed at the top of the class.
+     */
     private String getViewRendererAnnotation() {
 
         ViewKey viewKey = classDef.getViewKey();
@@ -277,6 +312,10 @@ class ViewClassSourceGenerator {
         return builder.toString();
     }
 
+    /*
+     * Generates the class name declaration along with all the interfaces that
+     * it implements.
+     */
     private String getViewInterfaceDeclaration() {
 
         List<String> classNames = new ArrayList<>();
@@ -306,6 +345,10 @@ class ViewClassSourceGenerator {
         return builder.toString();
     }
 
+    /*
+     * Gets the list of view class field definitions that the underlying view
+     * class definition should implement.
+     */
     private List<ViewClassFieldDefinition> getImplementedTemplateFieldDefinitions() {
 
         List<ViewClassFieldDefinition> implementedFieldDefs = new ArrayList<>();
@@ -329,6 +372,10 @@ class ViewClassSourceGenerator {
         return implementedFieldDefs;
     }
 
+    /*
+     * Generates the static variables that can be used as the value of the
+     * "types" argument in the @ViewBinding annotation.
+     */
     private String getInterfaceStaticStringVariableDeclaration(ViewClassFieldDefinition fieldDef, int indent, String suffix) {
 
         String varName = StringUtils.toUnderscored(fieldDef.getFieldName()).toUpperCase() + suffix;
@@ -341,6 +388,10 @@ class ViewClassSourceGenerator {
         return declaration;
     }
 
+    /*
+     * Generates the interface method declarations for a given field at the
+     * specified indent.
+     */
     private String getInterfaceMethodDeclarationSource(ViewClassFieldDefinition fieldDef, int indent) {
 
         // collect the methods' javadocs
@@ -373,10 +424,18 @@ class ViewClassSourceGenerator {
                 + indent(indent) + (isDefaulted ? "default " : "") + getJavaFieldType(fieldDef) + " " + getJavaInterfaceMethodName(fieldDef) + "()" + methodBody;
     }
 
+    /*
+     * Generates the fields that are used to bower the view interface builder
+     * class.
+     */
     private String getInterfaceBuilderFieldDeclarationSource(ViewClassFieldDefinition fieldDef, int indent) {
         return indent(indent) + "private " + getJavaFieldTypeForBuilder(fieldDef) + " " + fieldDef.getFieldName() + ";";
     }
 
+    /*
+     * Gets the Java field type for a given field definition used as the return
+     * type for the interface methods.
+     */
     private String getJavaFieldType(ViewClassFieldDefinition fieldDef) {
 
         Class<? extends JsonValue> effectiveType = fieldDef.getEffectiveType();
@@ -426,6 +485,12 @@ class ViewClassSourceGenerator {
         }
     }
 
+    /*
+     * Gets the Java field type for a given field definition used for the
+     * builder instance variables and/or builder method arguments. This is
+     * slightly different than its {@link #getJavaFieldType} counter part with
+     * regard to collections.
+     */
     private String getJavaFieldTypeForBuilder(ViewClassFieldDefinition fieldDef) {
 
         if (fieldDef.getEffectiveType() == JsonList.class) {
@@ -440,6 +505,10 @@ class ViewClassSourceGenerator {
         }
     }
 
+    /*
+     * Gets all the builder related methods for the give field definition at the
+     * specified indent.
+     */
     private String getInterfaceBuilderMethodImplementationSource(ViewClassFieldDefinition fieldDef, int indent) {
 
         StringBuilder builder = new StringBuilder();
@@ -624,6 +693,10 @@ class ViewClassSourceGenerator {
         return builder.toString();
     }
 
+    /*
+     * Gets the interface builder's build method source code for a given field
+     * definition.
+     */
     private String getInterfaceBuilderBuildMethodSource(ViewClassFieldDefinition fieldDef, int indent) {
         String[] method = {
                 indent(indent) + "@Override\n",
@@ -635,6 +708,9 @@ class ViewClassSourceGenerator {
         return Arrays.stream(method).collect(Collectors.joining(""));
     }
 
+    /*
+     * Gets the interface method name for a given field definition.
+     */
     private String getJavaInterfaceMethodName(ViewClassFieldDefinition fieldDef) {
         return "get" + ViewClassStringUtils.toJavaMethodCase(fieldDef.getFieldName());
     }

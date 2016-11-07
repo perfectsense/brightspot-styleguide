@@ -39,6 +39,67 @@ class ViewKey implements ViewClassFieldType {
         return name;
     }
 
+    /**
+     * Validates that this view key contains no errors. If there are any, they
+     * can be retrieved by called {@link #getErrors()}.
+     */
+    public void validate() {
+        // TODO: Still need to implement
+    }
+
+    /**
+     * Gets the list of errors (if any) for this view key.
+     *
+     * @return the list of errors.
+     */
+    public List<ViewClassDefinitionError> getErrors() {
+        validate();
+        return errors;
+    }
+
+    /**
+     * Checks if this view key contains any errors.
+     *
+     * @return true if there are errors, false otherwise.
+     */
+    public boolean hasAnyErrors() {
+        validate();
+        return !errors.isEmpty();
+    }
+
+    /**
+     * The name of the view renderer annotation class.
+     *
+     * @return the class name for the view renderer annotation.
+     */
+    public String getAnnotationClass() {
+        return "com.psddev.cms.view.JsonView";
+    }
+
+    /**
+     * This is a simplification of what is actually possible with annotation
+     * declarations, but since we control the types of templates that we support
+     * we can expand this logic to support more complex structures as needed.
+     *
+     * @return the map of annotation arguments needed to write out the annotation declaration.
+     */
+    public Map<String, String> getAnnotationArguments() {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public String getFullyQualifiedClassName() {
+
+        String packagePrefix = context.getDefaultJavaPackagePrefix();
+        if (packagePrefix == null) {
+            packagePrefix = "";
+        } else {
+            packagePrefix = StringUtils.ensureEnd(packagePrefix, ".");
+        }
+
+        return StringUtils.ensureEnd(packagePrefix + StringUtils.removeSurrounding(name, "."), "View");
+    }
+
     @Override
     public String toString() {
         return getName();
@@ -63,50 +124,5 @@ class ViewKey implements ViewClassFieldType {
     @Override
     public final int hashCode() {
         return name.hashCode();
-    }
-
-    public void validate() {
-        // TODO: Still need to implement
-    }
-
-    public List<ViewClassDefinitionError> getErrors() {
-        return errors;
-    }
-
-    public boolean hasAnyErrors() {
-        return !errors.isEmpty();
-    }
-
-    @Override
-    public String getFullyQualifiedClassName() {
-
-        String packagePrefix = context.getDefaultJavaPackagePrefix();
-        if (packagePrefix == null) {
-            packagePrefix = "";
-        } else {
-            packagePrefix = StringUtils.ensureEnd(packagePrefix, ".");
-        }
-
-        return StringUtils.ensureEnd(packagePrefix + StringUtils.removeSurrounding(name, "."), "View");
-    }
-
-    /**
-     * The name of the view renderer annotation class.
-     *
-     * @return the class name for the view renderer annotation.
-     */
-    public String getAnnotationClass() {
-        return "com.psddev.cms.view.JsonView";
-    }
-
-    /**
-     * This is a simplification of what is actually possible with annotation
-     * declarations, but since we control the types of templates that we support
-     * we can expand this logic to support more complex structures as needed.
-     *
-     * @return the map of annotation arguments needed to write out the annotation declaration.
-     */
-    public Map<String, String> getAnnotationArguments() {
-        return Collections.emptyMap();
     }
 }

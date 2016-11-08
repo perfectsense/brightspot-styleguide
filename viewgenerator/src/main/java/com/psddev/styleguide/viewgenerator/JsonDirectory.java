@@ -367,8 +367,6 @@ class JsonDirectory {
                         builder.append(" - Cause: ");
                         builder.append(cause.getMessage());
                     }
-
-                    throwable.printStackTrace();
                 }
 
                 JsonDataLocation location = error.getLocation();

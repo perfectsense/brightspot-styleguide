@@ -88,6 +88,8 @@ public class ViewClassGenerator {
 
     private ViewClassGeneratorContext context;
 
+    private List<ViewClassDefinition> classDefinitions;
+
     ViewClassGenerator(ViewClassGeneratorContext context) {
         this.context = context;
     }
@@ -200,38 +202,38 @@ public class ViewClassGenerator {
 
     List<ViewClassDefinition> getViewClassDefinitions() {
 
-        JsonDirectory directory;
-        Set<JsonViewMap> jsonViewMaps;
-        Map<ViewKey, Set<JsonViewMap>> jsonViewMapsByViewKey;
+        if (classDefinitions == null) {
 
-        directory = new JsonDirectory(context, context.getJsonDirectory());
+            JsonDirectory directory;
+            Set<JsonViewMap> jsonViewMaps;
+            Map<ViewKey, Set<JsonViewMap>> jsonViewMapsByViewKey;
 
-        // can throw an exception
-        jsonViewMaps = directory.resolveViewMaps();
+            directory = new JsonDirectory(context, context.getJsonDirectory());
 
-        // Be able to lookup JSON view maps by view key name
-        jsonViewMapsByViewKey = new HashMap<>();
+            // can throw an exception
+            jsonViewMaps = directory.resolveViewMaps();
 
-        for (JsonViewMap jsonViewMap : jsonViewMaps) {
+            // Be able to lookup JSON view maps by view key name
+            jsonViewMapsByViewKey = new HashMap<>();
 
-            ViewKey viewKey = jsonViewMap.getViewKey();
+            for (JsonViewMap jsonViewMap : jsonViewMaps) {
 
-            Set<JsonViewMap> set = jsonViewMapsByViewKey.get(viewKey);
-            if (set == null) {
-                set = new HashSet<>();
-                jsonViewMapsByViewKey.put(viewKey, set);
+                ViewKey viewKey = jsonViewMap.getViewKey();
+
+                Set<JsonViewMap> set = jsonViewMapsByViewKey.get(viewKey);
+                if (set == null) {
+                    set = new HashSet<>();
+                    jsonViewMapsByViewKey.put(viewKey, set);
+                }
+                set.add(jsonViewMap);
             }
-            set.add(jsonViewMap);
+
+            classDefinitions = jsonViewMapsByViewKey.entrySet().stream()
+                    .map(entry -> context.createViewClassDefinition(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
         }
 
-        List<ViewClassDefinition> classDefinitions = jsonViewMapsByViewKey.entrySet().stream()
-                .map(entry -> context.createViewClassDefinition(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-
-        // throws a RuntimeException if there are errors
-        checkForErrors(new HashSet<>(classDefinitions));
-
-        return classDefinitions;
+        return new ArrayList<>(classDefinitions);
     }
 
     Map<Path, String> getGeneratedClasses() {

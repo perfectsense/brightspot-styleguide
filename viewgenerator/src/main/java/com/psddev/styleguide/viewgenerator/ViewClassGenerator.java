@@ -116,7 +116,6 @@ public class ViewClassGenerator {
                 throw new RuntimeException(e);
             }
 
-            context.setRelativePaths(false);
             context.setDefaultTemplateExtension(TemplateType.HANDLEBARS.getExtension());
 
         } else {

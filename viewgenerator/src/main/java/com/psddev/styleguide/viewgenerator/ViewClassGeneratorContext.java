@@ -158,40 +158,11 @@ class ViewClassGeneratorContext {
         return new ArrayList<>(classDefinitions);
     }
 
-    /*
-     * To support backward compatibility
-     */
-    @Deprecated
-    private boolean relativePaths = true;
-
     @Deprecated
     private String defaultJavaPackagePrefix;
 
     @Deprecated
     private String defaultTemplateExtension;
-
-    /**
-     * Returns true if all paths (i.e. those not starting with a slash) should
-     * be treated as relative to the file the path was declared in. If set to
-     * false, then path values of "_template" keys are considered absolute even
-     * when they don't start with a slash. The default is true.
-     *
-     * @return true if relative paths is enabled.
-     */
-    @Deprecated
-    public boolean isRelativePaths() {
-        return relativePaths;
-    }
-
-    /**
-     * Sets whether relative paths is enabled or not.
-     *
-     * @param relativePaths true if relative paths is enabled.
-     */
-    @Deprecated
-    public void setRelativePaths(boolean relativePaths) {
-        this.relativePaths = relativePaths;
-    }
 
     /**
      * Gets the default java package prefix that should be used for view

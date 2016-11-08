@@ -16,17 +16,23 @@ class ViewClassStringUtils {
 
     /**
      * Converts a java field name into its method equivalent minus the get/set/add prefix
+     * such that it conforms with the Java bean spec for converting to and from
+     * read method names and property descriptors.
      *
      * @param string the string to convert.
      * @return a String that is valid to be used as the name of a Java method.
      */
     public static String toJavaMethodCase(String string) {
         if (string != null && !string.isEmpty()) {
-            char first = string.charAt(0);
-            if (" -_.$".indexOf(first) > -1) {
-                string = string.substring(1);
+            if (string.length() > 1) {
+                if (Character.isUpperCase(string.charAt(1))) {
+                    return string;
+                } else {
+                    return Character.toUpperCase(string.charAt(0)) + string.substring(1);
+                }
+            } else {
+                return string.toUpperCase();
             }
-            return Character.toUpperCase(string.charAt(0)) + string.substring(1);
         } else {
             return string;
         }

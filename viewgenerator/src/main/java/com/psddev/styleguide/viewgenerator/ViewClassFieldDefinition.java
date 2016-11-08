@@ -59,19 +59,33 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             return;
         }
 
-        // Make sure the field name is valid java identifier.
-        if (!Character.isJavaIdentifierStart(fieldName.charAt(0))
-                || (fieldName.length() > 1 && !fieldName.substring(1).chars().allMatch(Character::isJavaIdentifierPart))
-                || "class".equals(fieldName)) {
+        // validate the field name
+        validateFieldName();
 
-            addError("[" + fieldName + "] is not a valid Java identifier.");
-        }
-
+        // validate the value types
         effectiveType = validateValueTypes(fieldKeyValues.stream()
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toCollection(ArrayList::new)));
 
         validated = true;
+    }
+
+    private void validateFieldName() {
+
+        // Make sure the field name is valid java identifier...
+        if (!Character.isJavaIdentifierStart(fieldName.charAt(0))
+                || (fieldName.length() > 1 && !fieldName.substring(1).chars().allMatch(Character::isJavaIdentifierPart))
+                || "class".equals(fieldName)) {
+
+            addError("Field name [" + fieldName + "] is not a valid Java identifier.");
+
+        // ...and that it can be converted to a bean spec compatible getter method name.
+        } else if (Character.isUpperCase(fieldName.charAt(0))
+                && fieldName.length() > 1
+                && (Character.isLowerCase(fieldName.charAt(1)) || !Character.isLetter(fieldName.charAt(1)))) {
+
+            addError("Field name [" + fieldName + "] cannot start with an uppercase letter and be followed by a non-uppercase letter.");
+        }
     }
 
     /*

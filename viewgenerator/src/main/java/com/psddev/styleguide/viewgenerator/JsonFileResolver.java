@@ -270,7 +270,7 @@ class JsonFileResolver {
         try {
             file.getBaseDirectory().getPath().resolve(templatePath).toRealPath();
         } catch (IOException e) {
-            addError(e, template);
+            addError(e.getClass().getName() + ": " + templatePath, template);
         }
 
         if (templateType != null) {

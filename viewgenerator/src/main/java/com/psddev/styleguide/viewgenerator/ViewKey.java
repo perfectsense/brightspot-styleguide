@@ -18,7 +18,9 @@ class ViewKey implements ViewClassFieldType {
 
     protected String name;
 
-    protected List<ViewClassDefinitionError> errors = new ArrayList<>();
+    protected List<String> errors = new ArrayList<>();
+
+    private boolean validated;
 
     /**
      * Creates a new view key with the given name.
@@ -43,8 +45,44 @@ class ViewKey implements ViewClassFieldType {
      * Validates that this view key contains no errors. If there are any, they
      * can be retrieved by called {@link #getErrors()}.
      */
-    public void validate() {
-        // TODO: Still need to implement
+    public final void validate() {
+
+        if (validated) {
+            return;
+        }
+
+        doValidate();
+
+        validated = true;
+    }
+
+    /**
+     * Validates that this view key contains no errors. If there are any, they
+     * can be retrieved by called {@link #getErrors()}. Sub-classes may override
+     * this method to provide different validation.
+     */
+    protected void doValidate() {
+
+        int lastDotAt = name.lastIndexOf('.');
+        if (lastDotAt >= 0) {
+
+            String packageName = name.substring(0, lastDotAt);
+            String className = name.substring(lastDotAt + 1);
+
+            if (!ViewClassStringUtils.isValidJavaPackageName(packageName)) {
+                errors.add("ViewKey [" + name + "] has an invalid java package name.");
+            }
+
+            if (!ViewClassStringUtils.isValidJavaClassName(className)) {
+                errors.add("ViewKey [" + name + "] has an invalid java class name.");
+            }
+
+        } else {
+
+            if (!ViewClassStringUtils.isValidJavaClassName(name)) {
+                errors.add("ViewKey [" + name + "] has an invalid java class name.");
+            }
+        }
     }
 
     /**
@@ -52,7 +90,7 @@ class ViewKey implements ViewClassFieldType {
      *
      * @return the list of errors.
      */
-    public List<ViewClassDefinitionError> getErrors() {
+    public List<String> getErrors() {
         validate();
         return errors;
     }

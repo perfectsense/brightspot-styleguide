@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -456,9 +457,50 @@ public class ViewClassGenerator {
      */
     private void checkForErrors(Set<ViewClassDefinition> classDefs) {
 
-        // Validate each class definition
+        /*
+         * Check for conflicting class names. This is an edge case that can only
+         * be detected by evaluating all of the view class definitions
+         * holistically.
+         */
+        Map<String, Set<ViewClassDefinition>> classNamesToClassDefs = new LinkedHashMap<>();
+
+        for (ViewClassDefinition classDef : classDefs) {
+
+            String className = classDef.getFullyQualifiedClassName();
+
+            Set<ViewClassDefinition> classDefsForClassName = classNamesToClassDefs.get(className);
+            if (classDefsForClassName == null) {
+                classDefsForClassName = new LinkedHashSet<>();
+                classNamesToClassDefs.put(className, classDefsForClassName);
+            }
+
+            classDefsForClassName.add(classDef);
+        }
+
+        // loop through the map and if there exists a class name that maps to
+        // multiple view class definitions then we know there's an error.
+        for (Map.Entry<String, Set<ViewClassDefinition>> entry : classNamesToClassDefs.entrySet()) {
+
+            Set<ViewClassDefinition> classDefsForClassName = entry.getValue();
+
+            if (classDefsForClassName.size() > 1) {
+
+                for (ViewClassDefinition classDef : new HashSet<>(classDefsForClassName)) {
+
+                    String conflictingViewKeysString = classDefsForClassName.stream()
+                            .map(cd -> cd.getViewKey().getName())
+                            .filter(name -> !name.equals(classDef.getViewKey().getName()))
+                            .collect(Collectors.joining(", "));
+
+                    classDef.getErrors().add(new ViewClassDefinitionError(classDef,
+                            "Resolves to conflicting class name [" + entry.getKey()
+                                    + "] shared with the following view definitions: [" + conflictingViewKeysString + "]"));
+                }
+            }
+        }
+
+        // Find all the class definitions that contain errors.
         Set<ViewClassDefinition> errorClassDefs = classDefs.stream()
-                .peek(ViewClassDefinition::validate)
                 .filter(ViewClassDefinition::hasAnyErrors)
                 .collect(Collectors.toSet());
 

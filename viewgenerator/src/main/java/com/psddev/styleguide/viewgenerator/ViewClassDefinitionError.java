@@ -19,9 +19,8 @@ class ViewClassDefinitionError {
      * @param message the error message.
      */
     public ViewClassDefinitionError(ViewClassFieldDefinition fieldDef, String message) {
-        this.classDef = fieldDef.getClassDefinition();
+        this(fieldDef.getClassDefinition(), message);
         this.fieldDef = fieldDef;
-        this.message = message;
     }
 
     /**

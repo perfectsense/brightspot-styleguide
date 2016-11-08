@@ -1,11 +1,9 @@
 package com.psddev.styleguide.viewgenerator;
 
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.psddev.dari.util.StringUtils;
 
@@ -64,6 +62,18 @@ class TemplateViewKey extends ViewKey {
     }
 
     @Override
+    protected void doValidate() {
+
+        if (ViewClassStringUtils.toJavaPackageName(templatePath) == null) {
+            errors.add("Template [" + name + "] produces an invalid Java package name.");
+        }
+
+        if (ViewClassStringUtils.toJavaClassName(templatePath) == null) {
+            errors.add("Template [" + name + "] produces an invalid Java class name.");
+        }
+    }
+
+    @Override
     public String toString() {
         return templateType + ": " + templatePath.toString();
     }
@@ -71,49 +81,18 @@ class TemplateViewKey extends ViewKey {
     @Override
     public String getFullyQualifiedClassName() {
 
-        StringBuilder builder = new StringBuilder();
-
         String packagePrefix = getPackagePrefix();
         if (packagePrefix == null) {
             packagePrefix = "";
         }
 
-        String packageSuffix;
-        if (templatePath.getNameCount() > 1) {
+        String packageSuffix = ViewClassStringUtils.toJavaPackageName(templatePath);
+        String className = ViewClassStringUtils.toJavaClassName(templatePath);
 
-            String[] templatePathParts = new String[templatePath.getNameCount() - 1];
-            for (int i = 0; i < templatePathParts.length; i++) {
-                templatePathParts[i] = templatePath.getName(i).toString();
-            }
-            packageSuffix = Arrays.stream(templatePathParts).collect(Collectors.joining("."));
-
-        } else {
-            packageSuffix = "";
-        }
-
-        for (char c : (packagePrefix + "." + packageSuffix).toCharArray()) {
-            // excludes characters that would be invalid in a java package name
-            if (Character.isJavaIdentifierPart(c) || c == '.') {
-                builder.append(c);
-            }
-        }
-
-        builder.append('.');
-
-        // get just the template file name
-        String templateName = templatePath.getName(templatePath.getNameCount() - 1).toString();
-
-        // remove the template extension
-        templateName = StringUtils.removeEnd(templateName, "." + templateType.getExtension());
-
-        // convert the name to proper Java class name casing
-        builder.append(ViewClassStringUtils.toJavaClassCase(templateName));
-
-        // append "View"
-        builder.append("View");
+        String fqcn = packagePrefix + "." + packageSuffix + "." + className + "View";
 
         // clean up any extraneous dots before returning
-        return StringUtils.removeStart(builder.toString().replaceAll("\\.+", "."), ".");
+        return StringUtils.removeStart(fqcn.replaceAll("\\.+", "."), ".");
     }
 
     /*

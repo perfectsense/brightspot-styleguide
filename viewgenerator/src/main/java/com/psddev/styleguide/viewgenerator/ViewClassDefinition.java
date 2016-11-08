@@ -112,7 +112,7 @@ class ViewClassDefinition implements ViewClassFieldType {
         viewKey.validate();
 
         if (viewKey.hasAnyErrors()) {
-            errors.addAll(viewKey.getErrors());
+            errors.addAll(viewKey.getErrors().stream().map(error -> new ViewClassDefinitionError(this, error)).collect(Collectors.toList()));
         }
 
         for (ViewClassFieldDefinition fieldDef : getFieldDefinitions()) {
@@ -140,13 +140,14 @@ class ViewClassDefinition implements ViewClassFieldType {
     }
 
     /**
-     * Gets the list of errors with this view class definition.
+     * Gets the list of errors with this view class definition. The list can
+     * be further modified if needed.
      *
      * @return the list errors, or and empty list if there are no errors.
      */
     public List<ViewClassDefinitionError> getErrors() {
         validate();
-        return new ArrayList<>(errors);
+        return errors;
     }
 
     /**

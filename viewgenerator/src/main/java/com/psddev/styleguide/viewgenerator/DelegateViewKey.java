@@ -27,7 +27,7 @@ final class DelegateViewKey extends ViewKey {
      * No validation is needed for this instance.
      */
     @Override
-    public void validate() {
+    public void doValidate() {
     }
 
     /*

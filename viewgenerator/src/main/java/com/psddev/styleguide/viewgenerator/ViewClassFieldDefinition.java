@@ -13,18 +13,6 @@ import java.util.stream.Collectors;
 
 class ViewClassFieldDefinition implements ViewClassFieldType {
 
-    private static final Set<String> JAVA_KEYWORDS = new HashSet<>(Arrays.asList(
-            "assert", "abstract", "boolean", "break", "byte", "case", "catch",
-            "char", "class", "const", "continue", "default", "do", "double",
-            "else", "enum", "extends", "final", "finally", "float", "for",
-            "goto", "if", "implements", "import", "instanceof", "int",
-            "interface", "long", "native", "new", "null", "package", "private",
-            "protected", "public", "return", "short", "static", "strictfp",
-            "super", "switch", "synchronized", "this", "throw", "throws",
-            "transient", "try", "void", "volatile", "while", "true", "false",
-            "null"
-    ));
-
     private ViewClassDefinition viewClassDef;
 
     private String fieldName;
@@ -85,13 +73,12 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
     private void validateFieldName() {
 
         // Make sure the field name is valid java identifier...
-        if (!Character.isJavaIdentifierStart(fieldName.charAt(0))
-                || (fieldName.length() > 1 && !fieldName.substring(1).chars().allMatch(Character::isJavaIdentifierPart))) {
+        if (!ViewClassStringUtils.isValidJavaIdentifier(fieldName)) {
 
             addError("Field name [" + fieldName + "] is not a valid Java identifier.");
 
         // ... and not a Java reserved keyword...
-        } else if (JAVA_KEYWORDS.contains(fieldName)) {
+        } else if (ViewClassStringUtils.isJavaKeyword(fieldName)) {
 
             addError("Field name [" + fieldName + "] cannot be a Java keyword.");
 

@@ -517,7 +517,8 @@ class ViewClassSourceGenerator {
 
         Class<? extends JsonValue> effectiveType = fieldDef.getEffectiveType();
 
-        String name = fieldDef.getFieldName();
+        String fieldName = fieldDef.getFieldName();
+
         Set<String> notes = fieldDef.getNotes();
 
         // Lists have a specialized set of builder methods.
@@ -526,18 +527,18 @@ class ViewClassSourceGenerator {
             importsBuilder.add(ArrayList.class.getName());
 
             ViewClassJavadocsBuilder method1Javadocs = new ViewClassJavadocsBuilder();
-            method1Javadocs.addParagraph("Sets the " + name + " field.");
+            method1Javadocs.addParagraph("Sets the " + fieldName + " field.");
             notes.forEach(method1Javadocs::addParagraph);
             method1Javadocs.addFieldOccurrencesList(fieldDef);
             method1Javadocs.addSampleStringValuesList(fieldDef, 5);
             method1Javadocs.newLine();
-            method1Javadocs.addParameter(name).addCollectionFieldValueTypesSnippet(fieldDef).newLine();
+            method1Javadocs.addParameter(fieldName).addCollectionFieldValueTypesSnippet(fieldDef).newLine();
             method1Javadocs.addReturn().add("this builder.");
 
             String[] method1 = {
                     method1Javadocs.buildJavadocsSource(indent),
-                    indent(indent) + "public Builder " + name + "(" + getJavaFieldType(fieldDef) + " " + name + ") {\n",
-                    indent(indent + 1) + "this." + name + " = " + name + " != null ? new ArrayList<>(" + name + ") : null;\n",
+                    indent(indent) + "public Builder " + fieldName + "(" + getJavaFieldType(fieldDef) + " " + fieldName + ") {\n",
+                    indent(indent + 1) + "this." + fieldName + " = " + fieldName + " != null ? new ArrayList<>(" + fieldName + ") : null;\n",
                     indent(indent + 1) + "return this;\n",
                     indent(indent) + "}"
             };
@@ -549,12 +550,12 @@ class ViewClassSourceGenerator {
              * @return this builder.
              */
             ViewClassJavadocsBuilder method2Javadocs = new ViewClassJavadocsBuilder();
-            method2Javadocs.addParagraph("Adds a single item to the " + name + " field.");
+            method2Javadocs.addParagraph("Adds a single item to the " + fieldName + " field.");
             notes.forEach(method2Javadocs::addParagraph);
             method2Javadocs.addFieldOccurrencesList(fieldDef);
             method2Javadocs.addSampleStringValuesList(fieldDef, 5);
             method2Javadocs.newLine();
-            method2Javadocs.addParameter(name).add("the item to add. ").addFieldValueTypesSnippet(fieldDef).newLine();
+            method2Javadocs.addParameter(fieldName).add("the item to add. ").addFieldValueTypesSnippet(fieldDef).newLine();
             method2Javadocs.addReturn().add("this builder.");
             /*
             public Builder addToAuthors(Object authors) { // OR if strictly typed --> public Builder addToAuthors(FigureView authors) {
@@ -567,11 +568,11 @@ class ViewClassSourceGenerator {
              */
             String[] method2 = {
                     method2Javadocs.buildJavadocsSource(indent),
-                    indent(indent) + "public Builder addTo" + ViewClassStringUtils.toJavaMethodCase(name) + "(" + fieldDef.getEffectiveValueType().getLocalClassName() + " " + name + ") {\n",
-                    indent(indent + 1) + "if (this." + name + " == null) {\n",
-                    indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
+                    indent(indent) + "public Builder addTo" + ViewClassStringUtils.toJavaMethodCase(fieldName) + "(" + fieldDef.getEffectiveValueType().getLocalClassName() + " " + fieldName + ") {\n",
+                    indent(indent + 1) + "if (this." + fieldName + " == null) {\n",
+                    indent(indent + 2) + "this." + fieldName + " = new ArrayList<>();\n",
                     indent(indent + 1) + "}\n",
-                    indent(indent + 1) + "this." + name + ".add(" + name + ");\n",
+                    indent(indent + 1) + "this." + fieldName + ".add(" + fieldName + ");\n",
                     indent(indent + 1) + "return this;\n",
                     indent(indent) + "}"
             };
@@ -583,12 +584,12 @@ class ViewClassSourceGenerator {
              * @return this builder.
              */
             ViewClassJavadocsBuilder method3Javadocs = new ViewClassJavadocsBuilder();
-            method3Javadocs.addParagraph("Adds a Collection of items to the " + name + " field.");
+            method3Javadocs.addParagraph("Adds a Collection of items to the " + fieldName + " field.");
             notes.forEach(method3Javadocs::addParagraph);
             method3Javadocs.addFieldOccurrencesList(fieldDef);
             method3Javadocs.addSampleStringValuesList(fieldDef, 5);
             method3Javadocs.newLine();
-            method3Javadocs.addParameter(name).add("the items to add. ").addCollectionFieldValueTypesSnippet(fieldDef).newLine();
+            method3Javadocs.addParameter(fieldName).add("the items to add. ").addCollectionFieldValueTypesSnippet(fieldDef).newLine();
             method3Javadocs.addReturn().add("this builder.");
             /*
             public Builder addAllToAuthors(Collection<?> authors) {
@@ -601,11 +602,11 @@ class ViewClassSourceGenerator {
              */
             String[] method3 = {
                     method3Javadocs.buildJavadocsSource(indent),
-                    indent(indent) + "public Builder addAllTo" + ViewClassStringUtils.toJavaMethodCase(name) + "(" + getJavaFieldType(fieldDef) + " " + name + ") {\n",
-                    indent(indent + 1) + "if (this." + name + " == null) {\n",
-                    indent(indent + 2) + "this." + name + " = new ArrayList<>();\n",
+                    indent(indent) + "public Builder addAllTo" + ViewClassStringUtils.toJavaMethodCase(fieldName) + "(" + getJavaFieldType(fieldDef) + " " + fieldName + ") {\n",
+                    indent(indent + 1) + "if (this." + fieldName + " == null) {\n",
+                    indent(indent + 2) + "this." + fieldName + " = new ArrayList<>();\n",
                     indent(indent + 1) + "}\n",
-                    indent(indent + 1) + "this." + name + ".addAll(" + name + ");\n",
+                    indent(indent + 1) + "this." + fieldName + ".addAll(" + fieldName + ");\n",
                     indent(indent + 1) + "return this;\n",
                     indent(indent) + "}"
             };
@@ -621,20 +622,20 @@ class ViewClassSourceGenerator {
 
             ViewClassJavadocsBuilder methodJavadocs = new ViewClassJavadocsBuilder();
 
-            methodJavadocs.addParagraph("Sets the " + name + " field.");
+            methodJavadocs.addParagraph("Sets the " + fieldName + " field.");
             notes.forEach(methodJavadocs::addParagraph);
             methodJavadocs.addFieldOccurrencesList(fieldDef);
             methodJavadocs.addSampleStringValuesList(fieldDef, 5);
             methodJavadocs.newLine();
-            methodJavadocs.addParameter(name).addFieldAwareValueTypesSnippet(fieldDef).newLine();
+            methodJavadocs.addParameter(fieldName).addFieldAwareValueTypesSnippet(fieldDef).newLine();
             methodJavadocs.addReturn().add("this builder.");
 
             methodJavadocs.buildJavadocsSource(indent);
 
             String[] method = {
                     methodJavadocs.buildJavadocsSource(indent),
-                    indent(indent) + "public Builder " + name + "(" + getJavaFieldType(fieldDef) + " " + name + ") {\n",
-                    indent(indent + 1) + "this." + name + " = " + name + ";\n",
+                    indent(indent) + "public Builder " + fieldName + "(" + getJavaFieldType(fieldDef) + " " + fieldName + ") {\n",
+                    indent(indent + 1) + "this." + fieldName + " = " + fieldName + ";\n",
                     indent(indent + 1) + "return this;\n",
                     indent(indent) + "}"
             };
@@ -649,7 +650,7 @@ class ViewClassSourceGenerator {
                 importsBuilder.add(Map.class.getName());
 
                 ViewClassJavadocsBuilder javadocsBuilder = new ViewClassJavadocsBuilder();
-                javadocsBuilder.add("Adds an entry to the " + name + " field .").addLink("java.util.Map").addLine(".");
+                javadocsBuilder.add("Adds an entry to the " + fieldName + " field .").addLink("java.util.Map").addLine(".");
                 notes.forEach(javadocsBuilder::addParagraph);
                 javadocsBuilder.addFieldOccurrencesList(fieldDef);
                 javadocsBuilder.newLine();
@@ -677,12 +678,12 @@ class ViewClassSourceGenerator {
                 */
                 String[] mapAddMethod = {
                         javadocsBuilder.buildJavadocsSource(indent),
-                        indent(indent) + "public Builder add" + ViewClassStringUtils.toJavaMethodCase(name) + "(String key, Object value) {\n",
-                        indent(indent + 1) + "if (this." + name + " == null) {\n",
-                        indent(indent + 2) + "this." + name + " = new LinkedHashMap<>();\n",
+                        indent(indent) + "public Builder add" + ViewClassStringUtils.toJavaMethodCase(fieldName) + "(String key, Object value) {\n",
+                        indent(indent + 1) + "if (this." + fieldName + " == null) {\n",
+                        indent(indent + 2) + "this." + fieldName + " = new LinkedHashMap<>();\n",
                         indent(indent + 1) + "}\n",
                         indent(indent + 1) + "if (key != null) {\n",
-                        indent(indent + 2) + "this." + name + ".put(key, value);\n",
+                        indent(indent + 2) + "this." + fieldName + ".put(key, value);\n",
                         indent(indent + 1) + "}\n",
                         indent(indent + 1) + "return this;\n",
                         indent(indent) + "}"

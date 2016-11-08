@@ -25,7 +25,7 @@ class ViewClassDefinition implements ViewClassFieldType {
 
     private Map<String, ViewClassFieldDefinition> fieldDefsByName;
 
-    private List<ViewClassDefinitionError> errors;
+    private List<ViewClassDefinitionError> errors = new ArrayList<>();
 
     private boolean validated = false;
 
@@ -146,9 +146,6 @@ class ViewClassDefinition implements ViewClassFieldType {
      */
     public List<ViewClassDefinitionError> getErrors() {
         validate();
-        if (errors == null) {
-            errors = new ArrayList<>();
-        }
         return new ArrayList<>(errors);
     }
 

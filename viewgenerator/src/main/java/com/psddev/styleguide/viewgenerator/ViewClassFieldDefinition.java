@@ -59,6 +59,14 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             return;
         }
 
+        // Make sure the field name is valid java identifier.
+        if (!Character.isJavaIdentifierStart(fieldName.charAt(0))
+                || (fieldName.length() > 1 && !fieldName.substring(1).chars().allMatch(Character::isJavaIdentifierPart))
+                || "class".equals(fieldName)) {
+
+            addError("[" + fieldName + "] is not a valid Java identifier.");
+        }
+
         effectiveType = validateValueTypes(fieldKeyValues.stream()
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toCollection(ArrayList::new)));

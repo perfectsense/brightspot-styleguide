@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 public class TestUtils {
 
-    private static final String TEST_RESOURCES_DIRECTORY = "src/test/resources";
+    static final String TEST_RESOURCES_DIRECTORY = "src/test/resources";
 
     private static final String DEFAULT_JAVA_PACKAGE_NAME = "com.psddev.styleguide.view";
 
@@ -51,7 +51,7 @@ public class TestUtils {
         return generator;
     }
 
-    private static Path getTestResourcesPath() {
+    static Path getTestResourcesPath() {
 
         Path modulePath;
 

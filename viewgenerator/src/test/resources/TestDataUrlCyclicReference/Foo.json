@@ -1,0 +1,6 @@
+{
+    "_template": "Foo",
+    "foo": {
+        "_dataUrl": "Bar.json"
+    }
+}

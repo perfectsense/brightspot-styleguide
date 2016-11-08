@@ -1,0 +1,6 @@
+{
+    "_template": "Main.hbs",
+    "foo": {
+        "_dataUrl": "../Data.json"
+    }
+}

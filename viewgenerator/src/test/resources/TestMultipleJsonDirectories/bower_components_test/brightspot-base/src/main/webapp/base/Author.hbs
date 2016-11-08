@@ -1,0 +1,23 @@
+{{#defineBlock "Author"}}
+    {{#defineElement "image"}}
+        <div class="{{elementName}}" itemprop="image">{{this}}</div>
+    {{/defineElement}}
+
+    {{#defineElement "name"}}
+        <div class="{{elementName}}" itemprop="name">{{this}}</div>
+    {{/defineElement}}
+
+    {{#defineElement "affiliation"}}
+        <div class="{{elementName}}" itemprop="affiliation">{{this}}</div>
+    {{/defineElement}}
+
+    {{#defineBlockContainer}}
+        <div class="{{blockName}}" itemprop="author" itemscope itemtype="http://schema.org/Person"{{extraAttributes}}>
+            {{#defineBlockBody}}
+                {{element "image"}}
+                {{element "name"}}
+                {{element "affiliation"}}
+            {{/defineBlockBody}}
+        </div>
+    {{/defineBlockContainer}}
+{{/defineBlock}}

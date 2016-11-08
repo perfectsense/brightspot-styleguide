@@ -1,0 +1,15 @@
+{
+    "_template": "/community/commenting/Comment",
+
+    "author": {
+        "_template": "/base/Author",
+        "name": "{{name}}",
+        "image": {
+            "_template": "/base/util/Image",
+            "src": "{{image(60, 60)}}"
+        }
+    },
+
+    "replyButton": "reply",
+    "replyAction": "/block/commenting/_authenticated-reply-response"
+}

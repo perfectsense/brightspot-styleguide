@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<differences>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>ViewClassGenerator(java.util.Set, java.nio.file.Path, java.lang.String)</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>void disableLogColors()</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>java.util.List generateClasses()</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>java.lang.String getClassNamePrefix()</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>java.util.Map getGeneratedClasses()</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>java.util.Set getIgnoredFileNames()</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>java.util.Set getMapBasedTemplates()</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>boolean isRemoveDeprecations()</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>void printGeneratedClasses()</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>void setClassNamePrefix(java.lang.String)</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>void setIgnoredFileNames(java.util.Set)</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>void setMapBasedTemplates(java.util.Set)</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>void setRemoveDeprecations(boolean)</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/ViewClassGenerator</className>
+        <differenceType>7002</differenceType>
+        <method>void watch()</method>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/DataUrlTemplateOverrideException</className>
+        <differenceType>8001</differenceType>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/JsonTemplateObject$TemplateFormat</className>
+        <differenceType>8001</differenceType>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/MissingDataReferenceException</className>
+        <differenceType>8001</differenceType>
+    </difference>
+
+    <difference>
+        <className>com/psddev/styleguide/MissingTemplateException</className>
+        <differenceType>8001</differenceType>
+    </difference>
+
+</differences>

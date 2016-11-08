@@ -1,0 +1,63 @@
+{
+    "_template": "templates/main",
+    "stringValue": "alpha",
+    "numberValue": 0,
+    "booleanValue": true,
+    "stringList": [ "alpha", "beta", "gamma" ],
+    "numberList": [ 0, 1, 2 ],
+    "booleanList": [ true, false, true ],
+    "extraAttributes": {
+        "key1": "value1",
+        "key2": "value2",
+        "key3": "value3"
+    },
+    "singleTemplateTypeSamePackageValue": {
+        "_template": "templates/Alpha"
+    },
+    "singleTemplateTypeDiffPackageValue": {
+        "_template": "templates/other/Delta"
+    },
+    "singleTemplateTypeSamePackageList": [
+        {
+            "_template": "templates/Alpha"
+        }
+    ],
+    "singleTemplateTypeDiffPackageList": [
+        {
+            "_template": "templates/other/Delta"
+        }
+    ],
+    "multipleTemplateTypeSamePackageValue": {
+        "_template": "templates/Alpha"
+    },
+    "multipleTemplateTypeDiffPackageValue": {
+        "_template": "templates/other/Delta"
+    },
+    "multipleTemplateTypeMixedPackageValue": {
+        "_template": "templates/Alpha"
+    },
+    "multipleTemplateTypeSamePackageList": [
+        {
+            "_template": "templates/Alpha"
+        },
+        {
+            "_template": "templates/Beta"
+        }
+    ],
+    "multipleTemplateTypeDiffPackageList": [
+        {
+            "_template": "templates/other/Delta"
+        },
+        {
+            "_template": "templates/other/Epsilon"
+        }
+    ],
+    "multipleTemplateTypeMixedPackageList": [
+        {
+            "_template": "templates/Alpha"
+        },
+        {
+            "_template": "templates/other/Delta"
+        }
+    ]
+}

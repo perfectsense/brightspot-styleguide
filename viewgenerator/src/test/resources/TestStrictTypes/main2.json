@@ -1,0 +1,12 @@
+{
+    "_template": "templates/main",
+    "multipleTemplateTypeSamePackageValue": {
+        "_template": "templates/Beta"
+    },
+    "multipleTemplateTypeDiffPackageValue": {
+        "_template": "templates/other/Epsilon"
+    },
+    "multipleTemplateTypeMixedPackageValue": {
+        "_template": "templates/other/Delta"
+    }
+}

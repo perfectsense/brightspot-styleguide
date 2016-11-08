@@ -148,8 +148,6 @@ class ViewClassSourceGenerator {
         // Interface declaration / Ex: public interface ExampleView extends .... {
         sourceBuilder.append(getViewInterfaceDeclaration());
 
-        // Don't generate the static variables anymore, since strict types negates the need for this.
-        /*
         // Static view type/element constants
         for (ViewClassFieldDefinition fieldDef : fieldDefs) {
 
@@ -160,7 +158,6 @@ class ViewClassSourceGenerator {
                 sourceBuilder.append(NEW_LINE).append(declaration).append(NEW_LINE);
             }
         }
-        */
 
         // Interface method declarations
         for (ViewClassFieldDefinition fieldDef : fieldDefs) {

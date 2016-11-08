@@ -7,6 +7,10 @@ import java.util.TreeSet;
  * Manages all of the imports that need to be included in the generated view
  * class. Takes care of removing duplicates and discarding redundant or implicit
  * imports.
+ *
+ * TODO: Need to add APIs to detect if 2 different classes with the same
+ * "simple" name are imported such that the 2nd one needs to be fully qualified
+ * everywhere that it's referenced in the generated source code.
  */
 class ViewClassImportsBuilder {
 

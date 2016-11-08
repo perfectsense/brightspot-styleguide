@@ -37,15 +37,19 @@ a {
 .sg-header {
     position: fixed;
     display: flex;
-    padding: 17px 20px;
+    padding: 20px;
     width: 100%;
     z-index: 1;
     top: 0;
     background-color: white;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-
+    &-project-title {
+      font-size: 18px;
+      margin: 0 0 0 20px;
+    }
     &-left {
         flex-grow: 1;
+        display: flex;
     }
     &-right {
         display: flex;
@@ -67,15 +71,21 @@ a {
             border-color: @sg-color;
             color: @sg-color;
         }
+        &:before {
+          font-size: 14px;
+          margin-right: 2px;
+          line-height: 25px;
+        }
     }
 
     &-controlbar {
-        border-radius: 2px;
-        border: solid 1px #e5e5e5;
-        padding: 5px 10px;
-        > * {
-            display: inline-block;
-        }
+      height: 30px;
+      border-radius: 2px;
+      border: solid 1px #e5e5e5;
+      padding: 3px 10px;
+      > * {
+        display: inline-block;
+      }
     }
 }
 
@@ -87,13 +97,17 @@ a {
             margin-left: 6px;
             opacity: 0.5;
 
+            &:first-child{
+                margin-left: 0;
+            }
+
             &.sg-control-available-device-selected {
                 opacity: 1;
             }
         }
     }
     &-themes {
-        margin: 10px 0 10px 10px;
+        margin: 20px 20px 0 20px;
         &-options {
             height: 30px;
             font-size: 11px;
@@ -112,13 +126,13 @@ a {
     transition: max-width @sg-duration ease;
     &-container {
         width: @menu-width;
-        padding: 12px 12px 12px 20px;
+        padding: 15px 20px;
         overflow: auto;
         height: 100vh;
     }
     [data-navopen] & {
         max-width: 220px;
-        padding-right: 7px;
+        padding-right: 0;
     }
 }
 
@@ -148,7 +162,7 @@ a {
        cursor: pointer;
        font-weight: bold;
        margin: 5px 0;
-       font-size: 12px;
+       font-size: 13px;
    }
 }
 
@@ -162,7 +176,7 @@ a {
         display: block;
         padding-left: 14px;
         color: #262626;
-        font-size: 12px;
+        font-size: 13px;
         line-height: normal;
         margin: 3px 0;
         &[data-listActive] {
@@ -211,10 +225,11 @@ a {
 }
 
 .sg-randomize-button {
-    border: solid 1px #e5e5e5;
-    border-radius: 2px;
-    font-size: 11px;
-    padding: 5px 10px;
+  height:30px;
+  border: solid 1px #e5e5e5;
+  border-radius: 2px;
+  font-size: 11px;
+  padding: 2px 10px;
     &-link{
         color: black;
         margin-right: 8px;
@@ -276,7 +291,7 @@ a {
     &-form {
         overflow: hidden;
         text-align: center;
-        transition: max-height @sg-duration ease-in-out;
+        transition: max-height @sg-duration ease-in;
         max-height: 0;
         &-message {
             margin-left: 16px;

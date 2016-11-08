@@ -1,5 +1,5 @@
 {
-    "_template": "community/commenting/Comment",
+    "_template": "/community/commenting/Comment",
 
     "author": {
         "_template": "/base/Author",

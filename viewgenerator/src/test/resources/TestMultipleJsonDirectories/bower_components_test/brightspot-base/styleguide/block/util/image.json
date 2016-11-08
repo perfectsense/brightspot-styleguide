@@ -1,5 +1,5 @@
 {
-    "_template": "base/util/Image",
+    "_template": "/base/util/Image",
     "src": "{{image(100, 100)}}",
     "alt": "{{words}}",
     "srcset": "",

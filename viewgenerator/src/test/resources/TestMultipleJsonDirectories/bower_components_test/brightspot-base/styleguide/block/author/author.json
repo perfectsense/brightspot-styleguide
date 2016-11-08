@@ -1,7 +1,7 @@
 {
-    "_template": "base/Author",
+    "_template": "/base/Author",
     "image": {
-        "_template": "base/util/Image",
+        "_template": "/base/util/Image",
         "src": "{{image(50, 50)}}"
     },
     "name": "{{name}}",

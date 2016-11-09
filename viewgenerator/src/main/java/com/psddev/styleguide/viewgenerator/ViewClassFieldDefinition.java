@@ -98,6 +98,11 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
      */
     private Class<? extends JsonValue> validateValueTypes(Collection<JsonValue> values) {
 
+        // The only time values will be empty is if we are in a recursive call on a List.
+        if (values.isEmpty()) {
+            addError("List cannot be empty, they must have at least one value.");
+        }
+
         Set<Class<? extends JsonValue>> valueTypes = values.stream()
                 .map(JsonValue::getClass)
                 .collect(Collectors.toCollection(HashSet::new));

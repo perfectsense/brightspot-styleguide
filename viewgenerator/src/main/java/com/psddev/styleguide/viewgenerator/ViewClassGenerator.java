@@ -122,6 +122,12 @@ public class ViewClassGenerator {
             jsonDir = jsonDirs.iterator().next();
         }
 
+        try {
+            jsonDir = jsonDir.toRealPath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         context.setJsonDirectory(jsonDir);
         context.setJavaSourceDirectory(arguments.getBuildDirectory());
 

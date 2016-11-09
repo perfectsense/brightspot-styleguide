@@ -164,10 +164,6 @@ public class ViewClassGenerator {
                         FileFileFilter.FILE,
                         FileFilterUtils.suffixFileFilter("." + TemplateType.HANDLEBARS.getExtension())));
 
-        final String[] additionalTemplateDirs = {
-                "../src/main/webapp",
-                "../src/main/resources" };
-
         for (Path jsonDir : jsonDirs) {
 
             // Copy the entire JSON directory using the filter

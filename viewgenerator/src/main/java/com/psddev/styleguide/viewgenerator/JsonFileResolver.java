@@ -234,11 +234,6 @@ class JsonFileResolver {
                 missingTemplateExtensionErrorMessage = "Could not find view configuration to determine template extension.";
             }
 
-            if (templateExtension == null) {
-                templateExtension = file.getBaseDirectory().getContext().getDefaultTemplateExtension();
-                templateType = TemplateType.findByExtension(templateExtension);
-            }
-
             if (templateExtension != null) {
 
                 // append the file extension

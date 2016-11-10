@@ -161,9 +161,6 @@ class ViewClassGeneratorContext {
     @Deprecated
     private String defaultJavaPackagePrefix;
 
-    @Deprecated
-    private String defaultTemplateExtension;
-
     /**
      * Gets the default java package prefix that should be used for view
      * classes that don't have one defined otherwise.
@@ -184,27 +181,5 @@ class ViewClassGeneratorContext {
     @Deprecated
     public void setDefaultJavaPackagePrefix(String defaultJavaPackagePrefix) {
         this.defaultJavaPackagePrefix = defaultJavaPackagePrefix;
-    }
-
-    /**
-     * Gets the default template file extension that should be used for template
-     * paths that don't have one specified.
-     *
-     * @return the default template file extension.
-     */
-    @Deprecated
-    public String getDefaultTemplateExtension() {
-        return defaultTemplateExtension;
-    }
-
-    /**
-     * Sets the default template file extension that should be used for template
-     * paths that don't have one specified.
-     *
-     * @param defaultTemplateExtension the default template file extension.
-     */
-    @Deprecated
-    public void setDefaultTemplateExtension(String defaultTemplateExtension) {
-        this.defaultTemplateExtension = defaultTemplateExtension;
     }
 }

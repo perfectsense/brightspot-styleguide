@@ -116,8 +116,6 @@ public class ViewClassGenerator {
                 throw new RuntimeException(e);
             }
 
-            context.setDefaultTemplateExtension(TemplateType.HANDLEBARS.getExtension());
-
         } else {
             jsonDir = jsonDirs.iterator().next();
         }

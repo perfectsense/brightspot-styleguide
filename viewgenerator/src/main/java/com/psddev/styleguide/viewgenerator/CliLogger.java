@@ -213,7 +213,7 @@ final class CliLogger {
     }
 
     private void color(CliColor color, Object... objects) {
-        color(color).and(objects).log();
+        color(color).append(objects).log();
     }
 
     private CliLoggerMessageBuilder color(CliColor color) {

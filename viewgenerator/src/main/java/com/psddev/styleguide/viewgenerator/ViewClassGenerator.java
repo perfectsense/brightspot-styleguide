@@ -196,7 +196,7 @@ public class ViewClassGenerator {
         getGeneratedClasses().forEach((file, source) -> {
             String fileName = file.toString();
             String underline = new String(new char[fileName.length()]).replace("\0", "-");
-            logger.green().and(fileName, "\n", underline, "\n").reset().and(source, "\n").log();
+            logger.green().append(fileName, "\n", underline, "\n").reset().append(source, "\n").log();
         });
     }
 
@@ -268,7 +268,7 @@ public class ViewClassGenerator {
 
         printLogo();
 
-        logger.green().and("Scanning Directory: ").reset().and(context.getJsonDirectory()).log();
+        logger.green().append("Scanning Directory: ").reset().append(context.getJsonDirectory()).log();
 
         return generateClasses(true);
     }
@@ -291,8 +291,8 @@ public class ViewClassGenerator {
 
                     generatedFiles.add(classFile);
 
-                    logger.green().and("Wrote file: ")
-                            .reset().and(classFile)
+                    logger.green().append("Wrote file: ")
+                            .reset().append(classFile)
                             .log();
 
                 } catch (IOException e) {
@@ -354,10 +354,10 @@ public class ViewClassGenerator {
                     }
 
                     if (eventType != null) {
-                        logger.green().and(">>")
-                                .reset().and(" File \"")
-                                .green().and(path)
-                                .reset().and("\" ", eventType, ".\n")
+                        logger.green().append(">>")
+                                .reset().append(" File \"")
+                                .green().append(path)
+                                .reset().append("\" ", eventType, ".\n")
                                 .log();
 
                         changed = true;
@@ -366,10 +366,10 @@ public class ViewClassGenerator {
 
                     if (watchEventKind == StandardWatchEventKinds.ENTRY_MODIFY) {
 
-                        logger.green().and(">>")
-                                .reset().and(" Directory \"")
-                                .green().and(path)
-                                .reset().and("\" modified.\n")
+                        logger.green().append(">>")
+                                .reset().append(" Directory \"")
+                                .green().append(path)
+                                .reset().append("\" modified.\n")
                                 .log();
 
                         changed = true;
@@ -398,7 +398,7 @@ public class ViewClassGenerator {
                 }
             });
 
-            logger.green().and("Watching Directory: ").reset().and(context.getJsonDirectory()).log();
+            logger.green().append("Watching Directory: ").reset().append(context.getJsonDirectory()).log();
 
             watchDirectory.start();
 
@@ -442,9 +442,9 @@ public class ViewClassGenerator {
 
         String[] brightspotAsciiRows = BRIGHTSPOT_ASCII.split("\\n");
         for (String row : brightspotAsciiRows) {
-            logger.blue().and(row.substring(0, BRIGHTSPOT_ASCII_O_START_INDEX))
-                    .red().and(row.substring(BRIGHTSPOT_ASCII_O_START_INDEX, BRIGHTSPOT_ASCII_O_END_INDEX))
-                    .blue().and(row.substring(BRIGHTSPOT_ASCII_O_END_INDEX))
+            logger.blue().append(row.substring(0, BRIGHTSPOT_ASCII_O_START_INDEX))
+                    .red().append(row.substring(BRIGHTSPOT_ASCII_O_START_INDEX, BRIGHTSPOT_ASCII_O_END_INDEX))
+                    .blue().append(row.substring(BRIGHTSPOT_ASCII_O_END_INDEX))
                     .log();
         }
         logger.blue(VIEW_GENERATOR_ASCII);

@@ -121,10 +121,10 @@ class WatchDirectory {
             }
 
             if (pathType != null && eventType != null) {
-                logger.green().and(">>")
-                        .reset().and(" ", pathType, " \"")
-                        .green().and(path)
-                        .reset().and("\" ", eventType, ".")
+                logger.green().append(">>")
+                        .reset().append(" ", pathType, " \"")
+                        .green().append(path)
+                        .reset().append("\" ", eventType, ".")
                         .log();
 
                 return true;
@@ -222,8 +222,8 @@ class WatchDirectory {
                         registerAll(path, watcher, watchKeys);
 
                     } catch (IOException ex) {
-                        logger.red().and("Failed to watch new directory: ")
-                                .reset().and(path)
+                        logger.red().append("Failed to watch new directory: ")
+                                .reset().append(path)
                                 .log();
                     }
                 }

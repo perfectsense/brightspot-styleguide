@@ -42,7 +42,7 @@ final class CliLoggerMessageBuilder {
      * @param objects the objects to append to the message buffer
      * @return this message builder.
      */
-    public CliLoggerMessageBuilder and(Object... objects) {
+    public CliLoggerMessageBuilder append(Object... objects) {
         Arrays.stream(objects).forEach(messageBuilder::append);
         return this;
     }

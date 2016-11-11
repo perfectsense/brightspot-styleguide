@@ -99,7 +99,15 @@ URL to a randomly generated image.
 {{name()}}
 ```
 
-Generates a random name; first and last
+Generates a random name; first and last.
+
+#### randomUuid
+
+```
+{{randomUuid}}
+```
+
+Generates a random UUID.
 
 #### number
 

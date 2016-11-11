@@ -320,8 +320,11 @@ class ViewClassSourceGenerator {
         List<String> classNames = new ArrayList<>();
 
         for (ViewClassFieldDefinition fieldDef : getImplementedTemplateFieldDefinitions()) {
-            importsBuilder.add(fieldDef);
-            classNames.add(fieldDef.getClassName());
+            if (importsBuilder.add(fieldDef)) {
+                classNames.add(fieldDef.getLocalClassName());
+            } else {
+                classNames.add(fieldDef.getFullyQualifiedClassName());
+            }
         }
 
         StringBuilder builder = new StringBuilder();
@@ -454,8 +457,11 @@ class ViewClassSourceGenerator {
 
         } else if (effectiveType == JsonViewMap.class) {
             ViewClassFieldType fieldType = fieldDef.getEffectiveValueType();
-            importsBuilder.add(fieldType);
-            return fieldType.getLocalClassName();
+            if (importsBuilder.add(fieldType)) {
+                return fieldType.getLocalClassName();
+            } else {
+                return fieldType.getFullyQualifiedClassName();
+            }
 
         } else if (effectiveType == JsonList.class) {
 
@@ -469,12 +475,11 @@ class ViewClassSourceGenerator {
                 genericArgument = "?";
 
             } else {
-                // if the effective type lives in a different package, then import it.
-                if (!fieldDef.hasSamePackageAs(effectiveFieldValueType)) {
-                    importsBuilder.add(effectiveFieldValueType);
+                if (importsBuilder.add(effectiveFieldValueType)) {
+                    genericArgument = "? extends " + effectiveFieldValueType.getLocalClassName();
+                } else {
+                    genericArgument = "? extends " + effectiveFieldValueType.getFullyQualifiedClassName();
                 }
-
-                genericArgument = "? extends " + effectiveFieldValueType.getLocalClassName();
             }
 
             return "Collection<" + genericArgument + ">";

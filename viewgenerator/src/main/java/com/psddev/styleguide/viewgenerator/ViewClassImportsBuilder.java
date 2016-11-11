@@ -2,15 +2,13 @@ package com.psddev.styleguide.viewgenerator;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Manages all of the imports that need to be included in the generated view
  * class. Takes care of removing duplicates and discarding redundant or implicit
  * imports.
  *
- * TODO: Need to add APIs to detect if 2 different classes with the same
- * "simple" name are imported such that the 2nd one needs to be fully qualified
- * everywhere that it's referenced in the generated source code.
  */
 class ViewClassImportsBuilder {
 
@@ -35,23 +33,57 @@ class ViewClassImportsBuilder {
     }
 
     /**
-     * Adds a fully qualified class name to the list.
+     * Adds a fully qualified class name to the list of imports. If the class
+     * is a native java class, or the class is in the same package as the
+     * underlying view class definition, then it won't be added to the list
+     * but it will just safely be ignored, and the method will still return
+     * true. The method returns false if the class being added would cause a
+     * conflict with the existing imports in that there already exists a class
+     * with the same simple name.
      *
      * @param fullyQualifiedClassName the fully qualified class name to add.
+     * @return true if adding the import wouldn't , false otherwise.
      */
-    public void add(String fullyQualifiedClassName) {
-        if (!isSamePackage(fullyQualifiedClassName) && !fullyQualifiedClassName.startsWith("java.lang.")) {
-            imports.add(fullyQualifiedClassName);
-        }
+    public boolean add(String fullyQualifiedClassName) {
+        return add(() -> fullyQualifiedClassName);
     }
 
     /**
-     * Adds a view class field type to the list.
+     * Adds a fieldType to the list of imports. If the class
+     * is a native java class, or the class is in the same package as the
+     * underlying view class definition, then it won't be added to the list
+     * but it will just safely be ignored, and the method will still return
+     * true. The method returns false if the class being added would cause a
+     * conflict with the existing imports in that there already exists a class
+     * with the same simple name.
      *
      * @param fieldType the view class field type to add.
+     * @return true if adding the import wouldn't , false otherwise.
      */
-    public void add(ViewClassFieldType fieldType) {
-        add(fieldType.getFullyQualifiedClassName());
+    public boolean add(ViewClassFieldType fieldType) {
+
+        if (!isSamePackage(fieldType) && !fieldType.getPackageName().equals("java.lang")) {
+
+            if (imports.contains(fieldType.getFullyQualifiedClassName())) {
+                return true;
+
+            } else {
+                if (!imports.stream()
+                        .map(ViewClassFieldType::from)
+                        .map(ViewClassFieldType::getLocalClassName)
+                        .collect(Collectors.toSet())
+                        .contains(fieldType.getLocalClassName())) {
+
+                    imports.add(fieldType.getFullyQualifiedClassName());
+                    return true;
+
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return true;
+        }
     }
 
     /**

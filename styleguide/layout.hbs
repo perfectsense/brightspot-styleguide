@@ -168,10 +168,16 @@
                         {{/inline}}
                         {{#each examples}}
                             <li class="sg-group">
-                                <div class="sg-group-name">{{name}}</div>
+                                {{#if url}}
+                                  <a class="sg-example-name" href="{{url}}" title="Styleguide: {{#if dirName}}{{dirName}} - {{/if}}{{name}}" target="sg-content-iframe">{{name}}</a>
+                                {{else}}
+                                  <div class="sg-group-name">{{name}}</div>
+                                {{/if}}
+                                {{#if children}}
                                 <ul class="sg-example-list">
                                     {{> list}}
                                 </ul>
+                                {{/if}}
                             </li>
                         {{/each}}
                     </ul>

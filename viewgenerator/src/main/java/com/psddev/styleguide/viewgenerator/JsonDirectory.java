@@ -1,9 +1,12 @@
 package com.psddev.styleguide.viewgenerator;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -15,6 +18,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import com.psddev.dari.util.StringUtils;
 
@@ -22,6 +29,8 @@ import com.psddev.dari.util.StringUtils;
  * A directory of JSON files that power a FE styleguide.
  */
 class JsonDirectory {
+
+    private static final CliLogger LOGGER = CliLogger.getLogger();
 
     private static final String CONFIG_FILE_NAME = "_config.json";
     private static final String BOWER_COMPONENTS_DIRECTORY_NAME = "bower_components";
@@ -37,14 +46,12 @@ class JsonDirectory {
     private Map<Path, JsonFile> normalizedFilePathsCache;
 
     /**
-     * Creates a new JsonDirectory with the given context and path.
+     * Creates a new JsonDirectory with the given context.
      *
      * @param context the view generator context that supplies configuration information.
-     * @param path the path of the JSON directory.
      */
-    public JsonDirectory(ViewClassGeneratorContext context, Path path) {
+    public JsonDirectory(ViewClassGeneratorContext context) {
         this.context = context;
-        this.path = path;
     }
 
     /**
@@ -62,7 +69,89 @@ class JsonDirectory {
      * @return the directory path.
      */
     public Path getPath() {
+        if (path == null) {
+
+            Path jsonDir;
+
+            Set<Path> jsonDirs = context.getJsonDirectories();
+
+            if (jsonDirs.isEmpty()) {
+                throw new ViewClassGeneratorException("No JSON directory specified!");
+
+            } else if (jsonDirs.size() > 1) {
+
+                LOGGER.yellow().append("Multiple directories specified...").log();
+                jsonDirs.forEach(dir -> LOGGER.yellow().append("JSON directory: ").reset().append(dir).log());
+
+                try {
+                    jsonDir = createTempDirectory(jsonDirs);
+                } catch (IOException e) {
+                    throw new ViewClassGeneratorException(e);
+                }
+
+            } else {
+                jsonDir = jsonDirs.iterator().next();
+            }
+
+            // resolve the path to make sure it actually exists.
+            try {
+                jsonDir = jsonDir.toRealPath();
+            } catch (IOException e) {
+                throw new ViewClassGeneratorException(e);
+            }
+
+            path = jsonDir;
+        }
         return path;
+    }
+
+    /*
+     * To support backward compatibility, this method takes multiple directories
+     * and copies the contents of each of them into a temp directory. It also
+     * searches for a template directory relative to it based on the standard
+     * maven project directory structure, and copies the contents of that
+     * directory too if it exists. This puts all templates and JSON files into
+     * a single directory so that the view generator can correctly resolve
+     * the template paths.
+     */
+    private Path createTempDirectory(Set<Path> jsonDirs) throws IOException {
+
+        Path tempDir = Files.createTempDirectory("view-class-generator-");
+        LOGGER.yellow().append("Created temp directory: ").reset().append(tempDir).log();
+
+        // Create a filter for directories and handlebars files
+        FileFilter templateFilter = FileFilterUtils.or(
+                DirectoryFileFilter.DIRECTORY,
+                FileFilterUtils.and(
+                        FileFileFilter.FILE,
+                        // TODO: Support copying all supported template extensions.
+                        FileFilterUtils.suffixFileFilter("." + TemplateType.HANDLEBARS.getExtension())));
+
+        // For backward compatibility
+        for (Path jsonDir : jsonDirs) {
+
+            // Copy the entire JSON directory using the filter
+            FileUtils.copyDirectory(jsonDir.toFile(), tempDir.toFile());
+            LOGGER.yellow().append("Copied files to temp directory from: ").reset().append(jsonDir).log();
+
+            for (String templateDirPath : new String[] {
+                    "../src/main/webapp",
+                    "../src/main/resources" }) {
+
+                // Copy the template directory if it exists
+                Path templateDir = jsonDir.resolve(templateDirPath);
+                if (templateDir.toFile().exists()) {
+
+                    FileUtils.copyDirectory(templateDir.toFile(), tempDir.toFile(), templateFilter);
+                    LOGGER.yellow().append("Copied templates to temp directory from: ").reset().append(templateDir.normalize()).log();
+                }
+            }
+        }
+
+        // Delete the temp directory and all sub-directories on exit
+        FileUtils.listFilesAndDirs(tempDir.toFile(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE).forEach(File::deleteOnExit);
+
+        return tempDir;
     }
 
     /**
@@ -207,6 +296,9 @@ class JsonDirectory {
     public Set<JsonViewMap> resolveViewMaps() {
         if (viewMaps == null) {
 
+            Path directory = getPath();
+            LOGGER.green().append("Scanning Directory ").reset().append(directory).log();
+
             Set<JsonFile> files = getFiles();
 
             // check for errors
@@ -275,13 +367,13 @@ class JsonDirectory {
         excludedPaths.add(BOWER_COMPONENTS_DIRECTORY_NAME);
 
         // get each json file in this directory
-        return FileUtils.listFiles(path.toFile(), new String[] { "json" }, true).stream()
+        return FileUtils.listFiles(getPath().toFile(), new String[] { "json" }, true).stream()
 
                 // convert the file to a path
                 .map(file -> Paths.get(file.toURI()))
 
                 // remove excluded paths
-                .filter(path -> isPathExcluded(this.path.relativize(path), excludedPaths))
+                .filter(path -> isPathExcluded(getPath().relativize(path), excludedPaths))
 
                 // add each file to the set
                 .collect(Collectors.toSet());
@@ -336,18 +428,26 @@ class JsonDirectory {
      */
     private void logErrorFiles(Set<JsonFile> errorFiles) {
 
-        StringBuilder builder = new StringBuilder();
+        long totalErrorCount = errorFiles.stream().map(JsonFile::getErrors).flatMap(Collection::stream).count();
 
-        builder.append("Error while parsing the JSON files: \n");
+        CliLoggerMessageBuilder builder = new CliLoggerMessageBuilder(LOGGER, CliColor.RED);
+
+        builder.append("Found ");
+        builder.cyan().append(totalErrorCount).red();
+        builder.append(" error");
+        if (totalErrorCount != 1) {
+            builder.append("s");
+        }
+        builder.append(" while parsing the JSON files: \n");
 
         for (JsonFile file : errorFiles) {
 
             List<JsonFileError> errors = file.getErrors();
 
-            builder.append("    ");
-            builder.append(file.getRelativePath());
+            builder.append("\n    ");
+            builder.cyan().append(file.getRelativePath()).red();
             builder.append(" has ");
-            builder.append(errors.size());
+            builder.cyan().append(errors.size()).red();
             builder.append(" error");
             if (errors.size() != 1) {
                 builder.append("s");
@@ -372,18 +472,25 @@ class JsonDirectory {
                 JsonDataLocation location = error.getLocation();
                 if (location != null) {
                     // Ex. at (line no=18, column no=45, offset=521)
-                    builder.append(" at (line=");
+                    builder.append(" at ");
+                    //builder.cyan();
+                    builder.append("(line=");
                     builder.append(location.getLineNumber());
                     builder.append(", col=");
                     builder.append(location.getColumnNumber());
                     builder.append(", offset=");
                     builder.append(location.getStreamOffset());
                     builder.append(")");
+                    //builder.red();
                 }
                 builder.append("\n");
             }
         }
 
-        throw new RuntimeException(builder.toString());
+        builder.log();
+
+        throw new ViewClassGeneratorException("\nFailed to generate view classes due to "
+                + totalErrorCount
+                + " previous error" + (totalErrorCount == 1 ? "" : "s") + ".");
     }
 }

@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.psddev.dari.util.StringUtils;
+
 class ViewClassFieldDefinition implements ViewClassFieldType {
 
     private ViewClassDefinition viewClassDef;
@@ -143,7 +145,10 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
 
         } else if (valueTypes.size() > 1) {
             addError("A field can only have a single value type but has "
-                    + valueTypes.stream().map(Class::getSimpleName).collect(Collectors.toList())
+                    + valueTypes.stream()
+                            .map(Class::getSimpleName)
+                            .map(s -> StringUtils.removeStart(s, "Json"))
+                            .collect(Collectors.joining(" and "))
                     + " instead!");
         }
 

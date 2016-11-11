@@ -2,6 +2,7 @@ package com.psddev.styleguide.viewgenerator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,13 +16,15 @@ public class TestUtils {
     public static JsonDirectory getJsonDirectoryForName(String name) {
         Path path = getJsonDirectoriesForNames(name).stream().findFirst().orElse(null);
         ViewClassGeneratorContext context = new ViewClassGeneratorContext();
-        return new JsonDirectory(context, path);
+        context.setJsonDirectories(Collections.singleton(path));
+        return new JsonDirectory(context);
     }
 
     public static JsonDirectory getJsonDirectoryForClass(Class<?> klass) {
         Path path = getJsonDirectoriesForClasses(klass).stream().findFirst().orElse(null);
         ViewClassGeneratorContext context = new ViewClassGeneratorContext();
-        return new JsonDirectory(context, path);
+        context.setJsonDirectories(Collections.singleton(path));
+        return new JsonDirectory(context);
     }
 
     public static Set<Path> getJsonDirectoriesForNames(String... names) {
@@ -41,7 +44,7 @@ public class TestUtils {
         Set<Path> jsonDirectories = getJsonDirectoriesForClasses(klass);
 
         ViewClassGeneratorContext context = new ViewClassGeneratorContext();
-        context.setJsonDirectory(jsonDirectories.iterator().next());
+        context.setJsonDirectories(jsonDirectories);
         context.setJavaSourceDirectory(jsonDirectories.stream().findFirst().orElse(null).resolve("output"));
 
         ViewClassGenerator generator = new ViewClassGenerator(context);

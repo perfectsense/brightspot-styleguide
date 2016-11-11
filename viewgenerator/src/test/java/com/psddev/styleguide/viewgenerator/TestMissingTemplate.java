@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class TestMissingTemplate {
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ViewClassGeneratorException.class)
     public void testMissingTemplate() throws Exception {
         ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
 

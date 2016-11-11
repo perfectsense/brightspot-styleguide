@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class TestConflictingPackageNames {
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ViewClassGeneratorException.class)
     public void testDataUrlComplex() throws Exception {
 
         ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());

@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class TestMultipleEffectiveTypesError {
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ViewClassGeneratorException.class)
     public void testMultipleEffectiveTypesError() throws Exception {
 
         ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());

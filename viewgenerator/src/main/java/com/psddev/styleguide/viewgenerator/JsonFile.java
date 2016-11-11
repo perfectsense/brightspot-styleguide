@@ -279,6 +279,22 @@ class JsonFile {
      * @param error the error to add.
      */
     public void addError(JsonFileError error) {
+        /*
+         * Only add the error if the location of the error was in this file, or
+         * there's no file location information. Otherwise it means the error
+         * was in a different file, but was included in this one via _dataUrl,
+         * so we ignore it to prevent duplicative error messages.
+         */
+        JsonDataLocation location = error.getLocation();
+        if (location != null) {
+            JsonFile errorFile = location.getFile();
+            if (errorFile != null) {
+                if (!path.equals(errorFile.getPath())) {
+                    return;
+                }
+            }
+        }
+
         errors.add(error);
     }
 

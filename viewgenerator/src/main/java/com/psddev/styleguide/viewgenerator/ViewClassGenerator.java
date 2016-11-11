@@ -1,7 +1,6 @@
 package com.psddev.styleguide.viewgenerator;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -13,7 +12,6 @@ import java.nio.file.StandardWatchEventKinds;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,11 +28,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.FileFileFilter;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import com.psddev.dari.util.IoUtils;
 import com.psddev.dari.util.StringUtils;
@@ -99,34 +92,7 @@ public class ViewClassGenerator {
 
         context = new ViewClassGeneratorContext();
 
-        Path jsonDir;
-
-        Set<Path> jsonDirs = arguments.getJsonDirectories();
-
-        if (jsonDirs.isEmpty()) {
-            throw new RuntimeException("No JSON directory specified!");
-
-        } else if (jsonDirs.size() > 1) {
-
-            // To support backward compatibility
-
-            try {
-                jsonDir = createTempDirectory(jsonDirs);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-        } else {
-            jsonDir = jsonDirs.iterator().next();
-        }
-
-        try {
-            jsonDir = jsonDir.toRealPath();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        context.setJsonDirectory(jsonDir);
+        context.setJsonDirectories(arguments.getJsonDirectories());
         context.setJavaSourceDirectory(arguments.getBuildDirectory());
 
         context.setExcludedPaths(arguments.getIgnoredFileNames());
@@ -139,53 +105,6 @@ public class ViewClassGenerator {
 
     ViewClassGeneratorContext getContext() {
         return context;
-    }
-
-    /*
-     * To support backward compatibility, this method takes multiple directories
-     * and copies the contents of each of them into a temp directory. It also
-     * searches for a template directory relative to it based on the standard
-     * maven project directory structure, and copies the contents of that
-     * directory too if it exists. This puts all templates and JSON files into
-     * a single directory so that the view generator can correctly resolve
-     * the template paths.
-     */
-    private Path createTempDirectory(Set<Path> jsonDirs) throws IOException {
-
-        Path tempDir = Files.createTempDirectory("view-class-generator-");
-        logger.yellow("Created temp directory [", tempDir, "]");
-
-        // Create a filter for directories and handlebars files
-        FileFilter templateFilter = FileFilterUtils.or(
-                DirectoryFileFilter.DIRECTORY,
-                FileFilterUtils.and(
-                        FileFileFilter.FILE,
-                        FileFilterUtils.suffixFileFilter("." + TemplateType.HANDLEBARS.getExtension())));
-
-        for (Path jsonDir : jsonDirs) {
-
-            // Copy the entire JSON directory using the filter
-            FileUtils.copyDirectory(jsonDir.toFile(), tempDir.toFile());
-            logger.yellow("Copied [", jsonDir, "] to temp directory.");
-
-            for (String templateDirPath : new String[] {
-                    "../src/main/webapp",
-                    "../src/main/resources" }) {
-
-                // Copy the template directory if it exists
-                Path templateDir = jsonDir.resolve(templateDirPath);
-                if (templateDir.toFile().exists()) {
-
-                    FileUtils.copyDirectory(templateDir.toFile(), tempDir.toFile(), templateFilter);
-                    logger.yellow("Copied templates from [", templateDir.normalize(), "] to temp directory.");
-                }
-            }
-        }
-
-        // Delete the temp directory and all sub-directories on exit
-        FileUtils.listFilesAndDirs(tempDir.toFile(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE).forEach(File::deleteOnExit);
-
-        return tempDir;
     }
 
     void disableLogColors() {
@@ -208,7 +127,7 @@ public class ViewClassGenerator {
             Set<JsonViewMap> jsonViewMaps;
             Map<ViewKey, Set<JsonViewMap>> jsonViewMapsByViewKey;
 
-            directory = new JsonDirectory(context, context.getJsonDirectory());
+            directory = new JsonDirectory(context);
 
             // can throw an exception
             jsonViewMaps = directory.resolveViewMaps();
@@ -240,7 +159,7 @@ public class ViewClassGenerator {
 
         List<ViewClassDefinition> classDefinitions = getViewClassDefinitions();
 
-        // throws a RuntimeException if there are errors
+        // throws a ViewClassGeneratorException if there are errors
         checkForErrors(new HashSet<>(classDefinitions));
 
         List<ViewClassSource> sources = classDefinitions.stream()
@@ -248,7 +167,7 @@ public class ViewClassGenerator {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
-        Map<Path, String> generated = new LinkedHashMap<>();
+        Map<Path, String> generated = new TreeMap<>();
 
         for (ViewClassSource source : sources) {
 
@@ -267,8 +186,6 @@ public class ViewClassGenerator {
     List<Path> generateClasses() {
 
         printLogo();
-
-        logger.green().append("Scanning Directory: ").reset().append(context.getJsonDirectory()).log();
 
         return generateClasses(true);
     }
@@ -333,7 +250,7 @@ public class ViewClassGenerator {
         }, 1, TimeUnit.SECONDS);
 
         try {
-            WatchDirectory watchDirectory = new WatchDirectory(Collections.singleton(context.getJsonDirectory()));
+            WatchDirectory watchDirectory = new WatchDirectory(context.getJsonDirectories());
 
             watchDirectory.setProcessChangeFunction((path, watchEventKind) -> {
 
@@ -398,7 +315,8 @@ public class ViewClassGenerator {
                 }
             });
 
-            logger.green().append("Watching Directory: ").reset().append(context.getJsonDirectory()).log();
+            // TODO: Need to
+            context.getJsonDirectories().forEach(dir -> logger.green().append("Watching Directory: ").reset().append(dir).log());
 
             watchDirectory.start();
 
@@ -514,18 +432,26 @@ public class ViewClassGenerator {
      */
     private void logErrorDefinitions(Set<ViewClassDefinition> classDefs) {
 
-        StringBuilder builder = new StringBuilder();
+        long totalErrorCount = classDefs.stream().map(ViewClassDefinition::getErrors).flatMap(Collection::stream).count();
 
-        builder.append("Error while validating view class definitions: \n");
+        CliLoggerMessageBuilder builder = new CliLoggerMessageBuilder(logger, CliColor.RED);
+
+        builder.append("Found ");
+        builder.cyan().append(totalErrorCount).red();
+        builder.append(" error");
+        if (totalErrorCount != 1) {
+            builder.append("s");
+        }
+        builder.append(" while validating view class definitions: \n");
 
         for (ViewClassDefinition classDef : classDefs) {
 
             List<ViewClassDefinitionError> errors = classDef.getErrors();
 
-            builder.append("    ");
-            builder.append(classDef.getViewKey().getName());
+            builder.append("\n    ");
+            builder.cyan().append(classDef.getViewKey().getName()).red();
             builder.append(" has ");
-            builder.append(errors.size());
+            builder.cyan().append(errors.size()).red();
             builder.append(" error");
             if (errors.size() != 1) {
                 builder.append("s");
@@ -538,8 +464,8 @@ public class ViewClassGenerator {
                 ViewClassFieldDefinition fieldDef = error.getFieldDefinition();
                 if (fieldDef != null) {
 
-                    builder.append(fieldDef.getFieldName());
-                    builder.append(": ");
+                    builder.cyan().append(fieldDef.getFieldName()).red();
+                    builder.append(" ");
                     builder.append(error.getMessage());
                     builder.append("\n");
 
@@ -555,16 +481,18 @@ public class ViewClassGenerator {
                         String typeLabel = entry.getValue().getTypeLabel();
 
                         builder.append("             ");
-                        builder.append(typeLabel);
-                        builder.append(": ");
+                        builder.cyan().append(typeLabel).red();
+                        builder.append(" ");
                         builder.append(location.getFile().getRelativePath());
-                        builder.append(" at (line=");
-                        builder.append(location.getLineNumber());
-                        builder.append(":, col=");
-                        builder.append(location.getColumnNumber());
+                        builder.append(" at ");
+                        builder.append("(line=");
+                        builder.red().append(location.getLineNumber()).red();
+                        builder.append(", col=");
+                        builder.red().append(location.getColumnNumber()).red();
                         builder.append(", offset=");
-                        builder.append(location.getStreamOffset());
+                        builder.red().append(location.getStreamOffset()).red();
                         builder.append(")");
+                        builder.red();
                         builder.append("\n");
                     }
 
@@ -575,6 +503,10 @@ public class ViewClassGenerator {
             }
         }
 
-        throw new RuntimeException(builder.toString());
+        builder.log();
+
+        throw new ViewClassGeneratorException("\nFailed to generate view classes due to "
+                + totalErrorCount
+                + " previous error" + (totalErrorCount == 1 ? "" : "s") + ".");
     }
 }

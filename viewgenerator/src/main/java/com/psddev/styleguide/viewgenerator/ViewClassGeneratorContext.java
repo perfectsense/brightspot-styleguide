@@ -2,7 +2,7 @@ package com.psddev.styleguide.viewgenerator;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,7 +12,7 @@ import java.util.Set;
  */
 class ViewClassGeneratorContext {
 
-    private Path jsonDirectory;
+    private Set<Path> jsonDirectories;
     private Path javaSourceDirectory;
 
     private Set<String> excludedPaths;
@@ -29,21 +29,26 @@ class ViewClassGeneratorContext {
     }
 
     /**
-     * Gets the directory path where all of the JSON data files and templates live.
+     * Gets the directory paths where all of the JSON data files and
+     * templates live.
      *
      * @return the JSON directory path.
      */
-    public Path getJsonDirectory() {
-        return jsonDirectory;
+    public Set<Path> getJsonDirectories() {
+        if (jsonDirectories == null) {
+            jsonDirectories = new LinkedHashSet<>();
+        }
+        return jsonDirectories;
     }
 
     /**
-     * Sets the directory path where all of the JSON data files and templates live.
+     * Sets the directory paths where all of the JSON data files and templates
+     * live.
      *
-     * @param jsonDirectory the JSON directory path.
+     * @param jsonDirectories the JSON directory paths to set.
      */
-    public void setJsonDirectory(Path jsonDirectory) {
-        this.jsonDirectory = jsonDirectory;
+    public void setJsonDirectories(Set<Path> jsonDirectories) {
+        this.jsonDirectories = jsonDirectories;
     }
 
     /**
@@ -66,20 +71,20 @@ class ViewClassGeneratorContext {
 
     /**
      * Gets the set of path names that should be excluded by default when
-     * searching for JSON files in the {@link #getJsonDirectory() JSON directory}.
+     * searching for JSON files in the {@link #getJsonDirectories() JSON directories}.
      *
      * @return the set of path names to exclude.
      */
     public Set<String> getExcludedPaths() {
         if (excludedPaths == null) {
-            excludedPaths = new HashSet<>();
+            excludedPaths = new LinkedHashSet<>();
         }
         return excludedPaths;
     }
 
     /**
      * Sets the path names that should be excluded by default when searching
-     * for JSON files in the {@link #getJsonDirectory() JSON directory}.
+     * for JSON files in the {@link #getJsonDirectories() JSON directories}.
      *
      * @param excludedPaths the set of path names to exclude.
      */

@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class TestDataUrlCyclicReference {
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ViewClassGeneratorException.class)
     public void testJsonDirectory() throws Exception {
         // Should throw and error
         TestUtils.getJsonDirectoryForClass(getClass()).resolveViewMaps();

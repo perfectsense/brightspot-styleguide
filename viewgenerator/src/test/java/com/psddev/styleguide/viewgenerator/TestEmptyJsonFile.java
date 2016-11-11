@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class TestEmptyJsonFile {
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ViewClassGeneratorException.class)
     public void testEmptyJsonFile() throws Exception {
 
         ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());

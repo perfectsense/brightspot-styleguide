@@ -12,6 +12,7 @@
     "express": "^4.13.1",
     "font-awesome": "^4.4.0",
     "geopattern": "1.2.3",
+    "gulp-filter": "4.0.0",
     "gulp-jsonlint": "1.1.2",
     "gulp-lesshint": "2.0.0",
     "gulp-load-plugins": "1.4.0",

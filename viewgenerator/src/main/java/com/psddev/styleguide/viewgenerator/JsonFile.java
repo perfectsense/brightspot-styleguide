@@ -146,7 +146,7 @@ class JsonFile {
      * @return the normalized path.
      */
     public Path getNormalizedPath(Path other) {
-        return getNormalizedPath(other, true);
+        return getNormalizedPath(other, false);
     }
 
     /**
@@ -157,14 +157,17 @@ class JsonFile {
      * it starts with a ".".
      *
      * @param other the path to normalize.
-     * @param fileRelative true if paths not starting "/" or "." should be
-     *                     considered relative to this file, or false if they
-     *                     should be considered relative to this file's base
-     *                     directory.
+     * @param packageJsonRelative true if paths starting with "/" should be
+     *                            considered relative to the nearest
+     *                            package.json file's parent directory found by
+     *                            traversing up the directory tree starting
+     *                            from {@code other}, or false if they should
+     *                            always be considered relative to this file's
+     *                            base directory.
      * @return the normalized path.
      */
-    public Path getNormalizedPath(Path other, boolean fileRelative) {
-        return getBaseDirectory().getNormalizedPath(this, other, fileRelative);
+    public Path getNormalizedPath(Path other, boolean packageJsonRelative) {
+        return getBaseDirectory().getNormalizedPath(this, other, packageJsonRelative);
     }
 
     /**

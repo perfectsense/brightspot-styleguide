@@ -33,6 +33,7 @@ class JsonDirectory {
     private static final CliLogger LOGGER = CliLogger.getLogger();
 
     private static final String CONFIG_FILE_NAME = "_config.json";
+    private static final String PACKAGE_JSON_FILE_NAME = "package.json";
     private static final String BOWER_COMPONENTS_DIRECTORY_NAME = "bower_components";
 
     private ViewClassGeneratorContext context;
@@ -160,18 +161,44 @@ class JsonDirectory {
      *
      * @param ref the file to use to resolve relative paths.
      * @param filePath the path to normalize.
-     * @param refRelative true if paths not starting "/" or "." should be
-     *                    considered relative to the reference file, or false
-     *                    if they should be considered relative to the base
-     *                    directory.
+     * @param packageJsonRelative true if paths starting with "/" should be
+     *                            considered relative to the nearest
+     *                            package.json file's parent directory found by
+     *                            traversing up the directory tree starting
+     *                            from {@code ref}, or false if they should
+     *                            always be considered relative to this base
+     *                            directory.
      * @return the normalized path.
      */
-    public Path getNormalizedPath(JsonFile ref, Path filePath, boolean refRelative) {
+    public Path getNormalizedPath(JsonFile ref, Path filePath, boolean packageJsonRelative) {
 
         Path normalizedPath;
-        // resolve it relative to the json base directory
-        if (filePath.toString().startsWith("/") || (!refRelative && !filePath.toString().startsWith("."))) {
-            normalizedPath = getPath().resolve(StringUtils.removeStart(filePath.toString(), "/")).normalize();
+        // resolve it relative to the json base directory... sort of.
+        if (filePath.toString().startsWith("/")) {
+
+            /*
+             * To support the FE build process that copies styleguide
+             * dependencies into node_modules, where the dependency itself
+             * when built on its own treats its own styleguide directory as
+             * the base JSON directory, but when built as a dependency ends up
+             * being nested in a directory like node_modules/dependency-name
+             * underneath the main project's base directory, but may still
+             * contain absolutely pathed references as if it were being built
+             * by itself. To rectify these two scenarios, rather than always
+             * using this JSON directory as the base directory, we check for
+             * the existence of a package.json file somewhere up the directory
+             * tree relative to the reference JSON file, and if the file is
+             * found, use it's parent directory as the base directory for
+             * resolving this absolute path.
+             */
+            Path refPath;
+            if (packageJsonRelative) {
+                refPath = getNearestPackageJsonParentPath(ref);
+            } else {
+                refPath = getPath();
+            }
+
+            normalizedPath = refPath.resolve(StringUtils.removeStart(filePath.toString(), "/")).normalize();
 
         } else {
             // resolve it relative to this file.
@@ -197,7 +224,7 @@ class JsonDirectory {
     public JsonFile getNormalizedFile(JsonFile ref, Path filePath) {
 
         // get the normalized path.
-        Path normalizedPath = getNormalizedPath(ref, filePath, true);
+        Path normalizedPath = getNormalizedPath(ref, filePath, false);
 
         // ensure that it is within the scope of this directory.
         if (!"..".equals(normalizedPath.getName(0).toString())) {
@@ -227,6 +254,46 @@ class JsonDirectory {
         }
     }
 
+    /*
+     * Gets the path closest to the specified file up the directory tree that
+     * contains a package.json file stopping at the base directory. If the file
+     * is not found at any level, then the base directory path is returned.
+     */
+    private Path getNearestPackageJsonParentPath(JsonFile file) {
+
+        if (file == null) {
+            return getPath();
+        }
+
+        Path filePath = getPath().relativize(file.getPath().getParent());
+
+        while (true) {
+
+            if (filePath == null) {
+                filePath = Paths.get("");
+            }
+
+            Path resolvedFilePath = getPath().resolve(filePath);
+
+            Path packageJsonPath = resolvedFilePath.resolve(PACKAGE_JSON_FILE_NAME);
+
+            if (packageJsonPath.toFile().exists()) {
+                return resolvedFilePath;
+            }
+
+            if (filePath != null
+                    && filePath.getNameCount() > 0
+                    && !filePath.getName(0).toString().isEmpty()) {
+
+                filePath = filePath.getParent();
+            } else {
+                break;
+            }
+        }
+
+        return getPath();
+    }
+
     /**
      * Gets the template view configuration nearest to the normalized path, by
      * first checking its directory for a config file, and traversing up the
@@ -243,7 +310,7 @@ class JsonDirectory {
 
             // calls getNormalizedPath after pre-pending a slash so it knows
             // to treat the path as relative to this directory.
-            normalizedPath = getNormalizedPath(null, Paths.get(StringUtils.ensureStart(normalizedPath.toString(), "/")), true);
+            normalizedPath = getNormalizedPath(null, Paths.get(StringUtils.ensureStart(normalizedPath.toString(), "/")), false);
 
             // If the path is outside of the directory, return null immediately
             if (normalizedPath.getName(0).startsWith("..")) {
@@ -364,6 +431,7 @@ class JsonDirectory {
 
         // exclude some well known paths
         excludedPaths.add(CONFIG_FILE_NAME);
+        excludedPaths.add(PACKAGE_JSON_FILE_NAME);
         excludedPaths.add(BOWER_COMPONENTS_DIRECTORY_NAME);
 
         // get each json file in this directory

@@ -35,6 +35,7 @@ class JsonDirectory {
     private static final String CONFIG_FILE_NAME = "_config.json";
     private static final String PACKAGE_JSON_FILE_NAME = "package.json";
     private static final String BOWER_COMPONENTS_DIRECTORY_NAME = "bower_components";
+    private static final String NODE_MODULES_DIRECTORY_NAME = "node_modules";
 
     private ViewClassGeneratorContext context;
 
@@ -433,6 +434,7 @@ class JsonDirectory {
         excludedPaths.add(CONFIG_FILE_NAME);
         excludedPaths.add(PACKAGE_JSON_FILE_NAME);
         excludedPaths.add(BOWER_COMPONENTS_DIRECTORY_NAME);
+        excludedPaths.add(NODE_MODULES_DIRECTORY_NAME);
 
         // get each json file in this directory
         return FileUtils.listFiles(getPath().toFile(), new String[] { "json" }, true).stream()

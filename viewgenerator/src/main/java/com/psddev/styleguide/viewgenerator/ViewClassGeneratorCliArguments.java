@@ -26,8 +26,6 @@ class ViewClassGeneratorCliArguments {
     // default argument values
     private static final Path DEFAULT_JSON_DIRECTORY = Paths.get(System.getProperty("user.dir"), "styleguide");
 
-    private static final String DEFAULT_JAVA_PACKAGE = "com.psddev.styleguide.view";
-
     private static final Path DEFAULT_BUILD_DIRECTORY = Paths.get(System.getProperty("user.dir"), "target", "generated-sources", "styleguide");
 
     private Set<Path> jsonDirectories = new LinkedHashSet<>();
@@ -79,11 +77,6 @@ class ViewClassGeneratorCliArguments {
         if (jsonDirectories.isEmpty()) {
             logger.yellow("No JSON directories specified with [", JSON_DIRECTORY_PREFIX, "], defaulting to [", DEFAULT_JSON_DIRECTORY, "].");
             jsonDirectories.add(DEFAULT_JSON_DIRECTORY);
-        }
-
-        if (javaPackageName == null) {
-            logger.yellow("No java package specified with [", JAVA_PACKAGE_PREFIX, "], defaulting to [", DEFAULT_JAVA_PACKAGE, "].");
-            javaPackageName = DEFAULT_JAVA_PACKAGE;
         }
 
         if (buildDirectory == null) {
@@ -161,7 +154,7 @@ class ViewClassGeneratorCliArguments {
     }
 
     private void validateJavaPackageName() {
-        if (!javaPackageName.matches("([A-Z_a-z0-9]+\\x2e)*[A-Z_a-z0-9]+")) {
+        if (javaPackageName != null && !javaPackageName.matches("([A-Z_a-z0-9]+\\x2e)*[A-Z_a-z0-9]+")) {
             throw new IllegalArgumentException("Java Package [" + javaPackageName + "] must be a valid java package name!");
         }
     }

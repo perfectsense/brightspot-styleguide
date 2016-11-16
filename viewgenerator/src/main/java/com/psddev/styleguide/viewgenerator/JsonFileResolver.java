@@ -270,7 +270,7 @@ class JsonFileResolver {
 
         if (templateType != null) {
             return new TemplateViewKey(
-                    file.getBaseDirectory().getContext(),
+                    file.getBaseDirectory(),
                     viewKey != null ? viewKey.toRawValue() : null,
                     templatePath,
                     templateType,

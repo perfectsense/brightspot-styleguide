@@ -12,6 +12,8 @@ import com.psddev.dari.util.StringUtils;
  */
 class TemplateViewKey extends ViewKey {
 
+    private JsonDirectory jsonDirectory;
+
     private Path templatePath;
 
     private TemplateType templateType;
@@ -21,14 +23,15 @@ class TemplateViewKey extends ViewKey {
     /**
      * Creates a new template based view key.
      *
-     * @param context the view class generator context.
+     * @param jsonDirectory the JSON directory where the template lives.
      * @param name the name of the view key.
      * @param templatePath the path to the template.
      * @param templateType the type of template referenced by the templatePath.
      * @param templateConfig the configuration for this template.
      */
-    public TemplateViewKey(ViewClassGeneratorContext context, String name, Path templatePath, TemplateType templateType, TemplateViewConfiguration templateConfig) {
-        super(context, name != null ? name : templatePath.toString());
+    public TemplateViewKey(JsonDirectory jsonDirectory, String name, Path templatePath, TemplateType templateType, TemplateViewConfiguration templateConfig) {
+        super(jsonDirectory.getContext(), name != null ? name : templatePath.toString());
+        this.jsonDirectory = jsonDirectory;
         this.templatePath = templatePath;
         this.templateType = templateType;
         this.templateConfig = templateConfig;
@@ -86,8 +89,11 @@ class TemplateViewKey extends ViewKey {
             packagePrefix = "";
         }
 
-        String packageSuffix = ViewClassStringUtils.toJavaPackageName(templatePath);
-        String className = ViewClassStringUtils.toJavaClassName(templatePath);
+        Path packageJsonRelativeTemplatePath = jsonDirectory.getNearestPackageJsonParentPath(templatePath)
+                .relativize(jsonDirectory.getPath().resolve(templatePath));
+
+        String packageSuffix = ViewClassStringUtils.toJavaPackageName(packageJsonRelativeTemplatePath);
+        String className = ViewClassStringUtils.toJavaClassName(packageJsonRelativeTemplatePath);
 
         String fqcn = packagePrefix + "." + packageSuffix + "." + className + "View";
 

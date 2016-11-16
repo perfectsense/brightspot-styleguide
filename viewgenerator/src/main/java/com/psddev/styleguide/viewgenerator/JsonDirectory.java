@@ -255,38 +255,57 @@ class JsonDirectory {
         }
     }
 
-    /*
-     * Gets the path closest to the specified file up the directory tree that
-     * contains a package.json file stopping at the base directory. If the file
-     * is not found at any level, then the base directory path is returned.
+    /**
+     * Gets the path closest to the specified JSON file up the directory tree
+     * that contains a package.json file stopping at the base directory. If the
+     * file is not found at any level, then the base directory path is returned.
+     *
+     * @param file the file to reference.
+     * @return the nearest package.json parent path
      */
-    private Path getNearestPackageJsonParentPath(JsonFile file) {
+    public Path getNearestPackageJsonParentPath(JsonFile file) {
 
         if (file == null) {
             return getPath();
         }
 
-        Path filePath = getPath().relativize(file.getPath().getParent());
+        return getNearestPackageJsonParentPath(getPath().relativize(file.getPath().getParent()));
+    }
+
+    /**
+     * Gets the path closest to the specified relative path up the directory
+     * tree that contains a package.json file stopping at the base directory.
+     * If the file is not found at any level, then the base directory path is
+     * returned.
+     *
+     * @param relativePath the starting path.
+     * @return the nearest package.json parent path.
+     */
+    public Path getNearestPackageJsonParentPath(Path relativePath) {
+
+        if (relativePath == null) {
+            return getPath();
+        }
 
         while (true) {
 
-            if (filePath == null) {
-                filePath = Paths.get("");
+            if (relativePath == null) {
+                relativePath = Paths.get("");
             }
 
-            Path resolvedFilePath = getPath().resolve(filePath);
+            Path resolvedPath = getPath().resolve(relativePath);
 
-            Path packageJsonPath = resolvedFilePath.resolve(PACKAGE_JSON_FILE_NAME);
+            Path packageJsonPath = resolvedPath.resolve(PACKAGE_JSON_FILE_NAME);
 
             if (packageJsonPath.toFile().exists()) {
-                return resolvedFilePath;
+                return resolvedPath;
             }
 
-            if (filePath != null
-                    && filePath.getNameCount() > 0
-                    && !filePath.getName(0).toString().isEmpty()) {
+            if (relativePath != null
+                    && relativePath.getNameCount() > 0
+                    && !relativePath.getName(0).toString().isEmpty()) {
 
-                filePath = filePath.getParent();
+                relativePath = relativePath.getParent();
             } else {
                 break;
             }

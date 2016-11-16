@@ -1,0 +1,58 @@
+{
+    "_template": "Main.hbs",
+    "data": {
+        "_dataUrl": "Data.json"
+    },
+    "dataList": [
+        {
+            "_dataUrl": "Data.json"
+        },
+        {
+            "_dataUrl": "Data.json"
+        }
+    ],
+    "eventualData": {
+        "_template": "Main.hbs",
+        "data": {
+            "_dataUrl": "Data.json"
+        },
+        "dataList": [
+            {
+                "_dataUrl": "Data.json"
+            },
+            {
+                "_dataUrl": "Data.json"
+            }
+        ]
+    },
+    "eventualDataList": [
+        {
+            "_template": "Main.hbs",
+            "data": {
+                "_dataUrl": "Data.json"
+            },
+            "dataList": [
+                {
+                    "_dataUrl": "Data.json"
+                },
+                {
+                    "_dataUrl": "Data.json"
+                }
+            ]
+        },
+        {
+            "_template": "Main.hbs",
+            "data": {
+                "_dataUrl": "Data.json"
+            },
+            "dataList": [
+                {
+                    "_dataUrl": "Data.json"
+                },
+                {
+                    "_dataUrl": "Data.json"
+                }
+            ]
+        }
+    ]
+}

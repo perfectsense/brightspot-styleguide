@@ -1,6 +1,3 @@
-@import (inline) "../node_modules/normalize.css/normalize.css";
-@import (inline) "../node_modules/codemirror/lib/codemirror.css";
-
 @import "global.vars";
 
 .clearfix {
@@ -149,6 +146,7 @@ a {
     &[data-listOpen] {
         > .sg-example-list {
             max-height: 4000px;
+            transition: max-height 500ms ease-in-out;
         }
    }
 
@@ -191,7 +189,6 @@ a {
         padding: 0;
         max-height: 0;
         overflow: auto;
-        transition: max-height @sg-duration ease-in-out;
         ul {
            list-style: none;
            margin: 0 0 0 12px;
@@ -258,6 +255,10 @@ a {
             border-left: 1px solid #e0e0e0;
             }
         }
+    }
+
+    &-description {
+        padding: 0 20px;
     }
 
     &-option-list {

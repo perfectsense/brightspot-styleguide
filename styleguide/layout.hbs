@@ -5,6 +5,7 @@
 
         <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/x-icon">
 
+        <link rel="stylesheet" type="text/css" href="/node_modules/normalize.css/normalize.css">
         <link rel="stylesheet" type="text/css" href="/node_modules/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="/opensans-bold,opensans-bolditalic,opensans-italic,opensans-regular/fonts.css">
         <link rel="stylesheet" type="text/css" href="/styleguide.css">
@@ -168,10 +169,16 @@
                         {{/inline}}
                         {{#each examples}}
                             <li class="sg-group">
-                                <div class="sg-group-name">{{name}}</div>
+                                {{#if url}}
+                                  <a class="sg-example-name" href="{{url}}" title="Styleguide: {{#if dirName}}{{dirName}} - {{/if}}{{name}}" target="sg-content-iframe">{{name}}</a>
+                                {{else}}
+                                  <div class="sg-group-name">{{name}}</div>
+                                {{/if}}
+                                {{#if children}}
                                 <ul class="sg-example-list">
                                     {{> list}}
                                 </ul>
+                                {{/if}}
                             </li>
                         {{/each}}
                     </ul>

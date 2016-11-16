@@ -12,6 +12,8 @@
     "express": "^4.13.1",
     "font-awesome": "^4.4.0",
     "geopattern": "1.2.3",
+    "gulp-file": "0.3.0",
+    "gulp-filter": "4.0.0",
     "gulp-jsonlint": "1.1.2",
     "gulp-lesshint": "2.0.0",
     "gulp-load-plugins": "1.4.0",
@@ -31,17 +33,19 @@
     "normalize.css": "^3.0.3",
     "recursive-readdir-sync": "^1.0.6",
     "require-dir": "0.3.1",
+    "sentence-case": "2.1.0",
     "sticky-kit": "1.1.3",
     "stream-combiner2": "1.1.1",
-    "terminal-kit": "^0.15.10",
+    "terminal-kit": "0.25.1",
     "traverse": "^0.6.6",
-    "xml2js": "^0.4.15"
+    "xml2js": "0.4.17"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha -R spec"
   },
   "devDependencies": {
     "chai": "3.5.0",
+    "gulp-debug": "3.0.0",
     "mocha": "2.5.3"
   },
   "main": "lib/styleguide.js"

@@ -1,0 +1,16 @@
+{{#defineBlock "Bar"}}
+
+  {{#defineElement "title"}}
+    <div class="{{elementName}}">{{this}}</div>
+  {{/defineElement}}
+
+  {{#defineBlockContainer}}
+
+    <div class="{{blockName}}">
+      {{#defineBlockBody}}
+        {{element "title"}}
+      {{/defineBlockBody}}
+    </div>
+
+  {{/defineBlockContainer}}
+{{/defineBlock}}

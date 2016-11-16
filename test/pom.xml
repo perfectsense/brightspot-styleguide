@@ -30,28 +30,6 @@
                 <executions>
 
                     <execution>
-                        <id>install-node-and-npm</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <configuration>
-                            <nodeVersion>v6.9.1</nodeVersion>
-                            <npmVersion>3.10.8</npmVersion>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
                         <id>test</id>
                         <goals>
                             <goal>npm</goal>

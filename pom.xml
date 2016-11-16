@@ -8,7 +8,7 @@
 
     <parent>
         <groupId>com.psddev</groupId>
-        <artifactId>dari</artifactId>
+        <artifactId>dari-parent</artifactId>
         <version>3.2.2272-34adce</version>
     </parent>
 
@@ -17,12 +17,55 @@
     <version>2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>BrightSpot Styleguide</name>
+    <name>BrightSpot Styleguide - Parent</name>
 
     <modules>
         <module>viewgenerator</module>
         <module>test</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>yarn</id>
+
+            <activation>
+                <file>
+                    <exists>yarn.lock</exists>
+                </file>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.2</version>
+
+                        <executions>
+                            <execution>
+                                <id>install-node-and-yarn</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>install-node-and-yarn</goal>
+                                </goals>
+                                <configuration>
+                                    <nodeVersion>v6.9.1</nodeVersion>
+                                    <yarnVersion>v0.16.1</yarnVersion>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <id>yarn</id>
+                                <goals>
+                                    <goal>yarn</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>
@@ -104,4 +147,3 @@
     </distributionManagement>
 
 </project>
-

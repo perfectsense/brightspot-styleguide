@@ -8,7 +8,7 @@
 
     <parent>
         <groupId>com.psddev</groupId>
-        <artifactId>dari-parent</artifactId>
+        <artifactId>dari</artifactId>
         <version>3.2.2272-34adce</version>
     </parent>
 
@@ -21,7 +21,6 @@
 
     <modules>
         <module>viewgenerator</module>
-        <module>test</module>
     </modules>
 
     <profiles>
@@ -59,6 +58,17 @@
                                 <goals>
                                     <goal>yarn</goal>
                                 </goals>
+                            </execution>
+
+                            <execution>
+                                <id>test</id>
+                                <goals>
+                                    <goal>yarn</goal>
+                                </goals>
+                                <phase>test</phase>
+                                <configuration>
+                                    <arguments>run test</arguments>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

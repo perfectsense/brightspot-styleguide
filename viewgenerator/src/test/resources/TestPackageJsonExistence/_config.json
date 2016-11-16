@@ -1,4 +1,4 @@
 {
-    "javaPackage": "com.psddev.base",
+    "javaPackage": "com.psddev.project",
     "templateEngine": "hbs"
 }

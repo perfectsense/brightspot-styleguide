@@ -16,11 +16,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import com.psddev.dari.util.StringUtils;
@@ -126,8 +128,9 @@ class JsonDirectory {
                 DirectoryFileFilter.DIRECTORY,
                 FileFilterUtils.and(
                         FileFileFilter.FILE,
-                        // TODO: Support copying all supported template extensions.
-                        FileFilterUtils.suffixFileFilter("." + TemplateType.HANDLEBARS.getExtension())));
+                        FileFilterUtils.or(Stream.of(TemplateType.values())
+                                .map(templateType -> FileFilterUtils.suffixFileFilter("." + templateType.getExtension()))
+                                .toArray(IOFileFilter[]::new))));
 
         // For backward compatibility
         for (Path jsonDir : jsonDirs) {

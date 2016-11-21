@@ -338,9 +338,6 @@ public class ViewClassGenerator {
      */
     private void checkForErrors(Set<ViewClassDefinition> classDefs) {
 
-        // Does a second round of validation, this time in context of all class definitions.
-        classDefs.forEach(ViewClassDefinition::validateHolistically);
-
         /*
          * Check for conflicting class names. This is an edge case that can only
          * be detected by evaluating all of the view class definitions

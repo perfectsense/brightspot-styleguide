@@ -31,7 +31,6 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
     private Class<? extends JsonValue> effectiveType;
 
     private boolean validated = false;
-    private boolean validatedHolistically = false;
     private List<ViewClassDefinitionError> errors = new ArrayList<>();
 
     /**
@@ -104,33 +103,16 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         validateFieldName();
 
         // validate the value types
-        effectiveType = validateValueTypes(fieldKeyValues.stream()
+        getEffectiveType(fieldKeyValues.stream()
                 .map(Map.Entry::getValue)
-                .collect(Collectors.toCollection(ArrayList::new)));
+                .collect(Collectors.toCollection(ArrayList::new)), true);
 
-        validated = true;
-    }
-
-    /**
-     * Performs validation of this field in context of all class and field
-     * definitions. The checks in this method rely on the instantiation and
-     * individual validation of all of the view class definitions in the
-     * context first.
-     */
-    public void validateHolistically() {
-
-        if (validatedHolistically) {
-            return;
-        }
-
-        /*
-         * Gets the field value types with the validate flag set to true.
-         */
+        // Gets the field value types with the validate flag set to true.
         getFieldValueTypes(fieldKeyValues.stream()
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toCollection(ArrayList::new)), true);
 
-        validatedHolistically = true;
+        validated = true;
     }
 
     private void validateFieldName() {
@@ -159,11 +141,11 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
      * there is more than one, an error is added to this field definition and
      * null is returned.
      */
-    private Class<? extends JsonValue> validateValueTypes(Collection<JsonValue> values) {
+    private Class<? extends JsonValue> getEffectiveType(Collection<JsonValue> values, boolean validate) {
 
         // The only time values will be empty is if we are in a recursive call on a List.
         if (values.isEmpty()) {
-            addError("List cannot be empty, they must have at least one value.");
+            addErrorConditionally("List cannot be empty, they must have at least one value.", validate);
         }
 
         Set<Class<? extends JsonValue>> valueTypes = values.stream()
@@ -194,28 +176,30 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             // Recurse on list values, since they have to all be the same as well.
             // And we don't have to worry about List of Lists since that is caught during the JSON parse phase.
             if (effectiveValueType == JsonList.class) {
-                validateValueTypes(values.stream()
-                        // ignore nulls
-                        .filter(value -> !(value instanceof JsonNull))
-                        // the rest should be Lists
-                        .map(value -> (JsonList) value)
-                        // get the values in list
-                        .map(JsonList::getValues)
-                        // flatten it out
-                        .flatMap(Collection::stream)
-                        // add them to a set
-                        .collect(Collectors.toList()));
+                if (validate) {
+                    getEffectiveType(values.stream()
+                            // ignore nulls
+                            .filter(value -> !(value instanceof JsonNull))
+                            // the rest should be Lists
+                            .map(value -> (JsonList) value)
+                            // get the values in list
+                            .map(JsonList::getValues)
+                            // flatten it out
+                            .flatMap(Collection::stream)
+                            // add them to a set
+                            .collect(Collectors.toList()), true);
+                }
             }
 
             return effectiveValueType;
 
         } else if (valueTypes.size() > 1) {
-            addError("A field can only have a single value type but has "
+            addErrorConditionally("A field can only have a single value type but has "
                     + valueTypes.stream()
                             .map(Class::getSimpleName)
                             .map(s -> StringUtils.removeStart(s, "Json"))
                             .collect(Collectors.joining(" and "))
-                    + " instead!");
+                    + " instead!", validate);
         }
 
         return null;
@@ -227,7 +211,6 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
      * @return the set of value types for this field.
      */
     public Set<ViewClassFieldType> getFieldValueTypes() {
-        validate();
         return getFieldValueTypes(fieldKeyValues.stream()
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toCollection(ArrayList::new)), false);
@@ -400,7 +383,12 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
      * @return the effective type of this field.
      */
     public Class<? extends JsonValue> getEffectiveType() {
-        validate();
+        if (effectiveType == null) {
+            effectiveType = getEffectiveType(fieldKeyValues.stream()
+                    .map(Map.Entry::getValue)
+                    .collect(Collectors.toCollection(ArrayList::new)), false);
+        }
+
         return effectiveType;
     }
 
@@ -417,6 +405,12 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
 
     private void addError(String message) {
         errors.add(new ViewClassDefinitionError(this, message));
+    }
+
+    private void addErrorConditionally(String message, boolean addError) {
+        if (addError) {
+            addError(message);
+        }
     }
 
     private ViewClassGeneratorContext getContext() {

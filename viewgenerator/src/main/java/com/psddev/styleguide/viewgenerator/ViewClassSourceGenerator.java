@@ -83,15 +83,25 @@ class ViewClassSourceGenerator {
                 sourceBuilder.append(NEW_LINE);
 
                 // Adds javadocs if it exists (which it should).
-                sourceBuilder.append(new ViewClassJavadocsBuilder()
-                        .startParagraph()
-                        .add("Field level interface for the return type of ")
-                        .addLink(fieldDef.getClassDefinition().getClassName() + "#" + getJavaInterfaceMethodName(fieldDef) + "()")
-                        .add(". ")
-                        .newLine()
-                        .addFieldValueTypesSnippet(fieldDef)
-                        .endParagraph()
-                        .buildJavadocsSource(0));
+                ViewClassJavadocsBuilder javadocs = new ViewClassJavadocsBuilder();
+
+                javadocs.startParagraph();
+                if (fieldDef.isAbstract()) {
+                    javadocs.add("An <b>abstract</b> field");
+                } else {
+                    javadocs.add("Field");
+                }
+                javadocs.add(" level interface for the return type of ");
+                javadocs.addLink(fieldDef.getClassDefinition().getClassName() + "#" + getJavaInterfaceMethodName(fieldDef) + "()");
+                javadocs.add(".");
+                if (!fieldDef.isAbstract()) {
+                    javadocs.add(" ");
+                    javadocs.newLine();
+                    javadocs.addFieldValueTypesSnippet(fieldDef);
+                }
+                javadocs.endParagraph();
+
+                sourceBuilder.append(javadocs.buildJavadocsSource(0));
 
                 // field level interface declaration
                 sourceBuilder.append(indent(0)).append("public interface ").append(fieldDef.getClassName()).append(" {").append(NEW_LINE);

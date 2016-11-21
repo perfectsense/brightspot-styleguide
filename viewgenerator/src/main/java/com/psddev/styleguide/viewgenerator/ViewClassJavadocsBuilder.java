@@ -240,7 +240,11 @@ class ViewClassJavadocsBuilder {
         StringBuilder builder = new StringBuilder();
 
         if (fieldDef.getClassDefinition().getContext().isGenerateStrictTypes()) {
-            builder.append("A ");
+            if (fieldDef.isAbstract()) {
+                builder.append("An <b>abstract</b> ");
+            } else {
+                builder.append("A ");
+            }
         } else {
             builder.append("Typically a ");
         }

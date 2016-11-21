@@ -30,6 +30,9 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
     // The type of the field
     private Class<? extends JsonValue> effectiveType;
 
+    private Boolean isDelegate;
+    private Boolean isAbstract;
+
     private boolean validated = false;
     private List<ViewClassDefinitionError> errors = new ArrayList<>();
 
@@ -240,6 +243,9 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
 
         Class<? extends JsonValue> effectiveValueType;
 
+        isDelegate = false;
+        isAbstract = false;
+
         if (valueTypes.size() == 1
                 || (!viewClassDef.getContext().isGenerateStrictTypes() && valueTypes.size() == 2
                 && valueTypes.containsAll(Arrays.asList(JsonViewMap.class, JsonString.class)))) {
@@ -314,20 +320,26 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
                     addErrorConditionally("A field cannot be declared as both delegate and abstract.", validate);
                 }
 
-                /*
-                 * This means that this field definition is a delegate, but no
-                 * corresponding class definitions that declared it as its
-                 * wrapper.
-                 */
-                if (!delegateMaps.isEmpty() && fieldValueTypes.isEmpty()) {
-                    addErrorConditionally("Can't infer the type of this delegate field"
-                            + " because there are no views that implicitly nor"
-                            + " explicitly declared the field's file(s) as a"
-                            + " wrapper. Unreferenced wrapper files: "
-                            + delegateFilePaths, validate);
+                if (!delegateMaps.isEmpty()) {
+                    isDelegate = true;
+
+                    /*
+                     * This means that this field definition is a delegate, but
+                     * no corresponding class definitions that declared it as
+                     * its wrapper.
+                     */
+                    if (fieldValueTypes.isEmpty()) {
+                        addErrorConditionally("Can't infer the type of this delegate field"
+                                + " because there are no views that implicitly nor"
+                                + " explicitly declared the field's file(s) as a"
+                                + " wrapper. Unreferenced wrapper files: "
+                                + delegateFilePaths, validate);
+                    }
                 }
 
                 if (!abstractMaps.isEmpty() && fieldValueTypes.isEmpty()) {
+                    isAbstract = true;
+
                     return Collections.singleton(this);
                 }
 
@@ -414,9 +426,19 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
     }
 
     public boolean isDelegate() {
-        return fieldKeyValues.stream()
-                .map(Map.Entry::getValue)
-                .anyMatch(value -> value instanceof JsonDelegateMap);
+        if (isDelegate == null) {
+            // initializes the isDelegate flag if it hasn't been set.
+            getFieldValueTypes();
+        }
+        return Boolean.TRUE.equals(isDelegate);
+    }
+
+    public boolean isAbstract() {
+        if (isAbstract == null) {
+            // initializes the isAbstract flag if it hasn't been set.
+            getFieldValueTypes();
+        }
+        return Boolean.TRUE.equals(isAbstract);
     }
 
     @Override

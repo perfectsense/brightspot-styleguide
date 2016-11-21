@@ -1,0 +1,11 @@
+{
+    "_template": "/Page.hbs",
+
+    "head": {
+        "_dataUrl": "HeadForPromoModule.json"
+    },
+
+    "body": {
+        "_dataUrl": "/Body.json"
+    }
+}

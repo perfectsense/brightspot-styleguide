@@ -1,0 +1,14 @@
+{
+    "_template": "Page.hbs",
+    "body1": {
+        "_delegate": true,
+        "foo": "not allowed here"
+    },
+    "body2": {
+        "_delegate": "must be a boolean"
+    },
+    "body3": {
+        "_delegate": true,
+        "_notes": "not allowed here either"
+    }
+}

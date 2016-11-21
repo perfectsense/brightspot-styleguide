@@ -1,0 +1,14 @@
+{
+    "_template": "/Page.hbs",
+
+    "head": {
+        "_dataUrl": "/Head.json"
+    },
+
+    "body": {
+        "_template": "BodyOneOff.hbs",
+        "content": {
+            "_delegate": true
+        }
+    }
+}

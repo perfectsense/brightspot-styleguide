@@ -1,0 +1,5 @@
+{
+    "_wrapper": "_wrapperOneOff.json",
+    "_template": "OneOffContent.hbs",
+    "title": "Hello World!"
+}

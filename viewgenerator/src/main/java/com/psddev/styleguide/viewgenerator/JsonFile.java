@@ -47,6 +47,11 @@ class JsonFile {
     public static final String DELEGATE_KEY = "_delegate";
 
     /**
+     * The JSON key for denoting that a particular field's value is abstract, and not defined in this module.
+     */
+    public static final String ABSTRACT_KEY = "_abstract";
+
+    /**
      * The JSON key for providing documentation for the view map it's contained in.
      */
     public static final String NOTES_KEY = "_notes";

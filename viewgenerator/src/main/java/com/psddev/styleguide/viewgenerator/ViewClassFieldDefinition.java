@@ -155,8 +155,12 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         // ignore nulls
         valueTypes.remove(JsonNull.class);
 
-        // If we find a delegate map type, replace it with a view map type since they are placeholders for them.
+        // If we find a delegate or abstract map type, replace it with a view map type since they are placeholders for them.
         if (valueTypes.remove(JsonDelegateMap.class)) {
+            valueTypes.add(JsonViewMap.class);
+        }
+
+        if (valueTypes.remove(JsonAbstractMap.class)) {
             valueTypes.add(JsonViewMap.class);
         }
 
@@ -230,6 +234,10 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             valueTypes.add(JsonViewMap.class);
         }
 
+        if (valueTypes.remove(JsonAbstractMap.class)) {
+            valueTypes.add(JsonViewMap.class);
+        }
+
         Class<? extends JsonValue> effectiveValueType;
 
         if (valueTypes.size() == 1
@@ -271,6 +279,11 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
                         .map(value -> (JsonDelegateMap) value)
                         .collect(Collectors.toSet());
 
+                Set<JsonAbstractMap> abstractMaps = values.stream()
+                        .filter(value -> (value instanceof JsonAbstractMap))
+                        .map(value -> (JsonAbstractMap) value)
+                        .collect(Collectors.toSet());
+
                 /*
                  * for each delegate key search for all view class definitions
                  * that have a JSON view map whose wrapper JSON file matches
@@ -297,17 +310,25 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
                     }
                 }
 
+                if (!abstractMaps.isEmpty() && !delegateMaps.isEmpty()) {
+                    addErrorConditionally("A field cannot be declared as both delegate and abstract.", validate);
+                }
+
                 /*
                  * This means that this field definition is a delegate, but no
                  * corresponding class definitions that declared it as its
                  * wrapper.
                  */
-                if (validate && fieldValueTypes.isEmpty()) {
-                    addError("Can't infer the type of this delegate field"
+                if (!delegateMaps.isEmpty() && fieldValueTypes.isEmpty()) {
+                    addErrorConditionally("Can't infer the type of this delegate field"
                             + " because there are no views that implicitly nor"
                             + " explicitly declared the field's file(s) as a"
                             + " wrapper. Unreferenced wrapper files: "
-                            + delegateFilePaths);
+                            + delegateFilePaths, validate);
+                }
+
+                if (!abstractMaps.isEmpty() && fieldValueTypes.isEmpty()) {
+                    return Collections.singleton(this);
                 }
 
                 return fieldValueTypes;

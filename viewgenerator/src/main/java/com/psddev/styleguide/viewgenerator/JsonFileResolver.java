@@ -84,8 +84,15 @@ class JsonFileResolver {
             return null;
         }
 
+        Optional<Boolean> isAbstract = isAbstract(jsonMap);
+        if (!isAbstract.isPresent()) {
+            return null;
+        }
+
         ViewKey viewKey = null;
-        if (isViewExpected && !isDelegate.get()) {
+        if (isViewExpected
+                && !isDelegate.get()
+                && !isAbstract.get()) {
 
             viewKey = requireViewKey(jsonMap);
 
@@ -99,6 +106,9 @@ class JsonFileResolver {
 
         if (viewKey != null) {
             return new JsonViewMap(jsonMap.getLocation(), resolved, wrapperJsonFile, viewKey, getNotes(jsonMap));
+
+        } else if (isAbstract.get()) {
+            return new JsonAbstractMap(jsonMap.getLocation(), resolved);
 
         } else if (isDelegate.get()) {
             return new JsonDelegateMap(jsonMap.getLocation(), resolved, file);
@@ -237,6 +247,42 @@ class JsonFileResolver {
 
             } else {
                 addError("JSON key [" + JsonFile.DELEGATE_KEY + "] must be a boolean.", delegate);
+                return Optional.of(true);
+            }
+
+        } else {
+            return Optional.of(false);
+        }
+    }
+
+    /*
+     * Checks to see if this map uses the abstract key, and returns true if it
+     * does, or false if it does not. If it uses the abstract key, but sets the
+     * value to false, this method returns an empty optional signifying that
+     * this particular map is a no-op and has no value at all. There's not
+     * really a valid use case for it, but it also doesn't hurt anything so we
+     * allow it for now.
+     */
+    private Optional<Boolean> isAbstract(JsonMap jsonMap) {
+        JsonValue abstractValue = jsonMap.getValue(JsonFile.ABSTRACT_KEY);
+        if (abstractValue != null) {
+
+            if (jsonMap.getValues().size() > 1) {
+                addError("JSON key [" + JsonFile.ABSTRACT_KEY + "] must be the only key in the map.", jsonMap);
+            }
+
+            if (abstractValue instanceof JsonBoolean) {
+
+                if (((JsonBoolean) abstractValue).toRawValue()) {
+                    return Optional.of(true);
+
+                } else {
+                    // if _delegate is set to false, then just treat it as if the entire thing is null
+                    return Optional.empty();
+                }
+
+            } else {
+                addError("JSON key [" + JsonFile.ABSTRACT_KEY + "] must be a boolean.", abstractValue);
                 return Optional.of(true);
             }
 

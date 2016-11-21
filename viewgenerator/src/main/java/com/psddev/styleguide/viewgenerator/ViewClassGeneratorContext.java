@@ -137,23 +137,6 @@ class ViewClassGeneratorContext {
     }
 
     /**
-     * Creates a new view class definition object, validates it, and keeps a
-     * reference to it so that all of the created definitions can be analyzed
-     * holistically.
-     *
-     * @param viewKey the desired view key
-     * @param jsonViewMaps the set of JSON view maps that represent the class
-     *                     definition.
-     * @return a newly created and validated view class definition.
-     */
-    public ViewClassDefinition createViewClassDefinition(ViewKey viewKey, Set<JsonViewMap> jsonViewMaps) {
-        ViewClassDefinition classDef = new ViewClassDefinition(this, viewKey, jsonViewMaps);
-        classDef.validate();
-        classDefinitions.add(classDef);
-        return classDef;
-    }
-
-    /**
      * Returns the list of view class definitions that have been created thus
      * far in a view class generation operation.
      *
@@ -161,6 +144,15 @@ class ViewClassGeneratorContext {
      */
     public List<ViewClassDefinition> getClassDefinitions() {
         return new ArrayList<>(classDefinitions);
+    }
+
+    /**
+     * Sets the list of view class definitions that have been created.
+     *
+     * @param classDefinitions the class definitions to set.
+     */
+    public void setClassDefinitions(List<ViewClassDefinition> classDefinitions) {
+        this.classDefinitions = classDefinitions;
     }
 
     @Deprecated

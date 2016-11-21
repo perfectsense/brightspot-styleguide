@@ -3,51 +3,38 @@ package com.psddev.styleguide.viewgenerator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 public class TestUtils {
 
     static final String TEST_RESOURCES_DIRECTORY = "src/test/resources";
 
-    private static final String DEFAULT_JAVA_PACKAGE_NAME = "com.psddev.styleguide.view";
+    public static Path getJsonDirectoryPathForClass(Class<?> klass) {
+        return getTestResourcesPath().resolve(klass.getSimpleName());
+    }
 
-    public static JsonDirectory getJsonDirectoryForName(String name) {
-        Path path = getJsonDirectoriesForNames(name).stream().findFirst().orElse(null);
+    public static ViewClassGeneratorContext getViewClassGeneratorContextForClass(Class<?> klass) {
+
+        Path jsonDirectoryPath = getJsonDirectoryPathForClass(klass);
+
         ViewClassGeneratorContext context = new ViewClassGeneratorContext();
-        context.setJsonDirectories(Collections.singleton(path));
-        return new JsonDirectory(context);
+        context.setJsonDirectories(Collections.singleton(jsonDirectoryPath));
+        context.setJavaSourceDirectory(jsonDirectoryPath.resolve("output"));
+
+        return context;
     }
 
     public static JsonDirectory getJsonDirectoryForClass(Class<?> klass) {
-        Path path = getJsonDirectoriesForClasses(klass).stream().findFirst().orElse(null);
-        ViewClassGeneratorContext context = new ViewClassGeneratorContext();
-        context.setJsonDirectories(Collections.singleton(path));
-        return new JsonDirectory(context);
+        return new JsonDirectory(getViewClassGeneratorContextForClass(klass));
     }
 
-    public static Set<Path> getJsonDirectoriesForNames(String... names) {
-        return Stream.of(names)
-                .map(name -> getTestResourcesPath().resolve(name))
-                .collect(Collectors.toSet());
-    }
-
-    public static Set<Path> getJsonDirectoriesForClasses(Class<?>... classes) {
-        return Stream.of(classes)
-                .map(klass -> getTestResourcesPath().resolve(klass.getSimpleName()))
-                .collect(Collectors.toSet());
+    public static List<ViewClassDefinition> getViewClassDefinitionsForClass(Class<?> klass) {
+        JsonDirectory directory = getJsonDirectoryForClass(klass);
+        return ViewClassDefinition.createDefinitions(directory.getContext(), directory.resolveViewMaps());
     }
 
     public static ViewClassGenerator getDefaultGeneratorForClass(Class<?> klass) {
-
-        Set<Path> jsonDirectories = getJsonDirectoriesForClasses(klass);
-
-        ViewClassGeneratorContext context = new ViewClassGeneratorContext();
-        context.setJsonDirectories(jsonDirectories);
-        context.setJavaSourceDirectory(jsonDirectories.stream().findFirst().orElse(null).resolve("output"));
-
-        ViewClassGenerator generator = new ViewClassGenerator(context);
+        ViewClassGenerator generator = new ViewClassGenerator(getViewClassGeneratorContextForClass(klass));
 
         generator.disableLogColors();
 

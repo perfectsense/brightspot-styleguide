@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * metadata can and should be validated first to ensure that the generated
  * class will compile.
  */
-class ViewClassDefinition implements ViewClassFieldType {
+final class ViewClassDefinition implements ViewClassFieldType {
 
     private ViewClassGeneratorContext context;
 
@@ -41,9 +41,9 @@ class ViewClassDefinition implements ViewClassFieldType {
      *                     found in the styleguide that when combined create a unified
      *                     definition of all the fields and types for this view.
      */
-    public ViewClassDefinition(ViewClassGeneratorContext context,
-                               ViewKey viewKey,
-                               Set<JsonViewMap> jsonViewMaps) {
+    private ViewClassDefinition(ViewClassGeneratorContext context,
+                                ViewKey viewKey,
+                                Set<JsonViewMap> jsonViewMaps) {
 
         this.context = context;
         this.viewKey = viewKey;
@@ -215,5 +215,46 @@ class ViewClassDefinition implements ViewClassFieldType {
         return getFieldDefinitions().stream()
                 .filter(fieldDef -> fieldDef.getEffectiveType() != null)
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /**
+     * Creates a new view class definition object, validates it, and keeps a
+     * reference to it so that all of the created definitions can be analyzed
+     * holistically.
+     *
+     * @param context the class generation context
+     * @param jsonViewMaps the set of all JSON view maps that make up all the
+     *                     class definitions.
+     * @return a list of newly created and validated view class definitions.
+     */
+    public static List<ViewClassDefinition> createDefinitions(ViewClassGeneratorContext context, Set<JsonViewMap> jsonViewMaps) {
+
+        // Sort the view maps by view key
+        Map<ViewKey, Set<JsonViewMap>> jsonViewMapsByViewKey = new HashMap<>();
+
+        for (JsonViewMap jsonViewMap : jsonViewMaps) {
+
+            ViewKey viewKey = jsonViewMap.getViewKey();
+
+            Set<JsonViewMap> set = jsonViewMapsByViewKey.get(viewKey);
+            if (set == null) {
+                set = new HashSet<>();
+                jsonViewMapsByViewKey.put(viewKey, set);
+            }
+            set.add(jsonViewMap);
+        }
+
+        List<ViewClassDefinition> classDefs = new ArrayList<>();
+
+        for (Map.Entry<ViewKey, Set<JsonViewMap>> entry : jsonViewMapsByViewKey.entrySet()) {
+            ViewClassDefinition classDef = new ViewClassDefinition(context, entry.getKey(), entry.getValue());
+            classDefs.add(classDef);
+        }
+
+        context.setClassDefinitions(classDefs);
+
+        classDefs.forEach(ViewClassDefinition::validate);
+
+        return classDefs;
     }
 }

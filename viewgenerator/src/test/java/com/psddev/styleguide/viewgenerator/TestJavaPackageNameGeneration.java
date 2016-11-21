@@ -11,7 +11,7 @@ import org.junit.Test;
 public class TestJavaPackageNameGeneration {
 
     @Test
-    public void testDataUrlComplex() throws Exception {
+    public void testJavaPackageNameGeneration() throws Exception {
 
         Map<Path, String> pathToExpectedPackage = new LinkedHashMap<>();
 

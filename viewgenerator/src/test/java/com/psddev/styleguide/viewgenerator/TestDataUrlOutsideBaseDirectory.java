@@ -8,9 +8,9 @@ import org.junit.Test;
 public class TestDataUrlOutsideBaseDirectory {
 
     @Test(expected = RuntimeException.class)
-    public void testJsonDirectory() throws Exception {
+    public void testDataUrlOutsideBaseDirectory() throws Exception {
 
-        Path jsonPath = TestUtils.getJsonDirectoriesForClasses(getClass()).iterator().next().resolve("base");
+        Path jsonPath = TestUtils.getJsonDirectoryPathForClass(getClass()).resolve("base");
 
         ViewClassGeneratorContext context = new ViewClassGeneratorContext();
         context.setJsonDirectories(Collections.singleton(jsonPath));

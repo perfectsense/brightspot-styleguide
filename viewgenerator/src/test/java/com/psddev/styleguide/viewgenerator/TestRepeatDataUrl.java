@@ -11,11 +11,9 @@ public class TestRepeatDataUrl {
 
     @Test
     public void testRepeatDataUrl() throws Exception {
-        // get a default test view class generator
-        ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
 
         // generate the template definitions
-        List<ViewClassDefinition> definitions = generator.getViewClassDefinitions();
+        List<ViewClassDefinition> definitions = TestUtils.getViewClassDefinitionsForClass(getClass());
 
         // verify there's a definition for the list template
         ViewClassDefinition itemDef = definitions.stream().filter(classDef -> classDef.getViewKey().getName().equals("templates/list.hbs")).findFirst().get();

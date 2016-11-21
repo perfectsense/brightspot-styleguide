@@ -7,7 +7,7 @@ import org.junit.Test;
 public class TestMultipleJsonDirectories {
 
     @Test
-    public void testDataUrlOverrides() throws Exception {
+    public void testMultipleJsonDirectories() throws Exception {
 
         /*
             <argument>--json-dir=${project.basedir}/bower_components/brightspot-base/styleguide</argument>
@@ -18,7 +18,7 @@ public class TestMultipleJsonDirectories {
             <argument>--watch=${styleguide.viewgenerator.watch}</argument>
          */
 
-        Path testPath = TestUtils.getJsonDirectoriesForClasses(getClass()).iterator().next();
+        Path testPath = TestUtils.getJsonDirectoryPathForClass(getClass());
 
         // need to append _test to directory name so git doesn't ignore it.
         Path bowerComponentsPath = testPath.resolve("bower_components_test/brightspot-base/styleguide");

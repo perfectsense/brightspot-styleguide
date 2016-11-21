@@ -24,9 +24,7 @@ public class TestFieldNames {
     @Test
     public void testFieldNames() throws Exception {
 
-        ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
-
-        List<ViewClassDefinition> classDefs = generator.getViewClassDefinitions();
+        List<ViewClassDefinition> classDefs = TestUtils.getViewClassDefinitionsForClass(getClass());
 
         // makes sure there's only one class definition
         Assert.assertEquals(1, classDefs.size());

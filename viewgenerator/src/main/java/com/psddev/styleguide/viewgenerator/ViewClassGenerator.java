@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -82,8 +81,6 @@ public class ViewClassGenerator {
 
     private ViewClassGeneratorContext context;
 
-    private List<ViewClassDefinition> classDefinitions;
-
     ViewClassGenerator(ViewClassGeneratorContext context) {
         this.context = context;
     }
@@ -119,45 +116,13 @@ public class ViewClassGenerator {
         });
     }
 
-    List<ViewClassDefinition> getViewClassDefinitions() {
-
-        if (classDefinitions == null) {
-
-            JsonDirectory directory;
-            Set<JsonViewMap> jsonViewMaps;
-            Map<ViewKey, Set<JsonViewMap>> jsonViewMapsByViewKey;
-
-            directory = new JsonDirectory(context);
-
-            // can throw an exception
-            jsonViewMaps = directory.resolveViewMaps();
-
-            // Be able to lookup JSON view maps by view key name
-            jsonViewMapsByViewKey = new HashMap<>();
-
-            for (JsonViewMap jsonViewMap : jsonViewMaps) {
-
-                ViewKey viewKey = jsonViewMap.getViewKey();
-
-                Set<JsonViewMap> set = jsonViewMapsByViewKey.get(viewKey);
-                if (set == null) {
-                    set = new HashSet<>();
-                    jsonViewMapsByViewKey.put(viewKey, set);
-                }
-                set.add(jsonViewMap);
-            }
-
-            classDefinitions = jsonViewMapsByViewKey.entrySet().stream()
-                    .map(entry -> context.createViewClassDefinition(entry.getKey(), entry.getValue()))
-                    .collect(Collectors.toList());
-        }
-
-        return new ArrayList<>(classDefinitions);
-    }
-
     Map<Path, String> getGeneratedClasses() {
 
-        List<ViewClassDefinition> classDefinitions = getViewClassDefinitions();
+        JsonDirectory directory = new JsonDirectory(context);
+
+        Set<JsonViewMap> jsonViewMaps = directory.resolveViewMaps();
+
+        List<ViewClassDefinition> classDefinitions = ViewClassDefinition.createDefinitions(context, jsonViewMaps);
 
         // throws a ViewClassGeneratorException if there are errors
         checkForErrors(new HashSet<>(classDefinitions));
@@ -315,7 +280,6 @@ public class ViewClassGenerator {
                 }
             });
 
-            // TODO: Need to
             context.getJsonDirectories().forEach(dir -> logger.green().append("Watching Directory: ").reset().append(dir).log());
 
             watchDirectory.start();

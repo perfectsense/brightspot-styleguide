@@ -1,16 +1,14 @@
 package com.psddev.styleguide.viewgenerator;
 
+import java.util.List;
+
 import org.junit.Test;
 
 public class TestDataUrlOverrideTemplate {
 
     @Test
-    public void testDataUrlOverrides() throws Exception {
+    public void testDataUrlOverrideTemplate() throws Exception {
 
-        // get a default test view class generator
-        ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
-
-        // generate the template definitions
-        generator.getViewClassDefinitions();
+        List<ViewClassDefinition> definitions = TestUtils.getViewClassDefinitionsForClass(getClass());
     }
 }

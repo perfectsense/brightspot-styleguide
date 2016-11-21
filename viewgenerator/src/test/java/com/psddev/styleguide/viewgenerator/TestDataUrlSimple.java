@@ -8,7 +8,7 @@ import org.junit.Test;
 public class TestDataUrlSimple {
 
     @Test
-    public void testJsonDirectory() throws Exception {
+    public void testDataUrlSimple() throws Exception {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 

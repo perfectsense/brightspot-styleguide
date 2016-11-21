@@ -9,13 +9,12 @@ import org.junit.Test;
 public class TestRemoveFieldWithNullValue {
 
     @Test
-    public void testNull() throws Exception {
+    public void testRemoveFieldWithNullValue() throws Exception {
 
-        ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
+        ViewClassGeneratorContext context = TestUtils.getViewClassGeneratorContextForClass(getClass());
+        context.setExcludedPaths(Collections.singleton("base"));
 
-        generator.getContext().setExcludedPaths(Collections.singleton("base"));
-
-        List<ViewClassDefinition> classDefs = generator.getViewClassDefinitions();
+        List<ViewClassDefinition> classDefs = ViewClassDefinition.createDefinitions(context, new JsonDirectory(context).resolveViewMaps());
 
         Assert.assertEquals(1, classDefs.size());
 

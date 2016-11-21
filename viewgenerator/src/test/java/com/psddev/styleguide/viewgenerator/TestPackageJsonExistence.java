@@ -13,9 +13,7 @@ public class TestPackageJsonExistence {
     @Test
     public void testPackageJsonExistence() throws Exception {
 
-        ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
-
-        List<ViewClassDefinition> classDefs = generator.getViewClassDefinitions();
+        List<ViewClassDefinition> classDefs = TestUtils.getViewClassDefinitionsForClass(getClass());
 
         Assert.assertEquals(2, classDefs.size());
 

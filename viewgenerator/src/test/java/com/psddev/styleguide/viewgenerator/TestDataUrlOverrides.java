@@ -15,11 +15,7 @@ public class TestDataUrlOverrides {
     @Test
     public void testDataUrlOverrides() throws Exception {
 
-        // get a default test view class generator
-        ViewClassGenerator generator = TestUtils.getDefaultGeneratorForClass(getClass());
-
-        // generate the template definitions
-        List<ViewClassDefinition> definitions = generator.getViewClassDefinitions();
+        List<ViewClassDefinition> definitions = TestUtils.getViewClassDefinitionsForClass(getClass());
 
         // verify there's a definition for the "child" template
         ViewClassDefinition itemDef = definitions.stream().filter(classDef -> classDef.getViewKey().getName().equals("templates/child.hbs")).findFirst().get();

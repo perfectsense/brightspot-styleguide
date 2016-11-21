@@ -8,7 +8,7 @@ import org.junit.Test;
 public class TestNoViewConfiguration {
 
     @Test
-    public void testNullPath() throws Exception {
+    public void testNoViewConfiguration() throws Exception {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 

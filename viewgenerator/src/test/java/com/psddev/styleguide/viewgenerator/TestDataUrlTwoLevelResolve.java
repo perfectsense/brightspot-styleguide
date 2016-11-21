@@ -8,7 +8,7 @@ import org.junit.Test;
 public class TestDataUrlTwoLevelResolve {
 
     @Test
-    public void testJsonDirectory() throws Exception {
+    public void testDataUrlTwoLevelResolve() throws Exception {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 

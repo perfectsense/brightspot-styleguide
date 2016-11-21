@@ -28,6 +28,7 @@ class ViewClassDefinition implements ViewClassFieldType {
     private List<ViewClassDefinitionError> errors = new ArrayList<>();
 
     private boolean validated = false;
+    private boolean validatedHolistically = false;
 
     /**
      * Creates a new view class definition identified by the given
@@ -125,6 +126,24 @@ class ViewClassDefinition implements ViewClassFieldType {
         }
 
         validated = true;
+    }
+
+    public void validateHolistically() {
+
+        if (validatedHolistically) {
+            return;
+        }
+
+        for (ViewClassFieldDefinition fieldDef : getFieldDefinitions()) {
+
+            fieldDef.validateHolistically();
+
+            if (fieldDef.hasAnyErrors()) {
+                errors.addAll(fieldDef.getErrors());
+            }
+        }
+
+        validatedHolistically = true;
     }
 
     /**

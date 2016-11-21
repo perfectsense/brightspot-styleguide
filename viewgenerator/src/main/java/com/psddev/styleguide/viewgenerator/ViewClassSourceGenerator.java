@@ -71,10 +71,8 @@ class ViewClassSourceGenerator {
         // Field level interfaces
         for (ViewClassFieldDefinition fieldDef : classDef.getNonNullFieldDefinitions()) {
 
-            Set<ViewClassFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
-
             // Only create the view field level interface if there's more than one field value type
-            if (fieldValueTypes.size() > 1) {
+            if (!(fieldDef.getEffectiveValueType() instanceof ViewClassFieldNativeJavaType)) {
 
                 StringBuilder sourceBuilder = new StringBuilder();
 
@@ -359,12 +357,9 @@ class ViewClassSourceGenerator {
 
             for (ViewClassFieldDefinition fieldDef : classDef.getNonNullFieldDefinitions()) {
 
-                Set<ViewClassFieldType> fieldValueTypes = fieldDef.getFieldValueTypes();
-                if (fieldValueTypes.size() > 1 && fieldValueTypes.stream()
+                if (fieldDef.getFieldValueTypes().stream()
                         .map(ViewClassFieldType::getFullyQualifiedClassName)
-                        .filter(fqcn -> fqcn.equals(this.classDef.getFullyQualifiedClassName()))
-                        .findAny()
-                        .isPresent()) {
+                        .anyMatch(fqcn -> fqcn.equals(this.classDef.getFullyQualifiedClassName()))) {
 
                     implementedFieldDefs.add(fieldDef);
                 }

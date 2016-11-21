@@ -34,9 +34,10 @@ class JsonDirectory {
 
     private static final CliLogger LOGGER = CliLogger.getLogger();
 
-    private static final String CONFIG_FILE_NAME = "_config.json";
-    private static final String PACKAGE_JSON_FILE_NAME = "package.json";
-    private static final String BOWER_COMPONENTS_DIRECTORY_NAME = "bower_components";
+    public static final String CONFIG_FILE_NAME = "_config.json";
+    public static final String PACKAGE_JSON_FILE_NAME = "package.json";
+    public static final String WRAPPER_JSON_FILE_NAME = "_wrapper.json";
+    public static final String BOWER_COMPONENTS_DIRECTORY_NAME = "bower_components";
     private static final String NODE_MODULES_DIRECTORY_NAME = "node_modules";
 
     private ViewClassGeneratorContext context;
@@ -374,6 +375,58 @@ class JsonDirectory {
     }
 
     /**
+     * Get the wrapper JSON for the given file by traversing up the directory
+     * tree of the given file.
+     *
+     * @param jsonFile the JSON file whose effective wrapper is being searched for.
+     * @return the wrapper JSON for the given file.
+     */
+    public JsonFile getNearestWrapperJsonFile(JsonFile jsonFile) {
+
+        if (jsonFile == null) {
+            return null;
+        }
+
+        return getNearestWrapperJsonFile(getPath().relativize(jsonFile.getPath().getParent()));
+    }
+
+    private JsonFile getNearestWrapperJsonFile(Path relativePath) {
+
+        if (relativePath == null) {
+            return null;
+        }
+
+        while (true) {
+
+            if (relativePath == null) {
+                relativePath = Paths.get("");
+            }
+
+            Path resolvedPath = getPath().resolve(relativePath);
+
+            Path wrapperJsonPath = resolvedPath.resolve(WRAPPER_JSON_FILE_NAME);
+
+            if (wrapperJsonPath.toFile().exists()) {
+
+                Path foo = getPath().relativize(wrapperJsonPath);
+
+                return normalizedFilePathsCache.get(foo);
+            }
+
+            if (relativePath != null
+                    && relativePath.getNameCount() > 0
+                    && !relativePath.getName(0).toString().isEmpty()) {
+
+                relativePath = relativePath.getParent();
+            } else {
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Gets the set of all JSON view maps that were discovered and resolved in
      * this directory. Successful execution of this API means that all of the
      * discoverable JSON files are syntactically valid and all references to
@@ -418,11 +471,6 @@ class JsonDirectory {
             // find all the nested view maps
             viewMaps = new LinkedHashSet<>();
             fileViewMaps.stream().forEach(viewMap -> populateNestedViewMaps(viewMaps, viewMap));
-
-            // Filter out delegate view keys
-            viewMaps = viewMaps.stream()
-                    .filter(jsonViewMap -> !DelegateViewKey.INSTANCE.contentEquals(jsonViewMap.getViewKey()))
-                    .collect(Collectors.toSet());
         }
 
         return viewMaps;
@@ -431,7 +479,7 @@ class JsonDirectory {
     /*
      * Gets all the files that are discoverable within this directory.
      */
-    private Set<JsonFile> getFiles() {
+    public Set<JsonFile> getFiles() {
         if (files == null) {
             files = getFilePaths().stream()
                     .map(path -> new JsonFile(this, path))

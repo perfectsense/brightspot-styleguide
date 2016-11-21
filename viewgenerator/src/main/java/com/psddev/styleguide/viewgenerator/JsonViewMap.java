@@ -12,6 +12,8 @@ import com.psddev.dari.util.ObjectUtils;
  */
 class JsonViewMap extends JsonMap {
 
+    private JsonFile wrapper;
+
     private ViewKey viewKey;
 
     private String notes;
@@ -24,10 +26,20 @@ class JsonViewMap extends JsonMap {
      * @param viewKey the associated view key.
      * @param notes the documentation notes.
      */
-    public JsonViewMap(JsonDataLocation location, Map<JsonKey, JsonValue> values, ViewKey viewKey, String notes) {
+    public JsonViewMap(JsonDataLocation location, Map<JsonKey, JsonValue> values, JsonFile wrapper, ViewKey viewKey, String notes) {
         super(location, values);
+        this.wrapper = wrapper;
         this.viewKey = viewKey;
         this.notes = notes;
+    }
+
+    /**
+     * Gets the JSON file declared as being the wrapper for this view map.
+     *
+     * @return the wrapper file
+     */
+    public JsonFile getWrapper() {
+        return wrapper;
     }
 
     /**

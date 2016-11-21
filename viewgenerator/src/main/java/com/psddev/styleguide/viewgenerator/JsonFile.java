@@ -37,6 +37,11 @@ class JsonFile {
     public static final String DATA_URL_KEY = "_dataUrl";
 
     /**
+     * The JSON key specifying a custom wrapper JSON.
+     */
+    public static final String WRAPPER_KEY = "_wrapper";
+
+    /**
      * The JSON key for denoting that a particular field's value can be ANY view.
      */
     public static final String DELEGATE_KEY = "_delegate";
@@ -299,6 +304,15 @@ class JsonFile {
         }
 
         errors.add(error);
+    }
+
+    /**
+     * Gets the nearest wrapper JSON file to this file.
+     *
+     * @return the nearest wrapper JSON file to this file.
+     */
+    public JsonFile getNearestWrapperJsonFile() {
+        return getBaseDirectory().getNearestWrapperJsonFile(this);
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,7 @@ class JsonFileResolver {
      */
     private JsonViewMap resolveViewMap(JsonMap jsonMap) {
 
-        JsonMap resolved = resolveMap(jsonMap, true, new LinkedHashSet<>());
+        JsonMap resolved = resolveMap(jsonMap, true, new LinkedHashSet<>(), true);
         if (resolved instanceof JsonViewMap) {
             return (JsonViewMap) resolved;
 
@@ -66,7 +67,7 @@ class JsonFileResolver {
     /*
      * Recursive helper method for resolving JSON maps.
      */
-    private JsonMap resolveMap(JsonMap jsonMap, boolean isViewExpected, Set<Path> visitedDataUrlPaths) {
+    private JsonMap resolveMap(JsonMap jsonMap, boolean isViewExpected, Set<Path> visitedDataUrlPaths, boolean isBeginningOfFile) {
 
         Map<JsonKey, JsonValue> resolved = new LinkedHashMap<>();
 
@@ -78,10 +79,14 @@ class JsonFileResolver {
                 .filter(key -> !key.getName().startsWith(JsonFile.SPECIAL_KEY_PREFIX))
                 .collect(Collectors.toSet());
 
-        boolean isDelegate = keys.isEmpty() && jsonMap.containsKey(JsonFile.DELEGATE_KEY);
+        Optional<Boolean> isDelegate = isDelegate(jsonMap);
+        if (!isDelegate.isPresent()) {
+            return null;
+        }
 
         ViewKey viewKey = null;
-        if (isViewExpected && !isDelegate) {
+        if (isViewExpected && !isDelegate.get()) {
+
             viewKey = requireViewKey(jsonMap);
 
             for (JsonKey key : keys) {
@@ -90,12 +95,13 @@ class JsonFileResolver {
             }
         }
 
-        if (viewKey != null || isDelegate) {
-            return new JsonViewMap(
-                    jsonMap.getLocation(),
-                    resolved,
-                    isDelegate ? DelegateViewKey.INSTANCE : viewKey,
-                    getNotes(jsonMap));
+        JsonFile wrapperJsonFile = getWrapper(jsonMap, resolved, isBeginningOfFile);
+
+        if (viewKey != null) {
+            return new JsonViewMap(jsonMap.getLocation(), resolved, wrapperJsonFile, viewKey, getNotes(jsonMap));
+
+        } else if (isDelegate.get()) {
+            return new JsonDelegateMap(jsonMap.getLocation(), resolved, file);
 
         } else {
             return new JsonMap(jsonMap.getLocation(), resolved);
@@ -110,7 +116,9 @@ class JsonFileResolver {
     private JsonValue resolveValue(JsonKey key, JsonValue value, Set<Path> visitedDataUrlPaths) {
 
         if (value instanceof JsonMap) {
-            return resolveMap((JsonMap) value, !isMapBasedKey(key), visitedDataUrlPaths);
+            JsonMap jsonMap = resolveMap((JsonMap) value, !isMapBasedKey(key), visitedDataUrlPaths, false);
+            // The only time this will be null is if { "_delegate": false } in the map.
+            return jsonMap != null ? jsonMap : new JsonNull(null);
 
         } else if (value instanceof JsonList) {
 
@@ -127,6 +135,113 @@ class JsonFileResolver {
 
         } else {
             return value;
+        }
+    }
+
+    /*
+     * Gets the effective wrapper JSON file for the file being resolved. The
+     * isBeginningOfFile flag signifies whether the jsonMap is the outermost
+     * map within the JSON file being resolved.
+     */
+    private JsonFile getWrapper(JsonMap jsonMap, Map<JsonKey, JsonValue> resolvedValues, boolean isBeginningOfFile) {
+
+        JsonValue wrapper = jsonMap.getValue(JsonFile.WRAPPER_KEY);
+
+        /*
+         * If there's no wrapper defined and it's the beginning of the file and
+         * this file does not contain a delegate key, then find the nearest
+         * wrapper JSON file to it. If it did contain a delegate key, then it
+         * means that the map itself is a wrapper, and wrappers shouldn't
+         * contain wrappers.
+         */
+        if (wrapper == null) {
+            if (isBeginningOfFile && resolvedValues.values().stream().noneMatch(this::containsDelegateMapAnywhere)) {
+                return file.getNearestWrapperJsonFile();
+            } else {
+                return null;
+            }
+        }
+
+        if (!isBeginningOfFile) {
+            addError("JSON key [" + JsonFile.WRAPPER_KEY + "] must be at the root level of the JSON file.", wrapper);
+            return null;
+        }
+
+        // If it's null or false, return null.
+        if (wrapper instanceof JsonNull
+                || wrapper instanceof JsonBoolean && Boolean.FALSE.equals(((JsonBoolean) wrapper).toRawValue())) {
+            return null;
+        }
+
+        if (!(wrapper instanceof JsonString)) {
+            addError("JSON key [" + JsonFile.WRAPPER_KEY + "] must be a String.", wrapper);
+            return null;
+        }
+
+        String wrapperPath = ((JsonString) wrapper).toRawValue();
+
+        // find the corresponding json file
+        JsonFile wrapperFile = file.getBaseDirectory().getNormalizedFile(file, Paths.get(wrapperPath));
+
+        if (wrapperFile == null) {
+            addError("Couldn't find " + JsonFile.WRAPPER_KEY + ": " + wrapperPath, wrapper);
+            return null;
+        }
+
+        return wrapperFile;
+    }
+
+    /*
+     * Checks if the given resolved value contains a delegate map anywhere
+     * by traversing any children the value may have.
+     */
+    private boolean containsDelegateMapAnywhere(JsonValue resolvedValue) {
+
+        if (resolvedValue instanceof JsonMap) {
+            return resolvedValue instanceof JsonDelegateMap
+                    || ((JsonMap) resolvedValue).getValues().values().stream().anyMatch(this::containsDelegateMapAnywhere);
+
+        } else if (resolvedValue instanceof JsonList) {
+            return ((JsonList) resolvedValue).getValues().stream().anyMatch(this::containsDelegateMapAnywhere);
+
+        } else {
+            return false;
+        }
+    }
+
+    /*
+     * Checks to see if this map uses the delegate key, and returns true if it
+     * does, or false if it does not. If it uses the delegate key, but sets the
+     * value to false, this method returns an empty optional signifying that
+     * this particular map is a no-op and has no value at all. There's not
+     * really a valid use case for it, but it also doesn't hurt anything so we
+     * allow it for now.
+     */
+    private Optional<Boolean> isDelegate(JsonMap jsonMap) {
+        JsonValue delegate = jsonMap.getValue(JsonFile.DELEGATE_KEY);
+        if (delegate != null) {
+
+            if (jsonMap.getValues().size() > 1) {
+                addError("JSON key [" + JsonFile.DELEGATE_KEY + "] must be the only key in the map.", jsonMap);
+            }
+
+            if (delegate instanceof JsonBoolean) {
+
+                if (((JsonBoolean) delegate).toRawValue()) {
+                    return Optional.of(true);
+
+                } else {
+                    // if _delegate is set to false, then just treat it as if the entire thing is null
+                    return Optional.empty();
+                }
+
+            } else {
+                addError("JSON key [" + JsonFile.DELEGATE_KEY + "] must be a boolean.", delegate);
+                return Optional.of(true);
+            }
+
+        } else {
+            return Optional.of(false);
         }
     }
 

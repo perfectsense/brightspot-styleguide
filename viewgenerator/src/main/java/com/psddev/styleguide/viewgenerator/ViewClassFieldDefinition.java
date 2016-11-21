@@ -1,5 +1,6 @@
 package com.psddev.styleguide.viewgenerator;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,10 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.psddev.dari.util.StringUtils;
 
+/**
+ * Contains all of the metadata related to a single field of a
+ * {@link ViewClassDefinition}.
+ */
 class ViewClassFieldDefinition implements ViewClassFieldType {
 
     private ViewClassDefinition viewClassDef;
@@ -25,8 +31,17 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
     private Class<? extends JsonValue> effectiveType;
 
     private boolean validated = false;
+    private boolean validatedHolistically = false;
     private List<ViewClassDefinitionError> errors = new ArrayList<>();
 
+    /**
+     * Creates a new view class field definition.
+     *
+     * @param viewClassDef the parent class definition.
+     * @param fieldName the name of the field.
+     * @param fieldKeyValues the key/value JSON pairs for all instance of this
+     *                       field in the JSON directory.
+     */
     public ViewClassFieldDefinition(ViewClassDefinition viewClassDef,
                                     String fieldName,
                                     Set<Map.Entry<JsonKey, JsonValue>> fieldKeyValues) {
@@ -36,18 +51,39 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         this.fieldKeyValues = fieldKeyValues;
     }
 
+    /**
+     * Gets the parent class definition.
+     *
+     * @return the parent class definition.
+     */
     public ViewClassDefinition getClassDefinition() {
         return viewClassDef;
     }
 
+    /**
+     * Gets the name of the field.
+     *
+     * @return the field name.
+     */
     public String getFieldName() {
         return fieldName;
     }
 
+    /**
+     * Gets all the key/value JSON pairs for all instance of this field in the
+     * JSON directory.
+     *
+     * @return the JSON key/value pairs for this field.
+     */
     public Set<Map.Entry<JsonKey, JsonValue>> getFieldKeyValues() {
         return fieldKeyValues;
     }
 
+    /**
+     * Gets the documentation notes for this field.
+     *
+     * @return the set of notes for this field.
+     */
     public Set<String> getNotes() {
         return fieldKeyValues.stream()
                 .map(entry -> entry.getKey().getNotes())
@@ -55,6 +91,9 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Performs validation on this field, and adds any errors to a list.
+     */
     public void validate() {
 
         if (validated) {
@@ -70,6 +109,28 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
                 .collect(Collectors.toCollection(ArrayList::new)));
 
         validated = true;
+    }
+
+    /**
+     * Performs validation of this field in context of all class and field
+     * definitions. The checks in this method rely on the instantiation and
+     * individual validation of all of the view class definitions in the
+     * context first.
+     */
+    public void validateHolistically() {
+
+        if (validatedHolistically) {
+            return;
+        }
+
+        /*
+         * Gets the field value types with the validate flag set to true.
+         */
+        getFieldValueTypes(fieldKeyValues.stream()
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toCollection(ArrayList::new)), true);
+
+        validatedHolistically = true;
     }
 
     private void validateFieldName() {
@@ -111,6 +172,11 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
 
         // ignore nulls
         valueTypes.remove(JsonNull.class);
+
+        // If we find a delegate map type, replace it with a view map type since they are placeholders for them.
+        if (valueTypes.remove(JsonDelegateMap.class)) {
+            valueTypes.add(JsonViewMap.class);
+        }
 
         Class<? extends JsonValue> effectiveValueType;
 
@@ -155,22 +221,31 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         return null;
     }
 
+    /**
+     * Gets all the types of values that can be returned for this field.
+     *
+     * @return the set of value types for this field.
+     */
     public Set<ViewClassFieldType> getFieldValueTypes() {
         validate();
         return getFieldValueTypes(fieldKeyValues.stream()
                 .map(Map.Entry::getValue)
-                .collect(Collectors.toCollection(ArrayList::new)));
+                .collect(Collectors.toCollection(ArrayList::new)), false);
     }
 
-    private Set<ViewClassFieldType> getFieldValueTypes(Collection<JsonValue> values) {
+    private Set<ViewClassFieldType> getFieldValueTypes(Collection<JsonValue> values, boolean validate) {
 
         Set<Class<? extends JsonValue>> valueTypes = values.stream()
-                // filter out nulls
-                .filter(value -> !(value instanceof JsonNull))
-                // get the class
                 .map(JsonValue::getClass)
-                // add it to the set
                 .collect(Collectors.toCollection(HashSet::new));
+
+        // ignore nulls
+        valueTypes.remove(JsonNull.class);
+
+        // If we find a delegate map type, replace it with a view map type since they are placeholders for them.
+        if (valueTypes.remove(JsonDelegateMap.class)) {
+            valueTypes.add(JsonViewMap.class);
+        }
 
         Class<? extends JsonValue> effectiveValueType;
 
@@ -198,7 +273,7 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
                         // flatten it out
                         .flatMap(Collection::stream)
                         // add them to a set
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()), validate);
 
             } else if (effectiveValueType == JsonViewMap.class) {
 
@@ -206,14 +281,53 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
                         .filter(value -> (value instanceof JsonViewMap))
                         .map(value -> (JsonViewMap) value)
                         .map(JsonViewMap::getViewKey)
+                        .collect(Collectors.toCollection(HashSet::new));
+
+                Set<JsonDelegateMap> delegateMaps = values.stream()
+                        .filter(value -> (value instanceof JsonDelegateMap))
+                        .map(value -> (JsonDelegateMap) value)
                         .collect(Collectors.toSet());
 
-                // if there's a delegate view key, then that becomes the effective type, aka Object.
-                if (fieldValueTypes.contains(DelegateViewKey.INSTANCE)) {
-                    return Collections.singleton(DelegateViewKey.INSTANCE);
-                } else {
-                    return fieldValueTypes;
+                /*
+                 * for each delegate key search for all view class definitions
+                 * that have a JSON view map whose wrapper JSON file matches
+                 * the file that the delegate map is declared in.
+                 */
+                Set<Path> delegateFilePaths = delegateMaps.stream()
+                        .map(JsonDelegateMap::getDeclaringJsonFile)
+                        .map(JsonFile::getRelativePath)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
+                if (!delegateFilePaths.isEmpty()) {
+
+                    for (ViewClassDefinition classDef : getContext().getClassDefinitions()) {
+
+                        for (JsonViewMap jsonViewMap : classDef.getJsonViewMaps()) {
+
+                            JsonFile wrapper = jsonViewMap.getWrapper();
+                            if (wrapper != null) {
+                                if (delegateFilePaths.contains(wrapper.getRelativePath())) {
+                                    fieldValueTypes.add(classDef);
+                                }
+                            }
+                        }
+                    }
                 }
+
+                /*
+                 * This means that this field definition is a delegate, but no
+                 * corresponding class definitions that declared it as its
+                 * wrapper.
+                 */
+                if (validate && fieldValueTypes.isEmpty()) {
+                    addError("Can't infer the type of this delegate field"
+                            + " because there are no views that implicitly nor"
+                            + " explicitly declared the field's file(s) as a"
+                            + " wrapper. Unreferenced wrapper files: "
+                            + delegateFilePaths);
+                }
+
+                return fieldValueTypes;
 
             } else if (effectiveValueType == JsonBoolean.class) {
                 return Collections.singleton(ViewClassFieldNativeJavaType.BOOLEAN);
@@ -232,14 +346,37 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         return Collections.emptySet();
     }
 
-    protected ViewClassFieldType getEffectiveValueType() {
+    /**
+     * Gets the effective value type for this field. If the field can be
+     * multiple different value types the effective value type is the field
+     * itself which will be converted to the corresponding field level
+     * interface. The value type of a list field is the items that go in the
+     * list and the list type itself.
+     *
+     * @return the effective value type for of this field.
+     */
+    public ViewClassFieldType getEffectiveValueType() {
 
         boolean isStrictlyTyped = getClassDefinition().getContext().isGenerateStrictTypes();
 
         Set<ViewClassFieldType> fieldValueTypes = getFieldValueTypes();
 
         if (fieldValueTypes.size() == 1) {
-            return isStrictlyTyped ? fieldValueTypes.iterator().next() : ViewClassFieldNativeJavaType.OBJECT;
+
+            if (isStrictlyTyped) {
+
+                ViewClassFieldType fieldValueType = fieldValueTypes.iterator().next();
+                if (fieldValueType instanceof ViewClassFieldNativeJavaType) {
+                    return fieldValueType;
+                } else {
+                    return this;
+                }
+
+            } else {
+                return ViewClassFieldNativeJavaType.OBJECT;
+            }
+
+            //return isStrictlyTyped ? fieldValueTypes.iterator().next() : ViewClassFieldNativeJavaType.OBJECT;
 
         } else if (fieldValueTypes.size() > 1) {
 
@@ -255,9 +392,22 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         }
     }
 
+    /**
+     * Gets the effective type of this field. A {@link JsonBoolean},
+     * {@link JsonNumber}, {@link JsonString}, {@link JsonMap},
+     * {@link JsonList}, or {@link JsonViewMap}.
+     *
+     * @return the effective type of this field.
+     */
     public Class<? extends JsonValue> getEffectiveType() {
         validate();
         return effectiveType;
+    }
+
+    public boolean isDelegate() {
+        return fieldKeyValues.stream()
+                .map(Map.Entry::getValue)
+                .anyMatch(value -> value instanceof JsonDelegateMap);
     }
 
     @Override
@@ -269,10 +419,24 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         errors.add(new ViewClassDefinitionError(this, message));
     }
 
+    private ViewClassGeneratorContext getContext() {
+        return getClassDefinition().getContext();
+    }
+
+    /**
+     * Gets the list of errors with this field.
+     *
+     * @return the list of errors.
+     */
     public List<ViewClassDefinitionError> getErrors() {
         return errors;
     }
 
+    /**
+     * Returns whether or not this field has any errors.
+     *
+     * @return true if this field has any errors, false otherwise.
+     */
     public boolean hasAnyErrors() {
         return !errors.isEmpty();
     }

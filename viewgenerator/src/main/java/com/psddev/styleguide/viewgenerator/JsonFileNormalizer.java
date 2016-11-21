@@ -17,7 +17,8 @@ class JsonFileNormalizer {
     private static final Set<String> KEYS_TO_NORMALIZE = new HashSet<>(
             Arrays.asList(
                     JsonFile.TEMPLATE_KEY,
-                    JsonFile.DATA_URL_KEY));
+                    JsonFile.DATA_URL_KEY,
+                    JsonFile.WRAPPER_KEY));
 
     private JsonFile file;
 

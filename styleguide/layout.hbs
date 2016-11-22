@@ -66,18 +66,26 @@
                         $target.attr('src', contentUrl);
                         History.replaceState({}, $self.attr('title'), url);
                    });
-                   $('.sg-header a, .sg-control-themes').on('click, change', function(event){
-                       event.preventDefault();
-                       var $self = $(this);
-                       var docPath = document.location.pathname;
-                       var docSearch = $self.attr('href')? $self.attr('href') : $self.find(':selected').val();
-                       var query = null;
-
-                       if(docSearch.indexOf('?') > 0){
-                           query = docSearch.split('?').pop();
-                       }
-                       document.location.href = docPath + (query ? '?' + query: '');
+                   $('.sg-header a').on('click', function(event){
+                       event.preventDefault()
+                       var $self = $(this)
+                       loadUrlWithParams($self)
                    });
+                   $('.sg-control-themes-options').on('change', function(event){
+                       event.preventDefault()
+                       var $self = $(this)
+                       loadUrlWithParams($self)
+                   });
+
+                   function loadUrlWithParams ($self) {
+                     var docPath = document.location.pathname;
+                     var docSearch = $self.attr('href')? $self.attr('href') : $self.find(':selected').val();
+                     var query = null;
+                     if(docSearch.indexOf('?') > 0){
+                         query = docSearch.split('?').pop();
+                     }
+                     document.location.href = docPath + (query ? '?' + query: '');
+                   }
 
                    $('.sg-header-button').on('click', function(){
                        var $self = $(this);

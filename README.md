@@ -35,7 +35,6 @@ Add [example JSON files](docs/example-file-format.rst) to the `styleguide` direc
 
 ### path
 
-* `styleguide.path.src(glob)`: returns the glob in the source directory.
 * `styleguide.path.build(glob)`: returns the glob in the build directory.
 
 ### task

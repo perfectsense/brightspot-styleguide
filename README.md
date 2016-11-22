@@ -3,7 +3,7 @@
 ## Prerequisites
 
 * [Node.js](https://nodejs.org/en/) (>=6.9.1)
-* [Yarn](https://yarnpkg.com/en/docs/install)
+* [Yarn](https://yarnpkg.com/en/docs/install) (0.16.1)
 
 ## Installation
 
@@ -21,27 +21,30 @@ Run Brightspot Styleguide:
 
     $ gulp styleguide
 
-You can also run it on a different port:
+By default it runs on port `3000`, but you can also run it on a different port:
 
     $ gulp styleguide --port=3001
 
-Add [example JSON files](docs/example-file-format.rst) to the `styleguide` directory to see the pages at [http://localhost:3000](http://localhost:3000).
+Add [example JSON files](docs/example-file-format.rst) to the `styleguide/` directory to see the pages at [http://localhost:3000](http://localhost:3000).
 
 ## gulp
 
-* `styleguide.notify(message)`: desktop notification.
-* `styleguide.serve(settings)`: runs the Styleguide web server.
+* `styleguide.notify(message)`: send a desktop notification.
+* `styleguide.serve(settings)`: runs the Styleguide web server with optional settings.
 * `styleguide.watch()`: watches JS, JSON, and less files.
 
 ### path
 
 * `styleguide.path.build(glob)`: returns the glob in the build directory.
+* `styleguide.path.mavenTarget()`: returns the path to the maven snapshot directory. Will return `undefined` when a pom.xml is not found at the root of the project.
 
 ### task
 
+* `styleguide.task.copy.templates()`: returns the name of the task thats been pre-configured to copy templates into the build/target directory.
 * `styleguide.task.lint.js()`: returns the name of the task that lints JS files.
 * `styleguide.task.lint.json()`: returns the name of the task that lints JSON files.
 * `styleguide.task.lint.less()`: returns the name of the task that lints less files.
+* `styleguide.task.watch()`: returns the name of the task that watches JS, JSON, and less files.
 
 ## Troubleshooting
 

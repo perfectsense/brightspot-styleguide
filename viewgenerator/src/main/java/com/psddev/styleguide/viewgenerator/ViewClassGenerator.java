@@ -163,7 +163,7 @@ public class ViewClassGenerator {
         return generated;
     }
 
-    List<Path> generateClasses() {
+    public List<Path> generateClasses() {
 
         printLogo();
 
@@ -208,7 +208,7 @@ public class ViewClassGenerator {
         return generatedFiles;
     }
 
-    void watch() {
+    public void watch() {
 
         printLogo();
 

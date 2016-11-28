@@ -12,6 +12,7 @@ import java.nio.file.StandardWatchEventKinds;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +73,23 @@ public class ViewClassGenerator {
         } else {
             viewClassGenerator.generateClasses();
         }
+    }
+
+    /**
+     * Creates an instance of view class generator for the given input and output directory paths.
+     *
+     * @param styleguideDirectory The directory containing the styleguide files (JSON, templates, etc.).
+     * @param javaSourcesOutputDirectory The output directory for the generated Java source files.
+     * @return A new view class generator instance.
+     */
+    public static ViewClassGenerator createInstance(Path styleguideDirectory, Path javaSourcesOutputDirectory) {
+
+        ViewClassGeneratorContext context = new ViewClassGeneratorContext();
+
+        context.setJsonDirectories(Collections.singleton(styleguideDirectory));
+        context.setJavaSourceDirectory(javaSourcesOutputDirectory);
+
+        return new ViewClassGenerator(context);
     }
 
     private CliLogger logger = CliLogger.getLogger();

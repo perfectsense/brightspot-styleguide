@@ -578,7 +578,13 @@ class JsonDirectory {
         if (totalErrorCount != 1) {
             builder.append("s");
         }
-        builder.append(" while parsing the JSON files: \n");
+        builder.append(" in ");
+        builder.cyan().append(errorFiles.size()).red();
+        builder.append(" JSON file");
+        if (errorFiles.size() != 1) {
+            builder.append("s");
+        }
+        builder.append(": \n");
 
         for (JsonFile file : errorFiles) {
 

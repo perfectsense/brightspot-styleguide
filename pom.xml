@@ -21,7 +21,9 @@
 
     <modules>
         <module>viewgenerator</module>
+        <!--
         <module>maven-plugin</module>
+        -->
     </modules>
 
     <profiles>

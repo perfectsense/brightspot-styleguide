@@ -393,7 +393,7 @@ class JsonFileResolver {
 
             } else {
                 missingTemplateExtensionErrorMessage = "Could not find ["
-                        + "_config.json"
+                        + JsonDirectory.CONFIG_FILE_NAME
                         + "] with ["
                         + ViewConfiguration.TEMPLATE_TYPE_KEY
                         + "] setting to determine template extension.";

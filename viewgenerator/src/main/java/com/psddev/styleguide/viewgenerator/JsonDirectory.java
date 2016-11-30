@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -319,16 +320,18 @@ class JsonDirectory {
     }
 
     /**
-     * Gets the template view configuration nearest to the normalized path, by
-     * first checking its directory for a config file, and traversing up the
-     * directory structure until it finds one, stopping at the root of the base
+     * Gets the view configurations nearest to the normalized path, by first
+     * checking its directory for a config file, and traversing up the directory
+     * structure grabbing each one it finds, stopping at the root of the base
      * directory. If the normalized path is null, it just checks the root of
      * the base directory.
      *
      * @param normalizedPath the normalized path to start the search.
-     * @return the nearest view configuration to the normalized path.
+     * @return the list of view configurations for the normalized path.
      */
-    public TemplateViewConfiguration getTemplateViewConfiguration(Path normalizedPath) {
+    public List<TemplateViewConfiguration> getViewConfigurations(Path normalizedPath) {
+
+        List<TemplateViewConfiguration> viewConfigs = new ArrayList<>();
 
         if (normalizedPath != null) {
 
@@ -338,7 +341,7 @@ class JsonDirectory {
 
             // If the path is outside of the directory, return null immediately
             if (normalizedPath.getName(0).startsWith("..")) {
-                return null;
+                return viewConfigs;
             }
         }
 
@@ -353,11 +356,11 @@ class JsonDirectory {
             File configFile = configFilePath.toFile();
             if (configFile.exists()) {
                 try {
-                    return new TemplateViewConfiguration(configFilePath);
+                    viewConfigs.add(new TemplateViewConfiguration(configFilePath));
 
                 } catch (IOException e) {
+                    // TODO: Handle this error more gracefully
                     e.printStackTrace();
-                    return null;
                 }
             }
 
@@ -371,7 +374,7 @@ class JsonDirectory {
             }
         }
 
-        return null;
+        return viewConfigs;
     }
 
     /**

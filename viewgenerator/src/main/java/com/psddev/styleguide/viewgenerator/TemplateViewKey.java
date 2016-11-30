@@ -3,7 +3,9 @@ package com.psddev.styleguide.viewgenerator;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.psddev.dari.util.StringUtils;
 
@@ -18,7 +20,7 @@ class TemplateViewKey extends ViewKey {
 
     private TemplateType templateType;
 
-    private TemplateViewConfiguration templateConfig;
+    private List<TemplateViewConfiguration> viewConfigs;
 
     /**
      * Creates a new template based view key.
@@ -27,14 +29,14 @@ class TemplateViewKey extends ViewKey {
      * @param name the name of the view key.
      * @param templatePath the path to the template.
      * @param templateType the type of template referenced by the templatePath.
-     * @param templateConfig the configuration for this template.
+     * @param viewConfigs the configurations for this template.
      */
-    public TemplateViewKey(JsonDirectory jsonDirectory, String name, Path templatePath, TemplateType templateType, TemplateViewConfiguration templateConfig) {
+    public TemplateViewKey(JsonDirectory jsonDirectory, String name, Path templatePath, TemplateType templateType, List<TemplateViewConfiguration> viewConfigs) {
         super(jsonDirectory.getContext(), name != null ? name : templatePath.toString());
         this.jsonDirectory = jsonDirectory;
         this.templatePath = templatePath;
         this.templateType = templateType;
-        this.templateConfig = templateConfig;
+        this.viewConfigs = viewConfigs;
     }
 
     /**
@@ -60,8 +62,8 @@ class TemplateViewKey extends ViewKey {
      *
      * @return the template configuration. Can be null.
      */
-    public TemplateViewConfiguration getTemplateConfig() {
-        return templateConfig;
+    public List<TemplateViewConfiguration> getViewConfigs() {
+        return viewConfigs;
     }
 
     @Override
@@ -84,16 +86,26 @@ class TemplateViewKey extends ViewKey {
     @Override
     public String getFullyQualifiedClassName() {
 
-        String packagePrefix = getPackagePrefix();
+        // Find the closest config that defines a java package prefix.
+        TemplateViewConfiguration packageConfig = viewConfigs.stream()
+                .filter(c -> c.getJavaPackage() != null)
+                .findFirst()
+                .orElse(null);
+
+        // Get the java package prefix value, or fallback to the context default.
+        String packagePrefix = packageConfig != null ? packageConfig.getJavaPackage() : context.getDefaultJavaPackagePrefix();
         if (packagePrefix == null) {
             packagePrefix = "";
         }
 
-        Path packageJsonRelativeTemplatePath = jsonDirectory.getNearestPackageJsonParentPath(templatePath)
-                .relativize(jsonDirectory.getPath().resolve(templatePath));
+        // Gets the directory path of the closest config that defines a java package prefix, or default to the JSON directory if none defined.
+        Path packageConfigPath = packageConfig != null ? packageConfig.getPath().getParent() : jsonDirectory.getPath();
 
-        String packageSuffix = ViewClassStringUtils.toJavaPackageName(packageJsonRelativeTemplatePath);
-        String className = ViewClassStringUtils.toJavaClassName(packageJsonRelativeTemplatePath);
+        // Gets the relativized template path that will be used to construct the final java package name.
+        Path packageConfigRelativeTemplatePath = packageConfigPath.relativize(jsonDirectory.getPath().resolve(templatePath));
+
+        String packageSuffix = ViewClassStringUtils.toJavaPackageName(packageConfigRelativeTemplatePath);
+        String className = ViewClassStringUtils.toJavaClassName(packageConfigRelativeTemplatePath);
 
         String fqcn = packagePrefix + "." + packageSuffix + "." + className + "View";
 
@@ -103,19 +115,22 @@ class TemplateViewKey extends ViewKey {
 
     /*
      * Helper method to get the effective package prefix by looking first at
-     * the template's config file, and then falling back to the legacy view
+     * the template's config files, and then falling back to the legacy view
      * generator context property that allows it to be specified globally.
      */
     private String getPackagePrefix() {
 
-        if (templateConfig != null) {
-            String javaPackage = templateConfig.getJavaPackage();
-            if (javaPackage != null) {
-                return javaPackage;
-            }
+        String packagePrefix = viewConfigs.stream()
+                .map(TemplateViewConfiguration::getJavaPackage)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+
+        if (packagePrefix == null) {
+            packagePrefix = context.getDefaultJavaPackagePrefix();
         }
 
-        return context.getDefaultJavaPackagePrefix();
+        return packagePrefix;
     }
 
     @Override

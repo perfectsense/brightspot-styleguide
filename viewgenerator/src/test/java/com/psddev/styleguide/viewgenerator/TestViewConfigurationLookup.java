@@ -1,6 +1,7 @@
 package com.psddev.styleguide.viewgenerator;
 
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +13,7 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration config = jsonDir.getTemplateViewConfiguration(null);
+        TemplateViewConfiguration config = jsonDir.getViewConfigurations(null).get(0);
 
         Assert.assertEquals("base", config.getJavaPackage());
     }
@@ -22,10 +23,10 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration configBase = jsonDir.getTemplateViewConfiguration(Paths.get(""));
-        TemplateViewConfiguration configFoo = jsonDir.getTemplateViewConfiguration(Paths.get("foo"));
-        TemplateViewConfiguration configBar = jsonDir.getTemplateViewConfiguration(Paths.get("foo/bar"));
-        TemplateViewConfiguration configBaz = jsonDir.getTemplateViewConfiguration(Paths.get("foo/bar/baz"));
+        TemplateViewConfiguration configBase = jsonDir.getViewConfigurations(Paths.get("")).get(0);
+        TemplateViewConfiguration configFoo = jsonDir.getViewConfigurations(Paths.get("foo")).get(0);
+        TemplateViewConfiguration configBar = jsonDir.getViewConfigurations(Paths.get("foo/bar")).get(0);
+        TemplateViewConfiguration configBaz = jsonDir.getViewConfigurations(Paths.get("foo/bar/baz")).get(0);
 
         Assert.assertEquals("base", configBase.getJavaPackage());
         Assert.assertEquals("foo", configFoo.getJavaPackage());
@@ -38,10 +39,10 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration configBase = jsonDir.getTemplateViewConfiguration(Paths.get(""));
-        TemplateViewConfiguration configAlpha = jsonDir.getTemplateViewConfiguration(Paths.get("alpha"));
-        TemplateViewConfiguration configBeta = jsonDir.getTemplateViewConfiguration(Paths.get("alpha/beta"));
-        TemplateViewConfiguration configGamma = jsonDir.getTemplateViewConfiguration(Paths.get("alpha/beta/gamma"));
+        TemplateViewConfiguration configBase = jsonDir.getViewConfigurations(Paths.get("")).get(0);
+        TemplateViewConfiguration configAlpha = jsonDir.getViewConfigurations(Paths.get("alpha")).get(0);
+        TemplateViewConfiguration configBeta = jsonDir.getViewConfigurations(Paths.get("alpha/beta")).get(0);
+        TemplateViewConfiguration configGamma = jsonDir.getViewConfigurations(Paths.get("alpha/beta/gamma")).get(0);
 
         Assert.assertEquals("base", configBase.getJavaPackage());
         Assert.assertEquals("alpha", configAlpha.getJavaPackage());
@@ -54,10 +55,10 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration configBase = jsonDir.getTemplateViewConfiguration(Paths.get(""));
-        TemplateViewConfiguration configOne = jsonDir.getTemplateViewConfiguration(Paths.get("one"));
-        TemplateViewConfiguration configTwo = jsonDir.getTemplateViewConfiguration(Paths.get("one/two"));
-        TemplateViewConfiguration configThree = jsonDir.getTemplateViewConfiguration(Paths.get("one/two/three"));
+        TemplateViewConfiguration configBase = jsonDir.getViewConfigurations(Paths.get("")).get(0);
+        TemplateViewConfiguration configOne = jsonDir.getViewConfigurations(Paths.get("one")).get(0);
+        TemplateViewConfiguration configTwo = jsonDir.getViewConfigurations(Paths.get("one/two")).get(0);
+        TemplateViewConfiguration configThree = jsonDir.getViewConfigurations(Paths.get("one/two/three")).get(0);
 
         Assert.assertEquals("base", configBase.getJavaPackage());
         Assert.assertEquals("base", configOne.getJavaPackage());
@@ -70,19 +71,19 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration badConfig;
+        List<TemplateViewConfiguration> badConfigs;
 
-        badConfig = jsonDir.getTemplateViewConfiguration(Paths.get("../../"));
-        Assert.assertNull(badConfig);
+        badConfigs = jsonDir.getViewConfigurations(Paths.get("../../"));
+        Assert.assertEquals(0, badConfigs.size());
 
-        badConfig = jsonDir.getTemplateViewConfiguration(Paths.get("../"));
-        Assert.assertNull(badConfig);
+        badConfigs = jsonDir.getViewConfigurations(Paths.get("../"));
+        Assert.assertEquals(0, badConfigs.size());
 
-        badConfig = jsonDir.getTemplateViewConfiguration(Paths.get(".."));
-        Assert.assertNull(badConfig);
+        badConfigs = jsonDir.getViewConfigurations(Paths.get(".."));
+        Assert.assertEquals(0, badConfigs.size());
 
-        badConfig = jsonDir.getTemplateViewConfiguration(Paths.get("/alpha/../../"));
-        Assert.assertNull(badConfig);
+        badConfigs = jsonDir.getViewConfigurations(Paths.get("/alpha/../../"));
+        Assert.assertEquals(0, badConfigs.size());
     }
 
     @Test
@@ -92,28 +93,28 @@ public class TestViewConfigurationLookup {
 
         TemplateViewConfiguration rootConfig;
 
-        rootConfig = jsonDir.getTemplateViewConfiguration(null);
+        rootConfig = jsonDir.getViewConfigurations(null).get(0);
         Assert.assertEquals("base", rootConfig.getJavaPackage());
 
-        rootConfig = jsonDir.getTemplateViewConfiguration(Paths.get(""));
+        rootConfig = jsonDir.getViewConfigurations(Paths.get("")).get(0);
         Assert.assertEquals("base", rootConfig.getJavaPackage());
 
-        rootConfig = jsonDir.getTemplateViewConfiguration(Paths.get("."));
+        rootConfig = jsonDir.getViewConfigurations(Paths.get(".")).get(0);
         Assert.assertEquals("base", rootConfig.getJavaPackage());
 
-        rootConfig = jsonDir.getTemplateViewConfiguration(Paths.get("./"));
+        rootConfig = jsonDir.getViewConfigurations(Paths.get("./")).get(0);
         Assert.assertEquals("base", rootConfig.getJavaPackage());
 
-        rootConfig = jsonDir.getTemplateViewConfiguration(Paths.get("/"));
+        rootConfig = jsonDir.getViewConfigurations(Paths.get("/")).get(0);
         Assert.assertEquals("base", rootConfig.getJavaPackage());
 
-        rootConfig = jsonDir.getTemplateViewConfiguration(Paths.get("../TestViewConfigurationLookup"));
+        rootConfig = jsonDir.getViewConfigurations(Paths.get("../TestViewConfigurationLookup")).get(0);
         Assert.assertEquals("base", rootConfig.getJavaPackage());
 
-        rootConfig = jsonDir.getTemplateViewConfiguration(Paths.get("../TestViewConfigurationLookup/"));
+        rootConfig = jsonDir.getViewConfigurations(Paths.get("../TestViewConfigurationLookup/")).get(0);
         Assert.assertEquals("base", rootConfig.getJavaPackage());
 
-        rootConfig = jsonDir.getTemplateViewConfiguration(Paths.get("../../resources/TestViewConfigurationLookup/one/two"));
+        rootConfig = jsonDir.getViewConfigurations(Paths.get("../../resources/TestViewConfigurationLookup/one/two")).get(0);
         Assert.assertEquals("base", rootConfig.getJavaPackage());
     }
 }

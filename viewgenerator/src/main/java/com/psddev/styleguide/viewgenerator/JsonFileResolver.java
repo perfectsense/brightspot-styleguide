@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -370,9 +371,9 @@ class JsonFileResolver {
         String templateName = templatePath.getName(templatePath.getNameCount() - 1).toString();
 
         // find the configuration file
-        TemplateViewConfiguration templateConfig = file.getBaseDirectory().getTemplateViewConfiguration(templateDirectory);
+        List<TemplateViewConfiguration> viewConfigs = file.getBaseDirectory().getViewConfigurations(templateDirectory);
 
-        TemplateType templateType = null;
+        TemplateType templateType;
 
         int lastDotAt = templateName.lastIndexOf('.');
         // if there is no extension, find it
@@ -381,18 +382,21 @@ class JsonFileResolver {
             String templateExtension = null;
             String missingTemplateExtensionErrorMessage = null;
 
-            if (templateConfig != null) {
-                templateType = templateConfig.getTemplateType();
+            templateType = viewConfigs.stream()
+                    .map(TemplateViewConfiguration::getTemplateType)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null);
 
-                if (templateType != null) {
-                    templateExtension = templateType.getExtension();
-
-                } else {
-                    missingTemplateExtensionErrorMessage = "Could not find [templateExtension] setting in view configuration to determine template extension.";
-                }
+            if (templateType != null) {
+                templateExtension = templateType.getExtension();
 
             } else {
-                missingTemplateExtensionErrorMessage = "Could not find view configuration to determine template extension.";
+                missingTemplateExtensionErrorMessage = "Could not find ["
+                        + "_config.json"
+                        + "] with ["
+                        + TemplateViewConfiguration.TEMPLATE_TYPE_KEY
+                        + "] setting to determine template extension.";
             }
 
             if (templateExtension != null) {
@@ -435,7 +439,7 @@ class JsonFileResolver {
                     viewKey != null ? viewKey.toRawValue() : null,
                     templatePath,
                     templateType,
-                    templateConfig);
+                    viewConfigs);
         } else {
             return null;
         }

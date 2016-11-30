@@ -1,6 +1,7 @@
 package com.psddev.styleguide.viewgenerator;
 
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,8 +13,8 @@ public class TestNoViewConfiguration {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration config = jsonDir.getTemplateViewConfiguration(Paths.get("foo/bar/baz/qux"));
+        List<TemplateViewConfiguration> configs = jsonDir.getViewConfigurations(Paths.get("foo/bar/baz/qux"));
 
-        Assert.assertNull(config);
+        Assert.assertEquals(0, configs.size());
     }
 }

@@ -27,6 +27,8 @@ class TemplateViewConfiguration {
      */
     public static final String TEMPLATE_TYPE_KEY = "templateEngine";
 
+    private Path path;
+
     private Map<String, Object> rawData;
 
     private String javaPackage;
@@ -41,6 +43,8 @@ class TemplateViewConfiguration {
      * @throws IOException if the configuration file cannot be read for any reason.
      */
     public TemplateViewConfiguration(Path configFilePath) throws IOException {
+
+        this.path = configFilePath;
 
         String configFileData = IoUtils.toString(configFilePath.toFile(), StandardCharsets.UTF_8);
 
@@ -60,6 +64,15 @@ class TemplateViewConfiguration {
         } else {
             throw new IOException("Invalid configuration file format. Must be a valid JSON map.");
         }
+    }
+
+    /**
+     * Gets the path to this config file.
+     *
+     * @return the config file path.
+     */
+    public Path getPath() {
+        return path;
     }
 
     /**

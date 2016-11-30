@@ -18,7 +18,7 @@ public class TestPackageJsonExistence {
         Assert.assertEquals(2, classDefs.size());
 
         Assert.assertEquals(
-                new HashSet<>(Arrays.asList("com.psddev.plugin.styleguide", "com.psddev.plugin.styleguide.bar")),
+                new HashSet<>(Arrays.asList("com.psddev.plugin", "com.psddev.plugin.bar")),
                 classDefs.stream().map(ViewClassDefinition::getPackageName).collect(Collectors.toSet()));
     }
 }

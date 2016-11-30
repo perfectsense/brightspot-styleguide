@@ -13,7 +13,7 @@ import com.psddev.dari.util.ObjectUtils;
  * A configuration for a view/template that specifies how a particular view
  * interface should be generated.
  */
-class TemplateViewConfiguration {
+class ViewConfiguration {
 
     /**
      * The JSON key that specifies the java package prefix for the generated
@@ -42,7 +42,7 @@ class TemplateViewConfiguration {
      * @param configFilePath the path to the configuration file.
      * @throws IOException if the configuration file cannot be read for any reason.
      */
-    public TemplateViewConfiguration(Path configFilePath) throws IOException {
+    public ViewConfiguration(Path configFilePath) throws IOException {
 
         this.path = configFilePath;
 

@@ -371,7 +371,7 @@ class JsonFileResolver {
         String templateName = templatePath.getName(templatePath.getNameCount() - 1).toString();
 
         // find the configuration file
-        List<TemplateViewConfiguration> viewConfigs = file.getBaseDirectory().getViewConfigurations(templateDirectory);
+        List<ViewConfiguration> viewConfigs = file.getBaseDirectory().getViewConfigurations(templateDirectory);
 
         TemplateType templateType;
 
@@ -383,7 +383,7 @@ class JsonFileResolver {
             String missingTemplateExtensionErrorMessage = null;
 
             templateType = viewConfigs.stream()
-                    .map(TemplateViewConfiguration::getTemplateType)
+                    .map(ViewConfiguration::getTemplateType)
                     .filter(Objects::nonNull)
                     .findFirst()
                     .orElse(null);
@@ -395,7 +395,7 @@ class JsonFileResolver {
                 missingTemplateExtensionErrorMessage = "Could not find ["
                         + "_config.json"
                         + "] with ["
-                        + TemplateViewConfiguration.TEMPLATE_TYPE_KEY
+                        + ViewConfiguration.TEMPLATE_TYPE_KEY
                         + "] setting to determine template extension.";
             }
 

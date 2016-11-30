@@ -13,7 +13,7 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration config = jsonDir.getViewConfigurations(null).get(0);
+        ViewConfiguration config = jsonDir.getViewConfigurations(null).get(0);
 
         Assert.assertEquals("base", config.getJavaPackage());
     }
@@ -23,10 +23,10 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration configBase = jsonDir.getViewConfigurations(Paths.get("")).get(0);
-        TemplateViewConfiguration configFoo = jsonDir.getViewConfigurations(Paths.get("foo")).get(0);
-        TemplateViewConfiguration configBar = jsonDir.getViewConfigurations(Paths.get("foo/bar")).get(0);
-        TemplateViewConfiguration configBaz = jsonDir.getViewConfigurations(Paths.get("foo/bar/baz")).get(0);
+        ViewConfiguration configBase = jsonDir.getViewConfigurations(Paths.get("")).get(0);
+        ViewConfiguration configFoo = jsonDir.getViewConfigurations(Paths.get("foo")).get(0);
+        ViewConfiguration configBar = jsonDir.getViewConfigurations(Paths.get("foo/bar")).get(0);
+        ViewConfiguration configBaz = jsonDir.getViewConfigurations(Paths.get("foo/bar/baz")).get(0);
 
         Assert.assertEquals("base", configBase.getJavaPackage());
         Assert.assertEquals("foo", configFoo.getJavaPackage());
@@ -39,10 +39,10 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration configBase = jsonDir.getViewConfigurations(Paths.get("")).get(0);
-        TemplateViewConfiguration configAlpha = jsonDir.getViewConfigurations(Paths.get("alpha")).get(0);
-        TemplateViewConfiguration configBeta = jsonDir.getViewConfigurations(Paths.get("alpha/beta")).get(0);
-        TemplateViewConfiguration configGamma = jsonDir.getViewConfigurations(Paths.get("alpha/beta/gamma")).get(0);
+        ViewConfiguration configBase = jsonDir.getViewConfigurations(Paths.get("")).get(0);
+        ViewConfiguration configAlpha = jsonDir.getViewConfigurations(Paths.get("alpha")).get(0);
+        ViewConfiguration configBeta = jsonDir.getViewConfigurations(Paths.get("alpha/beta")).get(0);
+        ViewConfiguration configGamma = jsonDir.getViewConfigurations(Paths.get("alpha/beta/gamma")).get(0);
 
         Assert.assertEquals("base", configBase.getJavaPackage());
         Assert.assertEquals("alpha", configAlpha.getJavaPackage());
@@ -55,10 +55,10 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration configBase = jsonDir.getViewConfigurations(Paths.get("")).get(0);
-        TemplateViewConfiguration configOne = jsonDir.getViewConfigurations(Paths.get("one")).get(0);
-        TemplateViewConfiguration configTwo = jsonDir.getViewConfigurations(Paths.get("one/two")).get(0);
-        TemplateViewConfiguration configThree = jsonDir.getViewConfigurations(Paths.get("one/two/three")).get(0);
+        ViewConfiguration configBase = jsonDir.getViewConfigurations(Paths.get("")).get(0);
+        ViewConfiguration configOne = jsonDir.getViewConfigurations(Paths.get("one")).get(0);
+        ViewConfiguration configTwo = jsonDir.getViewConfigurations(Paths.get("one/two")).get(0);
+        ViewConfiguration configThree = jsonDir.getViewConfigurations(Paths.get("one/two/three")).get(0);
 
         Assert.assertEquals("base", configBase.getJavaPackage());
         Assert.assertEquals("base", configOne.getJavaPackage());
@@ -71,7 +71,7 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        List<TemplateViewConfiguration> badConfigs;
+        List<ViewConfiguration> badConfigs;
 
         badConfigs = jsonDir.getViewConfigurations(Paths.get("../../"));
         Assert.assertEquals(0, badConfigs.size());
@@ -91,7 +91,7 @@ public class TestViewConfigurationLookup {
 
         JsonDirectory jsonDir = TestUtils.getJsonDirectoryForClass(getClass());
 
-        TemplateViewConfiguration rootConfig;
+        ViewConfiguration rootConfig;
 
         rootConfig = jsonDir.getViewConfigurations(null).get(0);
         Assert.assertEquals("base", rootConfig.getJavaPackage());

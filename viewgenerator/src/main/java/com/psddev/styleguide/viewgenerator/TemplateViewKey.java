@@ -20,7 +20,7 @@ class TemplateViewKey extends ViewKey {
 
     private TemplateType templateType;
 
-    private List<TemplateViewConfiguration> viewConfigs;
+    private List<ViewConfiguration> viewConfigs;
 
     /**
      * Creates a new template based view key.
@@ -31,7 +31,7 @@ class TemplateViewKey extends ViewKey {
      * @param templateType the type of template referenced by the templatePath.
      * @param viewConfigs the configurations for this template.
      */
-    public TemplateViewKey(JsonDirectory jsonDirectory, String name, Path templatePath, TemplateType templateType, List<TemplateViewConfiguration> viewConfigs) {
+    public TemplateViewKey(JsonDirectory jsonDirectory, String name, Path templatePath, TemplateType templateType, List<ViewConfiguration> viewConfigs) {
         super(jsonDirectory.getContext(), name != null ? name : templatePath.toString());
         this.jsonDirectory = jsonDirectory;
         this.templatePath = templatePath;
@@ -62,7 +62,7 @@ class TemplateViewKey extends ViewKey {
      *
      * @return the template configuration. Can be null.
      */
-    public List<TemplateViewConfiguration> getViewConfigs() {
+    public List<ViewConfiguration> getViewConfigs() {
         return viewConfigs;
     }
 
@@ -87,7 +87,7 @@ class TemplateViewKey extends ViewKey {
     public String getFullyQualifiedClassName() {
 
         // Find the closest config that defines a java package prefix.
-        TemplateViewConfiguration packageConfig = viewConfigs.stream()
+        ViewConfiguration packageConfig = viewConfigs.stream()
                 .filter(c -> c.getJavaPackage() != null)
                 .findFirst()
                 .orElse(null);
@@ -121,7 +121,7 @@ class TemplateViewKey extends ViewKey {
     private String getPackagePrefix() {
 
         String packagePrefix = viewConfigs.stream()
-                .map(TemplateViewConfiguration::getJavaPackage)
+                .map(ViewConfiguration::getJavaPackage)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);

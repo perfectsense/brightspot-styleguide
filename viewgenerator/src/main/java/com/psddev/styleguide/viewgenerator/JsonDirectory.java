@@ -329,9 +329,9 @@ class JsonDirectory {
      * @param normalizedPath the normalized path to start the search.
      * @return the list of view configurations for the normalized path.
      */
-    public List<TemplateViewConfiguration> getViewConfigurations(Path normalizedPath) {
+    public List<ViewConfiguration> getViewConfigurations(Path normalizedPath) {
 
-        List<TemplateViewConfiguration> viewConfigs = new ArrayList<>();
+        List<ViewConfiguration> viewConfigs = new ArrayList<>();
 
         if (normalizedPath != null) {
 
@@ -356,7 +356,7 @@ class JsonDirectory {
             File configFile = configFilePath.toFile();
             if (configFile.exists()) {
                 try {
-                    viewConfigs.add(new TemplateViewConfiguration(configFilePath));
+                    viewConfigs.add(new ViewConfiguration(configFilePath));
 
                 } catch (IOException e) {
                     // TODO: Handle this error more gracefully

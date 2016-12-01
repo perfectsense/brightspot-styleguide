@@ -39,52 +39,23 @@
 
                     $('.sg-file').each(function () {
                         var $file = $(this);
-                        var $name = $file.find('.sg-file-name');
                         var $form = $file.find('.sg-file-form');
 
-                        $name.append($('<a/>', {
-                            href: '#',
-                            text: 'Edit',
-                            class: 'sg-file-edit',
-                            click: function () {
-                                $file.toggleClass('sg-file--hide');
-                                return false;
-                            }
-                        }));
+                        $file.find('.sg-tabs a').on('click', function () {
+                          var $this = $(this);
+                          var dataAttr = $this.attr('data-tab');
+                          $this.attr('data-activetab', '').parent().siblings().find('a').removeAttr('data-activetab');
+                          $this.parents('.sg-tabs-wrapper').siblings('.sg-tabs-panels').find('[data-tab="' + dataAttr + '"]').attr('data-activepanel','').siblings().removeAttr('data-activepanel');
+
+                          return false;
+                        });
 
                         $form.find('textarea').each(function () {
-                            CodeMirror.fromTextArea(this, {
-                                lineNumbers: true,
-                                mode: 'json'
-                            });
+                          CodeMirror.fromTextArea(this, {
+                            lineNumbers: true,
+                            mode: 'json'
+                          });
                         });
-
-                        var $message = $('<span/>', {
-                            'class': 'sg-file-form-message'
-                        });
-
-                        $form.find('button').after($message);
-
-                        $form.on('submit', function () {
-                            $message.text('Saving...');
-
-                            $.post('/save', $form.serialize()).
-
-                                done(function (data) {
-                                    $message.text('Saved successfully!');
-
-                                    $form.closest('.sg-file').find('iframe').each(function () {
-                                        this.contentWindow.location.reload();
-                                    });
-                                }).
-
-                                fail(function () {
-                                    $message.text('Unable to save ' + $form.find('input[name="path"]').val());
-                                });
-
-                            return false;
-                        });
-
                     });
 
                     $('.sg-file-body').each(function () {

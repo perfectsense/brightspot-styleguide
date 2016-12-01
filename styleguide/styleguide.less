@@ -15,20 +15,21 @@
 }
 
 body {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-    line-height: 24px;
-    padding: 0;
-    margin: 70px 0 20px 0;
-    .clearfix();
-    &.sg-content-embed {
-        margin: 0;
-    }
+  background-color: #c9c9c9;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;
+  line-height: 24px;
+  padding: 0;
+  margin: 70px 0 20px 0;
+  .clearfix();
+  &.sg-content-embed {
+    margin: 0;
+  }
 }
 
 a {
-    color: @sg-color-link;
-    text-decoration: none;
+  color: @sg-color-link;
+  text-decoration: none;
 }
 
 .sg-header {
@@ -40,6 +41,16 @@ a {
     top: 0;
     background-color: white;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+
+    &-name {
+      margin: 0 ;
+      padding: 8px 20px;
+      font-size: 13px;
+      background: #ededed;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+    }
+
     &-project-title {
       font-size: 18px;
       margin: 0 0 0 20px;
@@ -63,7 +74,7 @@ a {
         height: 30px;
         width: 30px;
         outline: none;
-        [data-navopen] & {
+        [data-navclosed] & {
             background-color: white;
             border-color: @sg-color;
             color: @sg-color;
@@ -104,33 +115,35 @@ a {
         }
     }
     &-themes {
-        margin: 20px 20px 0 20px;
+
         &-options {
             height: 30px;
             font-size: 11px;
             text-transform: capitalize;
             border-radius: 2px;
-            background-color: #f5f5f5;
-            border: solid 1px #e0e0e0;
+            background-color: white;
+            border: solid 1px #e5e5e5;
             width: 100%;
+            min-width: 75px;
         }
     }
 }
 
 .sg-menu {
+  max-width: @menu-width;
+  overflow: hidden;
+  transition: max-width @sg-duration ease;
+
+  &-container {
+    padding: 20px 0 20px 20px;
+    width: @menu-width;
+    overflow: auto;
+    height: 100vh;
+  }
+  [data-navclosed] & {
     max-width: 0;
-    overflow: hidden;
-    transition: max-width @sg-duration ease;
-    &-container {
-        width: @menu-width;
-        padding: 15px 20px;
-        overflow: auto;
-        height: 100vh;
-    }
-    [data-navopen] & {
-        max-width: 220px;
-        padding-right: 0;
-    }
+    padding-right: 0;
+  }
 }
 
 
@@ -143,6 +156,7 @@ a {
 }
 
 .sg-group {
+
     &[data-listOpen] {
         > .sg-example-list {
             max-height: 4000px;
@@ -151,16 +165,21 @@ a {
    }
 
    &-list {
-       list-style: none;
-       margin: 0 0 12px 0;
-       padding: 0;
+     background-color: white;
+     list-style: none;
+     margin: 0 0 12px 0;
+     padding: 0;
    }
 
    &-name {
        cursor: pointer;
        font-weight: bold;
-       margin: 5px 0;
+       padding: 8px 20px 9px 20px;
        font-size: 13px;
+
+       &:hover {
+         background-color: #ebf8fc;
+       }
    }
 }
 
@@ -169,17 +188,28 @@ a {
 }
 
 .sg-example {
+
+  &:hover {
+    background-color: #ebf8fc;
+  }
+
     &-name {
+
         cursor: pointer;
         display: block;
-        padding-left: 14px;
         color: #262626;
         font-size: 13px;
         line-height: normal;
-        margin: 3px 0;
+        margin: 0 20px 0 20px;
+        padding: 8px 0 9px 0;
+        border-bottom: 1px solid #e6e6e6;
+
         &[data-listActive] {
-            padding-left: 11px;
-            border-left: 3px solid @sg-color;
+          margin: 0;
+          padding: 8px 20px 9px 20px;
+          background-color: @sg-color;
+          color: #fff;
+          border-color: @sg-color;
         }
     }
 
@@ -196,21 +226,10 @@ a {
         }
     }
 
-    &[data-listOpen] {
-        .sg-example-name {
-            color: @sg-color-link;
-        }
-
-
-        > .sg-example-name {
-            padding-left: 11px;
-            border-left: 3px solid @sg-color;
-        }
-    }
 }
 
 .sg-content {
-    margin: 0;
+    margin: 20px 20px 0 10px;
     padding: 0;
     flex-grow: 1;
     iframe {
@@ -218,6 +237,12 @@ a {
         display: block;
         width: 100%;
         height: 100vh;
+    }
+    [data-navclosed] & {
+      margin-left: 20px;
+    }
+    &-container {
+      background-color: white;
     }
 }
 
@@ -241,22 +266,75 @@ a {
         border-radius: 2px;
     }
 }
+.sg-tabs {
+  margin: 0 0 20px 0;
+
+  padding: 0 0 0 10px;
+  li {
+    display: inline-block;
+  }
+  > li a {
+    cursor: pointer;
+    display: inherit;
+    position: relative;
+    font-weight: 700;
+    color: #008dbb;
+    padding: 10px 20px;
+
+
+    &[data-activetab] {
+      color: #262626;
+      cursor: auto;
+      &:before{
+        opacity: 1;
+        top: 0;
+      }
+    }
+    &:before {
+      border-color: #c9c9c9 #c9c9c9 #fff #c9c9c9;
+      border-radius: 2px 2px 0 0;
+      border-style: solid;
+      border-width: 1px;
+      bottom: 0;
+      content: '';
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      right: 0;
+      top: 35px;
+      transition: all .3s;
+    }
+  }
+
+  &-panel {
+    max-height: 0;
+    overflow: hidden;
+    &[data-activepanel] {
+      max-height: 4000px;
+    }
+  }
+
+  &-wrapper {
+    position: relative;
+    &:before{
+      background: #c9c9c9;
+      bottom: 0;
+      content: '';
+      height: 1px;
+      left: 0;
+      position: absolute;
+      right: 0;
+    }
+  }
+}
 
 .sg-file {
-    &-name {
-        font-size: 12px;
-        text-align: center;
-        a {
-            padding: 10px 15px;
-            display: inline-block;
-            border-right: 1px solid #e0e0e0;
-            color: #262626;
-            &:first-child {
-            border-left: 1px solid #e0e0e0;
-            }
-        }
+    &-title {
+      color: #262626;
+      font-size: 18px;
+      display: block;
+      padding: 10px 20px;
     }
-
     &-description {
         padding: 0 20px;
     }
@@ -284,16 +362,12 @@ a {
 .sg-file,
 .sg-design{
     &-header {
-        background: #ededed;
-        margin-bottom: 12px;
         z-index: 50;
     }
 
     &-form {
         overflow: hidden;
-        text-align: center;
         transition: max-height @sg-duration ease-in;
-        max-height: 0;
         &-message {
             margin-left: 16px;
         }
@@ -307,9 +381,6 @@ a {
             margin: 12px 0;
         }
 
-        .CodeMirror {
-            text-align: left;
-        }
         .sg-file--hide &,
         .sg-design--hide & {
             max-height: 4000px;
@@ -344,7 +415,7 @@ a {
         text-align: center;
     }
     &-name-text,
-    &-edit {
+    &-json {
         padding: 10px 15px;
         display: inline-block;
         border-right: 1px solid #e0e0e0;

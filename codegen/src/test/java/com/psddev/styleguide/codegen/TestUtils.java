@@ -47,8 +47,8 @@ public class TestUtils {
 
         Path userDir = Paths.get(System.getProperty("user.dir"));
 
-        if (!userDir.endsWith("viewgenerator")) {
-            modulePath = userDir.resolve("viewgenerator");
+        if (!userDir.endsWith("codegen")) {
+            modulePath = userDir.resolve("codegen");
         } else {
             modulePath = userDir;
         }

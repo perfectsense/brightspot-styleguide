@@ -20,9 +20,7 @@
 
     <modules>
         <module>codegen</module>
-        <!--
         <module>maven-plugin</module>
-        -->
     </modules>
 
     <profiles>

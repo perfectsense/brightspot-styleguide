@@ -9,50 +9,67 @@
                 {{#each files}}
                     <div class="sg-file">
                         <div class="sg-file-header">
-                            <div class="sg-file-name">
-                                <a href="{{url}}?full{{#if ../reqSeed}}&amp;seed={{../reqSeed}}{{/if}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}" target="_top" class="sg-file-name-text">{{name}}</a>
-                            </div>
+                          <a href="{{url}}?full{{#if ../reqSeed}}&amp;seed={{../reqSeed}}{{/if}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}" target="_top" class="sg-file-title">{{name}}</a>
+                        </div>
+                        <div class="sg-tabs-wrapper">
+                          <ul class="sg-tabs">
+                            <li>
+                              <a class="sg-file-main" data-tab="main" data-activetab>Main</a>
+                            </li>
+                            {{#with description}}
+                              <li>
+                                <a class="sg-file-document" data-tab="document">Documentation</a>
+                              </li>
+                            {{/with}}
+                            <li>
+                              <a class="sg-file-json" data-tab="json">JSON</a>
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="sg-tabs-panels">
+                          <div class="sg-tabs-panel" data-tab="document">
+                            {{#with description}}
+                                <div class="sg-file-description" data-tab="document">{{{this}}}</div>
+                            {{/with}}
 
+                            {{#with options}}
+                                <div class="sg-file-option-list">
+                                    Options:
+                                    <ul>
+                                        {{#each this}}
+                                            <li><span class="sg-design-item-type">{{@key}}</span> : {{this}}</li>
+                                        {{/each}}
+                                    </ul>
+                                </div>
+                            {{/with}}
+                          </div>
+                          <div class="sg-tabs-panel" data-tab="main" data-activepanel>
+                            <div class="sg-file-body">
+                                {{#with ../displayDevices}}
+                                    {{#each this}}
+                                        <div class="sg-device">
+                                            <div class="sg-device-name">
+                                                <i class="{{device.icon}}"></i> {{device.name}}
+                                            </div>
+
+                                            <iframe
+                                                style="height: {{device.height}}px; width: {{device.width}}px;"
+                                                src="{{../../url}}?full&amp;device=true&amp;{{#if ../../../seed}}seed={{../../../seed}}{{/if}}{{#if ../../../selectedStyleSheet}}&amp;ss={{../../../selectedStyleSheet.idx}}{{/if}}">
+                                            </iframe>
+                                        </div>
+                                    {{/each}}
+
+                                {{else}}
+                                    <iframe src="{{url}}?full{{#if ../reqSeed}}&amp;seed={{../reqSeed}}{{/if}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}"></iframe>
+                                {{/with}}
+                            </div>
+                          </div>
+                          <div class="sg-tabs-panel" data-tab="json">
                             <form class="sg-file-form">
                                 <input type="hidden" name="path" value="{{exampleFilePath}}">
                                 <textarea class="code" name="data">{{exampleFileData}}</textarea>
-                                <button>Save</button>
                             </form>
-                        </div>
-
-                        {{#with description}}
-                            <div class="sg-file-description">{{{this}}}</div>
-                        {{/with}}
-
-                        {{#with options}}
-                            <div class="sg-file-option-list">
-                                Options:
-                                <ul>
-                                    {{#each this}}
-                                        <li><span class="sg-design-item-type">{{@key}}</span> : {{this}}</li>
-                                    {{/each}}
-                                </ul>
-                            </div>
-                        {{/with}}
-
-                        <div class="sg-file-body">
-                            {{#with ../displayDevices}}
-                                {{#each this}}
-                                    <div class="sg-device">
-                                        <div class="sg-device-name">
-                                            <i class="{{device.icon}}"></i> {{device.name}}
-                                        </div>
-
-                                        <iframe
-                                            style="height: {{device.height}}px; width: {{device.width}}px;"
-                                            src="{{../../url}}?full&amp;device=true&amp;{{#if ../../../seed}}seed={{../../../seed}}{{/if}}{{#if ../../../selectedStyleSheet}}&amp;ss={{../../../selectedStyleSheet.idx}}{{/if}}">
-                                        </iframe>
-                                    </div>
-                                {{/each}}
-
-                            {{else}}
-                                <iframe src="{{url}}?full{{#if ../reqSeed}}&amp;seed={{../reqSeed}}{{/if}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}"></iframe>
-                            {{/with}}
+                          </div>
                         </div>
                     </div>
                 {{/each}}

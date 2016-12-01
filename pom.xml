@@ -19,7 +19,7 @@
     <name>BrightSpot Styleguide - Parent</name>
 
     <modules>
-        <module>viewgenerator</module>
+        <module>codegen</module>
         <module>maven-plugin</module>
     </modules>
 

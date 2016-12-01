@@ -10,7 +10,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import com.psddev.styleguide.viewgenerator.ViewClassGenerator;
+import com.psddev.styleguide.codegen.ViewClassGenerator;
 
 @Mojo(name = "generate-views", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
 class GenerateViewsMojo extends AbstractStyleguideMojo {

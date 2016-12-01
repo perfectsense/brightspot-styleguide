@@ -5,7 +5,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 
-import com.psddev.styleguide.viewgenerator.ViewClassGenerator;
+import com.psddev.styleguide.codegen.ViewClassGenerator;
 
 @Mojo(name = "watch", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
 class WatchMojo extends AbstractStyleguideMojo {

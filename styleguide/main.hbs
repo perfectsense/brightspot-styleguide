@@ -16,11 +16,20 @@
                             <li>
                               <a class="sg-file-main" data-tab="main" data-activetab>Main</a>
                             </li>
-                            {{#with description}}
+                            {{#unless options}}
+                            {{#if description}}
                               <li>
                                 <a class="sg-file-document" data-tab="document">Documentation</a>
                               </li>
-                            {{/with}}
+                            {{/if}}
+                            {{/unless}}
+                            {{#unless description}}
+                              {{#if options}}
+                                  <li>
+                                  <a class="sg-file-document" data-tab="document">Documentation</a>
+                                </li>
+                              {{/if}}
+                            {{/unless}}
                             <li>
                               <a class="sg-file-json" data-tab="json">JSON</a>
                             </li>

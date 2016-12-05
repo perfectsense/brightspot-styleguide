@@ -12,7 +12,7 @@ let defaults = {
   'project-path': process.cwd(),
   'project-styleguide-dirname': 'styleguide',
   'project-src-path': path.join(process.cwd(), 'styleguide'),
-  'project-target-path': path.join(process.cwd(), '_build'),
+  'build': path.join(process.cwd(), '_build'),
   'project-config-path': path.join(process.cwd(), 'styleguide', '_config.json'),
   'maven-pom': 'pom.xml'
 }
@@ -53,7 +53,7 @@ let Styleguide = function (gulp, settings = { }) {
         let targetName = `${pomXml.project.artifactId}-${pomXml.project.version}`
         let targetPath = path.join(this.config['project-path'], 'target', targetName)
         this.config['project-mavenTarget-path'] = targetPath
-        this.config['project-target-path'] = targetPath
+        this.config['build'] = targetPath
       }
     })
   }
@@ -65,6 +65,7 @@ let Styleguide = function (gulp, settings = { }) {
   }
 
   this.task = {
+    build: () => 'styleguide:build',
     copy: {
       json: () => 'styleguide:copy:json',
       templates: () => 'styleguide:postcopy:templates'
@@ -78,7 +79,7 @@ let Styleguide = function (gulp, settings = { }) {
   }
 
   this.path = {
-    build: () => this.config['project-target-path'],
+    build: () => this.config['build'],
     mavenTarget: () => this.config['project-mavenTarget-path']
   }
 

@@ -7,7 +7,7 @@ function Project (config, projectPath) {
   this._config = config
   this.name = label(path.basename(path.resolve(projectPath)))
 
-  let targetPath = path.join(this._config['project-target-path'], this._config['project-styleguide-dirname'])
+  let targetPath = path.join(this._config['build'], this._config['project-styleguide-dirname'])
 
   if (fs.existsSync(projectPath)) {
     this._projectPath = projectPath
@@ -15,20 +15,6 @@ function Project (config, projectPath) {
 
   if (fs.existsSync(targetPath) && fs.statSync(targetPath).isDirectory()) {
     this._targetPath = targetPath
-  }
-}
-
-Project.prototype.forEachPath = function (callback) {
-  if (this._targetPath) {
-    callback(this._targetPath)
-  }
-
-  if (this._targetPath) {
-    callback(this._targetPath)
-  }
-
-  if (this._projectPath) {
-    callback(this._projectPath)
   }
 }
 

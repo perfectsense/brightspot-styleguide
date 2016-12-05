@@ -3,6 +3,7 @@ const path = require('path')
 const extensionPattern = '{hbs,json}'
 const file = require('gulp-file')
 const filter = require('gulp-filter')
+const less = require('gulp-less')
 const glob = require('glob')
 
 function getFolders (dir) {
@@ -116,6 +117,12 @@ module.exports = {
 
     styleguide._gulp.task('styleguide:copy:json', [], () => {
       return styleguide._gulp.src(path.join(styleguide.config['project-src-path'], `**/*.json`), { base: '.' })
+        .pipe(styleguide._gulp.dest(styleguide.path.build()))
+    })
+
+    styleguide._gulp.task('styleguide:copy:styleguide', [], () => {
+      return styleguide._gulp.src(path.join(__dirname, '..', '..', '..', 'styleguide', 'styleguide.less'))
+        .pipe(less())
         .pipe(styleguide._gulp.dest(styleguide.path.build()))
     })
   }

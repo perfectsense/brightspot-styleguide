@@ -4,8 +4,6 @@ var express = require('express')
 var fs = require('fs')
 var _ = require('lodash')
 var marked = require('marked')
-var md5 = require('md5')
-var os = require('os')
 var path = require('path')
 var sentenceCase = require('sentence-case')
 var traverse = require('traverse')
@@ -36,18 +34,12 @@ module.exports = function (config) {
     // Automatically generated placeholder images.
   app.use(require('./placeholder-image')())
 
-    // Compile LESS on the fly.
-  var cssCachePath = path.join(os.tmpdir(), 'styleguide-css-cache', md5(__dirname))
-
-  app.use(require('less-middleware')(path.join(__dirname, '..', config['project-styleguide-dirname']), { dest: cssCachePath }))
-  app.use(express.static(cssCachePath))
-
   var project = config.project = new Project(config, config['project-path'])
 
   logger.success('Project: ' + project.name)
   logger.success(` \u{1F539} Path: ${config['project-path']}`)
   logger.success(` \u{1F539} Source Path: ${config['project-src-path']}`)
-  logger.success(` \u{1F539} Build Path: ${config['project-target-path']}`)
+  logger.success(` \u{1F539} build: ${config['build']}`)
 
     // Main display.
   app.use(function (req, res, next) {
@@ -201,9 +193,7 @@ module.exports = function (config) {
     res.sendFile(absUrl)
   })
 
-  project.forEachPath(function (projectPath) {
-    app.use(express.static(projectPath))
-  })
+  app.use(express.static(config.build))
 
     // Start the web server.
   let server = app.listen(config.port, config.host, function () {

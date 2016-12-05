@@ -77,49 +77,4 @@ Project.prototype.findStyleguideFile = function (file) {
   return null
 }
 
-Project.prototype.findVariableFiles = function () {
-    // Find all variable files.
-  var varFiles = [ ]
-  var targetPath = this._targetPath
-
-  if (targetPath) {
-    rrs(targetPath).forEach(function (filePath) {
-      if (path.extname(filePath) === '.vars') {
-        varFiles.push({
-          path: filePath,
-          name: filePath.slice(0, -5).split(fs.sep).join('/')
-        })
-      }
-    })
-  }
-
-    // Strip the common prefix from the variable file names.
-  var varFilesLength = varFiles.length
-
-  if (varFilesLength > 1) {
-    varFiles.sort(function (x, y) {
-      return x.name.localeCompare(y.name)
-    })
-
-    var first = varFiles[0]
-    var last = varFiles[varFilesLength - 1]
-    var commonLength = first.name.length
-    var commonIndex = 0
-
-    while (commonIndex < commonLength && first.name.charAt(commonIndex) === last.name.charAt(commonIndex)) {
-      ++commonIndex
-    }
-
-    var commonPrefixLength = first.name.substring(0, commonIndex).length
-
-    varFiles.forEach(function (varFile) {
-      varFile.name = varFile.name.substring(commonPrefixLength)
-    })
-  } else if (varFilesLength > 0) {
-    varFiles[0].name = path.basename(varFiles[0].name)
-  }
-
-  return varFiles
-}
-
 module.exports = Project

@@ -24,13 +24,6 @@
                         }
                     }));
 
-                    $form.find('textarea').each(function () {
-                        CodeMirror.fromTextArea(this, {
-                            lineNumbers: true,
-                            mode: 'json'
-                        });
-                    });
-
                     var $message = $('<span/>', {
                         'class': 'sg-design-form-message'
                     });

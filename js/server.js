@@ -256,13 +256,6 @@ module.exports = function (config) {
     app.use(express.static(projectPath))
   })
 
-    // Load project-specific middleware
-  if (config.middlewares) {
-    config.middlewares.forEach(function (middleware) {
-      app.use(middleware.path, require(middleware.id))
-    })
-  }
-
     // Start the web server.
   let server = app.listen(config.port, config.host, function () {
     logger.success(`Started on http://${config.host}:${config.port}`)

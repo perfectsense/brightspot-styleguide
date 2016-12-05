@@ -106,31 +106,11 @@ module.exports = function (config) {
       context.randomizeUrl = url.format(randomizeUrl)
     }
 
-    var groups = context.groups = [ ]
     var originalUrlSearch = context.originalUrlSearch = url.parse(req.originalUrl).search || ''
 
     context.reqPath = req.path
     context.contentQueryString = querystring.stringify(req.query) || ''
 
-        // Any variable files?
-    var varFiles = project.findVariableFiles()
-
-    if (varFiles.length > 0) {
-      var varExamples = [ ]
-      var varGroup = {
-        name: 'Variables',
-        children: varExamples
-      }
-
-      groups.push(varGroup)
-
-      varFiles.forEach(function (varFile) {
-        varExamples.push({
-          name: varFile.name.split('/').map(function (n) { return label(n) }).join(': '),
-          url: project.urlPrefix + '/variables/' + varFile.name
-        })
-      })
-    }
     var examples = context.examples = [ ]
     var groupNavigation = context.groupNavigation = [ ]
         // Finds all groups of examples in the styleguide directory.
@@ -253,11 +233,6 @@ module.exports = function (config) {
 
         // Example directory with JSON data files within?
     var examplePath = project.findStyleguideFile(requestedPath)
-
-        // Variables page?
-    if (require('./variables')(config, req, res, context)) {
-      return
-    }
 
         // res.send(renderContent(config, context, '/main.hbs'));
     if (require('./render-content')(config, req, res, context)) {

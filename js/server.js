@@ -42,11 +42,6 @@ module.exports = function (config) {
   app.use(require('less-middleware')(path.join(__dirname, '..', config['project-styleguide-dirname']), { dest: cssCachePath }))
   app.use(express.static(cssCachePath))
 
-    // Custom fonts.
-  app.use(require('connect-fonts').setup({
-    fonts: [ require('connect-fonts-opensans') ]
-  }))
-
   var project = config.project = new Project(config, config['project-path'])
 
   logger.success('Project: ' + project.name)

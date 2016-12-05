@@ -4,8 +4,6 @@
   "dependencies": {
     "body-parser": "1.14.1",
     "chance": "^0.8.0",
-    "connect-fonts": "2.0.2",
-    "connect-fonts-opensans": "0.0.5",
     "daemon": "1.1.0",
     "escape-html-in-json": "1.0.0",
     "express": "^4.13.1",

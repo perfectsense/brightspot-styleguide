@@ -20,7 +20,7 @@ let defaults = {
 let Styleguide = function (gulp, settings = { }) {
   this._gulp = gulp
 
-  // Apply bsp-styleguide config file overrides
+  // Apply styleguide config file overrides
   this.config = fs.readFileSync(path.join(__dirname, '../styleguide', '_config.json'), 'utf8')
   if (this.config) {
     this.config = JSON.parse(this.config)
@@ -66,15 +66,15 @@ let Styleguide = function (gulp, settings = { }) {
 
   this.task = {
     copy: {
-      json: () => 'bsp-styleguide:copy:json',
-      templates: () => 'bsp-styleguide:postcopy:templates'
+      json: () => 'styleguide:copy:json',
+      templates: () => 'styleguide:postcopy:templates'
     },
     lint: {
-      less: () => 'bsp-styleguide:lint:less',
-      js: () => 'bsp-styleguide:lint:js',
-      json: () => 'bsp-styleguide:lint:json'
+      less: () => 'styleguide:lint:less',
+      js: () => 'styleguide:lint:js',
+      json: () => 'styleguide:lint:json'
     },
-    watch: () => 'bsp-styleguide:watch'
+    watch: () => 'styleguide:watch'
   }
 
   this.path = {

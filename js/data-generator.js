@@ -7,7 +7,7 @@ var Util = require('./util');
 function DataGenerator(context, config) {
     this.config = config;
     this.context = context;
-    this.chance = new Chance(context.seed);
+    this.chance = new Chance();
 }
 
 DataGenerator.prototype.stylesheet = function () {

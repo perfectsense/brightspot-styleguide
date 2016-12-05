@@ -58,9 +58,6 @@ module.exports = function (config) {
   app.use(function (req, res, next) {
     var context = { }
 
-        // Seed for the randomization.
-    var seed = context.seed = parseInt(req.query.seed, 10) || Math.floor(Math.random() * 1000000)
-
     context.project = project
 
         // Request URL (e.g. /foo/bar) to file path (e.g. \foo\bar in Windows).
@@ -77,25 +74,6 @@ module.exports = function (config) {
       context.names = name.split('/').map(function (part) {
         return label(part)
       })
-    }
-
-        // Seed URL that pins the randomization.
-    var seedUrl = url.parse(req.originalUrl, true)
-
-    delete seedUrl.search
-
-    seedUrl.query.seed = seed
-    context.seedUrl = url.format(seedUrl)
-
-    var reqSeed = context.reqSeed = req.query.seed
-        // Randomize URL that resets the randomization.
-    if (reqSeed) {
-      var randomizeUrl = url.parse(req.originalUrl, true)
-
-      delete randomizeUrl.search
-      delete randomizeUrl.query.seed
-
-      context.randomizeUrl = url.format(randomizeUrl)
     }
 
     var originalUrlSearch = context.originalUrlSearch = url.parse(req.originalUrl).search || ''

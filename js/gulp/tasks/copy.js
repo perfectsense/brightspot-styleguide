@@ -18,6 +18,8 @@ function getFolders (dir) {
 
 module.exports = {
   registerModule: (styleguide) => {
+    const gulp = styleguide._gulp
+
     function config () {
       return filter((file) => {
         let config = require(file.path)
@@ -83,47 +85,41 @@ module.exports = {
     }
 
     // Looks for _config.json directives within the target because we might need to post-process something in the build dir
-    styleguide._gulp.task('styleguide:postcopy:templates', ['styleguide:copy:templates'], () => {
-      return styleguide._gulp.src([`${styleguide.path.build()}/**/*/_config.json`, `!${styleguide.path.build()}/node_modules/**/*`])
+    gulp.task('styleguide:postcopy:templates', ['styleguide:copy:templates'], () => {
+      return gulp.src([`${styleguide.path.build()}/**/*/_config.json`, `!${styleguide.path.build()}/node_modules/**/*`])
         .pipe(config())
     })
 
     // Copies the template and JSON files into target/gulp for the viewgenerator
-    styleguide._gulp.task('styleguide:copy:templates', ['styleguide:copy:createPackageFile'], () => {
-      return styleguide._gulp.src(path.join(styleguide.config.source, `**/*.${extensionPattern}`), { base: '.' })
-        .pipe(styleguide._gulp.dest(styleguide.path.build()))
+    gulp.task('styleguide:copy:templates', ['styleguide:copy:createPackageFile'], () => {
+      return gulp.src(path.join(styleguide.config.source, `**/*.${extensionPattern}`), { base: '.' })
+        .pipe(gulp.dest(styleguide.path.build()))
     })
 
     // creates a package.json at the root of each node_module within target/gulp
-    styleguide._gulp.task('styleguide:copy:createPackageFile', ['styleguide:copy:node_modules'], () => {
+    gulp.task('styleguide:copy:createPackageFile', ['styleguide:copy:node_modules'], () => {
       let folders = getFolders(path.join(styleguide.path.build(), 'node_modules'))
 
       folders.map((folder) => {
-        return styleguide._gulp.src(path.join(styleguide.path.build(), 'node_modules', folder, '/*'))
+        return gulp.src(path.join(styleguide.path.build(), 'node_modules', folder, '/*'))
                 .pipe(file('package.json', '{}'))
-                .pipe(styleguide._gulp.dest(path.join(styleguide.path.build(), 'node_modules', folder, '/')))
+                .pipe(gulp.dest(path.join(styleguide.path.build(), 'node_modules', folder, '/')))
       })
     })
 
     // Copies the template and JSON files from node_modules that contain a `styleguide` directory
     // into the target/gulp directory for the viewgenerator
-    styleguide._gulp.task('styleguide:copy:node_modules', [], () => {
-      return styleguide._gulp.src([
+    gulp.task('styleguide:copy:node_modules', [], () => {
+      return gulp.src([
         `!node_modules/brightspot-styleguide/styleguide/**/*.${extensionPattern}`, // exclude brightspot-styleguide templates
         `node_modules/*/styleguide/**/*.${extensionPattern}`
       ], { base: '.' })
-        .pipe(styleguide._gulp.dest(styleguide.path.build()))
+        .pipe(gulp.dest(styleguide.path.build()))
     })
 
-    styleguide._gulp.task('styleguide:copy:json', [], () => {
-      return styleguide._gulp.src(path.join(styleguide.config.source, `**/*.json`), { base: '.' })
-        .pipe(styleguide._gulp.dest(styleguide.path.build()))
-    })
-
-    styleguide._gulp.task('styleguide:copy:styleguide', [], () => {
-      return styleguide._gulp.src(path.join(__dirname, '..', '..', '..', 'styleguide', 'styleguide.less'))
-        .pipe(less())
-        .pipe(styleguide._gulp.dest(styleguide.path.build()))
+    gulp.task('styleguide:copy:json', [], () => {
+      return gulp.src(path.join(styleguide.config.source, `**/*.json`), { base: '.' })
+        .pipe(gulp.dest(styleguide.path.build()))
     })
   }
 }

@@ -1,12 +1,7 @@
-var bodyParser = require('body-parser')
-var exec = require('child_process').exec
 var express = require('express')
 var fs = require('fs')
-var _ = require('lodash')
-var marked = require('marked')
 var path = require('path')
 var sentenceCase = require('sentence-case')
-var traverse = require('traverse')
 var url = require('url')
 var querystring = require('querystring')
 
@@ -19,8 +14,6 @@ module.exports = function (config) {
   logger.welcome()
 
   let app = express()
-
-  app.use(bodyParser.urlencoded({ extended: true }))
 
     // Automatically generated placeholder images.
   app.use(require('./placeholder-image')())

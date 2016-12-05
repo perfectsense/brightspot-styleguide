@@ -177,30 +177,6 @@ module.exports = function (config) {
     delete context.resetDisplayDevicesUrl.search
     context.resetDisplayDevicesUrl = url.format(context.resetDisplayDevicesUrl)
 
-        // Which stylesheet to display?
-    if (config.stylesheets) {
-      var availableStylesheets = context.availableStylesheets = [ ]
-      context.selectedStyleSheet = null
-      config.stylesheets.forEach(function (sheet, i) {
-        var key = 'ss'
-        var stylesheetUrl = url.parse(req.originalUrl, true)
-
-                // does the original URL contain the query param that matches this sheet?
-        if (stylesheetUrl.query[key] === i) {
-          sheet.selected = true
-          context.selectedStyleSheet = sheet
-        } else {
-          sheet.selected = false
-        }
-
-        stylesheetUrl.query[key] = i
-        delete stylesheetUrl.search
-        sheet.idx = i
-        sheet.url = url.format(stylesheetUrl)
-        availableStylesheets.push(sheet)
-      })
-    }
-
         // Example directory with JSON data files within?
     var examplePath = project.findStyleguideFile(requestedPath)
 

@@ -10,7 +10,7 @@
                     <div class="sg-file">
                         <div class="sg-file-header">
                             <div class="sg-file-name">
-                                <a href="{{url}}?full{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}" target="_top" class="sg-file-name-text">{{name}}</a>
+                                <a href="{{url}}?full" target="_top" class="sg-file-name-text">{{name}}</a>
                             </div>
 
                             <form class="sg-file-form">
@@ -45,13 +45,13 @@
 
                                         <iframe
                                             style="height: {{device.height}}px; width: {{device.width}}px;"
-                                            src="{{../../url}}?full&amp;device=true{{#if ../../../selectedStyleSheet}}&amp;ss={{../../../selectedStyleSheet.idx}}{{/if}}">
+                                            src="{{../../url}}?full&amp;device=true">
                                         </iframe>
                                     </div>
                                 {{/each}}
 
                             {{else}}
-                                <iframe src="{{url}}?full{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}"></iframe>
+                                <iframe src="{{url}}?full"></iframe>
                             {{/with}}
                         </div>
                     </div>

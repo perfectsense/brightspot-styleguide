@@ -10,23 +10,6 @@ function DataGenerator(context, config) {
     this.chance = new Chance();
 }
 
-DataGenerator.prototype.stylesheet = function () {
-    var stylesheets = this.context.availableStylesheets;
-    if (stylesheets && stylesheets.length){
-        // use the first stylesheet by default unless one has been selected
-        var selectedSheet = sheet = stylesheets[0];
-        for (var n=0, len=stylesheets.length; n<len; n++){
-            sheet = stylesheets[n];
-            if (sheet.selected) {
-                selectedSheet = sheet;
-                break;
-            }
-        }
-        return selectedSheet.href;
-    }
-    throw new Error('Invalid! No stylesheet(s) were made available to the data');
-};
-
 DataGenerator.prototype.date = function (format) {
     var date;
 

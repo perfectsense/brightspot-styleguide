@@ -7,14 +7,14 @@ module.exports = {
   registerModule: (styleguide) => {
     styleguide._gulp.task('styleguide:lint:less', () => {
       // TODO: soften the file name?
-      return styleguide._gulp.src(path.join(styleguide.config['project-src-path'], 'All.less'))
+      return styleguide._gulp.src(path.join(styleguide.config.source, 'All.less'))
         .pipe(lesshint({}))
         .pipe(lesshint.reporter(''))
     })
 
     styleguide._gulp.task('styleguide:lint:js', () => {
       // TODO: soften the file name?
-      return styleguide._gulp.src(path.join(styleguide.config['project-src-path'], 'All.js'))
+      return styleguide._gulp.src(path.join(styleguide.config.source, 'All.js'))
         .pipe(standard())
         .pipe(standard.reporter('default', {
           breakOnError: true,
@@ -23,7 +23,7 @@ module.exports = {
     })
 
     styleguide._gulp.task('styleguide:lint:json', () => {
-      return styleguide._gulp.src(path.join(styleguide.config['project-src-path'], '**/*.json'))
+      return styleguide._gulp.src(path.join(styleguide.config.source, '**/*.json'))
         .pipe(jsonlint())
         .pipe(jsonlint.reporter())
     })

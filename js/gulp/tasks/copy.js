@@ -90,7 +90,7 @@ module.exports = {
 
     // Copies the template and JSON files into target/gulp for the viewgenerator
     styleguide._gulp.task('styleguide:copy:templates', ['styleguide:copy:createPackageFile'], () => {
-      return styleguide._gulp.src(path.join(styleguide.config['project-src-path'], `**/*.${extensionPattern}`), { base: '.' })
+      return styleguide._gulp.src(path.join(styleguide.config.source, `**/*.${extensionPattern}`), { base: '.' })
         .pipe(styleguide._gulp.dest(styleguide.path.build()))
     })
 
@@ -116,7 +116,7 @@ module.exports = {
     })
 
     styleguide._gulp.task('styleguide:copy:json', [], () => {
-      return styleguide._gulp.src(path.join(styleguide.config['project-src-path'], `**/*.json`), { base: '.' })
+      return styleguide._gulp.src(path.join(styleguide.config.source, `**/*.json`), { base: '.' })
         .pipe(styleguide._gulp.dest(styleguide.path.build()))
     })
 

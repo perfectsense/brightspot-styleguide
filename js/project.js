@@ -7,7 +7,7 @@ function Project (config, projectPath) {
   this._config = config
   this.name = label(path.basename(path.resolve(projectPath)))
 
-  let targetPath = path.join(this._config['build'], this._config['project-styleguide-dirname'])
+  let targetPath = this._config.source
 
   if (fs.existsSync(projectPath)) {
     this._projectPath = projectPath
@@ -46,7 +46,7 @@ Project.prototype.findStyleguideFile = function (file) {
   let filePath
   let basePath = this._targetPath
 
-  filePath = path.join(__dirname, '..', this._config['styleguide-path'], file)
+  filePath = path.join(__dirname, '..', 'styleguide', file)
 
   if (fs.existsSync(filePath)) {
     return filePath

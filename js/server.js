@@ -15,16 +15,7 @@ var Project = require('./project')
 var logger = require('./logger')
 var renderPage = require('./render-page')
 
-var defaults = {
-  'project-path': '.',
-  'project-src-path': path.join('src', 'main', 'webapp'),
-  'styleguide-path': 'styleguide',
-  'json-suffix': '.json'
-}
-
 module.exports = function (config) {
-  config = _.extend({ }, defaults, config)
-
   logger.welcome()
 
   let app = express()
@@ -34,12 +25,12 @@ module.exports = function (config) {
     // Automatically generated placeholder images.
   app.use(require('./placeholder-image')())
 
-  var project = config.project = new Project(config, config['project-path'])
+  var project = config.project = new Project(config, config.root)
 
   logger.success('Project: ' + project.name)
-  logger.success(` \u{1F539} Path: ${config['project-path']}`)
-  logger.success(` \u{1F539} Source Path: ${config['project-src-path']}`)
-  logger.success(` \u{1F539} build: ${config['build']}`)
+  logger.success(` \u{1F539} root: ${config.root}`)
+  logger.success(` \u{1F539} source: ${config.source}`)
+  logger.success(` \u{1F539} build: ${config.build}`)
 
     // Main display.
   app.use(function (req, res, next) {
@@ -83,7 +74,7 @@ module.exports = function (config) {
         if (name.slice(0, 1) !== '_') {
           var urlPath = dirPath.split(project._targetPath).pop()
 
-          if (path.extname(urlPath) === config['json-suffix']) {
+          if (path.extname(urlPath) === config.jsonSuffix) {
                         // item.name = label(name);
             item = path.parse(urlPath)
             item.url = path.join(item.dir, item.name) + originalUrlSearch

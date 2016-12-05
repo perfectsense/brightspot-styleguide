@@ -3,64 +3,84 @@ const fs = require('fs')
 const logger = require('./logger')
 const combiner = require('stream-combiner2')
 const notify = require('gulp-notify')
-const parseString = require('xml2js').parseString
+const xml2js = require('xml2js')
 const argv = require('minimist')(process.argv.slice(2))
 
 let defaults = {
-  'host': 'localhost',
-  'port': '3000',
-  'project-path': process.cwd(),
-  'project-styleguide-dirname': 'styleguide',
-  'project-src-path': path.join(process.cwd(), 'styleguide'),
-  'build': path.join(process.cwd(), '_build'),
-  'project-config-path': path.join(process.cwd(), 'styleguide', '_config.json'),
-  'maven-pom': 'pom.xml'
+  host: 'localhost',
+  port: '3000',
+  root: '.',
+  jsonSuffix: '.json',
+  devices: [
+    {
+      name: "Mobile - Portrait",
+      icon: "fa fa-mobile",
+      width: 320,
+      height: 480
+    },
+    {
+      name: "Mobile - Landscape",
+      icon: "fa fa-mobile fa-rotate-270",
+      width: 480,
+      height: 320
+    },
+    {
+      name: "Tablet - Portrait",
+      icon: "fa fa-tablet",
+      width: 768,
+      height: 1024
+    },
+    {
+      name: "Tablet - Landscape",
+      icon: "fa fa-tablet fa-rotate-270",
+      width: 1024,
+      height: 768
+    },
+    {
+      name: "Desktop",
+      icon: "fa fa-desktop",
+      width: 1200,
+      height: 600
+    }
+  ]
 }
 
 let Styleguide = function (gulp, settings = { }) {
   this._gulp = gulp
+  const config = this.config = Object.assign(defaults, settings, argv)
 
-  // Apply styleguide config file overrides
-  this.config = fs.readFileSync(path.join(__dirname, '../styleguide', '_config.json'), 'utf8')
-  if (this.config) {
-    this.config = JSON.parse(this.config)
+  if (!config.source) {
+    config.source = path.join(config.root, 'styleguide')
   }
 
-  this.config = Object.assign(defaults, this.config, settings, argv)
+  if (!config.build) {
+    config.build = path.join(config.root, '_build')
 
-  // Apply optional project-level config overrides
-  if (fs.existsSync(this.config['project-config-path'])) {
-    try {
-      this.config = Object.assign(this.config, JSON.parse(fs.readFileSync(this.config['project-config-path'], 'utf8')))
-      logger.success('Styleguide is configured with: ' + path.resolve(this.config['project-config-path']))
-    } catch (err) {
-      logger.warn("There was a problem parsing your project's " + this.config['project-config-path'] + ' file... falling back on the default config.')
-      return null
+    // If within a Maven project, change the default build directory.
+    const pomFile = path.join(config.root, 'pom.xml')
+
+    if (fs.existsSync(pomFile)) {
+      xml2js.parseString(fs.readFileSync(pomFile), { async: false }, (error, pomXml) => {
+        if (error) {
+          throw error;
+        }
+
+        if (pomXml.project.packaging.toString() === 'war') {
+          config.build = path.join(config.root, 'target', `${pomXml.project.artifactId}-${pomXml.project.version}`)
+        }
+      })
     }
-  } else {
-    logger.success('Styleguide is configured with default "_config.json" file')
-    logger.warn('(You can override this by creating a "' + this.config['project-config-path'] + '" file at the root of your project)')
   }
 
-  let pomFile = path.join(this.config['project-path'], this.config['maven-pom'])
-  if (fs.existsSync(pomFile)) {
-    parseString(fs.readFileSync(pomFile), { async: false }, (err, pomXml) => {
-      if (err) {
-        console.log('ERROR: ' + err)
-      }
+  const configFile = path.join(config.source, '_config.json')
 
-      if (pomXml.project.packaging.toString() === 'war') {
-        let targetName = `${pomXml.project.artifactId}-${pomXml.project.version}`
-        let targetPath = path.join(this.config['project-path'], 'target', targetName)
-        this.config['project-mavenTarget-path'] = targetPath
-        this.config['build'] = targetPath
-      }
-    })
+  if (fs.existsSync(configFile)) {
+    Object.assign(config, JSON.parse(fs.readFileSync(configFile, 'utf8')))
   }
 
-  process.title = this.config.title || 'styleguide'
+  process.title = config.title || 'styleguide'
 
-  if (this.config.daemon) {
+  if (config.daemon) {
     require('daemon')()
   }
 
@@ -79,8 +99,7 @@ let Styleguide = function (gulp, settings = { }) {
   }
 
   this.path = {
-    build: () => this.config['build'],
-    mavenTarget: () => this.config['project-mavenTarget-path']
+    build: () => config['build']
   }
 
   this.watch = () => {

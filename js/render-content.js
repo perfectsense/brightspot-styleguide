@@ -37,7 +37,7 @@ module.exports = function (config, req, res, context) {
     var file = path.basename(exampleFilePath);
 
 
-        if (file.slice(0, 1) !== '_' && path.extname(file) === config['json-suffix']) {
+        if (file.slice(0, 1) !== '_' && path.extname(file) === config.jsonSuffix) {
             var options;
             var exampleFileData = fs.readFileSync(exampleFilePath, 'utf8');
 
@@ -58,7 +58,7 @@ module.exports = function (config, req, res, context) {
                 }
             });
 
-            var fileName = sentenceCase(path.basename(exampleFilePath, config['json-suffix']));
+            var fileName = sentenceCase(path.basename(exampleFilePath, config.jsonSuffix));
             var url = req.path;
             var f = {
                 name: label(fileName),
@@ -69,7 +69,7 @@ module.exports = function (config, req, res, context) {
                 options: options
             };
 
-            var descriptionPath = exampleFilePath.slice(0, -config['json-suffix'].length) + '.md';
+            var descriptionPath = exampleFilePath.slice(0, -config.jsonSuffix.length) + '.md';
 
             if (fs.existsSync(descriptionPath)) {
                 f.description = marked(fs.readFileSync(descriptionPath, 'utf8'));

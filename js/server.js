@@ -33,23 +33,6 @@ module.exports = function (config) {
 
   app.use(bodyParser.urlencoded({ extended: true }))
 
-    // API endpoint for Saving
-  app.post('/save', function (req, res, next) {
-    fs.writeFileSync(req.body.path, req.body.data, 'utf8')
-
-    if (req.body.grunt) {
-      exec('npm run grunt', { cwd: config['project-path'] }, function (err) {
-        if (err) {
-          res.status(500).send(err)
-        } else {
-          res.send('')
-        }
-      })
-    } else {
-      res.send('')
-    }
-  })
-
     // Automatically generated placeholder images.
   app.use(require('./placeholder-image')())
 

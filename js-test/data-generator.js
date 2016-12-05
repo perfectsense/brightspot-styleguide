@@ -1,7 +1,7 @@
 const Chance = require('chance');
 const expect = require("chai").expect;
 const assert = require("chai").assert;
-const DataGenerator = require("../lib/data-generator");
+const DataGenerator = require("../js/data-generator");
 
 describe("Date Generator", function() {
 

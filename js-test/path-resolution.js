@@ -1,7 +1,7 @@
 const path = require('path')
 const expect = require('chai').expect
 const assert = require('chai').assert
-const ExampleFile = require('../lib/example-file')
+const ExampleFile = require('../js/example-file')
 
 describe('Path Resolution', () => {
   const basePath = path.join(__dirname, 'mockProject')

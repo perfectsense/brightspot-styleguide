@@ -49,8 +49,6 @@ module.exports = function (config) {
 
   var project = config.project = new Project(config, config['project-path'])
 
-  project.urlPrefix = '/' + project.name.replace(/ /g, '-').toLowerCase()
-
   logger.success('Project: ' + project.name)
   logger.success(` \u{1F539} Path: ${config['project-path']}`)
   logger.success(` \u{1F539} Source Path: ${config['project-src-path']}`)
@@ -67,12 +65,6 @@ module.exports = function (config) {
 
         // Request URL (e.g. /foo/bar) to file path (e.g. \foo\bar in Windows).
     var requestedUrl = req.path
-
-        // Is this request pathed under the project prefix?
-    if (requestedUrl.indexOf(project.urlPrefix) > -1) {
-            // strip the project path off
-      requestedUrl = req.path.slice(project.urlPrefix.length)
-    }
 
     context.requestedUrl = requestedUrl
 
@@ -129,7 +121,7 @@ module.exports = function (config) {
           if (path.extname(urlPath) === config['json-suffix']) {
                         // item.name = label(name);
             item = path.parse(urlPath)
-            item.url = path.join(project.urlPrefix, item.dir, item.name) + originalUrlSearch
+            item.url = path.join(item.dir, item.name) + originalUrlSearch
             item.name = label(sentenceCase(item.name))
 
             let formatedLabel = (item.dir.charAt(0) === '/') ? item.dir.substr(1).replace(/\//g, ' / ') : item.dir.replace(/\//g, ' / ')
@@ -262,7 +254,6 @@ module.exports = function (config) {
 
   project.forEachPath(function (projectPath) {
     app.use(express.static(projectPath))
-    app.use(project.urlPrefix, express.static(projectPath))
   })
 
     // Load project-specific middleware

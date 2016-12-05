@@ -40,7 +40,7 @@ function resolvePath (basePath, filePath, reqPath = null, parentPath = null) {
   return resolvedPath
 }
 
-function resolveTemplatePath (data, requestPath, project) {
+function resolveTemplatePath (data, requestPath, config) {
   traverse(data).forEach(function (value) {
     if (!value) return
 
@@ -48,12 +48,12 @@ function resolveTemplatePath (data, requestPath, project) {
     let parentPath = (this.parent) ? this.parent.node._dataUrl : null
 
     if (templatePath) {
-      value._template = resolvePath(project._projectPath, templatePath, requestPath, parentPath)
+      value._template = resolvePath(config.root, templatePath, requestPath, parentPath)
     }
   })
 }
 
-function resolveDataUrlPaths (data, currentDataPath, project) {
+function resolveDataUrlPaths (data, currentDataPath, config) {
   traverse(data).forEach(function (value) {
     if (!value) return
 
@@ -62,7 +62,7 @@ function resolveDataUrlPaths (data, currentDataPath, project) {
     let dataPath = ''
 
     if (dataUrl) {
-      dataPath = resolvePath(project._projectPath, dataUrl, currentDataPath, parentPath)
+      dataPath = resolvePath(config.root, dataUrl, currentDataPath, parentPath)
 
       let originalDataPath = currentDataPath
       currentDataPath = dataPath
@@ -88,10 +88,7 @@ function resolveDataUrlPaths (data, currentDataPath, project) {
   })
 }
 
-module.exports = function (config, req, res, context) {
-  let project = context.project
-  let filePath = project.findStyleguideFile(`${context.requestedPath}.json`)
-
+module.exports = function (config, filePath) {
   if (!filePath) {
     return false
   }
@@ -99,10 +96,10 @@ module.exports = function (config, req, res, context) {
   let data = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
   // Resolve all _dataUrl paths
-  resolveDataUrlPaths(data, filePath, project)
+  resolveDataUrlPaths(data, filePath, config)
 
   // Resolve all _template paths.
-  resolveTemplatePath(data, filePath, project)
+  resolveTemplatePath(data, filePath, config)
 
   // Validate the JSON data. Exceptions for the special keys we have that are maps, so they don't need _template or _view
   traverse(data).forEach(function (value) {
@@ -129,14 +126,18 @@ module.exports = function (config, req, res, context) {
 
   // Wrap the example file data?
   if (data._wrapper !== false && !data._view) {
-    var wrapperPath = project.findStyleguideFile(data._wrapper ? data._wrapper : '_wrapper.json')
+    var wrapperPath = path.join(config.source, data._wrapper ? data._wrapper : '_wrapper.json')
+
+    if (!fs.existsSync(wrapperPath)) {
+      wrapperPath = null;
+    }
 
     while (wrapperPath) {
       var wrapper = JSON.parse(fs.readFileSync(wrapperPath, 'utf8'))
 
-      resolveDataUrlPaths(wrapper, wrapperPath, project)
+      resolveDataUrlPaths(wrapper, wrapperPath, config)
 
-      resolveTemplatePath(wrapper, wrapperPath, project)
+      resolveTemplatePath(wrapper, wrapperPath, config)
 
       traverse(wrapper).forEach(function (value) {
         if (value && value._delegate) {
@@ -146,12 +147,16 @@ module.exports = function (config, req, res, context) {
 
       data = wrapper
 
-      wrapperPath = data._wrapper ? project.findStyleguideFile(data._wrapper) : null
+      wrapperPath = data._wrapper ? path.join(config.source, data._wrapper) : null
+
+      if (!fs.existsSync(wrapperPath)) {
+        wrapperPath = null;
+      }
     }
   }
 
   // post-process the JSON data.
-  new DataGenerator(context, config).process(data)
+  new DataGenerator(config).process(data)
 
   // Set up Handlebars cache.
   var compiledTemplates = { }
@@ -180,7 +185,7 @@ module.exports = function (config, req, res, context) {
     var jsonData = {
       'json': JSON.stringify(removePrivateKeys(data), escapeHtml, 2)
     }
-    var jsonTemplate = fs.readFileSync(context.project.findStyleguideFile('/example-json.hbs'), 'utf8')
+    var jsonTemplate = fs.readFileSync(path.join(__dirname, '..', 'styleguide', 'example-json.hbs'), 'utf8');
     var jsonCompiledTemplate = handlebars.compile(jsonTemplate)
 
     return jsonCompiledTemplate(jsonData)
@@ -208,7 +213,7 @@ module.exports = function (config, req, res, context) {
   })
 
   // Render the example file data.
-  var template = handlebars.compile(fs.readFileSync(project.findStyleguideFile('/example-file.hbs'), 'utf8'))
+  var template = handlebars.compile(fs.readFileSync(path.join(__dirname, '..', 'styleguide', 'example-file.hbs'), 'utf8'))
 
   function Template () {
   }
@@ -300,7 +305,7 @@ module.exports = function (config, req, res, context) {
 
     // block helper extend parameter was set
     if (extend) {
-      let absolutePath = resolvePath(project._projectPath, extend, null, options.data.root._contextPath || options.data.root._template)
+      let absolutePath = resolvePath(config.root, extend, null, options.data.root._contextPath || options.data.root._template)
       options.data.root._contextPath = absolutePath
       var template = compile(absolutePath, options)
       var templateOptions = { data: { } }
@@ -405,12 +410,7 @@ module.exports = function (config, req, res, context) {
   var iframeJs = fs.readFileSync(require.resolve('iframe-resizer/js/iframeResizer.contentWindow.min.js'), 'utf8')
 
   // if the example document contains a </head> then we append the iframe javascript to the <head>
-  res.send(template({
-    device: req.query.device === 'true',
+  return template({
     data: convert(data)
-  }).replace(/<\/head>/, '<script>' + iframeJs + '</script>\n</head>'))
-
-  return res
+  }).replace(/<\/head>/, '<script>' + iframeJs + '</script>\n</head>')
 }
-
-module.exports.resolvePath = resolvePath

@@ -4,9 +4,8 @@ var traverse = require('traverse');
 
 var Util = require('./util');
 
-function DataGenerator(context, config) {
+function DataGenerator(config) {
     this.config = config;
-    this.context = context;
     this.chance = new Chance();
 }
 

@@ -156,11 +156,6 @@ module.exports = function (config) {
       return
     }
 
-        // Example JSON data file?
-    if (require('./example-file')(config, req, res, context)) {
-      return
-    }
-
         // Not a directory or a styleguide route? (ie: jquery.js)
     if (!examplePath || !fs.statSync(examplePath).isDirectory()) {
       next()

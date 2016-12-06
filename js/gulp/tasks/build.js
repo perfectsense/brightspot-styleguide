@@ -7,8 +7,9 @@ const handlebars = require('handlebars')
 const less = require('gulp-less')
 const gutil = require('gulp-util')
 const glob = require('glob')
-const sentenceCase = require('sentence-case')
 const through = require('through2')
+
+const label = require('../../label')
 
 module.exports = {
   registerModule: (styleguide) => {
@@ -45,7 +46,7 @@ module.exports = {
         const groupByName = { }
 
         files.forEach((file) => {
-          const groupName = path.dirname(file).split('/').map(sentenceCase).join(': ')
+          const groupName = path.dirname(file).split('/').map(label).join(': ')
           let group = groupByName[groupName]
 
           if (!group) {
@@ -56,7 +57,7 @@ module.exports = {
           }
 
           group.children.push({
-            name: sentenceCase(path.basename(file, '.json')),
+            name: label(path.basename(file, '.json')),
             url: '/' + gutil.replaceExtension(file, '.html')
           })
         })

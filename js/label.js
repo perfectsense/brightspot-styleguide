@@ -1,15 +1,7 @@
-module.exports = function  (string, regExpression) {
-    label = string.
-        replace('.json', '').
-        replace( (regExpression) ? regExpression : /\W+/g, ' ').
-        trim().
-        split(' ').
-        map(function (part) { return part[0].toUpperCase() + part.slice(1); }).
-        join(' ');
-
-        if (label === 'Index'){
-            label = 'Main';
-        }
-
-    return label;
-};
+module.exports = string => string
+  .replace(/\W+/g, ' ')
+  .replace(/([a-z])([A-Z])/g, '$1 $2')
+  .trim()
+  .split(' ')
+  .map(part => part[0].toUpperCase() + part.slice(1))
+  .join(' ')

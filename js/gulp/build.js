@@ -6,33 +6,37 @@ const handlebars = require('handlebars')
 const path = require('path')
 const through = require('through2')
 
-const label = require('../../label')
+const example = require('../example')
+const label = require('../label')
 
 module.exports = {
   registerModule: (styleguide) => {
     const gulp = styleguide._gulp
+    const task = styleguide.task
 
-    // Build fonts used by the styleguide itself.
-    gulp.task('styleguide:build:styleguide:fonts', [ ], () => {
+    // Build fonts used by the styleguide UI itself.
+    gulp.task(task.build.ui.fonts(), [ ], () => {
       return gulp.src(path.join(path.dirname(require.resolve('font-awesome/package.json')), 'fonts', '*'))
         .pipe(gulp.dest(styleguide.path.build()))
     })
 
-    // Build CSS used by the styleguide itself.
-    gulp.task('styleguide:build:styleguide:css', [], () => {
-      return gulp.src(path.join(__dirname, '..', '..', 'styleguide.less'))
+    // Build LESS files used by the styleguide UI itself.
+    gulp.task(task.build.ui.less(), [ ], () => {
+      return gulp.src(path.join(__dirname, '..', 'styleguide.less'))
         .pipe(less())
         .pipe(gulp.dest(styleguide.path.build()))
     })
 
-    // Build all files used by the styleguide itself.
-    gulp.task('styleguide:build:styleguide', [ 'styleguide:build:styleguide:fonts', 'styleguide:build:styleguide:css' ], () => {
+    // Build all files used by the styleguide UI itself.
+    gulp.task(task.build.ui.all(), [
+      task.build.ui.fonts(),
+      task.build.ui.less()
+
+    ], () => {
     })
 
     // Build all example HTML files.
-    gulp.task('styleguide:build:html', [ 'styleguide:postcopy:templates' ], () => {
-      const build = styleguide.path.build()
-
+    gulp.task(task.build.examples(), [ styleguide.task.copy.all() ], () => {
       function jsonToHtml(file, encoding, callback) {
         const filePath = file.path
         const fileName = path.basename(filePath)
@@ -43,7 +47,7 @@ module.exports = {
 
           if (source) {
             source = source.slice(0, 1) === '/'
-              ? path.join(build, source)
+              ? path.join(styleguide.path.build(), source)
               : path.resolve(filePath, source)
 
             const fileDir = path.dirname(filePath)
@@ -55,8 +59,8 @@ module.exports = {
                 const matchPath = path.join(fileDir, path.relative(source, match))
 
                 this.push(new gutil.File({
-                  base: build,
-                  contents: new Buffer(require('../../example-file')(styleguide.config, match)),
+                  base: styleguide.path.build(),
+                  contents: new Buffer(example(styleguide.config, match)),
                   path: gutil.replaceExtension(matchPath, '.html')
                 }))
               }
@@ -64,8 +68,8 @@ module.exports = {
           }
 
         } else if (fileName !== 'package.json' && fileName.slice(0, 1) !== '_') {
-          file.base = build
-          file.contents = new Buffer(require('../../example-file')(styleguide.config, filePath))
+          file.base = styleguide.path.build()
+          file.contents = new Buffer(example(styleguide.config, filePath))
           file.path = gutil.replaceExtension(filePath, '.html')
           this.push(file)
         }
@@ -79,10 +83,8 @@ module.exports = {
     })
 
     // Build the main styleguide HTML file.
-    gulp.task('styleguide:build:index', [ 'styleguide:build:html' ], (done) => {
-      const build = styleguide.path.build()
-
-      glob('styleguide/**/*.html', { cwd: build }, (error, matches) => {
+    gulp.task(task.build.html(), [ task.build.examples() ], (done) => {
+      glob('styleguide/**/*.html', { cwd: styleguide.path.build() }, (error, matches) => {
         const groupByName = { }
 
         // Group matches by their path.
@@ -110,11 +112,11 @@ module.exports = {
           groups.push(groupByName[groupName])
         })
 
-        const template = handlebars.compile(fs.readFileSync(path.join(__dirname, '..', '..', 'styleguide.hbs'), 'utf8'), {
+        const template = handlebars.compile(fs.readFileSync(path.join(__dirname, '..', 'styleguide.hbs'), 'utf8'), {
           preventIndent: true
         })
 
-        fs.writeFileSync(path.join(build, 'styleguide.html'), template({
+        fs.writeFileSync(path.join(styleguide.path.build(), 'styleguide.html'), template({
           groups: groups
         }))
 
@@ -123,7 +125,14 @@ module.exports = {
     })
 
     // Build all files.
-    gulp.task('styleguide:build', [ 'styleguide:build:styleguide', 'styleguide:build:index' ], () => {
+    gulp.task(task.build.all(), [
+      task.lint.all(),
+      task.build.examples(),
+      task.build.html(),
+      task.build.project(),
+      task.build.ui.all()
+
+    ], () => {
     })
   }
 }

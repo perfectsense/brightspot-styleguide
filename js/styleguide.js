@@ -45,7 +45,7 @@ let defaults = {
   ]
 }
 
-let Styleguide = function (gulp, settings = { }) {
+module.exports = function Styleguide(gulp, settings = { }) {
   this._gulp = gulp
   const config = this.config = Object.assign(defaults, settings, argv)
 
@@ -85,17 +85,38 @@ let Styleguide = function (gulp, settings = { }) {
   }
 
   this.task = {
-    build: () => 'styleguide:build',
+    build: {
+      all: () => 'styleguide:build',
+      examples: () => 'styleguide:build:examples',
+      html: () => 'styleguide:build:html',
+      project: () => 'styleguide:build:project',
+
+      ui: {
+        all: () => 'styleguide:build:ui:all',
+        less: () => 'styleguide:build:ui:less',
+        fonts: () => 'styleguide:build:ui:fonts'
+      }
+    },
+
     copy: {
-      json: () => 'styleguide:copy:json',
-      templates: () => 'styleguide:postcopy:templates'
+      all: () => 'styleguide:copy',
+      html: () => 'styleguide:copy:html',
+      sourced: () => 'styleguide:copy:sourced'
     },
+
     lint: {
-      less: () => 'styleguide:lint:less',
+      all: () => 'styleguide:lint:all',
       js: () => 'styleguide:lint:js',
-      json: () => 'styleguide:lint:json'
+      json: () => 'styleguide:lint:json',
+      less: () => 'styleguide:lint:less'
     },
-    watch: () => 'styleguide:watch'
+
+    watch: {
+      all: () => 'styleguide:watch',
+      html: () => 'styleguide:watch:html',
+      js: () => 'styleguide:watch:js',
+      less: () => 'styleguide:watch:less'
+    }
   }
 
   this.path = {
@@ -103,7 +124,7 @@ let Styleguide = function (gulp, settings = { }) {
   }
 
   this.watch = () => {
-    this._gulp.start(this.task.watch())
+    this._gulp.start(this.task.watch.all())
   }
 
   this.notify = (_message, _options = null) => {
@@ -120,12 +141,16 @@ let Styleguide = function (gulp, settings = { }) {
     )
   }
 
+  this.serve = () => {
+    return require('./server')(Object.assign({ }, this.config, settings))
+  }
+
   // Register Styleguide tasks with gulp
-  require('./util').loadModules('./gulp/tasks', this)
-}
+  require('./util').loadModules('./gulp', this)
 
-Styleguide.prototype.serve = function (settings) {
-  return require('./server')(Object.assign({ }, this.config, settings))
-}
+  gulp.task('default', [ this.task.build.all() ])
 
-module.exports = Styleguide
+  gulp.task('styleguide', [ 'default', this.task.watch.all() ], () => {
+    this.serve()
+  })
+}

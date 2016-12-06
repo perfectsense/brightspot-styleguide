@@ -213,7 +213,7 @@ module.exports = function (config, filePath) {
   })
 
   // Render the example file data.
-  var template = handlebars.compile(fs.readFileSync(path.join(__dirname, 'example-file.hbs'), 'utf8'))
+  var template = handlebars.compile(fs.readFileSync(path.join(__dirname, 'example.hbs'), 'utf8'))
 
   function Template () {
   }

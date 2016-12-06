@@ -5,7 +5,7 @@
 @sg-color: #38b5dc;
 @sg-color-link: #259acd;
 @sg-duration: 400ms;
-@menu-width: 220px;
+@menu-width: 320px;
 
 .clearfix {
   &:before,
@@ -194,7 +194,7 @@ a {
   &-name {
     cursor: pointer;
     display: block;
-    color: #262626;
+    color: @sg-color-link;
     font-size: 13px;
     line-height: normal;
     margin: 0 20px 0 20px;
@@ -223,14 +223,7 @@ a {
       padding: 0;
     }
   }
-  .sg-example-name {
-      color: @sg-color-link;
-  }
 
-  > .sg-example-name {
-      padding-left: 11px;
-      border-left: 3px solid @sg-color;
-  }
 }
 
 .sg-content {

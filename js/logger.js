@@ -1,4 +1,10 @@
-var term = require('terminal-kit').terminal
+const term = require('terminal-kit').terminal
+
+function log(callback) {
+  term.defaultColor('[').cyan('BRIGHTSP').red('O').cyan('T Styleguide').defaultColor('] ')
+  callback()
+  term.defaultColor()
+}
 
 module.exports = {
   welcome: function () {
@@ -14,18 +20,19 @@ module.exports = {
     term.defaultColor('\n')
   },
 
+  info: function (message) {
+    log(() => term.defaultColor(`${message}\n`))
+  },
+
   success: function (message) {
-    term.green(`${message}\n`)
-    term.defaultColor()
+    log(() => term.green(`${message}\n`))
   },
 
   warn: function (message) {
-    term.yellow(`\u{26A0} ${message}\n`)
-    term.defaultColor()
+    log(() => term.yellow(`\u{26A0} ${message}\n`))
   },
 
   error: function (message) {
-    term.red(`\u{1F4A5} ${message}\n`)
-    term.defaultColor()
+    log(() => term.red(`\u{1F4A5} ${message}\n`))
   }
 }

@@ -62,7 +62,7 @@ class JsonViewMap extends JsonMap {
 
     @Override
     public String getTypeLabel() {
-        return "ViewMap";
+        return "View";
     }
 
     @Override

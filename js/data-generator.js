@@ -4,28 +4,10 @@ var traverse = require('traverse');
 
 var Util = require('./util');
 
-function DataGenerator(context, config) {
+function DataGenerator(config) {
     this.config = config;
-    this.context = context;
-    this.chance = new Chance(context.seed);
+    this.chance = new Chance();
 }
-
-DataGenerator.prototype.stylesheet = function () {
-    var stylesheets = this.context.availableStylesheets;
-    if (stylesheets && stylesheets.length){
-        // use the first stylesheet by default unless one has been selected
-        var selectedSheet = sheet = stylesheets[0];
-        for (var n=0, len=stylesheets.length; n<len; n++){
-            sheet = stylesheets[n];
-            if (sheet.selected) {
-                selectedSheet = sheet;
-                break;
-            }
-        }
-        return selectedSheet.href;
-    }
-    throw new Error('Invalid! No stylesheet(s) were made available to the data');
-};
 
 DataGenerator.prototype.date = function (format) {
     var date;
@@ -147,7 +129,7 @@ DataGenerator.prototype.var = function (key) {
         }
     }
 
-    return new Error('this.config.vars is undefined. The `var()` generator expects that your styleguide _config.json contains vars. Or, maybe you misspelled the keyname?\n')
+    return null;
 };
 
 DataGenerator.prototype.process = function (data) {

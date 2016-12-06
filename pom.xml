@@ -59,17 +59,6 @@
                                     <goal>yarn</goal>
                                 </goals>
                             </execution>
-
-                            <execution>
-                                <id>test</id>
-                                <goals>
-                                    <goal>yarn</goal>
-                                </goals>
-                                <phase>test</phase>
-                                <configuration>
-                                    <arguments>run test</arguments>
-                                </configuration>
-                            </execution>
                         </executions>
                     </plugin>
                 </plugins>

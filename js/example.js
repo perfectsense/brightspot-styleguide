@@ -1,108 +1,15 @@
 const fs = require('fs')
 const handlebars = require('handlebars')
 const _ = require('lodash')
-const Util = require('./util')
 const escapeHtml = require('escape-html-in-json')
 const path = require('path')
 const traverse = require('traverse')
+
 const DataGenerator = require('./data-generator')
+const resolver = require('./resolver')
 
-function resolvePath (basePath, filePath, reqPath = null, parentPath = null) {
-  if (!basePath || !filePath) {
-    return null
-  }
-
-  let resolvedPath = ''
-  if (filePath.split(path.sep)[1] === 'node_modules') {
-    resolvedPath = basePath
-  } else if (path.isAbsolute(filePath) && fs.existsSync(filePath)) {
-    resolvedPath = filePath
-    return resolvedPath
-  } else if (path.isAbsolute(filePath)) {
-    let context = parentPath || path.join(basePath, path.dirname(filePath))
-    resolvedPath = Util.closestParentWithFile(context, 'package.json')
-  } else if (parentPath) {
-    if (fs.lstatSync(parentPath).isFile()) {
-      resolvedPath = path.dirname(parentPath)
-    } else {
-      resolvedPath = parentPath
-    }
-  } else {
-    resolvedPath = path.dirname(reqPath)
-  }
-
-  resolvedPath = path.join(resolvedPath, filePath)
-
-  if (!fs.existsSync(resolvedPath)) {
-    throw new Error(`Couldn't find file: ${resolvedPath}`)
-  }
-
-  return resolvedPath
-}
-
-function resolveTemplatePath (data, requestPath, project) {
-  traverse(data).forEach(function (value) {
-    if (!value) return
-
-    let templatePath = value._template
-    let parentPath = (this.parent) ? this.parent.node._dataUrl : null
-
-    if (templatePath) {
-      value._template = resolvePath(project._projectPath, templatePath, requestPath, parentPath)
-    }
-  })
-}
-
-function resolveDataUrlPaths (data, currentDataPath, project) {
-  traverse(data).forEach(function (value) {
-    if (!value) return
-
-    let parentPath = (this.parent) ? this.parent.node._dataUrl : null
-    let dataUrl = value._dataUrl
-    let dataPath = ''
-
-    if (dataUrl) {
-      dataPath = resolvePath(project._projectPath, dataUrl, currentDataPath, parentPath)
-
-      let originalDataPath = currentDataPath
-      currentDataPath = dataPath
-
-      // parse the JSON file
-      try {
-        var data = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
-      } catch (err) {
-        throw err
-      }
-
-      // update the dataUrl
-      this.node._dataUrl = path.dirname(dataPath)
-
-      // store and update the template path relative to the parent template that _dataUrl'd it
-      data._template = path.resolve(path.dirname(dataPath), data._template)
-
-      // extend the incoming data from `dataUrl` with this node's data, then update the node
-      this.update(_.extend({ }, data, this.node))
-
-      currentDataPath = originalDataPath
-    }
-  })
-}
-
-module.exports = function (config, req, res, context) {
-  let project = context.project
-  let filePath = project.findStyleguideFile(`${context.requestedPath}.json`)
-
-  if (!filePath) {
-    return false
-  }
-
-  let data = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-
-  // Resolve all _dataUrl paths
-  resolveDataUrlPaths(data, filePath, project)
-
-  // Resolve all _template paths.
-  resolveTemplatePath(data, filePath, project)
+module.exports = function (config, filePath) {
+  let data = resolver.data(config.build, filePath);
 
   // Validate the JSON data. Exceptions for the special keys we have that are maps, so they don't need _template or _view
   traverse(data).forEach(function (value) {
@@ -129,14 +36,23 @@ module.exports = function (config, req, res, context) {
 
   // Wrap the example file data?
   if (data._wrapper !== false && !data._view) {
-    var wrapperPath = project.findStyleguideFile(data._wrapper ? data._wrapper : '_wrapper.json')
+    var slashAt = filePath.lastIndexOf('/styleguide/')
+    var source
+
+    if (slashAt > -1) {
+      source = path.join(filePath.substring(0, slashAt), 'styleguide')
+    } else {
+      source = config.source
+    }
+
+    var wrapperPath = path.join(source, data._wrapper ? data._wrapper : '_wrapper.json')
+
+    if (!fs.existsSync(wrapperPath)) {
+      wrapperPath = null;
+    }
 
     while (wrapperPath) {
-      var wrapper = JSON.parse(fs.readFileSync(wrapperPath, 'utf8'))
-
-      resolveDataUrlPaths(wrapper, wrapperPath, project)
-
-      resolveTemplatePath(wrapper, wrapperPath, project)
+      let wrapper = resolver.data(config.build, wrapperPath);
 
       traverse(wrapper).forEach(function (value) {
         if (value && value._delegate) {
@@ -146,12 +62,16 @@ module.exports = function (config, req, res, context) {
 
       data = wrapper
 
-      wrapperPath = data._wrapper ? project.findStyleguideFile(data._wrapper) : null
+      wrapperPath = data._wrapper ? path.join(source, data._wrapper) : null
+
+      if (!fs.existsSync(wrapperPath)) {
+        wrapperPath = null;
+      }
     }
   }
 
   // post-process the JSON data.
-  new DataGenerator(context, config).process(data)
+  new DataGenerator(config).process(data)
 
   // Set up Handlebars cache.
   var compiledTemplates = { }
@@ -180,7 +100,7 @@ module.exports = function (config, req, res, context) {
     var jsonData = {
       'json': JSON.stringify(removePrivateKeys(data), escapeHtml, 2)
     }
-    var jsonTemplate = fs.readFileSync(context.project.findStyleguideFile('/example-json.hbs'), 'utf8')
+    var jsonTemplate = fs.readFileSync(path.join(__dirname, 'example-json.hbs'), 'utf8');
     var jsonCompiledTemplate = handlebars.compile(jsonTemplate)
 
     return jsonCompiledTemplate(jsonData)
@@ -208,7 +128,7 @@ module.exports = function (config, req, res, context) {
   })
 
   // Render the example file data.
-  var template = handlebars.compile(fs.readFileSync(project.findStyleguideFile('/example-file.hbs'), 'utf8'))
+  var template = handlebars.compile(fs.readFileSync(path.join(__dirname, 'example.hbs'), 'utf8'))
 
   function Template () {
   }
@@ -300,7 +220,7 @@ module.exports = function (config, req, res, context) {
 
     // block helper extend parameter was set
     if (extend) {
-      let absolutePath = resolvePath(project._projectPath, extend, null, options.data.root._contextPath || options.data.root._template)
+      let absolutePath = resolver.path(config.root, options.data.root._contextPath || options.data.root._template, extend)
       options.data.root._contextPath = absolutePath
       var template = compile(absolutePath, options)
       var templateOptions = { data: { } }
@@ -402,15 +322,5 @@ module.exports = function (config, req, res, context) {
     return new handlebars.SafeString(value)
   })
 
-  var iframeJs = fs.readFileSync(require.resolve('iframe-resizer/js/iframeResizer.contentWindow.min.js'), 'utf8')
-
-  // if the example document contains a </head> then we append the iframe javascript to the <head>
-  res.send(template({
-    device: req.query.device === 'true',
-    data: convert(data)
-  }).replace(/<\/head>/, '<script>' + iframeJs + '</script>\n</head>'))
-
-  return res
+  return template({ data: convert(data) })
 }
-
-module.exports.resolvePath = resolvePath

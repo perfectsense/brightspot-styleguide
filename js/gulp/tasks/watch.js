@@ -11,7 +11,7 @@ module.exports = {
         logger.success(`Changed: ${file.path}`)
       }
 
-      gulp.watch(path.join(config.source, '**/*.{hbs,json}'), [ styleguide.task.build() ])
+      gulp.watch(path.join(config.source, '**/*.{hbs,json}'), [ 'styleguide:build:index' ])
         .on('change', logChange)
 
       gulp.watch(path.join(config.source, '**/*.js'), [ 'js' ])

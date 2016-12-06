@@ -175,12 +175,13 @@ module.exports = function (config, filePath) {
     const attrs = root.extraAttributes
     if (!attrs) return
 
-    let attrsString = ''
-    for (var name in attrs) {
-      attrsString += ' ' + name + '="' + attrs[name] + '"'
-    }
-
-    return new handlebars.SafeString(attrsString)
+    return new handlebars.SafeString(Object
+      .keys(attrs)
+      .map(name => ' '
+        + handlebars.Utils.escapeExpression(name)
+        + '="' + handlebars.Utils.escapeExpression(attrs[name])
+        + '"')
+      .join(''))
   })
 
   // This helper returns the key/value pairs of jsonObject key as an object string. Used when we need to pass a JSON object as a string into some JS options

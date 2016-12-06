@@ -22,7 +22,9 @@ module.exports = {
 
     gulp.task(task.copy.html(), () => {
       return gulp.src([
+        path.join(styleguide.config.root, 'package.json'),
         path.join(styleguide.config.source, '**/*.{hbs,json}'),
+        path.join(styleguide.config.root, 'node_modules/*/package.json'),
         path.join(styleguide.config.root, 'node_modules/*/styleguide/**/*.{hbs,json}')
 
       ], { base: '.' })

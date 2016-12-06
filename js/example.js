@@ -1,105 +1,15 @@
 const fs = require('fs')
 const handlebars = require('handlebars')
 const _ = require('lodash')
-const Util = require('./util')
 const escapeHtml = require('escape-html-in-json')
 const path = require('path')
 const traverse = require('traverse')
+
 const DataGenerator = require('./data-generator')
-
-function resolvePath (basePath, filePath, reqPath = null, parentPath = null) {
-  if (!basePath || !filePath) {
-    return null
-  }
-
-  let resolvedPath = ''
-  if (filePath.split(path.sep)[1] === 'node_modules') {
-    resolvedPath = basePath
-  } else if (path.isAbsolute(filePath) && fs.existsSync(filePath)) {
-    resolvedPath = filePath
-    return resolvedPath
-  } else if (path.isAbsolute(filePath)) {
-    let context = parentPath || path.join(basePath, path.dirname(filePath))
-    resolvedPath = Util.closestParentWithFile(context, 'package.json')
-  } else if (parentPath) {
-    if (fs.lstatSync(parentPath).isFile()) {
-      resolvedPath = path.dirname(parentPath)
-    } else {
-      resolvedPath = parentPath
-    }
-  } else {
-    resolvedPath = path.dirname(reqPath)
-  }
-
-  resolvedPath = path.join(resolvedPath, filePath)
-
-  if (!fs.existsSync(resolvedPath)) {
-    throw new Error(`Couldn't find file: ${resolvedPath}`)
-  }
-
-  return resolvedPath
-}
-
-function resolveTemplatePath (data, requestPath, config) {
-  traverse(data).forEach(function (value) {
-    if (!value) return
-
-    let templatePath = value._template
-    let parentPath = (this.parent) ? this.parent.node._dataUrl : null
-
-    if (templatePath) {
-      value._template = resolvePath(config.root, templatePath, requestPath, parentPath)
-    }
-  })
-}
-
-function resolveDataUrlPaths (data, currentDataPath, config) {
-  traverse(data).forEach(function (value) {
-    if (!value) return
-
-    let parentPath = (this.parent) ? this.parent.node._dataUrl : null
-    let dataUrl = value._dataUrl
-    let dataPath = ''
-
-    if (dataUrl) {
-      dataPath = resolvePath(config.root, dataUrl, currentDataPath, parentPath)
-
-      let originalDataPath = currentDataPath
-      currentDataPath = dataPath
-
-      // parse the JSON file
-      try {
-        var data = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
-      } catch (err) {
-        throw err
-      }
-
-      // update the dataUrl
-      this.node._dataUrl = path.dirname(dataPath)
-
-      // store and update the template path relative to the parent template that _dataUrl'd it
-      data._template = path.resolve(path.dirname(dataPath), data._template)
-
-      // extend the incoming data from `dataUrl` with this node's data, then update the node
-      this.update(_.extend({ }, data, this.node))
-
-      currentDataPath = originalDataPath
-    }
-  })
-}
+const resolver = require('./resolver')
 
 module.exports = function (config, filePath) {
-  if (!filePath) {
-    return false
-  }
-
-  let data = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-
-  // Resolve all _dataUrl paths
-  resolveDataUrlPaths(data, filePath, config)
-
-  // Resolve all _template paths.
-  resolveTemplatePath(data, filePath, config)
+  let data = resolver.data(config.build, filePath);
 
   // Validate the JSON data. Exceptions for the special keys we have that are maps, so they don't need _template or _view
   traverse(data).forEach(function (value) {
@@ -142,11 +52,7 @@ module.exports = function (config, filePath) {
     }
 
     while (wrapperPath) {
-      var wrapper = JSON.parse(fs.readFileSync(wrapperPath, 'utf8'))
-
-      resolveDataUrlPaths(wrapper, wrapperPath, config)
-
-      resolveTemplatePath(wrapper, wrapperPath, config)
+      let wrapper = resolver.data(config.build, wrapperPath);
 
       traverse(wrapper).forEach(function (value) {
         if (value && value._delegate) {
@@ -314,7 +220,7 @@ module.exports = function (config, filePath) {
 
     // block helper extend parameter was set
     if (extend) {
-      let absolutePath = resolvePath(config.root, extend, null, options.data.root._contextPath || options.data.root._template)
+      let absolutePath = resolver.path(config.root, options.data.root._contextPath || options.data.root._template, extend)
       options.data.root._contextPath = absolutePath
       var template = compile(absolutePath, options)
       var templateOptions = { data: { } }

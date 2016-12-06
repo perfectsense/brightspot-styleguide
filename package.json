@@ -6,6 +6,7 @@
     "daemon": "1.1.0",
     "escape-html-in-json": "1.0.0",
     "express": "^4.13.1",
+    "find-parent-dir": "0.3.0",
     "font-awesome": "^4.4.0",
     "fs-extra": "^1.0.0",
     "geopattern": "1.2.3",

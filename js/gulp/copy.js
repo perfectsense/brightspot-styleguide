@@ -1,24 +1,19 @@
 const fs = require('fs-extra')
-const path = require('path')
-const file = require('gulp-file')
-const filter = require('gulp-filter')
-const less = require('gulp-less')
 const glob = require('glob')
-
-function getFolders (dir) {
-  if (fs.existsSync(dir)) {
-    return fs.readdirSync(dir)
-      .filter((file) => {
-        return fs.statSync(path.join(dir, file)).isDirectory()
-      })
-  }
-  return []
-}
+const filter = require('gulp-filter')
+const path = require('path')
 
 module.exports = {
   registerModule: (styleguide) => {
     const gulp = styleguide._gulp
     const task = styleguide.task
+
+    const onlyStyleguidePackage = filter(file => {
+      const filePath = file.path
+
+      return path.basename(filePath) !== 'package.json'
+        || fs.existsSync(path.join(path.dirname(filePath), 'styleguide'))
+    })
 
     gulp.task(task.copy.html(), () => {
       return gulp.src([
@@ -28,6 +23,7 @@ module.exports = {
         path.join(styleguide.config.root, 'node_modules/*/styleguide/**/*.{hbs,json}')
 
       ], { base: '.' })
+        .pipe(onlyStyleguidePackage)
         .pipe(gulp.dest(styleguide.path.build()))
     })
 

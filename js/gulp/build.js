@@ -41,11 +41,12 @@ module.exports = {
         const filePath = file.path
         const fileName = path.basename(filePath)
 
-        // Source JSON files from elsewhere?
-        if (fileName === '_config.json') {
-          let source = JSON.parse(fs.readFileSync(filePath, 'utf8')).source
+        // Theming something else?
+        if (fileName === '_theme.json') {
+          const theme = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+          let source = theme.source
 
-          if (source) {
+          if (source && !theme.hidden) {
             source = source.slice(0, 1) === '/'
               ? path.join(styleguide.path.build(), source)
               : path.resolve(filePath, source)

@@ -33,7 +33,7 @@ module.exports = {
 
     // Looks for _config.json directives within the target because we might need to post-process something in the build dir
     gulp.task(task.copy.sourced(), [ task.copy.html() ], () => {
-      return gulp.src([`${styleguide.path.build()}/**/*/_config.json`, `!${styleguide.path.build()}/node_modules/**/*`])
+      return gulp.src(path.join(styleguide.path.build(), 'styleguide/**/_theme.json'))
         .pipe(filter((file) => {
           let config = require(file.path)
           let reportData = {

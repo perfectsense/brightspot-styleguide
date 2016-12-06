@@ -23,24 +23,30 @@ function resolvePath(root, parent, file) {
   }
 }
 
-function resolveData(root, file) {
-  let data = JSON.parse(fs.readFileSync(file, 'utf8'))
+function resolveData(root, file, extra) {
+  const data = JSON.parse(fs.readFileSync(file, 'utf8'))
+
+  if (extra) {
+    _.extend(data, extra)
+  }
 
   traverse(data).forEach(function (value) {
     if (this.key === '_template') {
       this.update(resolvePath(root, file, value))
 
-    } else {
-      const dataUrl = value._dataUrl
+    } else if (value) {
+      const include = value._include || value._dataUrl
 
-      if (dataUrl) {
-        var dataFile = resolvePath(root, file, dataUrl)
+      if (include) {
+        const includeFile = resolvePath(root, file, include)
 
-        if (!fs.existsSync(dataFile)) {
-          throw new Error(`Can't include [${dataUrl}] from [${file}]! (looked at [${dataFile}])`)
+        if (!fs.existsSync(includeFile)) {
+          throw new Error(`Can't include [${include}] from [${file}]! (looked at [${includeFile}])`)
         }
 
-        this.update(_.extend({ }, resolveData(root, dataFile), value), true)
+        value._include = null
+        value._dataUrl = null
+        this.update(resolveData(root, includeFile, value), true)
       }
     }
   })

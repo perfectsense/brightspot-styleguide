@@ -167,7 +167,7 @@ module.exports = function (config, filePath) {
     var extraAttributes = ''
     var extraAttributesData
 
-    if (!context) {
+    if (!context || !context.data.root) {
       return
     }
 

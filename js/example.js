@@ -126,7 +126,16 @@ module.exports = function (config, filePath) {
 
   // Wrap the example file data?
   if (data._wrapper !== false && !data._view) {
-    var wrapperPath = path.join(config.source, data._wrapper ? data._wrapper : '_wrapper.json')
+    var slashAt = filePath.lastIndexOf('/styleguide/')
+    var source
+
+    if (slashAt > -1) {
+      source = path.join(filePath.substring(0, slashAt), 'styleguide')
+    } else {
+      source = config.source
+    }
+
+    var wrapperPath = path.join(source, data._wrapper ? data._wrapper : '_wrapper.json')
 
     if (!fs.existsSync(wrapperPath)) {
       wrapperPath = null;
@@ -147,7 +156,7 @@ module.exports = function (config, filePath) {
 
       data = wrapper
 
-      wrapperPath = data._wrapper ? path.join(config.source, data._wrapper) : null
+      wrapperPath = data._wrapper ? path.join(source, data._wrapper) : null
 
       if (!fs.existsSync(wrapperPath)) {
         wrapperPath = null;

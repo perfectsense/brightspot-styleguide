@@ -41,7 +41,7 @@ module.exports = {
             if (fs.existsSync(sourcePath)) {
               reportData.overrides.push({
                 sourceOrigin: sourcePath,
-                sourceDest: path.resolve(sourcePath, '..', '_source', path.basename(sourcePath)),
+                sourceDest: path.resolve(sourcePath, '..', '_Source' + path.basename(sourcePath)),
                 overrideOrigin: filePath,
                 overrideDest: sourcePath
               })

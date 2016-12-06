@@ -12,8 +12,8 @@ var Project = require('./project');
 var renderPage = require('./render-page');
 
 
-function read(context, filePath) {
-    return fs.readFileSync(context.project.findStyleguideFile(filePath), 'utf8');
+function read(filePath) {
+    return fs.readFileSync(path.join(__dirname, filePath), 'utf8');
 }
 
 module.exports = function (config, req, res, context) {
@@ -95,13 +95,13 @@ module.exports = function (config, req, res, context) {
         files.unshift(mainFile);
     }
 
-    handlebars.registerPartial('layout', read(context, '/content.hbs'));
+    handlebars.registerPartial('layout', read('/content.hbs'));
 
     if (config.example){
         context.example = config.example;
     }
 
-    var template = handlebars.compile(read(context, '/main.hbs'), {
+    var template = handlebars.compile(read('/main.hbs'), {
         preventIndent: true
     });
 

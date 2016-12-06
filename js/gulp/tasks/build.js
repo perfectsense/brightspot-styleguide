@@ -18,7 +18,7 @@ module.exports = {
     })
 
     gulp.task('styleguide:build:server:css', [], () => {
-      return gulp.src(path.join(__dirname, '..', '..', '..', 'styleguide', 'styleguide.less'))
+      return gulp.src(path.join(__dirname, '..', '..', 'styleguide.less'))
               .pipe(less())
               .pipe(gulp.dest(styleguide.path.build()))
     })

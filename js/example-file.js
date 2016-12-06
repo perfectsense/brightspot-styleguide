@@ -185,7 +185,7 @@ module.exports = function (config, filePath) {
     var jsonData = {
       'json': JSON.stringify(removePrivateKeys(data), escapeHtml, 2)
     }
-    var jsonTemplate = fs.readFileSync(path.join(__dirname, '..', 'styleguide', 'example-json.hbs'), 'utf8');
+    var jsonTemplate = fs.readFileSync(path.join(__dirname, 'example-json.hbs'), 'utf8');
     var jsonCompiledTemplate = handlebars.compile(jsonTemplate)
 
     return jsonCompiledTemplate(jsonData)
@@ -213,7 +213,7 @@ module.exports = function (config, filePath) {
   })
 
   // Render the example file data.
-  var template = handlebars.compile(fs.readFileSync(path.join(__dirname, '..', 'styleguide', 'example-file.hbs'), 'utf8'))
+  var template = handlebars.compile(fs.readFileSync(path.join(__dirname, 'example-file.hbs'), 'utf8'))
 
   function Template () {
   }

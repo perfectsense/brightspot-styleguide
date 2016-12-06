@@ -163,25 +163,24 @@ module.exports = function (config, filePath) {
   }
 
   // This helper returns the key/value pairs of extraAttributes key , separated with '=' as a string. Used in links, images, forms.
-  handlebars.registerHelper('extraAttributes', function (context, options) {
-    var extraAttributes = ''
-    var extraAttributesData
+  handlebars.registerHelper('extraAttributes', function (context) {
+    if (!context) return
 
-    if (!context) {
-      return
+    const data = context.data
+    if (!data) return
+
+    const root = data.root
+    if (!root) return
+
+    const attrs = root.extraAttributes
+    if (!attrs) return
+
+    let attrsString = ''
+    for (var name in attrs) {
+      attrsString += ' ' + name + '="' + attrs[name] + '"'
     }
 
-    if (!context.data.root.extraAttributes) {
-      return
-    }
-
-    extraAttributesData = context.data.root.extraAttributes
-
-    for (var key in extraAttributesData) {
-      extraAttributes += ' ' + key + '="' + extraAttributesData[key] + '"'
-    }
-
-    return new handlebars.SafeString(extraAttributes)
+    return new handlebars.SafeString(attrsString)
   })
 
   // This helper returns the key/value pairs of jsonObject key as an object string. Used when we need to pass a JSON object as a string into some JS options

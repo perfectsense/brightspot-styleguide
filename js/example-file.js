@@ -407,10 +407,5 @@ module.exports = function (config, filePath) {
     return new handlebars.SafeString(value)
   })
 
-  var iframeJs = fs.readFileSync(require.resolve('iframe-resizer/js/iframeResizer.contentWindow.min.js'), 'utf8')
-
-  // if the example document contains a </head> then we append the iframe javascript to the <head>
-  return template({
-    data: convert(data)
-  }).replace(/<\/head>/, '<script>' + iframeJs + '</script>\n</head>')
+  return template({ data: convert(data) })
 }

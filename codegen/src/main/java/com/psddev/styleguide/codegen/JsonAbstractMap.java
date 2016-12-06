@@ -12,4 +12,9 @@ class JsonAbstractMap extends JsonMap {
     public JsonAbstractMap(JsonDataLocation location, Map<JsonKey, JsonValue> values) {
         super(location, values);
     }
+
+    @Override
+    public String getTypeLabel() {
+        return "View";
+    }
 }

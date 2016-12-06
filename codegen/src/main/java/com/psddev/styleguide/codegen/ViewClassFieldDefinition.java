@@ -13,8 +13,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import com.psddev.dari.util.StringUtils;
-
 /**
  * Contains all of the metadata related to a single field of a
  * {@link ViewClassDefinition}.
@@ -203,8 +201,8 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         } else if (valueTypes.size() > 1) {
             addErrorConditionally("A field can only have a single value type but has "
                     + valueTypes.stream()
-                            .map(Class::getSimpleName)
-                            .map(s -> StringUtils.removeStart(s, "Json"))
+                            .map(JsonValueType::forClass)
+                            .map(JsonValueType::getLabel)
                             .collect(Collectors.joining(" and "))
                     + " instead!", validate);
         }

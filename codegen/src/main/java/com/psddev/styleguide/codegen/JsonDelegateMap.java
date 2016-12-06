@@ -31,4 +31,9 @@ class JsonDelegateMap extends JsonMap {
     public JsonFile getDeclaringJsonFile() {
         return declaringJsonFile;
     }
+
+    @Override
+    public String getTypeLabel() {
+        return "View";
+    }
 }

@@ -70,11 +70,6 @@ a {
         height: 30px;
         width: 30px;
         outline: none;
-        [data-navopen] & {
-            background-color: white;
-            border-color: @sg-color;
-            color: @sg-color;
-        }
         &:before {
           font-size: 14px;
           margin-right: 2px;
@@ -134,10 +129,8 @@ a {
         overflow: auto;
         height: 100vh;
     }
-    [data-navopen] & {
-        max-width: 220px;
-        padding-right: 0;
-    }
+    max-width: 220px;
+    padding-right: 0;
 }
 
 
@@ -150,12 +143,10 @@ a {
 }
 
 .sg-group {
-    &[data-listOpen] {
-        > .sg-example-list {
-            max-height: 4000px;
-            transition: max-height 500ms ease-in-out;
-        }
-   }
+    > .sg-example-list {
+        max-height: 4000px;
+        transition: max-height 500ms ease-in-out;
+    }
 
    &-list {
        list-style: none;
@@ -184,10 +175,6 @@ a {
         font-size: 13px;
         line-height: normal;
         margin: 3px 0;
-        &[data-listActive] {
-            padding-left: 11px;
-            border-left: 3px solid @sg-color;
-        }
     }
 
     &-list {
@@ -203,16 +190,14 @@ a {
         }
     }
 
-    &[data-listOpen] {
-        .sg-example-name {
-            color: @sg-color-link;
-        }
+    .sg-example-name {
+        color: @sg-color-link;
+    }
 
 
-        > .sg-example-name {
-            padding-left: 11px;
-            border-left: 3px solid @sg-color;
-        }
+    > .sg-example-name {
+        padding-left: 11px;
+        border-left: 3px solid @sg-color;
     }
 }
 

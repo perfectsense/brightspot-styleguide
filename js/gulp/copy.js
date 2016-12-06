@@ -81,7 +81,7 @@ module.exports = {
             }
 
             // generate a report file
-            fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide-report.json'), JSON.stringify(reportData, null, `\t`))
+            fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/theme-report.json'), JSON.stringify(reportData, null, `\t`))
           }
 
           // throw if any errors were detected

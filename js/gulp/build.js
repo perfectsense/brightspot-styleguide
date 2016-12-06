@@ -17,14 +17,14 @@ module.exports = {
     // Build fonts used by the styleguide UI itself.
     gulp.task(task.build.ui.fonts(), [ ], () => {
       return gulp.src(path.join(path.dirname(require.resolve('font-awesome/package.json')), 'fonts', '*'))
-        .pipe(gulp.dest(styleguide.path.build()))
+        .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     })
 
     // Build LESS files used by the styleguide UI itself.
     gulp.task(task.build.ui.less(), [ ], () => {
       return gulp.src(path.join(__dirname, '..', 'styleguide.less'))
         .pipe(less())
-        .pipe(gulp.dest(styleguide.path.build()))
+        .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     })
 
     // Build all files used by the styleguide UI itself.
@@ -117,7 +117,7 @@ module.exports = {
           preventIndent: true
         })
 
-        fs.writeFileSync(path.join(styleguide.path.build(), 'styleguide.html'), template({
+        fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
           groups: groups
         }))
 

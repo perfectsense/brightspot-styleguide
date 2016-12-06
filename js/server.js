@@ -16,7 +16,7 @@ module.exports = config => {
   app.use(express.static(config.build))
 
   const server = app.listen(config.port, config.host, () => {
-    const url = `http://${config.host}:${config.port}/styleguide.html`
+    const url = `http://${config.host}:${config.port}/_styleguide/index.html`
 
     logger.success(`Server started on ${url}`)
     opn(url)

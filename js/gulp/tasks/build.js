@@ -27,17 +27,15 @@ module.exports = {
     })
 
     gulp.task('styleguide:build:html', [ 'styleguide:postcopy:templates' ], () => {
-      console.log(styleguide.path.build('**/*.json'))
       return gulp.src(path.join(styleguide.path.build(), '**/*.json'))
-          .pipe(through.obj((file, encoding, callback) => {
-            console.log('path: ' + file.path);
-            if (!fs.statSync(file.path).isDirectory() && path.basename(file.path).slice(0, 1) !== '_') {
-              file.contents = new Buffer(require('../../example-file')(styleguide.config, file.path));
-              file.path = gutil.replaceExtension(file.path, '.html')
-            }
-            callback(null, file)
-          }))
-          .pipe(gulp.dest(styleguide.path.build()))
+        .pipe(through.obj((file, encoding, callback) => {
+          if (!fs.statSync(file.path).isDirectory() && path.basename(file.path).slice(0, 1) !== '_') {
+            file.contents = new Buffer(require('../../example-file')(styleguide.config, file.path));
+            file.path = gutil.replaceExtension(file.path, '.html')
+          }
+          callback(null, file)
+        }))
+        .pipe(gulp.dest(styleguide.path.build()))
     })
 
     gulp.task('styleguide:build', [ 'styleguide:build:html', 'styleguide:build:server' ], () => {

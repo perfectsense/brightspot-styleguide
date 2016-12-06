@@ -62,10 +62,15 @@ module.exports = function Styleguide(gulp, settings = { }) {
     if (fs.existsSync(pomFile)) {
       xml2js.parseString(fs.readFileSync(pomFile), { async: false }, (error, pomXml) => {
         if (error) {
-          throw error;
+          throw error
         }
 
-        if (pomXml.project.packaging.toString() === 'war') {
+        const packaging = pomXml.project.packaging.toString()
+
+        if (packaging === 'jar') {
+          config.build = path.join(config.root, 'target/classes')
+
+        } else if (packaging === 'war') {
           config.build = path.join(config.root, 'target', `${pomXml.project.artifactId}-${pomXml.project.version}`)
         }
       })

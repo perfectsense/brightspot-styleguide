@@ -129,7 +129,7 @@ DataGenerator.prototype.var = function (key) {
         }
     }
 
-    return new Error('this.config.vars is undefined. The `var()` generator expects that your styleguide _config.json contains vars. Or, maybe you misspelled the keyname?\n')
+    return null;
 };
 
 DataGenerator.prototype.process = function (data) {

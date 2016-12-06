@@ -1,7 +1,6 @@
 const express = require('express')
 const opn = require('opn')
 
-const Project = require('./project')
 const logger = require('./logger')
 
 module.exports = function (config) {
@@ -12,12 +11,9 @@ module.exports = function (config) {
     // Automatically generated placeholder images.
   app.use(require('./placeholder-image')())
 
-  var project = config.project = new Project(config, config.root)
-
-  logger.success('Project: ' + project.name)
-  logger.success(` \u{1F539} root: ${config.root}`)
-  logger.success(` \u{1F539} source: ${config.source}`)
-  logger.success(` \u{1F539} build: ${config.build}`)
+  Object.keys(config).sort().forEach(key => {
+    logger.success(`Config: ${key}: ${JSON.stringify(config[key])}`)
+  })
 
   app.use('/node-modules', (req, res, next) => {
     let absUrl = require.resolve(req.url.replace(/^\/+/g, ''))

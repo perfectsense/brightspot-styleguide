@@ -8,22 +8,23 @@ module.exports = {
     const gulp = styleguide._gulp
     const task = styleguide.task
 
-    const onlyStyleguidePackage = filter(file => {
-      const filePath = file.path
-
-      return path.basename(filePath) !== 'package.json'
-        || fs.existsSync(path.join(path.dirname(filePath), 'styleguide'))
-    })
-
     gulp.task(task.copy.html(), () => {
-      return gulp.src([
+      const htmlFiles = [
         path.join(styleguide.config.root, 'package.json'),
         path.join(styleguide.config.source, '**/*.{hbs,json}'),
         path.join(styleguide.config.root, 'node_modules/*/package.json'),
         path.join(styleguide.config.root, 'node_modules/*/styleguide/**/*.{hbs,json}')
+      ]
 
-      ], { base: '.' })
-        .pipe(onlyStyleguidePackage)
+      const onlyStyleguidePackages = filter(file => {
+        const filePath = file.path
+
+        return path.basename(filePath) !== 'package.json'
+          || fs.existsSync(path.join(path.dirname(filePath), 'styleguide'))
+      })
+
+      return gulp.src(htmlFiles, { base: '.' })
+        .pipe(onlyStyleguidePackages)
         .pipe(gulp.dest(styleguide.path.build()))
     })
 

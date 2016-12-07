@@ -1,6 +1,5 @@
 const path = require('path')
 const fs = require('fs')
-const logger = require('./logger')
 const combiner = require('stream-combiner2')
 const notify = require('gulp-notify')
 const xml2js = require('xml2js')
@@ -13,39 +12,39 @@ let defaults = {
   jsonSuffix: '.json',
   devices: [
     {
-      name: "Mobile - Portrait",
-      icon: "fa fa-mobile",
+      name: 'Mobile - Portrait',
+      icon: 'fa fa-mobile',
       width: 320,
       height: 480
     },
     {
-      name: "Mobile - Landscape",
-      icon: "fa fa-mobile fa-rotate-270",
+      name: 'Mobile - Landscape',
+      icon: 'fa fa-mobile fa-rotate-270',
       width: 480,
       height: 320
     },
     {
-      name: "Tablet - Portrait",
-      icon: "fa fa-tablet",
+      name: 'Tablet - Portrait',
+      icon: 'fa fa-tablet',
       width: 768,
       height: 1024
     },
     {
-      name: "Tablet - Landscape",
-      icon: "fa fa-tablet fa-rotate-270",
+      name: 'Tablet - Landscape',
+      icon: 'fa fa-tablet fa-rotate-270',
       width: 1024,
       height: 768
     },
     {
-      name: "Desktop",
-      icon: "fa fa-desktop",
+      name: 'Desktop',
+      icon: 'fa fa-desktop',
       width: 1200,
       height: 600
     }
   ]
 }
 
-module.exports = function Styleguide(gulp, settings = { }) {
+module.exports = function Styleguide (gulp, settings = { }) {
   this._gulp = gulp
   const config = this.config = Object.assign(defaults, settings, argv)
 
@@ -69,7 +68,6 @@ module.exports = function Styleguide(gulp, settings = { }) {
 
         if (packaging === 'jar') {
           config.build = path.join(config.root, 'target/classes')
-
         } else if (packaging === 'war') {
           config.build = path.join(config.root, 'target', `${pomXml.project.artifactId}-${pomXml.project.version}`)
         }

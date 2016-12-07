@@ -8,7 +8,7 @@ module.exports = {
     const task = styleguide.task
     const source = styleguide.config.source
 
-    function logChange(file) {
+    function logChange (file) {
       logger.success(`Changed: ${file.path}`)
     }
 

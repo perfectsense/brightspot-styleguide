@@ -19,8 +19,8 @@ module.exports = {
       const onlyStyleguidePackages = filter(file => {
         const filePath = file.path
 
-        return path.basename(filePath) !== 'package.json'
-          || fs.existsSync(path.join(path.dirname(filePath), 'styleguide'))
+        return path.basename(filePath) !== 'package.json' ||
+          fs.existsSync(path.join(path.dirname(filePath), 'styleguide'))
       })
 
       return gulp.src(htmlFiles, { base: '.' })

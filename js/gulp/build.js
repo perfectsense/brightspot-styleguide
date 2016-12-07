@@ -37,7 +37,7 @@ module.exports = {
 
     // Build all example HTML files.
     gulp.task(task.build.examples(), [ styleguide.task.copy.all() ], () => {
-      function jsonToHtml(file, encoding, callback) {
+      function jsonToHtml (file, encoding, callback) {
         const filePath = file.path
         const fileName = path.basename(filePath)
 
@@ -67,7 +67,6 @@ module.exports = {
               }
             })
           }
-
         } else if (fileName !== 'package.json' && fileName.slice(0, 1) !== '_') {
           file.base = styleguide.path.build()
           file.contents = new Buffer(example(styleguide.config, filePath))
@@ -86,6 +85,10 @@ module.exports = {
     // Build the main styleguide HTML file.
     gulp.task(task.build.html(), [ task.build.examples() ], (done) => {
       glob('styleguide/**/*.html', { cwd: styleguide.path.build() }, (error, matches) => {
+        if (error) {
+          throw new Error(error)
+        }
+
         const groupByName = { }
 
         // Group matches by their path.

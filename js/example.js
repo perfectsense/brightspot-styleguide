@@ -9,17 +9,17 @@ const DataGenerator = require('./data-generator')
 const resolver = require('./resolver')
 
 module.exports = function (config, filePath) {
-  let data = resolver.data(config.build, filePath);
+  let data = resolver.data(config.build, filePath)
 
   // Validate the JSON data. Exceptions for the special keys we have that are maps, so they don't need _template or _view
   traverse(data).forEach(function (value) {
-    if (_.isPlainObject(value)
-            && !value._template
-            && !value._view
-            && this.key.slice(0, 1) !== '_'
-            && this.key !== 'displayOptions'
-            && this.key !== 'extraAttributes'
-            && this.key !== 'jsonObject') {
+    if (_.isPlainObject(value) &&
+      !value._template &&
+      !value._view &&
+      this.key.slice(0, 1) !== '_' &&
+      this.key !== 'displayOptions' &&
+      this.key !== 'extraAttributes' &&
+      this.key !== 'jsonObject') {
       var safeParent = false
 
       this.parents.forEach(function (value) {
@@ -48,11 +48,11 @@ module.exports = function (config, filePath) {
     var wrapperPath = path.join(source, data._wrapper ? data._wrapper : '_wrapper.json')
 
     if (!fs.existsSync(wrapperPath)) {
-      wrapperPath = null;
+      wrapperPath = null
     }
 
     while (wrapperPath) {
-      let wrapper = resolver.data(config.build, wrapperPath);
+      let wrapper = resolver.data(config.build, wrapperPath)
 
       traverse(wrapper).forEach(function (value) {
         if (value && value._delegate) {
@@ -65,7 +65,7 @@ module.exports = function (config, filePath) {
       wrapperPath = data._wrapper ? path.join(source, data._wrapper) : null
 
       if (!fs.existsSync(wrapperPath)) {
-        wrapperPath = null;
+        wrapperPath = null
       }
     }
   }
@@ -100,7 +100,7 @@ module.exports = function (config, filePath) {
     var jsonData = {
       'json': JSON.stringify(removePrivateKeys(data), escapeHtml, 2)
     }
-    var jsonTemplate = fs.readFileSync(path.join(__dirname, 'example-json.hbs'), 'utf8');
+    var jsonTemplate = fs.readFileSync(path.join(__dirname, 'example-json.hbs'), 'utf8')
     var jsonCompiledTemplate = handlebars.compile(jsonTemplate)
 
     return jsonCompiledTemplate(jsonData)
@@ -177,10 +177,11 @@ module.exports = function (config, filePath) {
 
     return new handlebars.SafeString(Object
       .keys(attrs)
-      .map(name => ' '
-        + handlebars.Utils.escapeExpression(name)
-        + '="' + handlebars.Utils.escapeExpression(attrs[name])
-        + '"')
+      .map(name =>
+        ' ' +
+        handlebars.Utils.escapeExpression(name) +
+        '="' + handlebars.Utils.escapeExpression(attrs[name]) +
+        '"')
       .join(''))
   })
 

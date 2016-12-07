@@ -59,6 +59,13 @@
                                     <goal>yarn</goal>
                                 </goals>
                             </execution>
+
+                            <execution>
+                                <id>gulp</id>
+                                <goals>
+                                    <goal>gulp</goal>
+                                </goals>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>

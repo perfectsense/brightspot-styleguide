@@ -1,6 +1,6 @@
 const term = require('terminal-kit').terminal
 
-function log(callback) {
+function log (callback) {
   term.defaultColor('[').cyan('BRIGHTSP').red('O').cyan('T Styleguide').defaultColor('] ')
   callback()
   term.defaultColor()

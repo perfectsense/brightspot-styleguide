@@ -662,6 +662,7 @@ class ViewClassSourceGenerator {
                 javadocsBuilder.add("Adds an entry to the " + fieldName + " field .").addLink("java.util.Map").addLine(".");
                 notes.forEach(javadocsBuilder::addParagraph);
                 javadocsBuilder.addFieldOccurrencesList(fieldDef);
+                javadocsBuilder.addSampleValuesList(fieldDef, 10);
                 javadocsBuilder.newLine();
                 javadocsBuilder.addParameter("key").addLine("the key to add.");
                 javadocsBuilder.addParameter("value").addLine("the value at the associated key.");

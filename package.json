@@ -26,7 +26,6 @@
     "minimist": "^1.2.0",
     "moment": "^2.10.6",
     "normalize.css": "^3.0.3",
-    "opn": "4.0.2",
     "recursive-readdir-sync": "^1.0.6",
     "require-dir": "0.3.1",
     "stream-combiner2": "1.1.1",

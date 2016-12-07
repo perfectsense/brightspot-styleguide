@@ -1,5 +1,4 @@
 const express = require('express')
-const opn = require('opn')
 
 const logger = require('./logger')
 
@@ -16,10 +15,7 @@ module.exports = config => {
   app.use(express.static(config.build))
 
   const server = app.listen(config.port, config.host, () => {
-    const url = `http://${config.host}:${config.port}/_styleguide/index.html`
-
-    logger.success(`Server started on ${url}`)
-    opn(url)
+    logger.success(`Server started on http://${config.host}:${config.port}/_styleguide/index.html`)
   })
 
   server.on('error', function (error) {

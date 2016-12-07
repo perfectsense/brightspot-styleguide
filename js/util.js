@@ -142,24 +142,6 @@ var Util = {
     let g = Math.floor(a * parseInt(values[1]) + (1 - a) * 255)
     let b = Math.floor(a * parseInt(values[2]) + (1 - a) * 255)
     return '#' + ('0' + r.toString(16)).slice(-2) + ('0' + g.toString(16)).slice(-2) + ('0' + b.toString(16)).slice(-2)
-  },
-
-  // credit: https://github.com/aseemk/requireDir/issues/15#issuecomment-146866910
-  loadModules: (rootPath, moduleArgs) => {
-    const requireDir = require('require-dir')
-    const loadedModules = requireDir(rootPath, { recurse: false })
-
-    for (var key in loadedModules) {
-      if (loadedModules.hasOwnProperty(key)) {
-        var loadedModule = loadedModules[ key ]
-
-        if (loadedModule.registerModule) {
-          loadedModule.registerModule(moduleArgs)
-        } else {
-          throw new TypeError(`One of the loaded modules does not expose the expected interface: ${key}`)
-        }
-      }
-    }
   }
 }
 

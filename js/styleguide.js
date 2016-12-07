@@ -1,9 +1,10 @@
-const path = require('path')
 const fs = require('fs')
-const combiner = require('stream-combiner2')
 const notify = require('gulp-notify')
-const xml2js = require('xml2js')
 const argv = require('minimist')(process.argv.slice(2))
+const path = require('path')
+const requireDir = require('require-dir')
+const combiner = require('stream-combiner2')
+const xml2js = require('xml2js')
 
 let defaults = {
   host: 'localhost',
@@ -45,7 +46,6 @@ let defaults = {
 }
 
 module.exports = function Styleguide (gulp, settings = { }) {
-  this._gulp = gulp
   const config = this.config = Object.assign(defaults, settings, argv)
 
   if (!config.source) {
@@ -87,6 +87,28 @@ module.exports = function Styleguide (gulp, settings = { }) {
     require('daemon')()
   }
 
+  this.path = {
+    build: () => config['build']
+  }
+
+  this.watch = () => {
+    this._gulp.start(this.task.watch.all())
+  }
+
+  this.notify = (_message, _options = null) => {
+    let options = Object.assign({ }, {
+      icon: false,
+      message: `${_message}: <%= file.relative %> \u{1F44D}`,
+      title: 'Brightspot Styleguide',
+      sound: 'Purr',
+      onLast: true
+    }, _options)
+
+    return combiner(
+      notify(options)
+    )
+  }
+
   this.task = {
     build: {
       all: () => 'styleguide:build',
@@ -122,36 +144,17 @@ module.exports = function Styleguide (gulp, settings = { }) {
     }
   }
 
-  this.path = {
-    build: () => config['build']
-  }
+  const gulpModules = requireDir('./gulp', { recurse: false })
 
-  this.watch = () => {
-    this._gulp.start(this.task.watch.all())
-  }
+  Object.keys(gulpModules).forEach(name => {
+    gulpModules[name](this, gulp)
+  })
 
-  this.notify = (_message, _options = null) => {
-    let options = Object.assign({ }, {
-      icon: false,
-      message: `${_message}: <%= file.relative %> \u{1F44D}`,
-      title: 'Brightspot Styleguide',
-      sound: 'Purr',
-      onLast: true
-    }, _options)
-
-    return combiner(
-      notify(options)
-    )
-  }
+  gulp.task('default', [ this.task.build.all() ])
 
   this.serve = () => {
     return require('./server')(Object.assign({ }, this.config, settings))
   }
-
-  // Register Styleguide tasks with gulp
-  require('./util').loadModules('./gulp', this)
-
-  gulp.task('default', [ this.task.build.all() ])
 
   gulp.task('styleguide', [ 'default', this.task.watch.all() ], () => {
     this.serve()

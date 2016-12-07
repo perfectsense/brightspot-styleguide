@@ -418,7 +418,7 @@ class ViewClassSourceGenerator {
 
         methodJavadocs.addFieldOccurrencesList(fieldDef);
 
-        methodJavadocs.addSampleStringValuesList(fieldDef, 5);
+        methodJavadocs.addSampleValuesList(fieldDef, 10);
 
         boolean isDefaulted = context.isGenerateDefaultMethods();
 
@@ -537,7 +537,7 @@ class ViewClassSourceGenerator {
             method1Javadocs.addParagraph("Sets the " + fieldName + " field.");
             notes.forEach(method1Javadocs::addParagraph);
             method1Javadocs.addFieldOccurrencesList(fieldDef);
-            method1Javadocs.addSampleStringValuesList(fieldDef, 5);
+            method1Javadocs.addSampleValuesList(fieldDef, 10);
             method1Javadocs.newLine();
             method1Javadocs.addParameter(fieldName).addCollectionFieldValueTypesSnippet(fieldDef).newLine();
             method1Javadocs.addReturn().add("this builder.");
@@ -560,7 +560,7 @@ class ViewClassSourceGenerator {
             method2Javadocs.addParagraph("Adds a single item to the " + fieldName + " field.");
             notes.forEach(method2Javadocs::addParagraph);
             method2Javadocs.addFieldOccurrencesList(fieldDef);
-            method2Javadocs.addSampleStringValuesList(fieldDef, 5);
+            method2Javadocs.addSampleValuesList(fieldDef, 10);
             method2Javadocs.newLine();
             method2Javadocs.addParameter(fieldName).add("the item to add. ").addFieldValueTypesSnippet(fieldDef).newLine();
             method2Javadocs.addReturn().add("this builder.");
@@ -594,7 +594,7 @@ class ViewClassSourceGenerator {
             method3Javadocs.addParagraph("Adds a Collection of items to the " + fieldName + " field.");
             notes.forEach(method3Javadocs::addParagraph);
             method3Javadocs.addFieldOccurrencesList(fieldDef);
-            method3Javadocs.addSampleStringValuesList(fieldDef, 5);
+            method3Javadocs.addSampleValuesList(fieldDef, 10);
             method3Javadocs.newLine();
             method3Javadocs.addParameter(fieldName).add("the items to add. ").addCollectionFieldValueTypesSnippet(fieldDef).newLine();
             method3Javadocs.addReturn().add("this builder.");
@@ -632,7 +632,7 @@ class ViewClassSourceGenerator {
             methodJavadocs.addParagraph("Sets the " + fieldName + " field.");
             notes.forEach(methodJavadocs::addParagraph);
             methodJavadocs.addFieldOccurrencesList(fieldDef);
-            methodJavadocs.addSampleStringValuesList(fieldDef, 5);
+            methodJavadocs.addSampleValuesList(fieldDef, 10);
             methodJavadocs.newLine();
             methodJavadocs.addParameter(fieldName).addFieldAwareValueTypesSnippet(fieldDef).newLine();
             methodJavadocs.addReturn().add("this builder.");

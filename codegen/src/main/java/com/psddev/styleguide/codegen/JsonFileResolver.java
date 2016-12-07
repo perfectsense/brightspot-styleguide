@@ -91,15 +91,23 @@ class JsonFileResolver {
         }
 
         ViewKey viewKey = null;
-        if (isViewExpected
-                && !isDelegate.get()
-                && !isAbstract.get()) {
+        if (!isDelegate.get() && !isAbstract.get()) {
 
-            viewKey = requireViewKey(jsonMap);
+            if (isViewExpected) {
+                viewKey = requireViewKey(jsonMap);
+            }
 
             for (JsonKey key : keys) {
                 key = new JsonKey(key.getName(), key.getLocation(), getNotes(key, jsonMap));
-                resolved.put(key, resolveValue(key, jsonMap.getValue(key), new LinkedHashSet<>(visitedDataUrlPaths)));
+
+                JsonValue value = jsonMap.getValue(key);
+
+                // only resolve the value if it's a view, otherwise it's just a raw map.
+                if (isViewExpected) {
+                    value = resolveValue(key, value, new LinkedHashSet<>(visitedDataUrlPaths));
+                }
+
+                resolved.put(key, value);
             }
         }
 

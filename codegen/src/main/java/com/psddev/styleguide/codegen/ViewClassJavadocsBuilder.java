@@ -344,16 +344,16 @@ class ViewClassJavadocsBuilder {
     }
 
     /**
-     * Finds example String values for a given field definition and appends them
-     * in an HTML list to serve as an example for what the view model
-     * implementation should return.
+     * Finds example String values or Map values for a given field definition
+     * and appends them in an HTML list to serve as an example for what the
+     * view model implementation should return.
      *
      * @param fieldDef the field definition to analyze.
      * @param numberOfSamples the maximum number of unique String values to
      *                        extract from the field definition.
      * @return this builder.
      */
-    public ViewClassJavadocsBuilder addSampleStringValuesList(ViewClassFieldDefinition fieldDef, int numberOfSamples) {
+    public ViewClassJavadocsBuilder addSampleValuesList(ViewClassFieldDefinition fieldDef, int numberOfSamples) {
 
         if (numberOfSamples > 0) {
 
@@ -374,7 +374,13 @@ class ViewClassJavadocsBuilder {
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList());
 
-            } else  if (effectiveType == JsonString.class) {
+            } else if (effectiveType == JsonString.class) {
+
+                values = fieldDef.getFieldKeyValues().stream()
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toList());
+
+            } else if (effectiveType == JsonMap.class) {
 
                 values = fieldDef.getFieldKeyValues().stream()
                         .map(Map.Entry::getValue)
@@ -386,6 +392,18 @@ class ViewClassJavadocsBuilder {
 
                     if (value instanceof JsonString) {
                         sampleValues.add(((JsonString) value).toRawValue());
+
+                        // make sure it's not a sub-class of JsonMap
+                    } else if (value instanceof JsonMap && value.getClass() == JsonMap.class) {
+
+                        for (Map.Entry<String, Object> entry : ((JsonMap) value).toRawValue().entrySet()) {
+
+                            sampleValues.add(entry.getKey() + " = " + entry.getValue());
+
+                            if (sampleValues.size() == numberOfSamples) {
+                                break;
+                            }
+                        }
                     }
 
                     if (sampleValues.size() == numberOfSamples) {

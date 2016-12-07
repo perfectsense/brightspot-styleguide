@@ -157,6 +157,7 @@ class ViewClassSourceGenerator {
         sourceBuilder.append(getViewInterfaceDeclaration());
 
         // Static view type/element constants
+        /*
         for (ViewClassFieldDefinition fieldDef : fieldDefs) {
 
             Class<? extends JsonValue> effectiveType = fieldDef.getEffectiveType();
@@ -166,6 +167,7 @@ class ViewClassSourceGenerator {
                 sourceBuilder.append(NEW_LINE).append(declaration).append(NEW_LINE);
             }
         }
+        */
 
         // Interface method declarations
         for (ViewClassFieldDefinition fieldDef : fieldDefs) {

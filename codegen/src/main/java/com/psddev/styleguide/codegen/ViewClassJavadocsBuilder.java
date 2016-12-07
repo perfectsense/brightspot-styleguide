@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.psddev.dari.util.StringUtils;
@@ -325,20 +327,59 @@ class ViewClassJavadocsBuilder {
      */
     private String getOccurrencesListHtml(List<JsonDataLocation> locations) {
 
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("<ul>");
-        builder.append(NEW_LINE);
+        Map<String, Set<JsonDataLocation>> locationsByPath = new TreeMap<>();
 
         // sort, then de-dupe preserving sort order
         for (JsonDataLocation location : locations.stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))) {
+
+            String locationPath = location.getFile().getRelativePath().toString();
+
+            Set<JsonDataLocation> locationsForPath = locationsByPath.get(locationPath);
+
+            if (locationsForPath == null) {
+                locationsForPath = new TreeSet<>();
+                locationsByPath.put(locationPath, locationsForPath);
+            }
+
+            locationsForPath.add(location);
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("<ol>");
+        builder.append(NEW_LINE);
+
+        for (Map.Entry<String, Set<JsonDataLocation>> entry : locationsByPath.entrySet()) {
+
+            String path = entry.getKey();
+            Set<JsonDataLocation> locationsAtPath = entry.getValue();
+
             builder.append("<li>");
-            builder.append(location);
+            builder.append(path);
+            builder.append(" at:");
+            builder.append(NEW_LINE);
+
+            builder.append("<ol>");
+            builder.append(NEW_LINE);
+
+            for (JsonDataLocation location : locationsAtPath) {
+                builder.append("    <li>");
+                builder.append(String.format("(line=%s, col=%s, offset=%s)",
+                        location.getLineNumber(),
+                        location.getColumnNumber(),
+                        location.getStreamOffset()));
+                builder.append("</li>");
+                builder.append(NEW_LINE);
+            }
+
+            builder.append("</ol>");
+            builder.append(NEW_LINE);
+
             builder.append("</li>");
             builder.append(NEW_LINE);
         }
 
-        builder.append("</ul>");
+        builder.append("</ol>");
         builder.append(NEW_LINE);
         return builder.toString();
     }
@@ -480,7 +521,6 @@ class ViewClassJavadocsBuilder {
             builder.append(NEW_LINE);
 
             for (String line : lines) {
-                line = line.trim();
 
                 builder.append(indent(indent)).append(" *");
 

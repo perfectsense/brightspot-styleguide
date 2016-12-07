@@ -5,8 +5,8 @@ var traverse = require('traverse')
 
 var Util = require('./util')
 
-function DataGenerator (config) {
-  this.config = config
+function DataGenerator (styleguide) {
+  this.styleguide = styleguide
   this.chance = new Chance()
 }
 
@@ -123,13 +123,7 @@ DataGenerator.prototype.paragraphs = function (paragraphCount, sentenceCount, wo
 // `var` takes the provided key and looks up the value as defined in the `vars` of your styleguide config (_config.json)
 // If it is found, it returns the corresponding value otherwise it returns an Error object
 DataGenerator.prototype.var = function (key) {
-  if (this.config.vars) {
-    if (key in this.config.vars) {
-      return this.config.vars[key]
-    }
-  }
-
-  return null
+  return this.styleguide.var(key)
 }
 
 DataGenerator.prototype.process = function (data) {

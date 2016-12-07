@@ -1,9 +1,7 @@
 const fs = require('fs')
-const notify = require('gulp-notify')
-const argv = require('minimist')(process.argv.slice(2))
+const _ = require('lodash')
+const commandLineArguments = require('minimist')(process.argv.slice(2))
 const path = require('path')
-const requireDir = require('require-dir')
-const combiner = require('stream-combiner2')
 const xml2js = require('xml2js')
 
 let defaults = {
@@ -45,12 +43,26 @@ let defaults = {
   ]
 }
 
-module.exports = function Styleguide (gulp, settings = { }) {
-  const config = this.config = Object.assign(defaults, settings, argv)
+module.exports = function Styleguide (gulp, configOverrides = { }) {
+  // Merge settings to allow gulpfile.js to override root and source.
+  const config = _.merge({ }, defaults, configOverrides)
+
+  // Make sure that the root is absolute.
+  config.root = path.resolve(process.cwd(), config.root)
 
   if (!config.source) {
     config.source = path.join(config.root, 'styleguide')
   }
+
+  // Merge config from source if available.
+  const configFile = path.join(config.source, '_config.json')
+
+  if (fs.existsSync(configFile)) {
+    _.merge(config, JSON.parse(fs.readFileSync(configFile, 'utf8')))
+  }
+
+  // Finally merge command line arguments.
+  _.merge(config, commandLineArguments)
 
   if (!config.build) {
     config.build = path.join(config.root, '_build')
@@ -75,88 +87,40 @@ module.exports = function Styleguide (gulp, settings = { }) {
     }
   }
 
-  const configFile = path.join(config.source, '_config.json')
-
-  if (fs.existsSync(configFile)) {
-    Object.assign(config, JSON.parse(fs.readFileSync(configFile, 'utf8')))
-  }
-
+  // Process options in case this needs to run in the background.
   process.title = config.title || 'styleguide'
 
   if (config.daemon) {
     require('daemon')()
   }
 
+  // Expose common paths.
   this.path = {
-    build: () => config['build']
+    build: () => config.build,
+    root: () => config.root,
+    source: () => config.source
   }
 
-  this.watch = () => {
-    this._gulp.start(this.task.watch.all())
-  }
+  // Variables in config to be used in example JSON files.
+  this.var = (name) => config.vars ? config.vars[name] : null
 
-  this.notify = (_message, _options = null) => {
-    let options = Object.assign({ }, {
-      icon: false,
-      message: `${_message}: <%= file.relative %> \u{1F44D}`,
-      title: 'Brightspot Styleguide',
-      sound: 'Purr',
-      onLast: true
-    }, _options)
-
-    return combiner(
-      notify(options)
-    )
-  }
-
-  this.task = {
-    build: {
-      all: () => 'styleguide:build',
-      examples: () => 'styleguide:build:examples',
-      html: () => 'styleguide:build:html',
-      project: () => 'styleguide:build:project',
-
-      ui: {
-        all: () => 'styleguide:build:ui:all',
-        less: () => 'styleguide:build:ui:less',
-        fonts: () => 'styleguide:build:ui:fonts'
-      }
-    },
-
-    copy: {
-      all: () => 'styleguide:copy',
-      html: () => 'styleguide:copy:html',
-      sourced: () => 'styleguide:copy:sourced'
-    },
-
-    lint: {
-      all: () => 'styleguide:lint:all',
-      js: () => 'styleguide:lint:js',
-      json: () => 'styleguide:lint:json',
-      less: () => 'styleguide:lint:less'
-    },
-
-    watch: {
-      all: () => 'styleguide:watch',
-      html: () => 'styleguide:watch:html',
-      js: () => 'styleguide:watch:js',
-      less: () => 'styleguide:watch:less'
-    }
-  }
-
-  const gulpModules = requireDir('./gulp', { recurse: false })
-
-  Object.keys(gulpModules).forEach(name => {
-    gulpModules[name](this, gulp)
-  })
-
-  gulp.task('default', [ this.task.build.all() ])
-
+  // Serve the generated UI via a local web server.
   this.serve = () => {
-    return require('./server')(Object.assign({ }, this.config, settings))
+    return require('./server')(config)
   }
 
-  gulp.task('styleguide', [ 'default', this.task.watch.all() ], () => {
+  // Expose common tasks.
+  this.task = { }
+
+  require('./task/build')(this, gulp)
+  require('./task/lint')(this, gulp)
+  require('./task/ui')(this, gulp)
+  require('./task/watch')(this, gulp)
+
+  gulp.task('default', [ this.task.build(), this.task.lint(), this.task.ui() ])
+
+  gulp.task('styleguide', [ 'default' ], () => {
     this.serve()
+    this.watch()
   })
 }

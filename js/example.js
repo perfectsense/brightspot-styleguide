@@ -8,8 +8,8 @@ const traverse = require('traverse')
 const DataGenerator = require('./data-generator')
 const resolver = require('./resolver')
 
-module.exports = function (config, filePath) {
-  let data = resolver.data(config.build, filePath)
+module.exports = function (styleguide, filePath) {
+  let data = resolver.data(styleguide.path.build(), filePath)
 
   // Validate the JSON data. Exceptions for the special keys we have that are maps, so they don't need _template or _view
   traverse(data).forEach(function (value) {
@@ -42,7 +42,7 @@ module.exports = function (config, filePath) {
     if (slashAt > -1) {
       source = path.join(filePath.substring(0, slashAt), 'styleguide')
     } else {
-      source = config.source
+      source = styleguide.path.source()
     }
 
     var wrapperPath = path.join(source, data._wrapper ? data._wrapper : '_wrapper.json')
@@ -52,7 +52,7 @@ module.exports = function (config, filePath) {
     }
 
     while (wrapperPath) {
-      let wrapper = resolver.data(config.build, wrapperPath)
+      let wrapper = resolver.data(styleguide.path.build(), wrapperPath)
 
       traverse(wrapper).forEach(function (value) {
         if (value && value._delegate) {
@@ -71,7 +71,7 @@ module.exports = function (config, filePath) {
   }
 
   // post-process the JSON data.
-  new DataGenerator(config).process(data)
+  new DataGenerator(styleguide).process(data)
 
   // Set up Handlebars cache.
   var compiledTemplates = { }
@@ -221,7 +221,7 @@ module.exports = function (config, filePath) {
 
     // block helper extend parameter was set
     if (extend) {
-      let absolutePath = resolver.path(config.root, options.data.root._contextPath || options.data.root._template, extend)
+      let absolutePath = resolver.path(styleguide.path.root(), options.data.root._contextPath || options.data.root._template, extend)
       options.data.root._contextPath = absolutePath
       var template = compile(absolutePath, options)
       var templateOptions = { data: { } }

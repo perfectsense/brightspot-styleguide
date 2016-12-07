@@ -1,6 +1,3 @@
-const path = require('path')
-const fs = require('fs')
-
 var Util = {
 
   getfullDay: function (day) {
@@ -163,26 +160,6 @@ var Util = {
         }
       }
     }
-  },
-
-  // Adapted from: https://github.com/thlorenz/find-parent-dir
-  closestParentWithFile: (startingPath = '.', file) => {
-    let splitPath = (path) => {
-      let parts = path.split(/(\/|\\)/)
-      if (!parts.length) return parts
-      return !parts[0].length ? parts.slice(1) : parts
-    }
-
-    let check = (parts) => {
-      if (parts.length === 0) return null
-
-      var p = parts.join('')
-
-      var found = fs.existsSync(path.join(p, file))
-      return found ? p : check(parts.slice(0, -1))
-    }
-
-    return fs.existsSync(path.join(startingPath, file)) ? startingPath : check(splitPath(startingPath))
   }
 }
 

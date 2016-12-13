@@ -1,0 +1,55 @@
+{{#> layout}}
+    {{#*inline 'head'}}
+
+    <script type="text/javascript">
+
+        (function (window,undefined) {
+            $(document).on('ready', function () {
+
+/*
+*VARIABLES
+*/
+            $('.sg-file-body').each(function () {
+                var $body = $(this);
+                var $devices = $body.find('> .sg-device');
+
+                if ($devices.length > 0) {
+                    var width = 50;
+
+                    $devices.each(function () {
+                        width += $(this).outerWidth(true);
+                    });
+
+                    $body.outerWidth(width);
+                }
+            });
+
+
+            });
+
+        })();
+    </script>
+
+    {{/inline}}
+
+    {{#*inline 'content'}}
+        <div class="sg-design">
+            <div class="sg-design-header">
+                <div class="sg-design-name"><span class="sg-design-title">{{name}}</span></div>
+            </div>
+
+            <div class="sg-design-item-list">
+                {{#each items}}
+                    {{#if this.description}}
+                        <div class="sg-design-description">
+                            {{this.description}}
+                        </div>
+
+                    {{else}}
+                        {{this}}
+                    {{/if}}
+                {{/each}}
+            </div>
+        </div>
+    {{/inline}}
+{{/layout}}

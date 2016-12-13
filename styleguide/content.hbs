@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Styleguide{{#each names}}: {{this}}{{/each}}</title>
+
+        <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/x-icon">
+
+        <link rel="stylesheet" type="text/css" href="/opensans-bold,opensans-bolditalic,opensans-italic,opensans-regular/fonts.css">
+        <link rel="stylesheet" type="text/css" href="/node_modules/normalize.css/normalize.css">
+        <link rel="stylesheet" type="text/css" href="/node_modules/codemirror/lib/codemirror.css">
+        <link rel="stylesheet" type="text/css" href="/styleguide.css">
+
+        <script type="text/javascript" src="/node-modules/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript" src="/node-modules/codemirror/lib/codemirror.js"></script>
+
+        <script type="text/javascript" src="/node-modules/codemirror/mode/javascript/javascript.js"></script>
+        <script type="text/javascript" src="/node-modules/iframe-resizer/js/iframeResizer.min.js"></script>
+
+        <script type="text/javascript">
+
+            (function (window,undefined) {
+                $(document).on('ready', function () {
+
+                    $('.sg-file-body > iframe').iFrameResize({
+                        log: false,
+                        heightCalculationMethod: 'max',
+                        autoResize: true,
+                        scrolling: true,
+                        {{#if example.exampleMinHeight}}
+                          minHeight: {{example.exampleMinHeight}},
+                        {{/if}}
+                        {{#if example.exampleMaxHeight}}
+                          maxHeight: {{example.exampleMaxHeight}},
+                        {{/if}}
+                        initCallback: function(iframe) {
+                            $(iframe).contents().find('html', 'body', 'div').css('height', 'auto');
+                        }
+                    });
+
+                    $('.sg-file').each(function () {
+                        var $file = $(this);
+                        var $form = $file.find('.sg-file-form');
+
+                        $file.find('.sg-tabs a').on('click', function () {
+                          var $this = $(this);
+                          var dataAttr = $this.attr('data-tab');
+                          $this.attr('data-activetab', '').parent().siblings().find('a').removeAttr('data-activetab');
+                          $this.parents('.sg-tabs-wrapper').siblings('.sg-tabs-panels').find('[data-tab="' + dataAttr + '"]').attr('data-activepanel','').siblings().removeAttr('data-activepanel');
+
+                          return false;
+                        });
+
+                        $form.find('textarea').each(function () {
+                          CodeMirror.fromTextArea(this, {
+                            lineNumbers: true,
+                            mode: 'json'
+                          });
+                        });
+                    });
+
+                    $('.sg-file-body').each(function () {
+                        var $body = $(this);
+                        var $devices = $body.find('> .sg-device');
+
+                        if ($devices.length > 0) {
+                            var width = 50;
+
+                            $devices.each(function () {
+                                width += $(this).outerWidth(true);
+                            });
+
+                            $body.outerWidth(width);
+                        }
+                    });
+
+                });
+
+            })();
+        </script>
+
+        {{> head}}
+    </head>
+    <body class="sg-content-embed">
+        {{> content}}
+    </body>
+</html>

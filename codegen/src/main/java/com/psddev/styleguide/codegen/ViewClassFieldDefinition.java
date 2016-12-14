@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.psddev.dari.util.ObjectUtils;
+
 /**
  * Contains all of the metadata related to a single field of a
  * {@link ViewClassDefinition}.
@@ -272,11 +274,16 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
 
             } else if (effectiveValueType == JsonViewMap.class) {
 
-                Set<ViewClassFieldType> fieldValueTypes = values.stream()
+                Set<ViewClassFieldType> fieldValueTypes = new TreeSet<>((o1, o2) -> ObjectUtils.compare(
+                        o1.getFullyQualifiedClassName(),
+                        o2.getFullyQualifiedClassName(),
+                        true));
+
+                values.stream()
                         .filter(value -> (value instanceof JsonViewMap))
                         .map(value -> (JsonViewMap) value)
                         .map(JsonViewMap::getViewKey)
-                        .collect(Collectors.toCollection(HashSet::new));
+                        .collect(Collectors.toCollection(() -> fieldValueTypes));
 
                 Set<JsonDelegateMap> delegateMaps = values.stream()
                         .filter(value -> (value instanceof JsonDelegateMap))

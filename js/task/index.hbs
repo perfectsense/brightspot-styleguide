@@ -80,5 +80,18 @@
                 <iframe src="about:blank" name="sg-content-iframe" id="sg-iframe-content"></iframe>
             </div>
         </div>
+
+        <script type="text/javascript">
+            (function () {
+                if (window !== window.parent) document.body.setAttribute('data-iframed', true)
+
+                var base = window.location.href
+                base = base.substring(0, base.indexOf('/_styleguide'))
+
+                document.querySelectorAll('a[href^="/"], link[href^="/"]').forEach(function (link) {
+                    link.setAttribute('href', base + link.getAttribute('href'))
+                })
+            })();
+        </script>
     </body>
 </html>

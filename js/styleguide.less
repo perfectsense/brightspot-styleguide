@@ -31,6 +31,10 @@ body {
     &.sg-content-embed {
         margin: 0;
     }
+
+    &[data-iframed] {
+      margin-top: 0;
+    }
 }
 
 a {
@@ -85,6 +89,10 @@ a {
       > * {
         display: inline-block;
       }
+    }
+
+    body[data-iframed] & {
+      display: none;
     }
 }
 

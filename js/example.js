@@ -323,5 +323,5 @@ module.exports = function (styleguide, filePath) {
     return new handlebars.SafeString(value)
   })
 
-  return template({ data: convert(data) })
+  return template({ data: convert(data) }).replace('</body>', '<script type="text/javascript">window.parent.rebase(window)</script></body>')
 }

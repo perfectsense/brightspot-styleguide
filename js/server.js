@@ -11,7 +11,6 @@ module.exports = config => {
 
   const app = express()
 
-  app.use(require('./placeholder-image')())
   app.use(express.static(config.build))
 
   const server = app.listen(config.port, config.host, () => {

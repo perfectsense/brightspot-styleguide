@@ -1,9 +1,11 @@
 /* eslint no-eval: 0 */
-var Chance = require('chance')
-var _ = require('lodash')
-var traverse = require('traverse')
+const Chance = require('chance')
+const _ = require('lodash')
+const path = require('path')
+const traverse = require('traverse')
 
-var Util = require('./util')
+const placeholderImage = require('./placeholder-image')
+const Util = require('./util')
 
 function DataGenerator (styleguide) {
   this.styleguide = styleguide
@@ -61,7 +63,14 @@ DataGenerator.prototype.hexColor = function (luminosity) {
 }
 
 DataGenerator.prototype.image = function (width, height) {
-  return '/placeholder-image/' + this.chance.guid() + '/' + this.number(width) + 'x' + this.number(height)
+  const key = this.chance.guid()
+  const finalWidth = this.number(width)
+  const finalHeight = this.number(height)
+  const url = '/placeholder-image/' + key + '/' + finalWidth + 'x' + finalHeight + '.svg'
+
+  placeholderImage(key, finalWidth, finalHeight, path.join(this.styleguide.path.build(), url))
+
+  return url
 }
 
 DataGenerator.prototype.name = function () {

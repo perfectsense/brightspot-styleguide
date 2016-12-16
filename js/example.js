@@ -9,7 +9,8 @@ const DataGenerator = require('./data-generator')
 const resolver = require('./resolver')
 
 module.exports = function (styleguide, filePath) {
-  let data = resolver.data(styleguide.path.build(), filePath)
+  const buildPath = styleguide.path.build()
+  let data = resolver.data(buildPath, filePath)
 
   // Validate the JSON data. Exceptions for the special keys we have that are maps, so they don't need _template or _view
   traverse(data).forEach(function (value) {
@@ -36,23 +37,24 @@ module.exports = function (styleguide, filePath) {
 
   // Wrap the example file data?
   if (data._wrapper !== false && !data._view) {
-    var slashAt = filePath.lastIndexOf('/styleguide/')
-    var source
+    const wrap = (data, wrapperPath) => {
+      if (!wrapperPath) {
+        wrapperPath = data._wrapper
 
-    if (slashAt > -1) {
-      source = path.join(filePath.substring(0, slashAt), 'styleguide')
-    } else {
-      source = styleguide.path.source()
-    }
+        if (!wrapperPath) {
+          return data
+        }
+      }
 
-    var wrapperPath = path.join(source, data._wrapper ? data._wrapper : '_wrapper.json')
+      // Make sure that the wrapper exists.
+      const resolvedWrapperPath = resolver.path(buildPath, filePath, wrapperPath)
 
-    if (!fs.existsSync(wrapperPath)) {
-      wrapperPath = null
-    }
+      if (!fs.existsSync(resolvedWrapperPath)) {
+        throw new Error(`Wrapper at [${resolvedWrapperPath}] doesn't exist!`)
+      }
 
-    while (wrapperPath) {
-      let wrapper = resolver.data(styleguide.path.build(), wrapperPath)
+      // Put the existing data into the wrapper at _delegate marker object.
+      const wrapper = resolver.data(buildPath, resolvedWrapperPath)
 
       traverse(wrapper).forEach(function (value) {
         if (value && value._delegate) {
@@ -60,12 +62,20 @@ module.exports = function (styleguide, filePath) {
         }
       })
 
-      data = wrapper
+      return wrap(wrapper)
+    }
 
-      wrapperPath = data._wrapper ? path.join(source, data._wrapper) : null
+    // Wrapper specified explicitly?
+    let wrapperPath = data._wrapper
 
-      if (!fs.existsSync(wrapperPath)) {
-        wrapperPath = null
+    if (wrapperPath) {
+      data = wrap(data)
+    } else {
+      // Use the wrapper at root implicitly.
+      wrapperPath = resolver.path(buildPath, filePath, '/styleguide/_wrapper.json')
+
+      if (fs.existsSync(wrapperPath)) {
+        data = wrap(data, '/styleguide/_wrapper.json')
       }
     }
   }

@@ -504,6 +504,7 @@ class JsonDirectory {
         Set<String> excludedPaths = context.getExcludedPaths().stream().collect(Collectors.toCollection(HashSet::new));
 
         // exclude some well known paths
+        excludedPaths.add("dari-reflections.json");
         excludedPaths.add(CONFIG_FILE_NAME);
         excludedPaths.add(PACKAGE_JSON_FILE_NAME);
         excludedPaths.add(BOWER_COMPONENTS_DIRECTORY_NAME);

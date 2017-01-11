@@ -165,7 +165,6 @@ module.exports = (styleguide, gulp) => {
           // Override styled templates.
           Object.keys(styledTemplates).forEach(styledTemplate => {
             const styledTemplatePath = path.join(styleguide.path.build(), styledTemplate)
-            console.log('styledTemplatePath : ' + styledTemplatePath)
 
             fs.mkdirsSync(path.dirname(styledTemplatePath))
             fs.writeFileSync(styledTemplatePath, styledTemplates[styledTemplate])

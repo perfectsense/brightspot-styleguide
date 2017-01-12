@@ -214,7 +214,6 @@ module.exports = function (styleguide, filePath) {
 
   // Defines a block.
   var DATA_PREFIX = '_brightspot_'
-  var ELEMENT_DATA = DATA_PREFIX + 'element'
   var BLOCK_NAME_DATA = DATA_PREFIX + 'blockName'
   var DEFINE_BLOCK_CONTAINER_IN_EXTEND_DATA = DATA_PREFIX + 'defineBlockContainerInExtend'
 
@@ -246,10 +245,12 @@ module.exports = function (styleguide, filePath) {
 
   // Marks the template as the block container.
   handlebars.registerHelper('defineBlockContainer', function (options) {
+    let result = options.fn(this)
+
     if (options.data[DEFINE_BLOCK_CONTAINER_IN_EXTEND_DATA]) {
       return null
     } else {
-      return new handlebars.SafeString(options.fn(this))
+      return new handlebars.SafeString(result)
     }
   })
 
@@ -302,24 +303,21 @@ module.exports = function (styleguide, filePath) {
 
   // Renders the named element.
   handlebars.registerHelper('element', function (name, options) {
-    var self = this
+    if (options.fn) {
+      this[ELEMENT_DEFINITION_DATA_PREFIX + name] = options
+    }
+
     var elementOptions = this[ELEMENT_DEFINITION_DATA_PREFIX + name]
 
     if (!elementOptions) {
       throw new Error('[' + name + '] element not defined!')
     }
 
-    // does this element contain nested elements?
-    Object.keys(this).filter(function (key) {
-      if (key.indexOf(ELEMENT_DATA) > -1 && options.data[BLOCK_NAME_DATA]) {
-        self[key].data[BLOCK_NAME_DATA] = options.data[BLOCK_NAME_DATA]
-      }
-    })
-
     var value = this[name]
     var fnOptions = { data: { } }
     var blockName = options.data[BLOCK_NAME_DATA] || elementOptions.data[BLOCK_NAME_DATA]
 
+    fnOptions.data[BLOCK_NAME_DATA] = blockName
     fnOptions.data[ELEMENT_NAME_DATA] = blockName + '-' + name
 
     if (elementOptions.hash.noWith) {

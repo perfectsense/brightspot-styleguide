@@ -233,7 +233,7 @@ module.exports = (styleguide, gulp) => {
           // Group example HTML files by their path.
           const groupByName = { }
 
-          glob.sync('styleguide/**/*.html', { cwd: styleguide.path.build() }).forEach(match => {
+          glob.sync('**/*.html', { cwd: path.join(styleguide.path.build(), 'styleguide') }).forEach(match => {
             const groupName = path.dirname(match).split('/').map(label).join(': ')
             let group = groupByName[groupName]
 
@@ -246,7 +246,7 @@ module.exports = (styleguide, gulp) => {
 
             group.children.push({
               name: label(path.basename(match, '.html')),
-              url: '/' + gutil.replaceExtension(match, '.html')
+              url: '/styleguide/' + gutil.replaceExtension(match, '.html')
             })
           })
 

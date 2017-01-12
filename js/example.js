@@ -277,9 +277,9 @@ module.exports = function (styleguide, filePath) {
     return options.data[BLOCK_NAME_DATA]
   })
 
-  // Renders the named block, optionally replacing its body.
-  handlebars.registerHelper('block', function (name, options) {
-    var template = compile(name)
+  // Renders a block, optionally with a new name and replacing its body.
+  handlebars.registerHelper('block', function (extend, options) {
+    var template = compile(resolver.path(styleguide.path.root(), options.data.root._contextPath || options.data.root._template, extend))
     this[BLOCK_BODY_TEMPLATE_DATA] = options.fn
     var templateOptions = { data: { } }
     templateOptions.data[BLOCK_NAME_DATA] = options.hash.name

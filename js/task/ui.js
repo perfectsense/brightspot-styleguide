@@ -61,10 +61,7 @@ module.exports = (styleguide, gulp) => {
                   }
                 })
 
-                const styledTemplatePath = path.join(styleguide.path.build(), template.template)
-                const styledExamplePath = path.join(
-                  path.dirname(styledTemplatePath),
-                  path.basename(styledTemplatePath, path.extname(styledTemplatePath)) + '.json')
+                const styledExamplePath = gutil.replaceExtension(path.join(styleguide.path.build(), template.template), '.json')
 
                 fs.mkdirsSync(path.dirname(styledExamplePath))
                 fs.writeFileSync(styledExamplePath, JSON.stringify(exampleJson))

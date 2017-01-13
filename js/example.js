@@ -215,77 +215,79 @@ module.exports = function (styleguide, filePath) {
   // Defines a block.
   var DATA_PREFIX = '_brightspot_'
   var BLOCK_NAME_DATA = DATA_PREFIX + 'blockName'
-  var DEFINE_BLOCK_CONTAINER_IN_EXTEND_DATA = DATA_PREFIX + 'defineBlockContainerInExtend'
+  var PARENT_PATH_DATA = DATA_PREFIX + 'parentPath'
+  var OVERRIDE_DATA = DATA_PREFIX + 'override'
 
-  function compile (absPath, options) {
-    return handlebars.compile(fs.readFileSync(absPath, 'utf8'))
-  }
-
-  handlebars.registerHelper('defineBlock', function (name, options) {
+  function block (name, options) {
     if (!options.data[BLOCK_NAME_DATA]) {
       options.data[BLOCK_NAME_DATA] = name
     }
 
-    let extend = options.hash.extend
+    let override = options.hash.override
+    let extend = override || options.hash.extend
 
-    // block helper extend parameter was set
     if (extend) {
-      let absolutePath = resolver.path(styleguide.path.root(), options.data.root._contextPath || options.data.root._template, extend)
-      options.data.root._contextPath = absolutePath
-      var template = compile(absolutePath, options)
-      var templateOptions = { data: { } }
-      templateOptions.data[BLOCK_NAME_DATA] = name
-      templateOptions.data[DEFINE_BLOCK_CONTAINER_IN_EXTEND_DATA] = true
+      let extendPath = resolver.path(styleguide.path.root(), options.data[PARENT_PATH_DATA] || options.data.root._template, extend)
+      let extendTemplate = handlebars.compile(fs.readFileSync(extendPath, 'utf8'))
+      let extendOptions = { data: { } }
 
-      template(this, templateOptions)
+      extendOptions.data[BLOCK_NAME_DATA] = name
+      extendOptions.data[PARENT_PATH_DATA] = extendPath
+      extendOptions.data[OVERRIDE_DATA] = options.data[OVERRIDE_DATA]
+
+      let extendResult = extendTemplate(this, extendOptions)
+
+      if (!options.fn) {
+        return new handlebars.SafeString(extendResult)
+      }
+
+      if (override) {
+        options.fn(this)
+        extendOptions.data[OVERRIDE_DATA] = true
+        return new handlebars.SafeString(extendTemplate(this, extendOptions))
+      }
     }
 
-    return new handlebars.SafeString(options.fn(this))
-  })
+    if (options.fn) {
+      return new handlebars.SafeString(options.fn(this))
+    } else {
+      throw new Error('{{block}} without extend must have a body!')
+    }
+  }
+
+  handlebars.registerHelper('block', block)
+  handlebars.registerHelper('defineBlock', block)
 
   // Marks the template as the block container.
   handlebars.registerHelper('defineBlockContainer', function (options) {
-    let result = options.fn(this)
-
-    if (options.data[DEFINE_BLOCK_CONTAINER_IN_EXTEND_DATA]) {
-      return null
-    } else {
-      return new handlebars.SafeString(result)
-    }
+    return options.fn(this)
   })
 
   // Marks the template as the block body.
   var BLOCK_BODY_TEMPLATE_DATA = DATA_PREFIX + 'blockBodyTemplate'
 
-  function defineBlockBody (options) {
-    var overrideTemplate = this[BLOCK_BODY_TEMPLATE_DATA]
-    var override
-
-    if (overrideTemplate) {
-      override = overrideTemplate(this, options)
-    } else {
-      override = options.fn(this)
+  function blockBody (options) {
+    if (options.fn && !options.data[OVERRIDE_DATA]) {
+      this[BLOCK_BODY_TEMPLATE_DATA] = options.fn
+      return new handlebars.SafeString(options.fn(this))
     }
 
-    return new handlebars.SafeString(override)
+    let blockBodyTemplate = this[BLOCK_BODY_TEMPLATE_DATA]
+
+    if (blockBodyTemplate) {
+      return new handlebars.SafeString(blockBodyTemplate(this, options))
+    } else {
+      return null
+    }
   }
 
-  handlebars.registerHelper('defineBlockBody', defineBlockBody)
-  handlebars.registerHelper('defaultBlockBody', defineBlockBody)
+  handlebars.registerHelper('blockBody', blockBody)
+  handlebars.registerHelper('defineBlockBody', blockBody)
+  handlebars.registerHelper('defaultBlockBody', blockBody)
 
   // Returns the name of the current block.
   handlebars.registerHelper('blockName', function (options) {
     return options.data[BLOCK_NAME_DATA]
-  })
-
-  // Renders a block, optionally with a new name and replacing its body.
-  handlebars.registerHelper('block', function (extend, options) {
-    var template = compile(resolver.path(styleguide.path.root(), options.data.root._contextPath || options.data.root._template, extend))
-    this[BLOCK_BODY_TEMPLATE_DATA] = options.fn
-    var templateOptions = { data: { } }
-    templateOptions.data[BLOCK_NAME_DATA] = options.hash.name
-
-    return new handlebars.SafeString(template(this, templateOptions))
   })
 
   // Defines an element.
@@ -293,7 +295,9 @@ module.exports = function (styleguide, filePath) {
   var ELEMENT_DEFINITION_DATA_PREFIX = DATA_PREFIX + 'element_'
 
   handlebars.registerHelper('defineElement', function (name, options) {
-    this[ELEMENT_DEFINITION_DATA_PREFIX + name] = options
+    if (options.fn && !options.data[OVERRIDE_DATA]) {
+      this[ELEMENT_DEFINITION_DATA_PREFIX + name] = options
+    }
   })
 
   // Returns the name of the current element.
@@ -303,7 +307,7 @@ module.exports = function (styleguide, filePath) {
 
   // Renders the named element.
   handlebars.registerHelper('element', function (name, options) {
-    if (options.fn) {
+    if (options.fn && !options.data[OVERRIDE_DATA]) {
       this[ELEMENT_DEFINITION_DATA_PREFIX + name] = options
     }
 

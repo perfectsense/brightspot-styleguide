@@ -47,6 +47,70 @@ Add [example JSON files](docs/example-file-format.rst) to the `styleguide/` dire
 * `styleguide.task.lint.less()`: returns the name of the task that lints less files.
 * `styleguide.task.watch()`: returns the name of the task that watches JS, JSON, and less files.
 
+## Handlebars Helpers
+
+* `block`
+* `blockName`
+* `blockBody`
+* `element`
+* `elementName`
+
+### Handlebars Usage Examples
+
+Given:
+
+```hbs
+{{#block "Promo"}}
+    <div class="{{blockName}}">
+        {{#blockBody}}
+            {{#element "title"}}<div class="{{elementName}}">{{this}}</div>{{/element}}
+            {{#element "description"}}<div class="{{elementName}}">{{this}}</div>{{/element}}
+            {{#element "figure" noWith=true}}
+                <figure class="{{elementName}}">
+                    {{#element "image"}}{{this}}{{/element}}
+                    {{#element "caption"}}<figcaption class="{{elementName}}">{{this}}</figcaption>{{/element}}
+                </figure>
+            {{/element}}
+        {{/blockBody}}
+    </div>
+{{/block}}
+```
+
+How do I rename it?
+
+```hbs
+{{block "MyPromo" override="Promo.hbs"}}
+```
+
+How do I reorder or remove elements?
+
+```hbs
+{{#block "MyPromo" override="Promo.hbs"}}
+    {{#blockBody}}
+        {{element "figure"}}
+        {{element "title"}}
+    {{/blockBody}}
+{{/block}}
+```
+
+How do I change the `caption` element markup?
+
+```hbs
+{{#block "MyPromo" override="Promo.hbs"}}
+    {{#element "caption"}}
+        <div class="{{elementName}}">{{this}}</div>
+    {{/element}}
+{{/block}}
+```
+
+How do I change the outer block markup?
+
+```hbs
+{{#block "MyPromo" extend="Promo.hbs"}}
+    <section class="{{blockName}}">{{blockBody}}</section>
+{{/block}}
+```
+
 ## Troubleshooting
 
 IFrame not resizing properly:

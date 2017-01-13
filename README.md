@@ -4,7 +4,7 @@
 
 * [Node.js](https://nodejs.org/en/) (>=6.9.1)
 * [gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md)
-* [Yarn](https://yarnpkg.com/en/docs/install) (0.16.1)
+* [Yarn](https://yarnpkg.com/en/docs/install) (>=0.16.1)
 
 ## Installation
 

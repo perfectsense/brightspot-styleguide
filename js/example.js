@@ -1,3 +1,4 @@
+const findParentDir = require('find-parent-dir')
 const fs = require('fs')
 const handlebars = require('handlebars')
 const _ = require('lodash')
@@ -37,24 +38,26 @@ module.exports = function (styleguide, filePath) {
 
   // Wrap the example file data?
   if (data._wrapper !== false && !data._view) {
-    const wrap = (data, wrapperPath) => {
-      if (!wrapperPath) {
-        wrapperPath = data._wrapper
+    // Wrapper specified explicitly or use the closest?
+    let wrapperPath = data._wrapper
 
-        if (!wrapperPath) {
-          return data
-        }
+    if (wrapperPath) {
+      wrapperPath = resolver.path(buildPath, filePath, wrapperPath)
+    } else {
+      wrapperPath = findParentDir.sync(filePath, '_wrapper.json')
+
+      if (wrapperPath) {
+        wrapperPath = path.join(wrapperPath, '_wrapper.json')
       }
+    }
 
-      // Make sure that the wrapper exists.
-      const resolvedWrapperPath = resolver.path(buildPath, filePath, wrapperPath)
-
-      if (!fs.existsSync(resolvedWrapperPath)) {
-        throw new Error(`Wrapper at [${resolvedWrapperPath}] doesn't exist!`)
+    if (wrapperPath) {
+      if (!fs.existsSync(wrapperPath)) {
+        throw new Error(`Wrapper at [${wrapperPath}] doesn't exist!`)
       }
 
       // Put the existing data into the wrapper at _delegate marker object.
-      const wrapper = resolver.data(buildPath, resolvedWrapperPath)
+      const wrapper = resolver.data(buildPath, wrapperPath)
 
       traverse(wrapper).forEach(function (value) {
         if (value && value._delegate) {
@@ -62,21 +65,7 @@ module.exports = function (styleguide, filePath) {
         }
       })
 
-      return wrap(wrapper)
-    }
-
-    // Wrapper specified explicitly?
-    let wrapperPath = data._wrapper
-
-    if (wrapperPath) {
-      data = wrap(data)
-    } else {
-      // Use the wrapper at root implicitly.
-      wrapperPath = resolver.path(buildPath, filePath, '/styleguide/_wrapper.json')
-
-      if (fs.existsSync(wrapperPath)) {
-        data = wrap(data, '/styleguide/_wrapper.json')
-      }
+      data = wrapper
     }
   }
 

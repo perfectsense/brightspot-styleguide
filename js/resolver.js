@@ -20,13 +20,7 @@ function resolvePath (root, parent, file) {
   }
 }
 
-function resolveData (root, file, extra) {
-  const data = JSON.parse(fs.readFileSync(file, 'utf8'))
-
-  if (extra) {
-    _.extend(data, extra)
-  }
-
+function traverseData (root, file, data) {
   traverse(data).forEach(function (value) {
     if (this.key === '_template') {
       this.update(resolvePath(root, file, value))
@@ -42,12 +36,17 @@ function resolveData (root, file, extra) {
 
         value._include = null
         value._dataUrl = null
-        this.update(resolveData(root, includeFile, value), true)
+
+        this.update(_.extend(resolveData(root, includeFile, value), traverseData(value)), true)
       }
     }
   })
 
   return data
+}
+
+function resolveData (root, file) {
+  return traverseData(root, file, JSON.parse(fs.readFileSync(file, 'utf8')))
 }
 
 module.exports = {

@@ -276,7 +276,7 @@ module.exports = (styleguide, gulp) => {
     }
   }
 
-  gulp.task(styleguide.task.ui(), done => {
+  gulp.task(styleguide.task.ui(), [ styleguide.task.clean() ], done => {
     styleguide.ui.copy(() => {
       styleguide.ui.html(() => {
         styleguide.ui.fonts().on('end', () => {

@@ -2,7 +2,6 @@ package com.psddev.styleguide.codegen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -450,17 +449,30 @@ class ViewClassSourceGenerator {
         Class<? extends JsonValue> effectiveType = fieldDef.getEffectiveType();
 
         if (effectiveType == JsonBoolean.class) {
-            return "Boolean";
+            return ViewClassFieldNativeJavaType.BOOLEAN.getClassName();
 
         } else if (effectiveType == JsonNumber.class) {
-            return "Number";
+            return ViewClassFieldNativeJavaType.NUMBER.getClassName();
 
         } else if (effectiveType == JsonString.class) {
-            return context.isGenerateStrictTypes() ? "CharSequence" : "Object";
+            ViewClassFieldType type;
+            if (context.isGenerateStrictTypes()) {
+                type = ViewClassFieldNativeJavaType.CHAR_SEQUENCE;
+            } else {
+                type = ViewClassFieldNativeJavaType.OBJECT;
+            }
+
+            importsBuilder.add(type);
+            return type.getClassName();
 
         } else if (effectiveType == JsonMap.class) {
-            importsBuilder.add(Map.class.getName());
-            return "Map<String, Object>";
+            importsBuilder.add(ViewClassFieldNativeJavaType.MAP);
+            importsBuilder.add(ViewClassFieldNativeJavaType.STRING);
+            importsBuilder.add(ViewClassFieldNativeJavaType.OBJECT);
+            return String.format("%s<%s, %s>",
+                    ViewClassFieldNativeJavaType.MAP.getClassName(),
+                    ViewClassFieldNativeJavaType.STRING.getClassName(),
+                    ViewClassFieldNativeJavaType.OBJECT.getClassName());
 
         } else if (effectiveType == JsonViewMap.class) {
             ViewClassFieldType fieldType = fieldDef.getEffectiveValueType();
@@ -472,7 +484,7 @@ class ViewClassSourceGenerator {
 
         } else if (effectiveType == JsonList.class) {
 
-            importsBuilder.add(Collection.class.getName());
+            importsBuilder.add(ViewClassFieldNativeJavaType.COLLECTION);
 
             String genericArgument;
 
@@ -489,7 +501,7 @@ class ViewClassSourceGenerator {
                 }
             }
 
-            return "Collection<" + genericArgument + ">";
+            return ViewClassFieldNativeJavaType.COLLECTION.getClassName() + "<" + genericArgument + ">";
 
         } else {
             throw new IllegalStateException("Field definitions must have a valid effective type!");
@@ -505,11 +517,11 @@ class ViewClassSourceGenerator {
     private String getJavaFieldTypeForBuilder(ViewClassFieldDefinition fieldDef) {
 
         if (fieldDef.getEffectiveType() == JsonList.class) {
-            importsBuilder.add(Collection.class.getName());
+            importsBuilder.add(ViewClassFieldNativeJavaType.COLLECTION);
 
             // Collection<?> --> Collection<Object>
             // Collection<? extends Foo> --> Collection<Foo>
-            return getJavaFieldType(fieldDef).replace("? extends ", "").replace("?", "Object");
+            return getJavaFieldType(fieldDef).replace("? extends ", "").replace("?", ViewClassFieldNativeJavaType.OBJECT.getClassName());
 
         } else {
             return getJavaFieldType(fieldDef);

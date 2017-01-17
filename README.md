@@ -111,6 +111,78 @@ How do I change the outer block markup?
 {{/block}}
 ```
 
+## Styling Components
+
+The default style of a component should be _mobile first_.
+
+### Styling Usage Examples
+
+Where should I define media queries?
+
+> Within a `MediaQueries.less` file imported from `All.less`
+
+Given: `Promo.less`:
+
+```less
+.Promo {
+  &-title {
+    color: dodgerblue;
+  }
+}
+```
+
+How do I define a small and large size?
+
+```less
+.Promo--small() {
+  &-title {
+    font-size: 10px;
+  }
+}
+
+.Promo--large() {
+  &-title {
+    font-size: 20px;
+  }
+}
+```
+
+How do I default it to the small size?
+
+```less
+.Promo {
+  &-title {
+    color: dodgerblue;
+  }
+
+  .Promo--small;
+}
+```
+
+How do I change to the large size at a specific breakpoint?
+
+> Use media queries within your `MediaQueries.less` file:
+
+```less
+@media "only screen and (min-width: 768px)" {
+  .Promo {
+    .Promo--large;
+  }
+}
+```
+
+How do I change to the large size _only_ when it's a child of the right-rail?
+
+> Use container queries within your `RightRail.less` file:
+
+```less
+.RightRail {
+  .Promo {
+    .Promo--large;
+  }
+}
+```
+
 ## Troubleshooting
 
 IFrame not resizing properly:

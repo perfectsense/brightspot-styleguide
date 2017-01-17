@@ -124,12 +124,18 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   // Expose common tasks.
   this.task = { }
 
+  require('./task/clean')(this, gulp)
   require('./task/build')(this, gulp)
   require('./task/lint')(this, gulp)
   require('./task/ui')(this, gulp)
   require('./task/watch')(this, gulp)
 
-  gulp.task('default', [ this.task.build(), this.task.lint(), this.task.ui() ])
+  gulp.task('default', [
+    this.task.clean(),
+    this.task.build(),
+    this.task.lint(),
+    this.task.ui()
+  ])
 
   gulp.task('styleguide', [ 'default' ], () => {
     // Error gracefully when the styleguide and watcher are running.

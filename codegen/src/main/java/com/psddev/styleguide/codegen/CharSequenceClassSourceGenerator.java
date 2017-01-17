@@ -83,7 +83,7 @@ class CharSequenceClassSourceGenerator {
         }
         sourceBuilder.append(NEW_LINE);
         {
-            for (Iterator<ViewClassFieldDefinition> it = mixedTypeFieldDefs.iterator(); it.hasNext(); ) {
+            for (Iterator<ViewClassFieldDefinition> it = mixedTypeFieldDefs.iterator(); it.hasNext();) {
 
                 ViewClassFieldDefinition fieldDef = it.next();
 

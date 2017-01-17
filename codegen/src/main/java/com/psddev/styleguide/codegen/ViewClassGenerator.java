@@ -142,10 +142,16 @@ public class ViewClassGenerator {
         // Throws an exception if there are any errors
         logErrorDefinitions(classDefinitions);
 
-        List<ViewClassSource> sources = classDefinitions.stream()
+        List<ViewClassSource> sources = new ArrayList<>();
+
+        classDefinitions.stream()
                 .map(classDef -> new ViewClassSourceGenerator(context, classDef).generateSources())
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(() -> sources));
+
+        if (context.isGenerateStrictTypes()) {
+            sources.addAll(new CharSequenceClassSourceGenerator(classDefinitions).generateSources());
+        }
 
         Map<Path, String> generated = new TreeMap<>();
 

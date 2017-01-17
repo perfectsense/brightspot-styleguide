@@ -456,7 +456,7 @@ class ViewClassSourceGenerator {
             return "Number";
 
         } else if (effectiveType == JsonString.class) {
-            return context.isGenerateStrictTypes() ? "String" : "Object";
+            return context.isGenerateStrictTypes() ? "CharSequence" : "Object";
 
         } else if (effectiveType == JsonMap.class) {
             importsBuilder.add(Map.class.getName());

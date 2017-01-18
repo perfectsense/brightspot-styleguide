@@ -205,7 +205,7 @@ module.exports = (styleguide, gulp) => {
 
                 this.push(new gutil.File({
                   base: styleguide.path.build(),
-                  contents: new Buffer(example(styleguide, match)),
+                  contents: Buffer.from(example(styleguide, match)),
                   path: gutil.replaceExtension(matchPath, '.html')
                 }))
               }
@@ -213,7 +213,7 @@ module.exports = (styleguide, gulp) => {
           }
         } else if (fileName !== 'package.json' && fileName.slice(0, 1) !== '_') {
           file.base = styleguide.path.build()
-          file.contents = new Buffer(example(styleguide, filePath))
+          file.contents = Buffer.from(example(styleguide, filePath))
           file.path = gutil.replaceExtension(filePath, '.html')
           this.push(file)
         }

@@ -1,5 +1,3 @@
-const path = require('path')
-
 const logger = require('../logger')
 
 module.exports = (styleguide, gulp) => {
@@ -14,7 +12,7 @@ module.exports = (styleguide, gulp) => {
   }
 
   styleguide.watch.html = () => {
-    gulp.watch(path.join(styleguide.path.source(), '**/*.{hbs,json}'), [ styleguide.task.ui() ])
+    gulp.watch('**/*.{hbs,json}', { cwd: styleguide.path.source() }, [ styleguide.task.ui() ])
       .on('change', onChange)
   }
 
@@ -22,12 +20,12 @@ module.exports = (styleguide, gulp) => {
   const deps = name => styleguide.buildDependencies.includes(name) ? [ name ] : [ ]
 
   styleguide.watch.js = () => {
-    gulp.watch(path.join(styleguide.path.source(), '**/*.js'), deps(styleguide.task.js()))
+    gulp.watch('**/*.js', { cwd: styleguide.path.source() }, deps(styleguide.task.js()))
       .on('change', onChange)
   }
 
   styleguide.watch.less = () => {
-    gulp.watch(path.join(styleguide.path.source(), '**/*.less'), deps(styleguide.task.less()))
+    gulp.watch('**/*.less', { cwd: styleguide.path.source() }, deps(styleguide.task.less()))
       .on('change', onChange)
   }
 }

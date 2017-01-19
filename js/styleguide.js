@@ -45,18 +45,14 @@ let defaults = {
 }
 
 module.exports = function Styleguide (gulp, configOverrides = { }) {
-  // Merge settings to allow gulpfile.js to override root and source.
+  // Merge settings to allow gulpfile.js to override root.
   const config = _.merge({ }, defaults, configOverrides)
 
   // Make sure that the root is absolute.
   config.root = path.resolve(process.cwd(), config.root)
 
-  if (!config.source) {
-    config.source = path.join(config.root, 'styleguide')
-  }
-
-  // Merge config from source if available.
-  const configFile = path.join(config.source, '_config.json')
+  // Merge project config if available.
+  const configFile = path.join(config.root, 'styleguide/_config.json')
 
   // Default to failing when an error occurs.
   this.failOnErrors = true
@@ -101,8 +97,7 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   // Expose common paths.
   this.path = {
     build: () => config.build,
-    root: () => config.root,
-    source: () => config.source
+    root: () => config.root
   }
 
   // Variables in config to be used in example JSON files.

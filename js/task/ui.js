@@ -27,7 +27,7 @@ module.exports = (styleguide, gulp) => {
     // Copy all files related to producing example HTML.
     copy: done => {
       // Automatically create all files related to styled templates.
-      const configPath = path.join(styleguide.path.source(), '_config.json')
+      const configPath = path.join(styleguide.path.root(), 'styleguide/_config.json')
       const styledTemplates = { }
 
       if (fs.existsSync(configPath)) {

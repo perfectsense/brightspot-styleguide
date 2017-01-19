@@ -256,11 +256,11 @@ module.exports = (styleguide, gulp) => {
             if (!group) {
               group = groupByName[groupName] = {
                 name: groupName,
-                children: [ ]
+                examples: [ ]
               }
             }
 
-            group.children.push({
+            group.examples.push({
               name: label(path.basename(match, '.html')),
               url: '/' + gutil.replaceExtension(match, '.html')
             })
@@ -303,7 +303,7 @@ module.exports = (styleguide, gulp) => {
 
     // Convert LESS files into CSS to be used by the styleguide UI itself.
     less: () => {
-      return gulp.src(path.join(__dirname, '..', 'styleguide.less'))
+      return gulp.src(path.join(__dirname, 'index.less'))
         .pipe(less())
         .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     }

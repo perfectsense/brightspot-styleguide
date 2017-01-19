@@ -16,11 +16,12 @@ const resolver = require('../resolver')
 module.exports = (styleguide, gulp) => {
   styleguide.task.ui = () => 'styleguide:ui'
 
+  function getProjectName () {
+    return JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), 'package.json'), 'utf8')).name
+  }
+
   function getProjectRootPath () {
-    return path.join(
-      styleguide.path.build(),
-      'node_modules',
-      JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), 'package.json'), 'utf8')).name)
+    return path.join(styleguide.path.build(), 'node_modules', getProjectName())
   }
 
   styleguide.ui = {
@@ -286,7 +287,7 @@ module.exports = (styleguide, gulp) => {
           // Create a project pointer for BE.
           fs.writeFileSync(
             path.join(styleguide.path.build(), '_project'),
-            path.relative(styleguide.path.build(), projectRootPath))
+            getProjectName())
 
           // Remove all unnecessary files.
           const packageDir = path.join(styleguide.path.build(), 'node_modules/*')

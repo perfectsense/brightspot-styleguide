@@ -1,3 +1,4 @@
+const del = require('del')
 const filter = require('gulp-filter')
 const fs = require('fs-extra')
 const glob = require('glob')
@@ -283,7 +284,21 @@ module.exports = (styleguide, gulp) => {
             groups: groups
           }))
 
-          done()
+          // Copy the project config to root for BE.
+          gulp.src(path.join(projectRootPath, 'styleguide/_config.json'))
+            .pipe(gulp.dest(styleguide.path.build()))
+            .on('end', () => {
+              // Remove all unnecessary files.
+              const packageDir = path.join(styleguide.path.build(), 'node_modules/*')
+
+              del.sync([
+                path.join(packageDir, 'package.json'),
+                path.join(packageDir, 'styleguide/_config.json'),
+                path.join(packageDir, '**/_theme.json')
+              ])
+
+              done()
+            })
         })
     },
 

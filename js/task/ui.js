@@ -283,21 +283,19 @@ module.exports = (styleguide, gulp) => {
             groups: groups
           }))
 
-          // Copy the project config to root for BE.
-          gulp.src(path.join(projectRootPath, 'styleguide/_config.json'))
-            .pipe(gulp.dest(styleguide.path.build()))
-            .on('end', () => {
-              // Remove all unnecessary files.
-              const packageDir = path.join(styleguide.path.build(), 'node_modules/*')
+          // Create a project pointer for BE.
+          fs.writeFileSync(
+            path.join(styleguide.path.build(), '_project'),
+            path.relative(styleguide.path.build(), projectRootPath))
 
-              del.sync([
-                path.join(packageDir, 'package.json'),
-                path.join(packageDir, 'styleguide/_config.json'),
-                path.join(packageDir, '**/_theme.json')
-              ])
+          // Remove all unnecessary files.
+          const packageDir = path.join(styleguide.path.build(), 'node_modules/*')
 
-              done()
-            })
+          del.sync([
+            path.join(packageDir, '**/_theme.json')
+          ])
+
+          done()
         })
     },
 

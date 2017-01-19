@@ -3,6 +3,7 @@ package com.psddev.styleguide.codegen;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,7 +40,6 @@ class JsonDirectory {
     public static final String PACKAGE_JSON_FILE_NAME = "package.json";
     public static final String WRAPPER_JSON_FILE_NAME = "_wrapper.json";
     public static final String BOWER_COMPONENTS_DIRECTORY_NAME = "bower_components";
-    private static final String NODE_MODULES_DIRECTORY_NAME = "node_modules";
 
     private ViewClassGeneratorContext context;
 
@@ -508,7 +508,23 @@ class JsonDirectory {
         excludedPaths.add(CONFIG_FILE_NAME);
         excludedPaths.add(PACKAGE_JSON_FILE_NAME);
         excludedPaths.add(BOWER_COMPONENTS_DIRECTORY_NAME);
-        excludedPaths.add(NODE_MODULES_DIRECTORY_NAME);
+
+        String projectPath;
+        Path pointerPath = getPath().resolve("_project");
+
+        if (Files.exists(pointerPath)) {
+            byte[] pointerBytes;
+
+            try {
+                projectPath = "/" + getPath().resolve(new String(Files.readAllBytes(pointerPath), StandardCharsets.UTF_8).trim()) + "/";
+
+            } catch (IOException error) {
+                throw new IllegalStateException(error);
+            }
+
+        } else {
+            projectPath = null;
+        }
 
         // get each json file in this directory
         return FileUtils.listFiles(getPath().toFile(), new String[] { "json" }, true).stream()
@@ -518,6 +534,14 @@ class JsonDirectory {
 
                 // remove excluded paths
                 .filter(path -> isPathExcluded(getPath().relativize(path), excludedPaths))
+
+                // Remove node_modules.
+                .filter(path -> {
+                    String pathString = path.toString();
+                    return pathString.contains("/node_modules/")
+                            && (projectPath == null
+                            || !pathString.contains(projectPath));
+                })
 
                 // add each file to the set
                 .collect(Collectors.toSet());

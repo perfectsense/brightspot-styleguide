@@ -203,9 +203,18 @@ module.exports = (styleguide, gulp) => {
               if (matchName !== 'package.json' && matchName.slice(0, 1) !== '_') {
                 const matchPath = path.join(fileDir, path.relative(source, match))
 
+                let matchContents
+                try {
+                  matchContents = Buffer.from(example(styleguide, match))
+                } catch (err) {
+                  matchContents = null
+                  err.message += ` at [${source}]!`
+                  styleguide.handleError(err)
+                }
+
                 this.push(new gutil.File({
                   base: styleguide.path.build(),
-                  contents: Buffer.from(example(styleguide, match)),
+                  contents: matchContents,
                   path: gutil.replaceExtension(matchPath, '.html')
                 }))
               }
@@ -213,7 +222,14 @@ module.exports = (styleguide, gulp) => {
           }
         } else if (fileName !== 'package.json' && fileName.slice(0, 1) !== '_') {
           file.base = styleguide.path.build()
-          file.contents = Buffer.from(example(styleguide, filePath))
+
+          try {
+            file.contents = Buffer.from(example(styleguide, filePath))
+          } catch (err) {
+            err.message += ` at [${filePath}]!`
+            styleguide.handleError(err)
+          }
+
           file.path = gutil.replaceExtension(filePath, '.html')
           this.push(file)
         }

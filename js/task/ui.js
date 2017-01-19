@@ -167,9 +167,6 @@ module.exports = (styleguide, gulp) => {
                   })
                 }
 
-                // Generate a report of what's been done.
-                fs.writeFileSync(path.join(themeDir, '_theme-report.json'), JSON.stringify(report, null, 4))
-
                 // Throw any errors that were detected.
                 if (report.errors.length > 0) {
                   throw new Error(report.errors.map(error => `\n${error.message}\n`))

@@ -538,9 +538,9 @@ class JsonDirectory {
                 // Remove node_modules.
                 .filter(path -> {
                     String pathString = path.toString();
-                    return pathString.contains("/node_modules/")
-                            && (projectPath == null
-                            || !pathString.contains(projectPath));
+                    return !pathString.contains("/node_modules/")
+                            || (projectPath != null
+                            && pathString.contains(projectPath));
                 })
 
                 // add each file to the set

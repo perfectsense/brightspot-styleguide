@@ -125,12 +125,12 @@ module.exports = (styleguide, gulp) => {
             .on('end', () => {
               glob.sync(path.join(projectRootPath, 'styleguide/**/_theme.json'), { absolute: true }).forEach(themeFile => {
                 const theme = JSON.parse(fs.readFileSync(themeFile, 'utf8'))
+                const rawSource = theme.source
 
                 // Make sure source exists and is resolved.
-                let source = theme.source
-                if (!source) return
-                source = path.join(styleguide.path.build(), source)
+                if (!rawSource) return
 
+                const source = path.join(styleguide.path.build(), rawSource)
                 const themeDir = path.dirname(themeFile)
                 const report = {
                   overrides: [ ],
@@ -175,6 +175,40 @@ module.exports = (styleguide, gulp) => {
                 if (report.errors.length > 0) {
                   throw new Error(report.errors.map(error => `\n${error.message}\n`))
                 }
+
+                // Copy all example JSON files into the theme directory.
+                glob.sync('**/*.json', { cwd: source }).forEach(examplePath => {
+                  if (path.basename(examplePath) !== 'package.json') {
+                    const exampleJson = JSON.parse(fs.readFileSync(path.join(source, examplePath), 'utf8'))
+                    exampleJson._hidden = theme.hidden
+
+                    traverse(exampleJson).forEach(function (value) {
+                      if (!value) {
+                        return
+                      }
+
+                      if (this.key === '_template' ||
+                        this.key === '_wrapper' ||
+                        this.key === '_include' ||
+                        this.key === '_dataUrl') {
+                        if (!value.startsWith('/')) {
+                          value = path.resolve(path.dirname(path.resolve(rawSource, examplePath)), value)
+                        }
+
+                        if (value.startsWith('/styleguide/')) {
+                          value = path.join(rawSource, path.relative('/styleguide/', value))
+                        }
+
+                        this.update(value)
+                      }
+
+                      const themeExamplePath = path.join(themeDir, examplePath)
+
+                      fs.mkdirsSync(path.dirname(themeExamplePath))
+                      fs.writeFileSync(themeExamplePath, JSON.stringify(exampleJson))
+                    })
+                  }
+                })
               })
 
               // Override styled templates.
@@ -202,39 +236,15 @@ module.exports = (styleguide, gulp) => {
         const filePath = file.path
         const fileName = path.basename(filePath)
 
-        // Theming something else?
-        if (fileName === '_theme.json') {
-          const theme = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-          let source = theme.source
+        if (fileName !== 'package.json' && fileName.slice(0, 1) !== '_') {
+          const html = example(styleguide, filePath)
 
-          if (source && !theme.hidden) {
-            source = source.slice(0, 1) === '/'
-              ? path.join(styleguide.path.build(), source)
-              : path.resolve(filePath, source)
-
-            const fileDir = path.dirname(filePath)
-
-            // Use the example JSON files in the source and put the produced
-            // HTML into the theme directory.
-            glob.sync(path.join(source, '**/*.json'), { absolute: true }).forEach(match => {
-              const matchName = path.basename(match)
-
-              if (matchName !== 'package.json' && matchName.slice(0, 1) !== '_') {
-                const matchPath = path.join(fileDir, path.relative(source, match))
-
-                this.push(new gutil.File({
-                  base: styleguide.path.build(),
-                  contents: new Buffer(example(styleguide, match)),
-                  path: gutil.replaceExtension(matchPath, '.html')
-                }))
-              }
-            })
+          if (html) {
+            file.base = styleguide.path.build()
+            file.contents = new Buffer(html)
+            file.path = gutil.replaceExtension(filePath, '.html')
+            this.push(file)
           }
-        } else if (fileName !== 'package.json' && fileName.slice(0, 1) !== '_') {
-          file.base = styleguide.path.build()
-          file.contents = new Buffer(example(styleguide, filePath))
-          file.path = gutil.replaceExtension(filePath, '.html')
-          this.push(file)
         }
 
         callback()

@@ -13,6 +13,10 @@ module.exports = function (styleguide, filePath) {
   const buildPath = styleguide.path.build()
   let data = resolver.data(buildPath, filePath)
 
+  if (data._hidden) {
+    return
+  }
+
   // Validate the JSON data. Exceptions for the special keys we have that are maps, so they don't need _template or _view
   traverse(data).forEach(function (value) {
     if (_.isPlainObject(value) &&

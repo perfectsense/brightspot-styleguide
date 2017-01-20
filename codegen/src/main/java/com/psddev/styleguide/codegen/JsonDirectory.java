@@ -516,7 +516,7 @@ class JsonDirectory {
             byte[] pointerBytes;
 
             try {
-                projectPath = "/node_modules/" + getPath().resolve(new String(Files.readAllBytes(pointerPath), StandardCharsets.UTF_8).trim()) + "/";
+                projectPath = "/node_modules/" + new String(Files.readAllBytes(pointerPath), StandardCharsets.UTF_8).trim() + "/";
 
             } catch (IOException error) {
                 throw new IllegalStateException(error);

@@ -198,7 +198,7 @@ class JsonDirectory {
              * resolving this absolute path.
              */
             Path refPath;
-            if (packageJsonRelative) {
+            if (packageJsonRelative && !filePath.toString().startsWith("/node_modules/")) {
                 refPath = getNearestPackageJsonParentPath(ref);
             } else {
                 refPath = getPath();

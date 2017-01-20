@@ -286,7 +286,7 @@ module.exports = (styleguide, gulp) => {
 
           // Create a project pointer for BE.
           fs.writeFileSync(
-            path.join(styleguide.path.build(), '_project'),
+            path.join(styleguide.path.build(), '_name'),
             getProjectName())
 
           // Remove all unnecessary files.

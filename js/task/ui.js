@@ -68,11 +68,12 @@ module.exports = (styleguide, gulp) => {
                       if (this.key === '_template' &&
                         resolver.path(rootPath, examplePath, value) === resolver.path(rootPath, examplePath, styledTemplate)) {
                         this.update(template.template)
-                      } else if (this.key === '_template' ||
+                      } else if ((this.key === '_template' ||
                         this.key === '_wrapper' ||
                         this.key === '_include' ||
-                        this.key === '_dataUrl') {
-                        this.update(path.join(path.dirname(example), value))
+                        this.key === '_dataUrl') &&
+                        !value.startsWith('/')) {
+                        this.update(path.resolve(path.dirname(example), value))
                       }
                     })
 

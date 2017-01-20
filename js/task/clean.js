@@ -5,7 +5,9 @@ module.exports = (styleguide, gulp) => {
 
   styleguide.clean = {
     all: () => {
-      return del.sync([ `${styleguide.path.build()}/**/*` ])
+      if (styleguide.failOnErrors) {
+        del.sync([ `${styleguide.path.build()}/**/*` ])
+      }
     }
   }
 

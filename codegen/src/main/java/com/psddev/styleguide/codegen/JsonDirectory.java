@@ -510,13 +510,13 @@ class JsonDirectory {
         excludedPaths.add(BOWER_COMPONENTS_DIRECTORY_NAME);
 
         String projectPath;
-        Path pointerPath = getPath().resolve("_project");
+        Path namePath = getPath().resolve("_name");
 
-        if (Files.exists(pointerPath)) {
+        if (Files.exists(namePath)) {
             byte[] pointerBytes;
 
             try {
-                projectPath = "/node_modules/" + new String(Files.readAllBytes(pointerPath), StandardCharsets.UTF_8).trim() + "/";
+                projectPath = "/node_modules/" + new String(Files.readAllBytes(namePath), StandardCharsets.UTF_8).trim() + "/";
 
             } catch (IOException error) {
                 throw new IllegalStateException(error);

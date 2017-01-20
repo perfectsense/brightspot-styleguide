@@ -225,17 +225,15 @@ module.exports = (styleguide, gulp) => {
                 let matchContents
                 try {
                   matchContents = Buffer.from(example(styleguide, match))
+                  this.push(new gutil.File({
+                    base: styleguide.path.build(),
+                    contents: matchContents,
+                    path: gutil.replaceExtension(matchPath, '.html')
+                  }))
                 } catch (err) {
-                  matchContents = null
                   err.message += ` at [${source}]!`
                   styleguide.handleError(err)
                 }
-
-                this.push(new gutil.File({
-                  base: styleguide.path.build(),
-                  contents: matchContents,
-                  path: gutil.replaceExtension(matchPath, '.html')
-                }))
               }
             })
           }
@@ -244,13 +242,12 @@ module.exports = (styleguide, gulp) => {
 
           try {
             file.contents = Buffer.from(example(styleguide, filePath))
+            file.path = gutil.replaceExtension(filePath, '.html')
+            this.push(file)
           } catch (err) {
             err.message += ` at [${filePath}]!`
             styleguide.handleError(err)
           }
-
-          file.path = gutil.replaceExtension(filePath, '.html')
-          this.push(file)
         }
 
         callback()

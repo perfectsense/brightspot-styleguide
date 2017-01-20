@@ -17,6 +17,10 @@ module.exports = function (styleguide, filePath) {
     styleguide.handleError(Error(`Example data contains zero keys at [${filePath}]!`))
   }
 
+  if (data._hidden) {
+    return
+  }
+
   // Validate the JSON data. Exceptions for the special keys we have that are maps, so they don't need _template or _view
   traverse(data).forEach(function (value) {
     if (_.isPlainObject(value) &&

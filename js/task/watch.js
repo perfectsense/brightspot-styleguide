@@ -12,7 +12,7 @@ module.exports = (styleguide, gulp) => {
   }
 
   styleguide.watch.html = () => {
-    gulp.watch('**/*.{hbs,json}', { cwd: styleguide.path.source() }, [ styleguide.task.ui() ])
+    gulp.watch('styleguide/**/*.{hbs,json}', { cwd: styleguide.path.root() }, [ styleguide.task.ui() ])
       .on('change', onChange)
   }
 
@@ -20,12 +20,12 @@ module.exports = (styleguide, gulp) => {
   const deps = name => styleguide.buildDependencies.includes(name) ? [ name ] : [ ]
 
   styleguide.watch.js = () => {
-    gulp.watch('**/*.js', { cwd: styleguide.path.source() }, deps(styleguide.task.js()))
+    gulp.watch('styleguide/**/*.js', { cwd: styleguide.path.root() }, deps(styleguide.task.js()))
       .on('change', onChange)
   }
 
   styleguide.watch.less = () => {
-    gulp.watch('**/*.less', { cwd: styleguide.path.source() }, deps(styleguide.task.less()))
+    gulp.watch('styleguide/**/*.less', { cwd: styleguide.path.root() }, deps(styleguide.task.less()))
       .on('change', onChange)
   }
 }

@@ -8,7 +8,7 @@ module.exports = (styleguide, gulp) => {
 
   styleguide.lint = {
     js: () => {
-      return gulp.src(path.join(styleguide.path.source(), 'All.js'))
+      return gulp.src(path.join(styleguide.path.root(), 'styleguide/All.js'))
         .pipe(standard())
         .pipe(standard.reporter('default', {
           breakOnError: true,
@@ -17,13 +17,13 @@ module.exports = (styleguide, gulp) => {
     },
 
     json: () => {
-      return gulp.src(path.join(styleguide.path.source(), '**/*.json'))
+      return gulp.src(path.join(styleguide.path.root(), 'styleguide/**/*.json'))
         .pipe(jsonlint())
         .pipe(jsonlint.reporter())
     },
 
     less: () => {
-      return gulp.src(path.join(styleguide.path.source(), 'All.less'))
+      return gulp.src(path.join(styleguide.path.root(), 'styleguide/All.less'))
         .pipe(lesshint())
         .pipe(lesshint.reporter(''))
     }

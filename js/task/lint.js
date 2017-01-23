@@ -1,5 +1,6 @@
 const jsonlint = require('gulp-jsonlint')
 const lesshint = require('gulp-lesshint')
+const mergeStream = require('merge-stream')
 const path = require('path')
 const standard = require('gulp-standard')
 
@@ -8,7 +9,7 @@ module.exports = (styleguide, gulp) => {
 
   styleguide.lint = {
     js: () => {
-      return gulp.src(path.join(styleguide.path.root(), 'styleguide/All.js'))
+      return gulp.src(path.join(styleguide.path.root(), 'styleguide/**/*.js'))
         .pipe(standard())
         .pipe(standard.reporter('default', {
           breakOnError: true,
@@ -19,7 +20,7 @@ module.exports = (styleguide, gulp) => {
     json: () => {
       return gulp.src(path.join(styleguide.path.root(), 'styleguide/**/*.json'))
         .pipe(jsonlint())
-        .pipe(jsonlint.reporter())
+        .pipe(jsonlint.failAfterError())
     },
 
     less: () => {
@@ -29,10 +30,10 @@ module.exports = (styleguide, gulp) => {
     }
   }
 
-  gulp.task(styleguide.task.lint(), (done) => {
-    styleguide.lint.js()
-    styleguide.lint.json()
-    styleguide.lint.less()
-    done()
+  gulp.task(styleguide.task.lint(), () => {
+    return mergeStream(
+      styleguide.lint.js(),
+      styleguide.lint.json(),
+      styleguide.lint.less())
   })
 }

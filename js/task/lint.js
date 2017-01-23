@@ -9,7 +9,7 @@ module.exports = (styleguide, gulp) => {
 
   styleguide.lint = {
     js: () => {
-      return gulp.src(path.join(styleguide.path.root(), 'styleguide/All.js'))
+      return gulp.src(path.join(styleguide.path.root(), 'styleguide/**/*.js'))
         .pipe(standard())
         .pipe(standard.reporter('default', {
           breakOnError: true,

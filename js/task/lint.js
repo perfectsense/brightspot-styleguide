@@ -1,5 +1,6 @@
 const jsonlint = require('gulp-jsonlint')
 const lesshint = require('gulp-lesshint')
+const mergeStream = require('merge-stream')
 const path = require('path')
 const standard = require('gulp-standard')
 
@@ -29,10 +30,10 @@ module.exports = (styleguide, gulp) => {
     }
   }
 
-  gulp.task(styleguide.task.lint(), (done) => {
-    styleguide.lint.js()
-    styleguide.lint.json()
-    styleguide.lint.less()
-    done()
+  gulp.task(styleguide.task.lint(), () => {
+    return mergeStream(
+      styleguide.lint.js(),
+      styleguide.lint.json(),
+      styleguide.lint.less())
   })
 }

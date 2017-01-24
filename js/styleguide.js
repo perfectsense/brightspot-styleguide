@@ -54,9 +54,6 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   // Merge project config if available.
   const configFile = path.join(config.root, 'styleguide/_config.json')
 
-  // Throws an exception when errors occur (default)
-  this.failOnErrors = true
-
   if (fs.existsSync(configFile)) {
     _.merge(config, JSON.parse(fs.readFileSync(configFile, 'utf8')))
   }
@@ -108,14 +105,6 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
     return require('./server')(config)
   }
 
-  // Determine how the error provided should be handled.
-  this.handleError = (err) => {
-    logger.error(err)
-    if (this.failOnErrors) {
-      process.exit(1)
-    }
-  }
-
   // Expose common tasks.
   this.task = { }
 
@@ -133,9 +122,6 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   ])
 
   gulp.task('styleguide', [ 'default' ], () => {
-    // Catch errors and log message so the styleguide keeps running
-    this.failOnErrors = false
-
     this.serve()
     this.watch()
   })

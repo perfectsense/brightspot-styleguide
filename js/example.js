@@ -14,7 +14,7 @@ module.exports = function (styleguide, filePath) {
   let data = resolver.data(buildPath, filePath)
 
   if (Object.keys(data).length === 0) {
-    styleguide.handleError(Error(`Example data contains zero keys at [${filePath}]!`))
+    throw new Error(`Example data contains zero keys`)
   }
 
   if (data._hidden) {

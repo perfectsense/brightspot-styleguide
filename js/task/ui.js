@@ -216,7 +216,12 @@ module.exports = (styleguide, gulp) => {
                 const styledTemplatePath = path.join(styleguide.path.build(), styledTemplate)
 
                 fs.mkdirsSync(path.dirname(styledTemplatePath))
-                fs.writeFileSync(styledTemplatePath, styledTemplates[styledTemplate])
+                fs.writeFileSync(styledTemplatePath,
+                  '{{#styled}}' +
+                  styledTemplates[styledTemplate] +
+                  '{{else}}' +
+                  fs.readFileSync(styledTemplatePath, 'utf8') +
+                  '{{/styled}}')
               })
 
               done()

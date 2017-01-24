@@ -24,7 +24,7 @@ module.exports = (styleguide, gulp) => {
     },
 
     less: () => {
-      return gulp.src(path.join(styleguide.path.root(), 'styleguide/All.less'))
+      return gulp.src(path.join(styleguide.path.root(), 'styleguide/**/*.less'))
         .pipe(lesshint())
         .pipe(lesshint.reporter(''))
     }

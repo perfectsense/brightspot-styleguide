@@ -1,7 +1,11 @@
 const logger = require('../logger')
 
 module.exports = (styleguide, gulp) => {
+  this.watching = false
+
   styleguide.watch = () => {
+    this.watching = true
+
     styleguide.watch.html()
     styleguide.watch.js()
     styleguide.watch.less()

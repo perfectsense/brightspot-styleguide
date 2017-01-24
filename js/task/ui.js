@@ -92,13 +92,13 @@ module.exports = (styleguide, gulp) => {
                   const internalName = template.internalName || template.template
                   const templatePath = resolver.path(rootPath, configPath, template.template)
 
-                  styledTemplates[styledTemplate] += `{{#if _template.[${internalName}]}}${fs.readFileSync(templatePath, 'utf8')}{{else}}`
+                  styledTemplates[styledTemplate] += `{{#styledTemplate '${internalName}'}}${fs.readFileSync(templatePath, 'utf8')}{{else}}`
                 }
 
                 styledTemplates[styledTemplate] += fs.readFileSync(path.join(styleguide.path.root(), templates[0].template), 'utf8')
 
                 for (let i = templates.length - 1; i > 0; --i) {
-                  styledTemplates[styledTemplate] += '{{/if}}'
+                  styledTemplates[styledTemplate] += '{{/styledTemplate}}'
                 }
               })
             }

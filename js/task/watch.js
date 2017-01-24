@@ -11,6 +11,10 @@ module.exports = (styleguide, gulp) => {
     styleguide.watch.less()
   }
 
+  styleguide.isWatching = () => {
+    return this.watching
+  }
+
   function onChange (file) {
     logger.info(`Changed: ${file.path}`)
   }

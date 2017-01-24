@@ -8,6 +8,7 @@ const handlebars = require('handlebars')
 const path = require('path')
 const through = require('through2')
 const traverse = require('traverse')
+const logger = require('../logger')
 
 const example = require('../example')
 const label = require('../label')
@@ -247,8 +248,10 @@ module.exports = (styleguide, gulp) => {
               this.push(file)
             }
           } catch (err) {
-            err.message += ` at [${filePath}]!`
-            styleguide.handleError(err)
+            logger.error(`${err} at [${filePath}]!`)
+            if (!styleguide.isWatching()) {
+              process.exit(1)
+            }
           }
         }
 

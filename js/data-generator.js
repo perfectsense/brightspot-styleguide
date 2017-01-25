@@ -1,6 +1,6 @@
 /* eslint no-eval: 0 */
-const Chance = require('chance')
 const _ = require('lodash')
+const Chance = require('chance')
 const path = require('path')
 const traverse = require('traverse')
 

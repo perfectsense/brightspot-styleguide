@@ -1,9 +1,8 @@
-const fs = require('fs')
 const _ = require('lodash')
 const commandLineArguments = require('minimist')(process.argv.slice(2))
+const fs = require('fs')
 const path = require('path')
 const xml2js = require('xml2js')
-const logger = require('./logger')
 
 let defaults = {
   host: 'localhost',

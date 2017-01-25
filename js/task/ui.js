@@ -2,16 +2,16 @@ const del = require('del')
 const filter = require('gulp-filter')
 const fs = require('fs-extra')
 const glob = require('glob')
-const less = require('gulp-less')
 const gutil = require('gulp-util')
 const handlebars = require('handlebars')
+const less = require('gulp-less')
 const path = require('path')
 const through = require('through2')
 const traverse = require('traverse')
-const logger = require('../logger')
 
 const example = require('../example')
 const label = require('../label')
+const logger = require('../logger')
 const resolver = require('../resolver')
 
 module.exports = (styleguide, gulp) => {

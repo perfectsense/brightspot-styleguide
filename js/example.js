@@ -1,8 +1,8 @@
+const _ = require('lodash')
+const escapeHtml = require('escape-html-in-json')
 const findParentDir = require('find-parent-dir')
 const fs = require('fs')
 const handlebars = require('handlebars')
-const _ = require('lodash')
-const escapeHtml = require('escape-html-in-json')
 const path = require('path')
 const traverse = require('traverse')
 

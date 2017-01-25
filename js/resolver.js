@@ -1,6 +1,6 @@
+const _ = require('lodash')
 const findParentDir = require('find-parent-dir')
 const fs = require('fs')
-const _ = require('lodash')
 const path = require('path')
 const traverse = require('traverse')
 

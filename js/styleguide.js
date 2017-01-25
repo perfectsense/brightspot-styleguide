@@ -109,6 +109,7 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
 
   const styleguide = this
   const gulpsrc = gulp.src
+  const notify = require('gulp-notify')
 
   // Overrides gulp.src to patch plumber into all gulp src'ed streams for
   // universal task error management for streams
@@ -116,7 +117,7 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
     return gulpsrc.apply(gulp, arguments)
       .pipe(plumber({
         errorHandler: function (err) {
-          logger.error(`Error: ${err.message}`)
+          logger.error(err)
 
           // When watching, fail gracefully
           if (styleguide.isWatching()) {

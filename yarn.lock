@@ -1365,7 +1365,7 @@ gulp-load-plugins@1.4.0:
     micromatch "^2.3.8"
     resolve "^1.1.7"
 
-gulp-notify@2.2.0:
+gulp-notify@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/gulp-notify/-/gulp-notify-2.2.0.tgz#046c8285c292e97eed4e15a009c26cbbe5cef135"
   dependencies:

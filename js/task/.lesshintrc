@@ -128,7 +128,6 @@
         "severity": "error"
     },
     "zeroUnit": {
-        "style": "keep_unit",
-        "severity": "error"
+        "enabled": false
     }
 }

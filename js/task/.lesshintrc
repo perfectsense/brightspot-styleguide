@@ -1,0 +1,122 @@
+{
+    "attributeQuotes": {
+        "enabled": true,
+        "severity": "error"
+    },
+    "borderZero": {
+        "style": "zero",
+        "severity": "error"
+    },
+    "comment": {
+        "enabled": false
+    },
+    "decimalZero": {
+        "leading": true,
+        "severity": "error"
+    },
+    "depthLevel": {
+        "depth": 3,
+        "severity": "error"
+    },
+    "duplicateProperty": {
+        "severity": "error"
+    },
+    "emptyRule": {
+        "severity": "error"
+    },
+    "finalNewline": {
+        "severity": "error"
+    },
+    "hexLength": {
+        "enabled": false
+    },
+    "hexNotation": {
+        "style": "lowercase",
+        "severity": "error"
+    },
+    "hexValidation": {
+        "severity": "error"
+    },
+    "idSelector": {
+        "severity": "error"
+    },
+    "importantRule": {
+        "enabled": false
+    },
+    "importPath": {
+        "severity": "error"
+    },
+    "maxCharPerLine": {
+        "limit": 100,
+        "severity": "error"
+    },
+    "newlineAfterBlock": {
+        "severity": "error"
+    },
+    "propertyOrdering": {
+        "enabled": false
+    },
+    "qualifyingElement": {
+        "enabled": false 
+    },
+    "selectorNaming": {
+        "disallowUppercase": false,
+        "disallowUnderscore": true,
+        "disallowDash": false,
+        "severity": "error"
+    },
+    "singleLinePerProperty": {
+        "allowSingleLineRules": false,
+        "severity": "error"
+    },
+    "singleLinePerSelector": {
+        "style": "18f",
+        "severity": "error"
+    },
+    "spaceAfterPropertyColon": {
+        "style": "one_space",
+        "severity": "error"
+    },
+    "spaceAfterPropertyName": {
+        "style": "no_space",
+        "severity": "error"
+    },
+    "spaceAfterPropertyValue": {
+        "style": "no_space",
+        "severity": "error"
+    },
+    "spaceAroundComma": {
+        "allowNewLine": "false",
+        "style": "after",
+        "severity": "error"
+    },
+    "spaceAroundOperator": {
+        "style": "both",
+        "severity": "error"
+    },
+    "spaceBeforeBrace": {
+        "style": "one_space",
+        "severity": "error"
+    },
+    "spaceBetweenParens": {
+        "style": "no_space",
+        "severity": "error"
+    },
+    "stringQuotes": {
+        "style": "single",
+        "severity": "error"
+    },
+    "trailingSemicolon": {
+        "severity": "error"
+    },
+    "trailingWhitespace": {
+        "severity": "error"
+    },
+    "urlQuotes": {
+        "severity": "error"
+    },
+    "zeroUnit": {
+        "style": "keep_unit",
+        "severity": "error"
+    }
+}

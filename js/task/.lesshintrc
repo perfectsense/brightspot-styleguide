@@ -41,7 +41,8 @@
         "severity": "error"
     },
     "importantRule": {
-        "enabled": false
+        "enabled": true,
+        "severity": "error"
     },
     "importPath": {
         "severity": "error"

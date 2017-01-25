@@ -4,6 +4,7 @@ const commandLineArguments = require('minimist')(process.argv.slice(2))
 const path = require('path')
 const xml2js = require('xml2js')
 const logger = require('./logger')
+const plumber = require('gulp-plumber')
 
 let defaults = {
   host: 'localhost',
@@ -114,6 +115,17 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
     if (this.failOnErrors) {
       process.exit(1)
     }
+  }
+
+  // TODO: change the location an name of this method to be more specific to `build` event?
+  this.errorHandler = () => {
+    return plumber({
+      errorHandler: function (err) {
+        logger.error(`Error: ${err.message}`)
+        // TODO: we could also fail the build based on a watching flag (pending a merge)
+        this.emit('end')
+      }
+    })
   }
 
   // Expose common tasks.

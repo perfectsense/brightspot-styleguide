@@ -2,7 +2,10 @@ const _ = require('lodash')
 const commandLineArguments = require('minimist')(process.argv.slice(2))
 const fs = require('fs')
 const path = require('path')
+const plumber = require('gulp-plumber')
 const xml2js = require('xml2js')
+
+const logger = require('./logger.js')
 
 let defaults = {
   host: 'localhost',
@@ -102,6 +105,27 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   // Serve the generated UI via a local web server.
   this.serve = () => {
     return require('./server')(config)
+  }
+
+  const styleguide = this
+  const gulpsrc = gulp.src
+
+  // Overrides gulp.src to patch plumber into all gulp src'ed streams for
+  // universal task error management for streams
+  gulp.src = function () {
+    return gulpsrc.apply(gulp, arguments)
+      .pipe(plumber({
+        errorHandler: function (err) {
+          logger.error(`Error: ${err.message}`)
+
+          // When watching, fail gracefully
+          if (styleguide.isWatching()) {
+            this.emit('end')
+          } else {
+            process.exit(1)
+          }
+        }
+      }))
   }
 
   // Expose common tasks.

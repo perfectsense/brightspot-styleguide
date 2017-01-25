@@ -48,7 +48,7 @@
         "severity": "error"
     },
     "maxCharPerLine": {
-        "limit": 100,
+        "limit": 80,
         "severity": "error"
     },
     "newlineAfterBlock": {

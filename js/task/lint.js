@@ -27,7 +27,7 @@ module.exports = (styleguide, gulp) => {
       return gulp.src(path.join(styleguide.path.root(), 'styleguide/**/*.less'))
         .pipe(lesshint({
           configPath: path.join(
-            __dirname, 
+            __dirname,
             '.lesshintrc'
           )
         }))

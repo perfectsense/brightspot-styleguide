@@ -56,6 +56,17 @@
     "propertyOrdering": {
         "enabled": false
     },
+    "propertyUnits": {
+        "invalid": [
+            "cm", 
+            "ex", 
+            "in", 
+            "mm", 
+            "pc", 
+            "pt"
+        ],
+        "severity": "error"
+    },
     "qualifyingElement": {
         "enabled": false 
     },

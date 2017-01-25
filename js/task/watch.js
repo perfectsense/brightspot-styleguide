@@ -1,20 +1,24 @@
-const path = require('path')
-
 const logger = require('../logger')
 
 module.exports = (styleguide, gulp) => {
+  this.watching = false
+
   styleguide.watch = () => {
+    this.watching = true
+
     styleguide.watch.html()
     styleguide.watch.js()
     styleguide.watch.less()
   }
+
+  styleguide.isWatching = () => this.watching
 
   function onChange (file) {
     logger.info(`Changed: ${file.path}`)
   }
 
   styleguide.watch.html = () => {
-    gulp.watch(path.join(styleguide.path.root(), 'styleguide/**/*.{hbs,json}'), [ styleguide.task.ui() ])
+    gulp.watch('styleguide/**/*.{hbs,json}', { cwd: styleguide.path.root() }, [ styleguide.task.ui() ])
       .on('change', onChange)
   }
 
@@ -22,12 +26,12 @@ module.exports = (styleguide, gulp) => {
   const deps = name => styleguide.buildDependencies.includes(name) ? [ name ] : [ ]
 
   styleguide.watch.js = () => {
-    gulp.watch(path.join(styleguide.path.root(), 'styleguide/**/*.js'), deps(styleguide.task.js()))
+    gulp.watch('styleguide/**/*.js', { cwd: styleguide.path.root() }, deps(styleguide.task.js()))
       .on('change', onChange)
   }
 
   styleguide.watch.less = () => {
-    gulp.watch(path.join(styleguide.path.root(), 'styleguide/**/*.less'), deps(styleguide.task.less()))
+    gulp.watch('styleguide/**/*.less', { cwd: styleguide.path.root() }, deps(styleguide.task.less()))
       .on('change', onChange)
   }
 }

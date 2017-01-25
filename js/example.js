@@ -1,8 +1,8 @@
+const _ = require('lodash')
+const escapeHtml = require('escape-html-in-json')
 const findParentDir = require('find-parent-dir')
 const fs = require('fs')
 const handlebars = require('handlebars')
-const _ = require('lodash')
-const escapeHtml = require('escape-html-in-json')
 const path = require('path')
 const traverse = require('traverse')
 
@@ -12,6 +12,10 @@ const resolver = require('./resolver')
 module.exports = function (styleguide, filePath) {
   const buildPath = styleguide.path.build()
   let data = resolver.data(buildPath, filePath)
+
+  if (Object.keys(data).length === 0) {
+    throw new Error(`Example data contains zero keys`)
+  }
 
   if (data._hidden) {
     return

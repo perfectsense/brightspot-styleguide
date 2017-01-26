@@ -253,7 +253,7 @@ module.exports = (styleguide, gulp) => {
               this.push(file)
             }
           } catch (err) {
-            logger.error(err, `${err} at [${filePath}]!`)
+            logger.error(`${err.message} at [${filePath}]!`)
             if (!styleguide.isWatching()) {
               process.exit(1)
             }

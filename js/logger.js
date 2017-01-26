@@ -1,5 +1,6 @@
 const term = require('terminal-kit').terminal
 const notify = require('gulp-notify')
+const path = require('path')
 
 function log (callback) {
   term.defaultColor('[').cyan('BRIGHTSP').red('O').cyan('T Styleguide').defaultColor('] ')
@@ -33,13 +34,18 @@ module.exports = {
     log(() => term.yellow(`\u{26A0} ${message}\n`))
   },
 
-  error: function (error, customMessage) {
+  error: function (message) {
+    message = `\u{1F4A5} [Error] ${message}`
+
+    notify.logLevel(0)
+
     notify.onError({
       title: `Styleguide Error`,
-      message: `<%= error.message %>`,
-      sound: `Frog`
-    })(error)
+      message: message,
+      sound: `Frog`,
+      icon: path.join(__dirname, `brightspot-logo.png`)
+    })(message)
 
-    log(() => term.red(`\u{1F4A5} [Error] ${(error) ? error.message : customMessage}\n`))
+    log(() => term.red(`${message}\n`))
   }
 }

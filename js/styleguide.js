@@ -116,7 +116,7 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
     return gulpsrc.apply(gulp, arguments)
       .pipe(plumber({
         errorHandler: function (err) {
-          logger.error(err.message)
+          logger.error(err.message, styleguide.isWatching())
 
           // When watching, fail gracefully
           if (styleguide.isWatching()) {

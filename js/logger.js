@@ -34,17 +34,19 @@ module.exports = {
     log(() => term.yellow(`\u{26A0} ${message}\n`))
   },
 
-  error: function (message) {
+  error: function (message, notifications = true) {
     message = `\u{1F4A5} [Error] ${message}`
 
-    notify.logLevel(0)
+    if (notifications) {
+      notify.logLevel(0)
 
-    notify.onError({
-      title: `Styleguide Error`,
-      message: message,
-      sound: `Frog`,
-      icon: path.join(__dirname, `brightspot-logo.png`)
-    })(message)
+      notify.onError({
+        title: `Styleguide Error`,
+        message: message,
+        sound: `Frog`,
+        icon: path.join(__dirname, `brightspot-logo.png`)
+      })(message)
+    }
 
     log(() => term.red(`${message}\n`))
   }

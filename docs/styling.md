@@ -128,8 +128,6 @@ How do I apply a specific style variation when its in the _FullWidth-body_ layou
 Given layout/FullWidth.less:
 
 ```less
-@import '../Promo';
-
 .FullWidth-body {
   > .Promo {
     .Promo--large;
@@ -144,8 +142,6 @@ How do I apply a specific style variation at a specific breakpoint?
 Given layout/TwoColumn.less:
 
 ```less
-@import '../Promo';
-
 @media "only screen and (min-width: 768px)" {
   .TwoColumn-left {
     > .Promo {

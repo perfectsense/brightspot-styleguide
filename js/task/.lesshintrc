@@ -4,6 +4,7 @@
         "severity": "error"
     },
     "borderZero": {
+        "enabled": true,
         "style": "zero",
         "severity": "error"
     },
@@ -11,33 +12,41 @@
         "enabled": false
     },
     "decimalZero": {
+        "enabled": true,
         "leading": true,
         "severity": "error"
     },
     "depthLevel": {
+        "enabled": true,
         "depth": 3,
         "severity": "error"
     },
     "duplicateProperty": {
+        "enabled": true,
         "severity": "error"
     },
     "emptyRule": {
+        "enabled": true,
         "severity": "error"
     },
     "finalNewline": {
+        "enabled": true,
         "severity": "error"
     },
     "hexLength": {
         "enabled": false
     },
     "hexNotation": {
+        "enabled": true,
         "style": "lowercase",
         "severity": "error"
     },
     "hexValidation": {
+        "enabled": true,
         "severity": "error"
     },
     "idSelector": {
+        "enabled": true,
         "severity": "error"
     },
     "importantRule": {
@@ -45,19 +54,23 @@
         "severity": "error"
     },
     "importPath": {
+        "enabled": true,
         "severity": "error"
     },
     "maxCharPerLine": {
+        "enabled": true,
         "limit": 80,
         "severity": "error"
     },
     "newlineAfterBlock": {
+        "enabled": true,
         "severity": "error"
     },
     "propertyOrdering": {
         "enabled": false
     },
     "propertyUnits": {
+        "enabled": true,
         "invalid": [
             "cm", 
             "ex", 
@@ -72,59 +85,73 @@
         "enabled": false 
     },
     "selectorNaming": {
+        "enabled": true,
         "disallowUppercase": false,
         "disallowUnderscore": true,
         "disallowDash": false,
         "severity": "error"
     },
     "singleLinePerProperty": {
+        "enabled": true,
         "allowSingleLineRules": false,
         "severity": "error"
     },
     "singleLinePerSelector": {
+        "enabled": true,
         "style": "18f",
         "severity": "error"
     },
     "spaceAfterPropertyColon": {
+        "enabled": true,
         "style": "one_space",
         "severity": "error"
     },
     "spaceAfterPropertyName": {
+        "enabled": true,
         "style": "no_space",
         "severity": "error"
     },
     "spaceAfterPropertyValue": {
+        "enabled": true,
         "style": "no_space",
         "severity": "error"
     },
     "spaceAroundComma": {
+        "enabled": true,
         "allowNewLine": "false",
         "style": "after",
         "severity": "error"
     },
     "spaceAroundOperator": {
+        "enabled": true,
         "style": "both",
         "severity": "error"
     },
     "spaceBeforeBrace": {
+        "enabled": true,
         "style": "one_space",
         "severity": "error"
     },
     "spaceBetweenParens": {
+        "enabled": true,
         "style": "no_space",
         "severity": "error"
     },
     "stringQuotes": {
+        "enabled": true,
         "style": "single",
         "severity": "error"
     },
     "trailingSemicolon": {
+        "enabled": true,
         "severity": "error"
     },
     "trailingWhitespace": {
+        "enabled": true,
         "severity": "error"
     },
     "urlQuotes": {
+        "enabled": true,
         "severity": "error"
     },
     "zeroUnit": {

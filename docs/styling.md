@@ -53,6 +53,18 @@ And now, `All.less` looks like:
 
 How do I start writing styles for a _Promo_ component?
 
+Given Promo.hbs:
+
+```hbs
+{{#block "Promo"}}
+    <div class="{{blockName}}">
+        {{#blockBody}}
+            {{#element "title"}}<div class="{{elementName}}">{{this}}</div>{{/element}}
+        {{/blockBody}}
+    </div>
+{{/block}}
+```
+
 > Within the same directory as `Promo.hbs`, create a `Promo.less` file.
 
 ```less

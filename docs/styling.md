@@ -2,8 +2,10 @@
 
 Our styles use the [LESS](http://lesscss.org/) CSS pre-processor. We enforce our coding standards via [lesshint](https://github.com/lesshint/lesshint); which is pre-configured in the build process to fail the build when one or more of our conventions aren't followed.
 
+
 > **Important!**
-Be sure that your editor/IDE of choice supports [editorconfig](http://editorconfig.org/) to preserve formatting between developer environments. To see what our formatting standards are, take a look at your project's `.editorconfig` file.
+We rely on [editorconfig](http://editorconfig.org/) to preserve formatting between developer environments. Make sure your editor/IDE of choice supports configuration through the project's `.editorconfig` file.
+
 
 ## Recommendations
 
@@ -11,6 +13,7 @@ We recommend using the following plugins:
 
 #### Atom:
 + [linter-lesshint](https://atom.io/packages/linter-lesshint)
+
 
 Examples
 ---

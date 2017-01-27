@@ -26,10 +26,7 @@ module.exports = (styleguide, gulp) => {
     less: () => {
       return gulp.src(path.join(styleguide.path.root(), 'styleguide/**/*.less'))
         .pipe(lesshint({
-          configPath: path.join(
-            __dirname,
-            '.lesshintrc'
-          )
+          configPath: path.join(__dirname, '.lesshintrc')
         }))
         .pipe(lesshint.reporter(''))
     }

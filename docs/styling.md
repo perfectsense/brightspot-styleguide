@@ -20,10 +20,6 @@ Where do I begin introducing styles to my project?
 
 > At the root of the project's styleguide, create an `All.less` file. This file serves as a place to define global variables and the root of all import statements.
 
-Where do I define import statements to my component styles?
-
-> Starting in `styleguide/All.less`, import your other LESS files like normal ...
-
 Given All.less:
 
 ```less
@@ -37,7 +33,7 @@ Given All.less:
 @import 'promo/MegaPromo'
 ```
 
-... then its time to create an `All.less` within the _promo_ directory.
+... which you'll change by creating an `All.less` within the _promo_ directory.
 
 Given `promo/All.less`:
 
@@ -51,7 +47,6 @@ And now, `All.less` looks like:
 ```less
 @import 'promo/All'
 ```
-
 
 How do I start writing styles for a _Promo_ component?
 

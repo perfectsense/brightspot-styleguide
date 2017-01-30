@@ -2,15 +2,16 @@ const del = require('del')
 const filter = require('gulp-filter')
 const fs = require('fs-extra')
 const glob = require('glob')
-const less = require('gulp-less')
 const gutil = require('gulp-util')
 const handlebars = require('handlebars')
+const less = require('gulp-less')
 const path = require('path')
 const through = require('through2')
 const traverse = require('traverse')
 
 const example = require('../example')
 const label = require('../label')
+const logger = require('../logger')
 const resolver = require('../resolver')
 
 module.exports = (styleguide, gulp) => {
@@ -242,13 +243,20 @@ module.exports = (styleguide, gulp) => {
         const fileName = path.basename(filePath)
 
         if (fileName !== 'package.json' && fileName.slice(0, 1) !== '_') {
-          const html = example(styleguide, filePath)
+          try {
+            const html = example(styleguide, filePath)
 
-          if (html) {
-            file.base = styleguide.path.build()
-            file.contents = new Buffer(html)
-            file.path = gutil.replaceExtension(filePath, '.html')
-            this.push(file)
+            if (html) {
+              file.base = styleguide.path.build()
+              file.contents = Buffer.from(html)
+              file.path = gutil.replaceExtension(filePath, '.html')
+              this.push(file)
+            }
+          } catch (err) {
+            logger.error(`${err.message} at [${filePath}]!`)
+            if (!styleguide.isWatching()) {
+              process.exit(1)
+            }
           }
         }
 

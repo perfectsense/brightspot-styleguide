@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
 const GeoPattern = require('geopattern')
-const XMLNode = require('geopattern/lib/xml')
 const path = require('path')
+const XMLNode = require('geopattern/lib/xml')
 
 module.exports = function (key, width, height, file) {
   // Geo pattern doesn't support arbitrary sizing,

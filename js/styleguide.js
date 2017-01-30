@@ -1,9 +1,11 @@
-const fs = require('fs')
 const _ = require('lodash')
 const commandLineArguments = require('minimist')(process.argv.slice(2))
+const fs = require('fs')
 const path = require('path')
+const plumber = require('gulp-plumber')
 const xml2js = require('xml2js')
-const logger = require('./logger')
+
+const logger = require('./logger.js')
 
 let defaults = {
   host: 'localhost',
@@ -53,9 +55,6 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
 
   // Merge project config if available.
   const configFile = path.join(config.root, 'styleguide/_config.json')
-
-  // Default to failing when an error occurs.
-  this.failOnErrors = true
 
   if (fs.existsSync(configFile)) {
     _.merge(config, JSON.parse(fs.readFileSync(configFile, 'utf8')))
@@ -108,12 +107,25 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
     return require('./server')(config)
   }
 
-  // Determine how the error provided should be handled.
-  this.handleError = (err) => {
-    logger.error(err)
-    if (this.failOnErrors) {
-      process.exit(1)
-    }
+  const styleguide = this
+  const gulpsrc = gulp.src
+
+  // Overrides gulp.src to patch plumber into all gulp src'ed streams for
+  // universal task error management for streams
+  gulp.src = function () {
+    return gulpsrc.apply(gulp, arguments)
+      .pipe(plumber({
+        errorHandler: function (err) {
+          logger.error(err.message, styleguide.isWatching())
+
+          // When watching, fail gracefully
+          if (styleguide.isWatching()) {
+            this.emit('end')
+          } else {
+            process.exit(1)
+          }
+        }
+      }))
   }
 
   // Expose common tasks.
@@ -133,9 +145,6 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   ])
 
   gulp.task('styleguide', [ 'default' ], () => {
-    // Error gracefully when the styleguide and watcher are running.
-    this.failOnErrors = false
-
     this.serve()
     this.watch()
   })

@@ -59,7 +59,7 @@
     },
     "maxCharPerLine": {
         "enabled": true,
-        "limit": 80,
+        "limit": 100,
         "severity": "error"
     },
     "newlineAfterBlock": {

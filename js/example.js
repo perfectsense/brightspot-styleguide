@@ -169,6 +169,11 @@ module.exports = function (styleguide, filePath) {
     return data
   }
 
+  // Marks the path to be uploaded to the CDN.
+  handlebars.registerHelper('cdn', function (path) {
+    return path
+  })
+
   // This helper returns the key/value pairs of extraAttributes key , separated with '=' as a string. Used in links, images, forms.
   handlebars.registerHelper('extraAttributes', function (context) {
     if (!context) return

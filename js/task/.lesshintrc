@@ -18,7 +18,7 @@
     },
     "depthLevel": {
         "enabled": true,
-        "depth": 3,
+        "depth": 5,
         "severity": "error"
     },
     "duplicateProperty": {
@@ -72,17 +72,17 @@
     "propertyUnits": {
         "enabled": true,
         "invalid": [
-            "cm", 
-            "ex", 
-            "in", 
-            "mm", 
-            "pc", 
+            "cm",
+            "ex",
+            "in",
+            "mm",
+            "pc",
             "pt"
         ],
         "severity": "error"
     },
     "qualifyingElement": {
-        "enabled": false 
+        "enabled": false
     },
     "selectorNaming": {
         "enabled": true,

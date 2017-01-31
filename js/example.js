@@ -363,5 +363,5 @@ module.exports = function (styleguide, filePath) {
     }
   }))
 
-  return template({ data: convert(data) }).replace('</body>', '<script type="application/javascript">if (window.parent.rebase) window.parent.rebase(window)</script></body>')
+  return template({ data: convert(data) })
 }

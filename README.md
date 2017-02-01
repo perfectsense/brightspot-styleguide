@@ -3,10 +3,16 @@
 ## Prerequisites
 
 * [Node.js](https://nodejs.org/en/) (>=6.9.1)
-* [gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md)
+> We recommend using [NVM](https://github.com/creationix/nvm#install-script) to install and manage Node.js
+* [gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) (3.9.x)
+> $ npm install gulp --global
 * [Yarn](https://yarnpkg.com/en/docs/install) (>=0.16.1)
+> $ curl -o- -L https://yarnpkg.com/install.sh | bash
 
 ## Installation
+
+> **Important!**: Run `$ node -v` or `$ nvm ls` to be sure that your shell is using the version of Node.js listed in the Prerequisites above.
+
 
 Make sure that `gulpfile.js` and `package.json` exist at the root of the project directory.
 

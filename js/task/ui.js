@@ -8,6 +8,9 @@ const less = require('gulp-less')
 const path = require('path')
 const through = require('through2')
 const traverse = require('traverse')
+const mergeStream = require('merge-stream')
+const plugins = require('gulp-load-plugins')()
+const Builder = require('systemjs-builder')
 
 const example = require('../example')
 const label = require('../label')
@@ -329,16 +332,50 @@ module.exports = (styleguide, gulp) => {
       return gulp.src(path.join(__dirname, 'index.less'))
         .pipe(less())
         .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
+    },
+    js: () => {
+      let builder = new Builder()
+
+      builder.config({
+        defaultJSExtensions: true,
+        map: {
+          'bliss': 'node_modules/blissfuljs/bliss.min.js',
+          'prism': 'node_modules/prismjs/prism.js'
+        }
+      })
+
+      let buildOptions = {
+        minify: false
+      }
+
+      builder.buildStatic(path.join(__dirname, 'index.js'), buildOptions).then(output => {
+        gulp.src([ ])
+          .pipe(plugins.file('styleguide/index.js', output.source))
+          .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
+          .pipe(plugins.sourcemaps.init())
+          .pipe(plugins.uglify())
+          .pipe(plugins.rename({ extname: '.min.js' }))
+          .pipe(plugins.sourcemaps.write('.'))
+          .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
+      })
+      // return gulp.src(path.join(path.dirname(require.resolve('blissfuljs/package.json')), 'bliss.min.js'))
+      //   .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     }
+
   }
 
   gulp.task(styleguide.task.ui(), [ styleguide.task.clean() ], done => {
     styleguide.ui.copy(() => {
       styleguide.ui.html(() => {
         styleguide.ui.fonts().on('end', () => {
-          styleguide.ui.less().on('end', () => {
-            done()
-          })
+          mergeStream(
+            styleguide.ui.js(() => {
+
+            }),
+            styleguide.ui.less().on('end', () => {
+              done()
+            })
+          )
         })
       })
     })

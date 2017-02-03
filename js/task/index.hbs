@@ -4,6 +4,7 @@
         <title>Styleguide</title>
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700">
         <link rel="stylesheet" type="text/css" href="/_styleguide/index.css">
+        <script src="/_styleguide/bliss.min.js"></script>
     </head>
     <body>
         <header class="StyleguideHeader">
@@ -27,9 +28,66 @@
                 </ul>
             </div>
         </nav>
-
         <div class="StyleguideContent">
-            <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
+          <div class="StyleguideTabs-wrapper">
+            <ul class="StyleguideTabs">
+              <li>
+                <a data-tab="main" data-activetab>Main</a>
+              </li>
+              <li>
+                <a data-tab="json">JSON</a>
+              </li>
+              <li>
+                <a data-tab="md">Documentation</a>
+              </li>
+            </ul>
+          </div>
+          <div class="StyleguideTabs-panels">
+            <div class="StyleguideMain" data-tab="main" data-activepanel>
+              <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
+            </div>
+            <pre class="StyleguideDocument" data-tab="md">
+            </pre>
+            <pre  class="StyleguideJSON" data-tab="json">
+            </pre>
+          </div>
+
         </div>
+
+        <script type="text/javascript">
+            (function () {
+                $$('.StyleguideTabs a').forEach(function (element) {
+                    element.addEventListener('click', function (event) {
+                    var dataAttr = this.getAttribute('data-tab');
+                    var tabsList = this.parentNode.parentNode;
+                    // remove active indicator from all tabs
+                    tabsList.querySelectorAll('a').forEach(function (element) {
+                      element.removeAttribute('data-activetab')
+                    })
+                    // set active indicator to active tabs
+                    this.setAttribute('data-activetab', '')
+
+                    // remove active indicator from all panels
+                    Array.from(tabsList.parentNode.nextElementSibling.children).forEach(function (element) {
+                      element.removeAttribute('data-activepanel')
+                    })
+                    // set active indicator to active panel
+                    tabsList.parentNode.nextElementSibling.querySelectorAll('[data-tab="' + dataAttr + '"]')[0].setAttribute('data-activepanel','')
+                  });
+                });
+
+                $('.StyleguideExample').addEventListener('load', function (event) {
+                  var baseURL = this.contentWindow.location.href.split('.html')
+
+                  $$('pre[data-tab]').forEach(function(el, index, array){
+                    var dataType = el.getAttribute('data-tab')
+                    var prismSrc = baseURL[0] + '.' + dataType
+                    el.setAttribute('data-src', prismSrc)
+                  })
+                })
+
+            })();
+        </script>
+
     </body>
 </html>

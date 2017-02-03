@@ -332,6 +332,7 @@ module.exports = (styleguide, gulp) => {
         .pipe(less())
         .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     },
+    // Convert js files into js to be used by the styleguide UI itself.
     js: done => {
       let builder = new Builder()
 

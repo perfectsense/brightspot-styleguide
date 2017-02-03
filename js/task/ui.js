@@ -332,7 +332,8 @@ module.exports = (styleguide, gulp) => {
         .pipe(less())
         .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     },
-    // Convert js files into js to be used by the styleguide UI itself.
+
+    // JavaScript transpilation to be used by the styleguide UI itself.
     js: done => {
       let builder = new Builder()
 
@@ -351,11 +352,6 @@ module.exports = (styleguide, gulp) => {
       builder.buildStatic(path.join(__dirname, 'index.js'), buildOptions).then(output => {
         gulp.src([ ])
           .pipe(plugins.file('index.js', output.source))
-          .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
-          .pipe(plugins.sourcemaps.init())
-          .pipe(plugins.uglify())
-          .pipe(plugins.rename({ extname: '.min.js' }))
-          .pipe(plugins.sourcemaps.write('.'))
           .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
           .on('end', done)
       })

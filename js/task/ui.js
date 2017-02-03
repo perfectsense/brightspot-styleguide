@@ -8,7 +8,6 @@ const less = require('gulp-less')
 const path = require('path')
 const through = require('through2')
 const traverse = require('traverse')
-const mergeStream = require('merge-stream')
 const plugins = require('gulp-load-plugins')()
 const Builder = require('systemjs-builder')
 
@@ -333,11 +332,12 @@ module.exports = (styleguide, gulp) => {
         .pipe(less())
         .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     },
-    js: () => {
+    js: done => {
       let builder = new Builder()
 
       builder.config({
         defaultJSExtensions: true,
+        baseURL: path.join(__dirname, '../../'),
         map: {
           'bliss': 'node_modules/blissfuljs/bliss.min.js',
           'prism': 'node_modules/prismjs/prism.js'
@@ -350,16 +350,15 @@ module.exports = (styleguide, gulp) => {
 
       builder.buildStatic(path.join(__dirname, 'index.js'), buildOptions).then(output => {
         gulp.src([ ])
-          .pipe(plugins.file('styleguide/index.js', output.source))
+          .pipe(plugins.file('index.js', output.source))
           .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
           .pipe(plugins.sourcemaps.init())
           .pipe(plugins.uglify())
           .pipe(plugins.rename({ extname: '.min.js' }))
           .pipe(plugins.sourcemaps.write('.'))
           .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
+          .on('end', done)
       })
-      // return gulp.src(path.join(path.dirname(require.resolve('blissfuljs/package.json')), 'bliss.min.js'))
-      //   .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     }
 
   }
@@ -368,14 +367,11 @@ module.exports = (styleguide, gulp) => {
     styleguide.ui.copy(() => {
       styleguide.ui.html(() => {
         styleguide.ui.fonts().on('end', () => {
-          mergeStream(
-            styleguide.ui.js(() => {
-
-            }),
+          styleguide.ui.js(() => {
             styleguide.ui.less().on('end', () => {
               done()
             })
-          )
+          })
         })
       })
     })

@@ -305,9 +305,14 @@ module.exports = (styleguide, gulp) => {
             preventIndent: true
           })
 
+          const buildConfig = {
+            'TRAVIS_COMMIT': `${process.env.TRAVIS_COMMIT}`
+          }
+
           fs.mkdirsSync(path.join(styleguide.path.build(), '_styleguide'))
           fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
-            groups: groups
+            groups: groups,
+            config: `${JSON.stringify(buildConfig)}`
           }))
 
           // Create a project pointer for BE.

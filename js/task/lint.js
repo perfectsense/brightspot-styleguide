@@ -20,6 +20,7 @@ module.exports = (styleguide, gulp) => {
     json: () => {
       return gulp.src(path.join(styleguide.path.root(), 'styleguide/**/*.json'))
         .pipe(jsonlint())
+        .pipe(jsonlint.reporter())
         .pipe(jsonlint.failAfterError())
     },
 

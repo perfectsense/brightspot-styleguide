@@ -305,17 +305,19 @@ module.exports = (styleguide, gulp) => {
             preventIndent: true
           })
 
-          const buildProperties = {
-            'Project': {
-              'branch': `${process.env.TRAVIS_BRANCH}`,
-              'commit': `${process.env.TRAVIS_COMMIT}`
-            }
-          }
-
           fs.mkdirsSync(path.join(styleguide.path.build(), '_styleguide'))
           fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
             groups: groups,
-            buildProperties: (process.env.TRAVIS) ? `${JSON.stringify(buildProperties)}` : null
+            buildProperties: (process.env.TRAVIS)
+            ? `${JSON.stringify({
+              'Project': {
+                'repo': `${process.env.TRAVIS_REPO_SLUG}`,
+                'branch': `${process.env.TRAVIS_BRANCH}`,
+                'commit': `${process.env.TRAVIS_COMMIT}`,
+                'url': `https://github.com/${process.env.TRAVIS_REPO_SLUG}/commits/${process.env.TRAVIS_BRANCH}/${process.env.TRAVIS_COMMIT}`
+              }
+            })}`
+            : null
           }))
 
           // Create a project pointer for BE.

@@ -306,7 +306,7 @@ module.exports = (styleguide, gulp) => {
           })
 
           const buildProperties = {
-            'git': {
+            'Project': {
               'branch': `${process.env.TRAVIS_BRANCH}`,
               'commit': `${process.env.TRAVIS_COMMIT}`
             }

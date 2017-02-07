@@ -80,7 +80,8 @@
         "severity": "error"
     },
     "qualifyingElement": {
-        "enabled": false
+        "enabled": true,
+        "severity": "error"
     },
     "selectorNaming": {
         "enabled": true,

@@ -4,6 +4,7 @@
         <title>Styleguide</title>
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700">
         <link rel="stylesheet" type="text/css" href="/_styleguide/index.css">
+        <script type="application/javascript" src="/_styleguide/index.js"></script>
     </head>
     <body>
         <header class="StyleguideHeader">
@@ -31,28 +32,5 @@
         <div class="StyleguideContent">
             <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
         </div>
-
-        <script type="text/javascript">
-            (function () {
-                if (window !== window.parent) document.body.setAttribute('data-iframed', true)
-
-                var base = window.location.href
-                base = base.substring(0, base.indexOf('/_styleguide'))
-
-                document.querySelectorAll('a[href^="/"], link[href^="/"]').forEach(function (element) {
-                    element.setAttribute('href', base + element.getAttribute('href'))
-                })
-
-                window.rebase = function (window) {
-                    window.document.querySelectorAll('a[href^="/"], link[href^="/"]').forEach(function (element) {
-                        element.setAttribute('href', base + element.getAttribute('href'))
-                    })
-
-                    window.document.querySelectorAll('img[src^="/"], script[src^="/"]').forEach(function (element) {
-                        element.setAttribute('src', base + element.getAttribute('src'))
-                    })
-                }
-            })();
-        </script>
     </body>
 </html>

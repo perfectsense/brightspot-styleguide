@@ -48,7 +48,7 @@
           {{#if buildProperties}}
             var props = {{{buildProperties}}};
             Object.keys(props).forEach(function(key) {
-              console.group('Property [%s]:', key)
+              console.group(key, ':')
               console.log(props[key])
               console.groupEnd()
             })

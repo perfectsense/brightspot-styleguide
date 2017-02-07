@@ -313,8 +313,8 @@ module.exports = (styleguide, gulp) => {
               'Project': {
                 'repo': `${process.env.TRAVIS_REPO_SLUG}`,
                 'branch': `${process.env.TRAVIS_BRANCH}`,
-                'commit': `${process.env.TRAVIS_COMMIT}`,
-                'url': `https://github.com/${process.env.TRAVIS_REPO_SLUG}/commit/${process.env.TRAVIS_COMMIT}`
+                'revison': `${process.env.TRAVIS_COMMIT}`,
+                'revision_url': `https://github.com/${process.env.TRAVIS_REPO_SLUG}/commit/${process.env.TRAVIS_COMMIT}`
               }
             })}`
             : null

@@ -17,7 +17,7 @@
         "severity": "error"
     },
     "depthLevel": {
-        "enabled": false,
+        "enabled": false
     },
     "duplicateProperty": {
         "enabled": true,

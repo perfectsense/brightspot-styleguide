@@ -1,3 +1,9 @@
+# Brightspot Styleguide
+
+All the rules and guidelines in https://github.com/perfectsense/brightspot
+apply to this repository as well. This is separated out only because npm
+doesn't allow linking to a subdirectory (https://github.com/npm/npm/issues/2974).
+
 # Front-end
 
 ## Prerequisites

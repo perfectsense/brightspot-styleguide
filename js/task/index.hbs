@@ -46,7 +46,7 @@
                      |___|     |___|`, "color: dodgerblue; font-size: 9px; font-family: monospace")
           {{#if buildProperties}}
             var props = {{{buildProperties}}};
-            Object.keys(props).sort().forEach(function(key) {
+            Object.keys(props).forEach(function(key) {
               console.group('Property [%s]:', key)
               console.log(props[key])
               console.groupEnd()

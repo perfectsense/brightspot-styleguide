@@ -34,7 +34,7 @@ module.exports = (styleguide, gulp) => {
       // Pretend that the project is a package.
       const projectFiles = [
         path.join(styleguide.path.root(), 'package.json'),
-        path.join(styleguide.path.root(), 'styleguide/**/*.{hbs,json}')
+        path.join(styleguide.path.root(), 'styleguide/**/*.{hbs,json,md}')
       ]
 
       const projectRootPath = getProjectRootPath()
@@ -279,6 +279,10 @@ module.exports = (styleguide, gulp) => {
           glob.sync('**/*.html', { cwd: styleguide.path.build() }).forEach(match => {
             const groupName = path.dirname(path.relative(path.join(projectRootPath, 'styleguide'), path.join(styleguide.path.build(), match))).split('/').map(label).join(': ')
             let group = groupByName[groupName]
+            let item = {}
+            item.name = label(path.basename(match, '.html'))
+            item.url = '/' + gutil.replaceExtension(match, '.html')
+            item.source = {'html': 'Main', 'json': 'JSON'}
 
             if (!group) {
               group = groupByName[groupName] = {
@@ -286,11 +290,12 @@ module.exports = (styleguide, gulp) => {
                 examples: [ ]
               }
             }
+            if (fs.existsSync(gutil.replaceExtension(path.join(styleguide.path.build(), match), '.md'))) {
+                // Do something
+              item.source = Object.assign(item.source, {'md': 'Markdown'})
+            }
 
-            group.examples.push({
-              name: label(path.basename(match, '.html')),
-              url: '/' + gutil.replaceExtension(match, '.html')
-            })
+            group.examples.push(item)
           })
 
           // Sort the grouping so that the display is alphabetical.
@@ -341,7 +346,10 @@ module.exports = (styleguide, gulp) => {
         defaultJSExtensions: true,
         baseURL: path.join(__dirname, '../../'),
         map: {
-          'bliss': 'node_modules/blissfuljs/bliss.min.js'
+          'bliss': 'node_modules/blissfuljs/bliss.min.js',
+          'prism': 'node_modules/prismjs/prism.js',
+          'prism-json': 'node_modules/prismjs/components/prism-json.min.js',
+          'prism-markdown': 'node_modules/prismjs/components/prism-markdown.min.js'
         }
       })
 

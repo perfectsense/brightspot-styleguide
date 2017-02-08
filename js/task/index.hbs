@@ -20,7 +20,7 @@
                             <h3 class="StyleguideGroups-name">{{name}}</h3>
                             <ul class="StyleguideGroups-examples">
                                 {{#each examples}}
-                                    <li><a href="{{url}}" title="{{name}}" target="StyleguideExample">{{name}}</a></li>
+                                    <li><a href="{{url}}" title="{{name}}" target="StyleguideExample" {{#if source}}data-source='{{{json source}}}'{{/if}}>{{name}}</a></li>
                                 {{/each}}
                             </ul>
                         </li>
@@ -30,7 +30,12 @@
         </nav>
 
         <div class="StyleguideContent">
-            <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
+          <div class="StyleguideTabs-wrapper">
+            <ul class="StyleguideTabs">
+            </ul>
+          </div>
+          <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
         </div>
+
     </body>
 </html>

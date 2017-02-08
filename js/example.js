@@ -214,6 +214,14 @@ module.exports = function (styleguide, filePath) {
     return new handlebars.SafeString(JSON.stringify(jsonObjectData))
   })
 
+  handlebars.registerHelper('json', function (context) {
+    if (!context) {
+      return
+    }
+
+    return JSON.stringify(context)
+  })
+
   // BEM helpers:
   const PREFIX = '_bem_'
   const BLOCK_NAME = PREFIX + 'blockName'

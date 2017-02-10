@@ -1,3 +1,8 @@
+const fs = require('fs')
+const path = require('path')
+const xml2js = require('xml2js')
+const zip = require('gulp-zip')
+
 module.exports = (styleguide, gulp) => {
   Object.assign(styleguide.task, {
     build: () => 'styleguide:build',
@@ -25,5 +30,19 @@ module.exports = (styleguide, gulp) => {
     originalGulpTask.apply(this, arguments)
   }
 
-  gulp.task(styleguide.task.build(), styleguide.buildDependencies)
+  gulp.task(styleguide.task.build(), styleguide.buildDependencies, () => {
+    const pomFile = path.resolve('pom.xml')
+
+    if (fs.existsSync(pomFile)) {
+      xml2js.parseString(fs.readFileSync(pomFile), { async: false }, (error, pomXml) => {
+        if (error) {
+          throw error
+        }
+
+        gulp.src(`${styleguide.path.build()}/**`)
+          .pipe(zip(`${pomXml.project.artifactId}-${pomXml.project.version}.zip`))
+          .pipe(gulp.dest(path.join(styleguide.path.build(), '..')))
+      })
+    }
+  })
 }

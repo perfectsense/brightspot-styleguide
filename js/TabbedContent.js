@@ -28,19 +28,36 @@ export class TabbedContent {
     }, options)
   }
 
-  init() {
+  init () {
     let self = this
+    // Event listener for the tabs
+    $('.StyleguideTabs').addEventListener('Styleguide:tabsInit', function (e) {
+      let hashTab = window.location.hash
+      if (hashTab !== '') {
+        this.querySelector('[name=' + hashTab.replace('#', '') + ']').click()
+      } else {
+        this.querySelector('a').click()
+      }
+    })
+
+    // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       var prismElement = this.contentWindow.document.querySelector('pre')
-      console.log('iframe loaded', prismElement)
       if (prismElement !== null) {
-        console.log(self.selectors.languageClass + self.dataType)
         prismElement.className = self.selectors.languageClass + self.dataType
         Prism.highlightElement(prismElement)
         let cssAppend = $.clone($('link[href="/_styleguide/index.css"]'))
         this.contentWindow.document.head.append(cssAppend)
       }
     })
+  }
+
+  initTabs (element) {
+    this.createTabs(element)
+    // set an event for tabs init
+    let tabCreationEvent = document.createEvent('Event')
+    tabCreationEvent.initEvent('Styleguide:tabsInit', false, true)
+    $(this.selectors.tabList).dispatchEvent(tabCreationEvent)
   }
 
   createTabs (element) {
@@ -60,7 +77,7 @@ export class TabbedContent {
     for (var key in dataSources) {
       if (dataSources.hasOwnProperty(key)) {
         let iframeSrc = baseURL[0] + '.' + key
-
+        let index = Object.keys(dataSources).indexOf(key)
         let tabItem = $.create('li',
           {
             delegate: {
@@ -74,7 +91,7 @@ export class TabbedContent {
                   // set active indicator to active tabs
                   this.setAttribute('data-active', '')
                   self.dataType = this.querySelector('a').name
-                  console.log(self.dataType)
+                  history.replaceState({}, this.getAttribute('title'), '#' + self.dataType)
                 }
               }
             },
@@ -82,6 +99,9 @@ export class TabbedContent {
               tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample', name: dataSources[key].toLowerCase()
             }
           })
+        if (index === 0) {
+          tabItem.setAttribute('data-active', '')
+        }
         $(this.selectors.tabList)._.contents(tabItem)
       }
     }

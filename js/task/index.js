@@ -3,15 +3,35 @@ import Bliss from 'bliss'
 import {TabbedContent} from '../TabbedContent.js'
 
 document.addEventListener('DOMContentLoaded', function (event) {
+  function searchToObject (search) {
+    let searchParams = search.substring(1).split('&')
+    let searchParam
+    let paramObj = {}
+
+    for (let key in searchParams) {
+      if (searchParams[key] === null) continue
+
+      searchParam = searchParams[key].split('=')
+      paramObj[ decodeURIComponent(searchParam[0]) ] = decodeURIComponent(searchParam[1])
+    }
+    return paramObj
+  }
+
+  // load tabs
   let content = document.querySelector('.StyleguideContent')
   let tabbedContent = new TabbedContent(content, {})
   tabbedContent.init()
+  let searchObject = searchToObject(window.location.search)
 
   $$('.StyleguideNavigation a').forEach(function (element) {
+    if (element.pathname === searchObject['file']) {
+      element.setAttribute('data-active', '')
+      tabbedContent.initTabs(element)
+    }
+
     element.addEventListener('click', function (event) {
+      history.replaceState({}, this.getAttribute('title'), '?file=' + this.pathname)
       tabbedContent.createTabs(this)
-      // set first tab to init on click
-      $('.StyleguideTabs li').setAttribute('data-active', '')
     })
   })
 }, false)

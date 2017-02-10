@@ -1,3 +1,4 @@
+const Builder = require('systemjs-builder')
 const del = require('del')
 const filter = require('gulp-filter')
 const fs = require('fs-extra')
@@ -6,10 +7,11 @@ const gutil = require('gulp-util')
 const handlebars = require('handlebars')
 const less = require('gulp-less')
 const path = require('path')
+const plugins = require('gulp-load-plugins')()
 const through = require('through2')
 const traverse = require('traverse')
-const plugins = require('gulp-load-plugins')()
-const Builder = require('systemjs-builder')
+const xml2js = require('xml2js')
+const zip = require('gulp-zip')
 
 const example = require('../example')
 const label = require('../label')
@@ -326,6 +328,23 @@ module.exports = (styleguide, gulp) => {
         })
     },
 
+    zip: done => {
+      const pomFile = path.resolve('pom.xml')
+
+      if (fs.existsSync(pomFile)) {
+        xml2js.parseString(fs.readFileSync(pomFile), { async: false }, (error, pomXml) => {
+          if (error) {
+            throw error
+          }
+
+          gulp.src(`${styleguide.path.build()}/**`)
+            .pipe(zip(`${pomXml.project.artifactId}-${pomXml.project.version}.zip`))
+            .pipe(gulp.dest(path.join(styleguide.path.build(), '..')))
+            .on('end', done)
+        })
+      }
+    },
+
     // Convert LESS files into CSS to be used by the styleguide UI itself.
     less: () => {
       return gulp.src(path.join(__dirname, 'index.less'))
@@ -362,10 +381,12 @@ module.exports = (styleguide, gulp) => {
   gulp.task(styleguide.task.ui(), [ styleguide.task.clean() ], done => {
     styleguide.ui.copy(() => {
       styleguide.ui.html(() => {
-        styleguide.ui.fonts().on('end', () => {
-          styleguide.ui.js(() => {
-            styleguide.ui.less().on('end', () => {
-              done()
+        styleguide.ui.zip(() => {
+          styleguide.ui.fonts().on('end', () => {
+            styleguide.ui.js(() => {
+              styleguide.ui.less().on('end', () => {
+                done()
+              })
             })
           })
         })

@@ -214,12 +214,12 @@ module.exports = function (styleguide, filePath) {
     return new handlebars.SafeString(JSON.stringify(jsonObjectData))
   })
 
-  handlebars.registerHelper('json', function (context) {
+  handlebars.registerHelper('jsonToString', function (context) {
     if (!context) {
       return
     }
 
-    return JSON.stringify(context)
+    return new handlebars.SafeString(JSON.stringify(context))
   })
 
   // BEM helpers:

@@ -328,8 +328,9 @@ module.exports = (styleguide, gulp) => {
         })
     },
 
-    zip: done => {
+    zip: () => {
       const pomFile = path.resolve('pom.xml')
+      let name = getProjectName()
 
       if (fs.existsSync(pomFile)) {
         xml2js.parseString(fs.readFileSync(pomFile), { async: false }, (error, pomXml) => {
@@ -337,14 +338,13 @@ module.exports = (styleguide, gulp) => {
             throw error
           }
 
-          gulp.src(`${styleguide.path.build()}/**`)
-            .pipe(zip(`${pomXml.project.artifactId}-${pomXml.project.version}.zip`))
-            .pipe(gulp.dest(path.join(styleguide.path.build(), '..')))
-            .on('end', done)
+          name = `${pomXml.project.artifactId}-${pomXml.project.version}`
         })
-      } else {
-        done()
       }
+
+      return gulp.src(`${styleguide.path.build()}/**`)
+        .pipe(zip(`${name}.zip`))
+        .pipe(gulp.dest(path.join(styleguide.path.build(), '..')))
     },
 
     // Convert LESS files into CSS to be used by the styleguide UI itself.
@@ -383,12 +383,11 @@ module.exports = (styleguide, gulp) => {
   gulp.task(styleguide.task.ui(), [ styleguide.task.clean() ], done => {
     styleguide.ui.copy(() => {
       styleguide.ui.html(() => {
-        styleguide.ui.zip(() => {
-          styleguide.ui.fonts().on('end', () => {
-            styleguide.ui.js(() => {
-              styleguide.ui.less().on('end', () => {
-                done()
-              })
+        styleguide.ui.fonts().on('end', () => {
+          styleguide.ui.js(() => {
+            styleguide.ui.less().on('end', () => {
+              styleguide.ui.zip()
+              done()
             })
           })
         })

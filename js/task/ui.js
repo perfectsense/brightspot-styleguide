@@ -386,7 +386,9 @@ module.exports = (styleguide, gulp) => {
         styleguide.ui.fonts().on('end', () => {
           styleguide.ui.js(() => {
             styleguide.ui.less().on('end', () => {
-              styleguide.ui.zip()
+              if (!styleguide.isWatching()) {
+                styleguide.ui.zip()
+              }
               done()
             })
           })

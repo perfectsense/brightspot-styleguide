@@ -342,6 +342,8 @@ module.exports = (styleguide, gulp) => {
             .pipe(gulp.dest(path.join(styleguide.path.build(), '..')))
             .on('end', done)
         })
+      } else {
+        done()
       }
     },
 

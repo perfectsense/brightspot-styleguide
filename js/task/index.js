@@ -31,6 +31,11 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
     element.addEventListener('click', function (event) {
       history.replaceState({}, this.getAttribute('title'), '?file=' + this.pathname)
+      // loop through and remove the active nav attribute
+      $$('.StyleguideNavigation a[data-active]').forEach(function (element) {
+    	   element.removeAttribute('data-active')
+      })
+      this.setAttribute('data-active', '')
       tabbedContent.createTabs(this)
       if (event.target.classList.contains('fa-external-link')) {
         window.open(this.href)

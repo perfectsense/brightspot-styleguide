@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', function (event) {
     element.addEventListener('click', function (event) {
       history.replaceState({}, this.getAttribute('title'), '?file=' + this.pathname)
       tabbedContent.createTabs(this)
+      if (event.target.classList.contains('fa-external-link')) {
+        window.open(this.href)
+      }
     })
   })
 }, false)

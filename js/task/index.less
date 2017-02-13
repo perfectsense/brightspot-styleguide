@@ -1,8 +1,25 @@
 @import (inline) 'node_modules/normalize.css/normalize.css';
 @import (inline) '../../node_modules/prismjs/themes/prism.css';
-@fa-font-path: '.';
-@import 'node_modules/font-awesome/less/font-awesome';
 
+/*!
+ *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
+
+@import "node_modules/font-awesome/less/variables";
+@fa-font-path: '.';
+@import "node_modules/font-awesome/less/mixins";
+@import "node_modules/font-awesome/less/path";
+@import "node_modules/font-awesome/less/core";
+@import "node_modules/font-awesome/less/larger";
+@import "node_modules/font-awesome/less/fixed-width";
+@import "node_modules/font-awesome/less/list";
+@import "node_modules/font-awesome/less/bordered-pulled";
+@import "node_modules/font-awesome/less/animated";
+@import "node_modules/font-awesome/less/rotated-flipped";
+@import "node_modules/font-awesome/less/stacked";
+@import "node_modules/font-awesome/less/icons";
+@import "node_modules/font-awesome/less/screen-reader";
 
 *,
 *:after,
@@ -129,7 +146,14 @@ body {
                 margin-right: -20px;
                 padding-left: 20px;
                 padding-right: 20px;
+                .fa {
+                  opacity: 1
+                }
             }
+        }
+        .fa {
+          margin-left: 10px;
+          opacity: 0;
         }
     }
 }
@@ -195,7 +219,7 @@ body {
       transition: all .3s;
     }
   }
-  
+
   &-wrapper {
     position: relative;
 

@@ -21,7 +21,7 @@ export class TabbedContent {
     this.ctx = ctx
     this.settings = Object.assign({}, {
       selectors: {
-        tabList: '.StyleguideTabs',
+        tabList: 'StyleguideTabs',
         languageClass: 'language-',
         iframeContent: 'StyleguideExample'
       },
@@ -31,16 +31,6 @@ export class TabbedContent {
 
   init () {
     let self = this
-    // Event listener for the tabs
-    $('.StyleguideTabs').addEventListener('Styleguide:tabsInit', function (e) {
-      let hashTab = window.location.hash
-      if (hashTab !== '') {
-        this.querySelector('[name=' + hashTab.replace('#', '') + ']').click()
-      } else {
-        this.querySelector('a').click()
-      }
-    })
-
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       if (self.settings.prismHighlight.indexOf(self.dataType) >= 0) {
@@ -54,17 +44,27 @@ export class TabbedContent {
   }
 
   initTabs (element) {
+    $.create('ul',{className: this.selectors.tabList})._.before($(`.${this.selectors.iframeContent}`))
+    // Event listener for the tabs
     this.createTabs(element)
+    $(`.${this.selectors.tabList}`).addEventListener('Styleguide:tabsInit', function (e) {
+      let hashTab = window.location.hash
+      if (hashTab !== '') {
+        this.querySelector('[name=' + hashTab.replace('#', '') + ']').click()
+      } else {
+        this.querySelector('a').click()
+      }
+    })
     // set an event for tabs init
     let tabCreationEvent = document.createEvent('Event')
     tabCreationEvent.initEvent('Styleguide:tabsInit', false, true)
-    $(this.selectors.tabList).dispatchEvent(tabCreationEvent)
+    $(`.${this.selectors.tabList}`).dispatchEvent(tabCreationEvent)
   }
 
   createTabs (element) {
     let dataSources = JSON.parse(element.getAttribute('data-source'))
     let baseURL = element.getAttribute('href').split('.html')
-    let tabList = $(this.selectors.tabList)
+    let tabList = $(`.${this.selectors.tabList}`)
     let self = this
     // unbind old tabs
     tabList.querySelectorAll('li').forEach((element) => {
@@ -103,7 +103,7 @@ export class TabbedContent {
         if (index === 0) {
           tabItem.setAttribute('data-active', '')
         }
-        $(this.selectors.tabList)._.contents(tabItem)
+        $(`.${this.selectors.tabList}`)._.contents(tabItem)
       }
     }
   }

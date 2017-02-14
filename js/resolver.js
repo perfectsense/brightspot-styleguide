@@ -1,6 +1,6 @@
+const _ = require('lodash')
 const findParentDir = require('find-parent-dir')
 const fs = require('fs')
-const _ = require('lodash')
 const path = require('path')
 const traverse = require('traverse')
 
@@ -37,7 +37,7 @@ function traverseData (root, file, data) {
         value._include = null
         value._dataUrl = null
 
-        this.update(_.extend(resolveData(root, includeFile, value), traverseData(value)), true)
+        this.update(_.extend(resolveData(root, includeFile, value), traverseData(root, file, value)), true)
       }
     }
   })

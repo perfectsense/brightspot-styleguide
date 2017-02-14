@@ -21,7 +21,7 @@ module.exports = config => {
     if (error.errno === 'EADDRINUSE') {
       logger.error(`Another server already running on ${config.port}!`)
     } else {
-      logger.error(`Unknown error! ${error}`)
+      logger.error(`Unknown error! ${error.message}`)
     }
 
     this.close()

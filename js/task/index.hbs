@@ -3,105 +3,34 @@
     <head>
         <title>Styleguide</title>
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700">
-        <link rel="stylesheet" type="text/css" href="/_styleguide/styleguide.css">
+        <link rel="stylesheet" type="text/css" href="/_styleguide/index.css">
+        <script type="application/javascript" src="/_styleguide/index.js"></script>
     </head>
     <body>
-        <header class="sg-header">
-            <div class="sg-header-left">
-                <button class="sg-header-button fa fa-bars"></button>
-                <h1 class="sg-header-project-title">Styleguide</h1>
-            </div>
-            <div class="sg-header-right">
-                <div class="sg-header-controlbar">
-                    {{#with availableDevices}}
-                        <div class="sg-control-available-device-list">
-                            <a href="{{../resetDisplayDevicesUrl}}" title="Reset Viewports"><i class="fa fa-ban"></i></a>
-
-                            {{#each this}}
-                                <a{{#if selected}} class="sg-control-available-device-selected"{{/if}} href="{{url}}" title="{{device.name}} - {{device.width}}x{{device.height}}"><i class="{{device.icon}}"></i></a>
-                            {{/each}}
-                        </div>
-                    {{/with}}
-                </div>
-            </div>
+        <header class="StyleguideHeader">
+            <h1 class="StyleguideTitle">Styleguide</h1>
         </header>
-        <div class="sg-row">
-            <div class="sg-menu">
-                <div class="sg-menu-container">
 
-                    <ul class="sg-group-list">
-                        {{#each groups}}
-                            <li class="sg-group">
-                                <div class="sg-group-name">{{name}}</div>
-                                <ul class="sg-example-list">
-                                    {{#each children}}
-                                        <li class="sg-example">
-                                                <a class="sg-example-name"  href="{{url}}" title="{{name}}" target="sg-content-iframe">{{name}}</a>
-                                            {{#if children}}
-                                                <ul class="sg-example-list-children">
-                                                    {{#each children}}
-                                                        <li class="sg-example">
-                                                            <a href="{{url}}" class="sg-example-file-name" title="{{name}}" target="sg-content-iframe">{{name}}</a>
-                                                        </li>
-                                                    {{/each}}
-                                                </ul>
-                                            {{/if}}
-                                        </li>
-                                    {{/each}}
-                                </ul>
-                            </li>
-                        {{/each}}
-                        {{#*inline 'list'}}
-                            {{#each children}}
-                                <li class="sg-example">
-                                    <a class="sg-example-name" {{#if url}}href="{{url}}"{{/if}} title="Styleguide: {{#if dirName}}{{dirName}} - {{/if}}{{name}}" target="sg-content-iframe">{{name}}</a>
-                                </li>
-                            {{/each}}
-                        {{/inline}}
-                        {{#each examples}}
-                            <li class="sg-group">
-                                {{#if url}}
-                                  <a class="sg-example-name" href="{{url}}" title="Styleguide: {{#if dirName}}{{dirName}} - {{/if}}{{name}}" target="sg-content-iframe">{{name}}</a>
-                                {{else}}
-                                  <div class="sg-group-name">{{name}}</div>
-                                {{/if}}
-                                {{#if children}}
-                                <ul class="sg-example-list">
-                                    {{> list}}
-                                </ul>
-                                {{/if}}
-                            </li>
-                        {{/each}}
-                    </ul>
-                </div>
+        <nav class="StyleguideNavigation">
+            <h2 class="StyleguideNavigation-title">Examples</h2>
+            <div class="StyleguideNavigation-content">
+                <ul class="StyleguideGroups">
+                    {{#each groups}}
+                        <li>
+                            <h3 class="StyleguideGroups-name">{{name}}</h3>
+                            <ul class="StyleguideGroups-examples">
+                                {{#each examples}}
+                                    <li><a href="{{url}}" title="{{name}}" target="StyleguideExample">{{name}}</a></li>
+                                {{/each}}
+                            </ul>
+                        </li>
+                    {{/each}}
+                </ul>
             </div>
+        </nav>
 
-            <div class="sg-content">
-                <iframe src="about:blank" name="sg-content-iframe" id="sg-iframe-content"></iframe>
-            </div>
+        <div class="StyleguideContent">
+            <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
         </div>
-
-        <script type="text/javascript">
-            (function () {
-                if (window !== window.parent) document.body.setAttribute('data-iframed', true)
-
-                var base = window.location.href
-                base = base.substring(0, base.indexOf('/_styleguide'))
-
-                document.querySelectorAll('a[href^="/"], link[href^="/"]').forEach(function (element) {
-                    element.setAttribute('href', base + element.getAttribute('href'))
-                })
-
-                window.rebase = function (window) {
-                    window.document.querySelectorAll('a[href^="/"], link[href^="/"]').forEach(function (element) {
-                        element.setAttribute('href', base + element.getAttribute('href'))
-                    })
-
-                    window.document.querySelectorAll('img[src^="/"], script[src^="/"]').forEach(function (element) {
-                        element.setAttribute('src', base + element.getAttribute('src'))
-                    })
-                }
-            })();
-        </script>
     </body>
 </html>

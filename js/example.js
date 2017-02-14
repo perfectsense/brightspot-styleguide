@@ -247,6 +247,10 @@ module.exports = function (styleguide, filePath) {
           }
           options.data.root[key] = value
           return value
+        },
+
+        resolve: function (path) {
+          return resolver.path(styleguide.path.root(), this.get(PARENT_PATH) || this.get('_template'), path)
         }
       })
 
@@ -270,7 +274,7 @@ module.exports = function (styleguide, filePath) {
     const extend = override || options.hash.extend
 
     if (bem.isTrue(extend)) {
-      const extendPath = bem.set(PARENT_PATH, resolver.path(styleguide.path.root(), bem.get(PARENT_PATH) || bem.get('_template'), extend))
+      const extendPath = bem.set(PARENT_PATH, bem.resolve(extend))
       const extendTemplate = handlebars.compile(fs.readFileSync(extendPath, 'utf8'))
       const extendResult = extendTemplate(this, options)
 

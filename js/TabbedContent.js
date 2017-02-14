@@ -44,7 +44,7 @@ export class TabbedContent {
   }
 
   initTabs (element) {
-    $.create('ul',{className: this.selectors.tabList})._.before($(`.${this.selectors.iframeContent}`))
+    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.iframeContent}`))
     // Event listener for the tabs
     this.createTabs(element)
     $(`.${this.selectors.tabList}`).addEventListener('Styleguide:tabsInit', function (e) {
@@ -92,7 +92,7 @@ export class TabbedContent {
                   // set active indicator to active tabs
                   this.setAttribute('data-active', '')
                   self.dataType = this.querySelector('a').name
-                  history.replaceState({}, this.getAttribute('title'), '#' + self.dataType)
+                  window.history.replaceState({}, this.getAttribute('title'), '#' + self.dataType)
                 }
               }
             },

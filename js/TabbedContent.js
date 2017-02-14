@@ -24,7 +24,8 @@ export class TabbedContent {
         tabList: '.StyleguideTabs',
         languageClass: 'language-',
         iframeContent: 'StyleguideExample'
-      }
+      },
+      prismHighlight: ['json', 'markdown']
     }, options)
   }
 
@@ -42,8 +43,8 @@ export class TabbedContent {
 
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
-      var prismElement = this.contentWindow.document.querySelector('pre')
-      if (prismElement !== null) {
+      if (self.settings.prismHighlight.indexOf(self.dataType) > 0) {
+        var prismElement = this.contentWindow.document.querySelector('pre')
         prismElement.className = self.selectors.languageClass + self.dataType
         Prism.highlightElement(prismElement)
         let cssAppend = $.clone($('link[href="/_styleguide/index.css"]'))

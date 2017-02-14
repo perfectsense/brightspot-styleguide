@@ -3,6 +3,7 @@ import Bliss from 'bliss'
 import Prism from 'prism'
 import PrismJson from 'prism-json'
 import PrismMarkdown from 'prism-markdown'
+/* global $, $$ */
 
 export class TabbedContent {
   get selectors () {
@@ -32,7 +33,6 @@ export class TabbedContent {
     let self = this
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
-
       if (self.settings.prismMap[self.dataType] !== undefined) {
         let prismElement = this.contentWindow.document.querySelector('pre')
         prismElement.className = `language-${self.settings.prismMap[self.dataType]}`

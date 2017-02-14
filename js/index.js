@@ -2,6 +2,7 @@
 import Bliss from 'bliss'
 import Util from './util.js'
 import {TabbedContent} from './TabbedContent.js'
+/* global $, $$ */
 
 document.addEventListener('DOMContentLoaded', function (event) {
   // load tabs

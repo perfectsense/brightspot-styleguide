@@ -1,27 +1,14 @@
 /* eslint-disable no-unused-vars */
 import Bliss from 'bliss'
+import Util from './util.js'
 import {TabbedContent} from './TabbedContent.js'
 
 document.addEventListener('DOMContentLoaded', function (event) {
-  function searchToObject (search) {
-    let searchParams = search.substring(1).split('&')
-    let searchParam
-    let paramObj = {}
-
-    for (let key in searchParams) {
-      if (searchParams[key] === null) continue
-
-      searchParam = searchParams[key].split('=')
-      paramObj[ decodeURIComponent(searchParam[0]) ] = decodeURIComponent(searchParam[1])
-    }
-    return paramObj
-  }
-
   // load tabs
   let content = document.querySelector('.StyleguideContent')
   let tabbedContent = new TabbedContent(content, {})
   tabbedContent.init()
-  let searchObject = searchToObject(window.location.search)
+  let searchObject = Util.locationSearchToObject(window.location.search)
 
   $$('.StyleguideNavigation a').forEach(function (element) {
     if (element.pathname === searchObject['file']) {

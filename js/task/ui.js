@@ -306,7 +306,7 @@ module.exports = (styleguide, gulp) => {
           })
 
           // Create the index HTML file.
-          const template = handlebars.compile(fs.readFileSync(path.join(__dirname, 'index.hbs'), 'utf8'), {
+          const template = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'index.hbs'), 'utf8'), {
             preventIndent: true
           })
 
@@ -333,7 +333,7 @@ module.exports = (styleguide, gulp) => {
 
     // Convert LESS files into CSS to be used by the styleguide UI itself.
     less: () => {
-      return gulp.src(path.join(__dirname, 'index.less'))
+      return gulp.src(path.join(__dirname, '../', 'index.less'))
         .pipe(less())
         .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     },
@@ -357,7 +357,7 @@ module.exports = (styleguide, gulp) => {
         minify: false
       }
 
-      builder.buildStatic(path.join(__dirname, 'index.js'), buildOptions).then(output => {
+      builder.buildStatic(path.join(__dirname, '../', 'index.js'), buildOptions).then(output => {
         gulp.src([ ])
           .pipe(plugins.file('index.js', output.source))
           .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))

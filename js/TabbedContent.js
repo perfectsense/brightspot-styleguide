@@ -43,7 +43,7 @@ export class TabbedContent {
 
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
-      if (self.settings.prismHighlight.indexOf(self.dataType) > 0) {
+      if (self.settings.prismHighlight.indexOf(self.dataType) >= 0) {
         var prismElement = this.contentWindow.document.querySelector('pre')
         prismElement.className = self.selectors.languageClass + self.dataType
         Prism.highlightElement(prismElement)

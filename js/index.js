@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import Bliss from 'bliss'
-import {TabbedContent} from '../TabbedContent.js'
+import {TabbedContent} from './TabbedContent.js'
 
 document.addEventListener('DOMContentLoaded', function (event) {
   function searchToObject (search) {

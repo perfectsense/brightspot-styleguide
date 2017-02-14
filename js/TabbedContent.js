@@ -77,7 +77,7 @@ export class TabbedContent {
     // loop through json object to generate tabs
     for (let key in dataSources) {
       if (dataSources.hasOwnProperty(key)) {
-        let iframeSrc = baseURL[0] + '.' + key
+        let iframeSrc = `${baseURL[0]}.${key}`
         let index = Object.keys(dataSources).indexOf(key)
         let tabItem = $.create('li',
           {
@@ -92,7 +92,7 @@ export class TabbedContent {
                   // set active indicator to active tabs
                   this.setAttribute('data-active', '')
                   self.dataType = this.querySelector('a').name
-                  window.history.replaceState({}, this.getAttribute('title'), '#' + self.dataType)
+                  window.history.replaceState({}, this.getAttribute('title'), `#${self.dataType}`)
                 }
               }
             },

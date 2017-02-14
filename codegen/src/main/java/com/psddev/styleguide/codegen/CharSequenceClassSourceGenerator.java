@@ -15,7 +15,7 @@ import static com.psddev.styleguide.codegen.ViewClassStringUtils.indent;
  */
 class CharSequenceClassSourceGenerator {
 
-    static final String PACKAGE_NAME = "styleguide.core";
+    static final String PACKAGE_NAME = "com.psddev.styleguide";
 
     static final String PLAIN_TEXT_CLASS_NAME = "PlainText";
     static final String RAW_HTML_CLASS_NAME = "RawHtml";

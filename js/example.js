@@ -8,6 +8,7 @@ const traverse = require('traverse')
 
 const DataGenerator = require('./data-generator')
 const resolver = require('./resolver')
+const Util = require('./util')
 
 module.exports = function (styleguide, filePath) {
   const buildPath = styleguide.path.build()
@@ -78,7 +79,7 @@ module.exports = function (styleguide, filePath) {
   }
 
   // post-process the JSON data.
-  new DataGenerator(styleguide).process(data)
+  new DataGenerator(styleguide, Util.getCommandLineArg('randomSeed')).process(data)
 
   // Set up Handlebars cache.
   var compiledTemplates = { }

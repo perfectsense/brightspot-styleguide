@@ -7,9 +7,9 @@ const traverse = require('traverse')
 const placeholderImage = require('./placeholder-image')
 const Util = require('./util')
 
-function DataGenerator (styleguide) {
+function DataGenerator (styleguide, seed) {
   this.styleguide = styleguide
-  this.chance = new Chance()
+  this.chance = (seed) ? new Chance(seed) : new Chance()
 }
 
 DataGenerator.prototype.date = function (format) {

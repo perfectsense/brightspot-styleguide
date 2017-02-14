@@ -34,7 +34,7 @@ export class TabbedContent {
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       if (self.settings.prismHighlight.indexOf(self.dataType) >= 0) {
-        var prismElement = this.contentWindow.document.querySelector('pre')
+        let prismElement = this.contentWindow.document.querySelector('pre')
         prismElement.className = self.selectors.languageClass + self.dataType
         Prism.highlightElement(prismElement)
         let cssAppend = $.clone($('link[href="/_styleguide/index.css"]'))
@@ -75,7 +75,7 @@ export class TabbedContent {
       tabList.removeChild(tabList.lastChild)
     }
     // loop through json object to generate tabs
-    for (var key in dataSources) {
+    for (let key in dataSources) {
       if (dataSources.hasOwnProperty(key)) {
         let iframeSrc = baseURL[0] + '.' + key
         let index = Object.keys(dataSources).indexOf(key)

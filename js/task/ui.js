@@ -292,7 +292,7 @@ module.exports = (styleguide, gulp) => {
             }
 
             if (fs.existsSync(gutil.replaceExtension(path.join(styleguide.path.build(), match), '.md'))) {
-              item.source = Object.assign(item.source, {'md': 'Markdown'})
+              item.source = Object.assign(item.source, {'md': 'Documentation'})
             }
 
             group.examples.push(item)

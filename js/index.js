@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
       })
       this.setAttribute('data-active', '')
       tabbedContent.createTabs(this)
-      if (event.target.classList.contains('fa-external-link')) {
+      if (event.target.classList.contains('StyleguideGroups-examples-externalLink')) {
         window.open(this.href)
       }
     })

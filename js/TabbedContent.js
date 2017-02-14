@@ -81,6 +81,7 @@ export class TabbedContent {
         let index = Object.keys(dataSources).indexOf(key)
         let tabItem = $.create('li',
           {
+            className: `${self.selectors.tabList}-item`,
             delegate: {
               click: {
                 a: function () {
@@ -97,7 +98,7 @@ export class TabbedContent {
               }
             },
             contents: {
-              tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample', name: dataSources[key].toLowerCase()
+              tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample', name: dataSources[key].toLowerCase(), className: `${self.selectors.tabList}-link`
             }
           })
         if (index === 0) {

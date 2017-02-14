@@ -90,15 +90,24 @@ module.exports = (styleguide, gulp) => {
                 // Create the template that delegates to the styled ones.
                 styledTemplates[styledTemplate] = ''
 
+                function appendStyledTemplate (template) {
+                  const templatePath = resolver.path(rootPath, configPath, template.template)
+
+                  styledTemplates[styledTemplate] += `{{#withParentPath '${path.relative(styleguide.path.build(), templatePath)}'}}`
+                  styledTemplates[styledTemplate] += fs.readFileSync(templatePath, 'utf8')
+                  styledTemplates[styledTemplate] += '{{/withParentPath}}'
+                }
+
                 for (let i = templates.length - 1; i > 0; --i) {
                   const template = templates[i]
                   const internalName = template.internalName || template.template
-                  const templatePath = resolver.path(rootPath, configPath, template.template)
 
-                  styledTemplates[styledTemplate] += `{{#styledTemplate '${internalName}'}}${fs.readFileSync(templatePath, 'utf8')}{{else}}`
+                  styledTemplates[styledTemplate] += `{{#styledTemplate '${internalName}'}}`
+                  appendStyledTemplate(template)
+                  styledTemplates[styledTemplate] += '{{else}}'
                 }
 
-                styledTemplates[styledTemplate] += fs.readFileSync(path.join(styleguide.path.root(), templates[0].template), 'utf8')
+                appendStyledTemplate(templates[0])
 
                 for (let i = templates.length - 1; i > 0; --i) {
                   styledTemplates[styledTemplate] += '{{/styledTemplate}}'

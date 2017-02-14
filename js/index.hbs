@@ -20,7 +20,7 @@
                             <h3 class="StyleguideGroups-name">{{name}}</h3>
                             <ul class="StyleguideGroups-examples">
                                 {{#each examples}}
-                                    <li class="StyleguideGroups-examples-example"><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample" {{#if source}}data-source='{{{jsonToString source}}}'{{/if}}>{{name}}<i class="fa fa-external-link"></i></a>
+                                    <li class="StyleguideGroups-examples-example"><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample" {{#if source}}data-source='{{{jsonObject source}}}'{{/if}}>{{name}}<i class="fa fa-external-link"></i></a>
                                     </li>
                                 {{/each}}
                             </ul>

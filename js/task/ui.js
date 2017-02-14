@@ -282,7 +282,7 @@ module.exports = (styleguide, gulp) => {
             let item = {}
             item.name = label(path.basename(match, '.html'))
             item.url = '/' + gutil.replaceExtension(match, '.html')
-            item.source = {'html': 'Main', 'json': 'JSON'}
+            item.source = {'html': 'Example', 'json': 'JSON'}
 
             if (!group) {
               group = groupByName[groupName] = {

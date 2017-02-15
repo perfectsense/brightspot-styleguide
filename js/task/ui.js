@@ -83,7 +83,7 @@ module.exports = (styleguide, gulp) => {
                     const styledExamplePath = gutil.replaceExtension(resolver.path(rootPath, configPath, template.template), '.json')
 
                     fs.mkdirsSync(path.dirname(styledExamplePath))
-                    fs.writeFileSync(styledExamplePath, JSON.stringify(exampleJson))
+                    fs.writeFileSync(styledExamplePath, JSON.stringify(exampleJson, null, '\t'))
                   })
                 }
 
@@ -208,7 +208,7 @@ module.exports = (styleguide, gulp) => {
                       const themeExamplePath = path.join(themeDir, examplePath)
 
                       fs.mkdirsSync(path.dirname(themeExamplePath))
-                      fs.writeFileSync(themeExamplePath, JSON.stringify(exampleJson))
+                      fs.writeFileSync(themeExamplePath, JSON.stringify(exampleJson, null, '\t'))
                     })
                   }
                 })

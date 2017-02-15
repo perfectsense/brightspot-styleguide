@@ -68,7 +68,7 @@ export class TabbedContent {
     let tabList = $(`.${this.selectors.tabList}`)
     let self = this
     // unbind old tabs
-    tabList.querySelectorAll('li').forEach((element) => {
+    Array.prototype.slice.call(tabList.querySelectorAll('li')).forEach((element) => {
       element._.unbind('click')
     })
     // remove old tabs
@@ -91,7 +91,7 @@ export class TabbedContent {
                 a: function () {
                   let tabsList = this.parentNode
                   // remove active indicator from all tabs
-                  tabsList.querySelectorAll('li').forEach((element) => {
+                  Array.prototype.slice.call(tabsList.querySelectorAll('li')).forEach((element) => {
                     element.removeAttribute('data-active')
                   })
                   // set active indicator to active tabs

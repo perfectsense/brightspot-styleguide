@@ -1,11 +1,4 @@
-const commandLineArguments = require('minimist')(process.argv.slice(2))
-
 var Util = {
-
-  getCommandLineArg: (name) => {
-    return commandLineArguments[name]
-  },
-
   getfullDay: function (day) {
     var fullDay
     switch (day) {

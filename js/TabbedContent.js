@@ -45,7 +45,6 @@ export class TabbedContent {
   }
 
   initTabs (element) {
-
     // Event listener for the tabs
     this.createTabs(element)
     $(`.${this.selectors.tabList}`).addEventListener('Styleguide:tabsInit', function (e) {

@@ -31,6 +31,7 @@ export class TabbedContent {
 
   init () {
     let self = this
+    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.iframeContent}`))
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       if (self.settings.prismMap[self.dataType] !== undefined) {
@@ -44,7 +45,7 @@ export class TabbedContent {
   }
 
   initTabs (element) {
-    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.iframeContent}`))
+
     // Event listener for the tabs
     this.createTabs(element)
     $(`.${this.selectors.tabList}`).addEventListener('Styleguide:tabsInit', function (e) {
@@ -74,6 +75,9 @@ export class TabbedContent {
     while (tabList.lastChild) {
       tabList.removeChild(tabList.lastChild)
     }
+    // init to first datatype
+    self.dataType = dataSources[Object.keys(dataSources)[0]]
+
     // loop through json object to generate tabs
     for (let key in dataSources) {
       if (dataSources.hasOwnProperty(key)) {

@@ -1,5 +1,6 @@
 const express = require('express')
 
+const path = require('path')
 const logger = require('./logger')
 
 module.exports = config => {
@@ -12,6 +13,10 @@ module.exports = config => {
   const app = express()
 
   app.use(express.static(config.build))
+
+  app.post('/node_modules/brightspot-express/styleguide/*', function (req, res) {
+    res.sendFile(path.join(config.build, req.originalUrl))
+  })
 
   const server = app.listen(config.port, config.host, () => {
     logger.success(`Server started on http://${config.host}:${config.port}/_styleguide/index.html`)

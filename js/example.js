@@ -80,9 +80,6 @@ module.exports = function (styleguide, filePath) {
   // post-process the JSON data.
   new DataGenerator(styleguide).process(data)
 
-  // Set up Handlebars cache.
-  var compiledTemplates = { }
-
   function renderTemplate (data) {
     var templatePath = data._template
 
@@ -91,13 +88,12 @@ module.exports = function (styleguide, filePath) {
       return renderJsonTemplate(data)
     }
 
-    var compiledTemplate = compiledTemplates[templatePath]
+    var compiledTemplate = styleguide.templateCache[templatePath]
 
     if (!compiledTemplate) {
       var template = fs.readFileSync(templatePath, 'utf8')
-
       compiledTemplate = handlebars.compile(template)
-      compiledTemplates[templatePath] = compiledTemplate
+      styleguide.templateCache[templatePath] = compiledTemplate
     }
 
     return compiledTemplate(data)

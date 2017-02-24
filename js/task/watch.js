@@ -1,8 +1,10 @@
+/* eslint-disable no-unused-vars */
 const logger = require('../logger')
 const plugins = require('gulp-load-plugins')()
 const path = require('path')
-const fs = require('fs')
-const env = require('dotenv').config()
+const dotenv = require('dotenv').config()
+
+/* eslint-enable no-unused-vars */
 
 module.exports = (styleguide, gulp) => {
   this.watching = false

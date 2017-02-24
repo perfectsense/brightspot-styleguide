@@ -32,7 +32,6 @@ module.exports = (styleguide, gulp) => {
   styleguide.watch.js = () => {
     gulp.watch('styleguide/**/*.js', { cwd: styleguide.path.root() }, deps(styleguide.task.js()))
       .on('change', onChange)
-    debugger
     // waiting for change in the minified file before copying unminified to minified
     if (process.env.JS_MIN !== 'true') {
       gulp.watch('styleguide/All.min.js', { cwd: styleguide.path.build() })

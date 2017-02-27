@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 const logger = require('../logger')
+const dotenv = require('dotenv').config()
 const plugins = require('gulp-load-plugins')()
 const path = require('path')
-const dotenv = require('dotenv').config()
 
 /* eslint-enable no-unused-vars */
 

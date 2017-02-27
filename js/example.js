@@ -116,6 +116,10 @@ module.exports = function (styleguide, filePath) {
   // Returns all pairs who's keyname doesn't start with an '_'
   function removePrivateKeys (data) {
     return _.omit(data, function (value, key) {
+      if (Object(value) === value) {
+        removePrivateKeys(value)
+      }
+
       return _.startsWith(key, '_')
         && !_.eq(key, '_view')
     })

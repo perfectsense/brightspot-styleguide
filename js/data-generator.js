@@ -179,6 +179,8 @@ DataGenerator.prototype.process = function (data) {
       }))
     }
   })
+
+  return data
 }
 
 module.exports = DataGenerator

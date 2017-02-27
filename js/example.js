@@ -117,6 +117,7 @@ module.exports = function (styleguide, filePath) {
   function removePrivateKeys (data) {
     return _.omit(data, function (value, key) {
       return _.startsWith(key, '_')
+        && !_.eq(key, '_view')
     })
   }
 

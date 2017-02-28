@@ -261,6 +261,7 @@ module.exports = (styleguide, gulp) => {
       }
 
       const originalTemplates = { }
+      const styledTemplates = { }
       const configPath = path.join(getProjectRootPath(), 'styleguide/_config.json')
 
       if (fs.existsSync(configPath)) {
@@ -269,11 +270,15 @@ module.exports = (styleguide, gulp) => {
         if (styles) {
           const rootPath = styleguide.path.root()
 
-          Object.keys(styles).forEach(styledTemplate => {
-            const resolvedStyledTemplate = resolver.path(rootPath, configPath, styledTemplate)
+          Object.keys(styles).forEach(originalTemplate => {
+            const relativeOriginalTemplate = '/' + path.relative(styleguide.path.root(), resolver.path(rootPath, configPath, originalTemplate))
 
-            styles[styledTemplate].templates.forEach(template => {
-              originalTemplates[resolver.path(rootPath, configPath, template.template)] = resolvedStyledTemplate
+            styles[originalTemplate].templates.forEach(template => {
+              const relativeTemplate = '/' + path.relative(styleguide.path.build(), resolver.path(rootPath, configPath, template.template))
+
+              originalTemplates[relativeTemplate] = relativeOriginalTemplate
+              styledTemplates[relativeOriginalTemplate] = styledTemplates[relativeOriginalTemplate] || [ ]
+              styledTemplates[relativeOriginalTemplate].push(relativeTemplate)
             })
           })
         }
@@ -299,13 +304,14 @@ module.exports = (styleguide, gulp) => {
                       const template = parent.node._template
 
                       if (template) {
-                        const originalTemplate = originalTemplates[template]
+                        const relativeTemplate = '/' + path.relative(styleguide.path.build(), template)
+                        const originalTemplate = originalTemplates[relativeTemplate]
                         const index = parseInt(parent.key, 10)
 
-                        selector.unshift('/' + path.relative(styleguide.path.build(), template))
+                        selector.unshift(relativeTemplate)
 
                         if (originalTemplate) {
-                          selector.unshift('/' + path.relative(styleguide.path.root(), originalTemplate))
+                          selector.unshift(originalTemplate)
                         }
 
                         if (!isNaN(index)) {
@@ -314,7 +320,7 @@ module.exports = (styleguide, gulp) => {
                       }
                     }
 
-                    const template = selector.pop()
+                    const template = selector[selector.length - 1]
                     const field = this.key
                     const imageSize = {
                       selector: selector,
@@ -403,7 +409,12 @@ module.exports = (styleguide, gulp) => {
 
           fs.writeFileSync(
             path.join(styleguide.path.build(), '_image-sizes'),
-            JSON.stringify(imageSizes, null, '  '))
+
+            JSON.stringify({
+              originalTemplates: originalTemplates,
+              styledTemplates: styledTemplates,
+              imageSizes: imageSizes
+            }, null, '  '))
 
           done()
         })

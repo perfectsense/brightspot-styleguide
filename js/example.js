@@ -78,7 +78,7 @@ module.exports = function (styleguide, filePath) {
   }
 
   // post-process the JSON data.
-  new DataGenerator(styleguide).process(data)
+  new DataGenerator(styleguide, styleguide.randomSeed()).process(data)
 
   // Set up Handlebars cache.
   var compiledTemplates = { }

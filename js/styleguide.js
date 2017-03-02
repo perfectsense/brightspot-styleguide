@@ -99,6 +99,9 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
     root: () => config.root
   }
 
+  // random seed API
+  this.randomSeed = () => config.randomSeed
+
   // Variables in config to be used in example JSON files.
   this.var = (name) => config.vars ? config.vars[name] : null
 

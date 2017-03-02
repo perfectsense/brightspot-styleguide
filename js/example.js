@@ -366,6 +366,6 @@ module.exports = function (styleguide, filePath) {
 
   return {
     data: _.cloneDeep(data),
-    html: template({ data: convert(new DataGenerator(styleguide).process(data)) })
+    html: template({ data: convert(new DataGenerator(styleguide, styleguide.randomSeed()).process(data)) })
   }
 }

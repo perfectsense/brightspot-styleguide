@@ -77,9 +77,6 @@ module.exports = function (styleguide, filePath) {
     }
   }
 
-  // post-process the JSON data.
-  new DataGenerator(styleguide, styleguide.randomSeed()).process(data)
-
   // Set up Handlebars cache.
   var compiledTemplates = { }
 
@@ -367,5 +364,8 @@ module.exports = function (styleguide, filePath) {
     }
   }))
 
-  return template({ data: convert(data) })
+  return {
+    data: _.cloneDeep(data),
+    html: template({ data: convert(new DataGenerator(styleguide, styleguide.randomSeed()).process(data)) })
+  }
 }

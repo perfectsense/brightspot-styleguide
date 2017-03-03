@@ -249,17 +249,102 @@ module.exports = (styleguide, gulp) => {
 
     // Convert example JSON files to HTML.
     html: done => {
+      const imageSizes = { }
+
+      function addImageSize (template, field, imageSize) {
+        if (!template) return
+        let x = imageSizes[template]
+        if (!x) x = imageSizes[template] = { }
+        let y = x[field]
+        if (!y) y = imageSizes[template][field] = [ ]
+        y.push(imageSize)
+      }
+
+      const originalTemplates = { }
+      const styledTemplates = { }
+      const configPath = path.join(getProjectRootPath(), 'styleguide/_config.json')
+
+      if (fs.existsSync(configPath)) {
+        const styles = JSON.parse(fs.readFileSync(configPath, 'utf8')).styles
+
+        if (styles) {
+          const rootPath = styleguide.path.root()
+
+          Object.keys(styles).forEach(originalTemplate => {
+            const relativeOriginalTemplate = '/' + path.relative(styleguide.path.root(), resolver.path(rootPath, configPath, originalTemplate))
+
+            styles[originalTemplate].templates.forEach(template => {
+              const relativeTemplate = '/' + path.relative(styleguide.path.build(), resolver.path(rootPath, configPath, template.template))
+
+              originalTemplates[relativeTemplate] = relativeOriginalTemplate
+              styledTemplates[relativeOriginalTemplate] = styledTemplates[relativeOriginalTemplate] || [ ]
+              styledTemplates[relativeOriginalTemplate].push(relativeTemplate)
+            })
+          })
+        }
+      }
+
       function jsonToHtml (file, encoding, callback) {
         const filePath = file.path
         const fileName = path.basename(filePath)
 
         if (fileName !== 'package.json' && fileName.slice(0, 1) !== '_') {
           try {
-            const html = example(styleguide, filePath)
+            const processedExample = example(styleguide, filePath)
 
-            if (html) {
+            if (processedExample) {
+              traverse(processedExample.data).forEach(function (value) {
+                if (typeof value === 'string') {
+                  const match = value.match(/\{\{\s*image\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)\s*}}/)
+
+                  if (match) {
+                    const selector = [ ]
+
+                    for (let parent = this.parent; parent; parent = parent.parent) {
+                      const template = parent.node._template
+
+                      if (template) {
+                        const relativeTemplate = '/' + path.relative(styleguide.path.build(), template)
+                        const originalTemplate = originalTemplates[relativeTemplate]
+                        const index = parseInt(parent.key, 10)
+
+                        selector.unshift(relativeTemplate)
+
+                        if (originalTemplate) {
+                          selector.unshift(originalTemplate)
+                        }
+
+                        if (!isNaN(index)) {
+                          const grandparent = parent.parent
+                          const grandparentTemplate = grandparent.parent.node._template
+                          console.log(grandparent.parent.node._template)
+
+                          if (grandparentTemplate) {
+                            const grandparentKey = '/' + path.relative(styleguide.path.build(), grandparentTemplate) + ':' + grandparent.key
+
+                            selector.unshift(grandparentKey + ':' + index)
+                            selector.unshift(grandparentKey)
+                          }
+                        }
+                      }
+                    }
+
+                    const template = selector[selector.length - 1]
+                    const field = this.key
+                    const imageSize = {
+                      selector: selector,
+                      width: parseInt(match[1], 10),
+                      height: parseInt(match[2], 10)
+                    }
+
+                    addImageSize(template, field, imageSize)
+                    addImageSize(originalTemplates[template], field, imageSize)
+                  }
+                }
+              })
+
               file.base = styleguide.path.build()
-              file.contents = Buffer.from(html)
+              file.contents = Buffer.from(processedExample.html)
               file.path = gutil.replaceExtension(filePath, '.html')
               this.push(file)
             }
@@ -330,6 +415,15 @@ module.exports = (styleguide, gulp) => {
           del.sync([
             path.join(packageDir, '**/_theme.json')
           ])
+
+          fs.writeFileSync(
+            path.join(styleguide.path.build(), '_image-sizes'),
+
+            JSON.stringify({
+              originalTemplates: originalTemplates,
+              styledTemplates: styledTemplates,
+              imageSizes: imageSizes
+            }, null, '  '))
 
           done()
         })

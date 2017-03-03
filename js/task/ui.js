@@ -317,7 +317,6 @@ module.exports = (styleguide, gulp) => {
                         if (!isNaN(index)) {
                           const grandparent = parent.parent
                           const grandparentTemplate = grandparent.parent.node._template
-                          console.log(grandparent.parent.node._template)
 
                           if (grandparentTemplate) {
                             const grandparentKey = '/' + path.relative(styleguide.path.build(), grandparentTemplate) + ':' + grandparent.key

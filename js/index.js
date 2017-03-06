@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import Bliss from 'bliss'
+import {DeviceViewport} from './DeviceViewport.js'
 import Util from './util.js'
 import {TabbedContent} from './TabbedContent.js'
 /* global $, $$ */
@@ -7,6 +8,9 @@ import {TabbedContent} from './TabbedContent.js'
 document.addEventListener('DOMContentLoaded', function (event) {
   // load tabs
   let content = document.querySelector('.StyleguideContent')
+
+  let deviceViewport = new DeviceViewport(content, {})
+  deviceViewport.init()
   let tabbedContent = new TabbedContent(content, {})
   tabbedContent.init()
   let searchObject = Util.locationSearchToObject(window.location.search)

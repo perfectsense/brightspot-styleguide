@@ -15,31 +15,31 @@ let defaults = {
   devices: [
     {
       name: 'Mobile - Portrait',
-      icon: 'fa fa-mobile',
+      icon: 'StyleguideDevices-mobile',
       width: 320,
       height: 480
     },
     {
       name: 'Mobile - Landscape',
-      icon: 'fa fa-mobile fa-rotate-270',
+      icon: 'StyleguideDevices-mobile-rotate-270',
       width: 480,
       height: 320
     },
     {
       name: 'Tablet - Portrait',
-      icon: 'fa fa-tablet',
+      icon: 'StyleguideDevices-tablet',
       width: 768,
       height: 1024
     },
     {
       name: 'Tablet - Landscape',
-      icon: 'fa fa-tablet fa-rotate-270',
+      icon: 'StyleguideDevices-tablet-rotate-270',
       width: 1024,
       height: 768
     },
     {
       name: 'Desktop',
-      icon: 'fa fa-desktop',
+      icon: 'StyleguideDevices-desktop',
       width: 1200,
       height: 600
     }
@@ -97,6 +97,10 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   this.path = {
     build: () => config.build,
     root: () => config.root
+  }
+
+  this.devices = () => {
+    return config.devices
   }
 
   // Variables in config to be used in example JSON files.

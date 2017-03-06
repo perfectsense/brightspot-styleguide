@@ -18,11 +18,20 @@ export class TabbedContent {
     this._dataType = data
   }
 
+  get iframeStyle () {
+    return this._iframeStyle
+  }
+
+  set iframeStyle (style) {
+    this._iframeStyle = style
+  }
+
   constructor (ctx, options = {}) {
     this.ctx = ctx
     this.settings = Object.assign({}, {
       selectors: {
         tabList: 'StyleguideTabs',
+        content: 'StyleguideContent',
         iframeContent: 'StyleguideExample'
       },
       prismMap: {'json': 'json', 'documentation': 'markdown'}
@@ -31,7 +40,7 @@ export class TabbedContent {
 
   init () {
     let self = this
-    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.iframeContent}`))
+    $.create('ul', {className: this.selectors.tabList})._.start($(`.${this.selectors.content}`))
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       if (self.settings.prismMap[self.dataType] !== undefined) {
@@ -66,6 +75,7 @@ export class TabbedContent {
     let baseURL = element.getAttribute('href').split('.html')
     let tabList = $(`.${this.selectors.tabList}`)
     let self = this
+
     // unbind old tabs
     Array.prototype.slice.call(tabList.querySelectorAll('li')).forEach((element) => {
       element._.unbind('click')
@@ -89,13 +99,21 @@ export class TabbedContent {
               click: {
                 a: function () {
                   let tabsList = this.parentNode
+                  self.dataType = this.querySelector('a').name
                   // remove active indicator from all tabs
                   Array.prototype.slice.call(tabsList.querySelectorAll('li')).forEach((element) => {
                     element.removeAttribute('data-active')
                   })
+                  // allows iframe to retain style property if example
+                  $(`.${self.selectors.tabList}`).setAttribute('data-viewportsize', self.dataType)
+                  self.iframeStyle = $(`.${self.selectors.iframeContent}`).getAttribute('style')
+                  if (self.dataType !== 'example') {
+                    $(`.${self.selectors.iframeContent}`).style = ''
+                  } else {
+                    $(`.${self.selectors.iframeContent}`).style = self.iframeStyle
+                  }
                   // set active indicator to active tabs
                   this.setAttribute('data-active', '')
-                  self.dataType = this.querySelector('a').name
                   window.history.replaceState({}, this.getAttribute('title'), `#${self.dataType}`)
                 }
               }
@@ -105,6 +123,7 @@ export class TabbedContent {
             }
           })
         if (index === 0) {
+          $(`.${self.selectors.tabList}`).setAttribute('data-viewportsize', dataSources[key].toLowerCase())
           tabItem.setAttribute('data-active', '')
         }
         $(`.${this.selectors.tabList}`)._.contents(tabItem)

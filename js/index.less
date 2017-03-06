@@ -186,16 +186,19 @@ body {
 }
 
 .StyleguideExample {
-    border: 0;
-    display: block;
-    height: ~'calc(100% - 87px)';
-    margin: 20px;
-    width: ~'calc(100% - 40px)';
+  height: ~'calc(100% - 61px)';
+  width: 100%;
+  border: 10px solid #ededed;
+  display: block;
 }
 
 .StyleguideTabs {
   margin: 0;
   background-color: #ededed;
+
+  &:not([data-viewportsize=example]) ~ .StyleguideDevices {
+    display: none;
+  }
 
   &-item {
     display: inline-block;
@@ -232,5 +235,78 @@ body {
     [data-tab=md][data-source] {
       display: block;
     }
+  }
+}
+
+.StyleguideDevices {
+  padding: 10px;
+
+  button {
+      color: #008dbb;
+      outline: 0;
+      border: 0;
+      background: transparent;
+
+    &[data-active] {
+      color: black;
+    }
+  }
+
+  &-reset {
+
+    &:before {
+      .fa;
+       content: @fa-var-ban;
+    }
+  }
+
+  &-mobile {
+
+    &:before {
+      .fa;
+       content: @fa-var-mobile;
+    }
+  }
+
+  &-mobile-rotate-270 {
+
+    &:before {
+      .fa;
+      .fa-rotate-270;
+      content: @fa-var-mobile;
+    }
+  }
+
+  &-tablet {
+
+    &:before {
+      .fa;
+       content: @fa-var-tablet;
+    }
+  }
+
+  &-tablet-rotate-270 {
+
+    &:before {
+      .fa;
+      .fa-rotate-270;
+      content: @fa-var-tablet;
+    }
+  }
+
+  &-desktop {
+
+    &:before {
+      .fa;
+       content: @fa-var-desktop;
+    }
+  }
+
+  &-width,
+  &-height {
+    color: black;
+    border: 0;
+    width: 50px;
+    text-align: center;
   }
 }

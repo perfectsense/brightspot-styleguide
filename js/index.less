@@ -28,7 +28,11 @@
     font-size: 100%;
 }
 
-body {
+pre[class*='language-'] {
+  background: transparent;
+}
+
+.StyleguideBody {
     background: #c9c9c9;
     color: #262626;
     font-family: 'Open Sans', sans-serif;
@@ -209,8 +213,15 @@ body {
     width: ~'calc(100% - 40px)';
 }
 
+.StyleguideContent-title {
+  font-size: 18px;
+  font-weight: 400;
+  margin: 25px 20px;
+}
+
 .StyleguideTabs {
-  margin: 0;
+  margin: 0 20px;
+  padding: 0;
   position: relative;
 
   &-item {

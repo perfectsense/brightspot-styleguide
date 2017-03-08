@@ -1,0 +1,288 @@
+@import (inline) 'node_modules/normalize.css/normalize.css';
+@import (inline) 'node_modules/prismjs/themes/prism.css';
+
+/*!
+ *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
+
+@import 'node_modules/font-awesome/less/variables';
+@fa-font-path: '.';
+@import 'node_modules/font-awesome/less/mixins';
+@import 'node_modules/font-awesome/less/path';
+@import 'node_modules/font-awesome/less/core';
+@import 'node_modules/font-awesome/less/larger';
+@import 'node_modules/font-awesome/less/fixed-width';
+@import 'node_modules/font-awesome/less/list';
+@import 'node_modules/font-awesome/less/bordered-pulled';
+@import 'node_modules/font-awesome/less/animated';
+@import 'node_modules/font-awesome/less/rotated-flipped';
+@import 'node_modules/font-awesome/less/stacked';
+@import 'node_modules/font-awesome/less/icons';
+@import 'node_modules/font-awesome/less/screen-reader';
+
+*,
+*:after,
+*:before {
+    box-sizing: border-box;
+    font-size: 100%;
+}
+
+pre[class*='language-'] {
+  background: transparent;
+}
+
+.StyleguideBody {
+    background: #c9c9c9;
+    color: #262626;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+
+    &[data-iframed] {
+        background: transparent;
+    }
+}
+
+.StyleguideHeader {
+    background: white;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    height: 70px;
+    left: 0;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+
+    body[data-iframed] & {
+        display: none;
+    }
+}
+
+.StyleguideTitle {
+    font-size: 25px;
+    margin: 0;
+    line-height: 50px;
+    text-transform: uppercase;
+}
+
+.StyleguideNavigation,
+.StyleguideContent {
+    background: white;
+    border: 1px solid white;
+    border-radius: 2px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+
+    body[data-iframed] & {
+        border: 0;
+        box-shadow: none;
+    }
+}
+
+.StyleguideNavigation {
+    bottom: 20px;
+    left: 20px;
+    position: fixed;
+    top: 90px;
+    width: 240px;
+
+    body[data-iframed] & {
+        background: transparent;
+        top: 20px;
+    }
+
+    &-title {
+        background: #ededed;
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+        font-weight: 700;
+        height: 36px;
+        line-height: 36px;
+        margin: 0;
+        padding: 0 20px;
+        text-shadow: white 1px 1px 1px;
+
+        body[data-iframed] & {
+            display: none;
+        }
+    }
+
+    &-content {
+        bottom: 20px;
+        left: 0;
+        overflow: auto;
+        position: absolute;
+        right: 0;
+        top: 56px;
+
+        body[data-iframed] & {
+            top: 0;
+        }
+    }
+}
+
+.StyleguideGroups {
+    list-style: none;
+    margin: 0 20px;
+    padding: 0;
+
+    &-name {
+        font-weight: 700;
+        margin: 0 0 10px 0;
+    }
+
+    &-examples {
+        list-style: none;
+        margin: 0 0 20px 0;
+        padding: 0;
+    }
+
+  &-examples-link {
+        &:hover {
+            background: #ebf8fc;
+            margin-left: -20px;
+            margin-right: -20px;
+            padding-left: 20px;
+            padding-right: 20px;
+
+            .StyleguideGroups-examples-externalLink {
+              opacity: 1;
+            }
+        }
+    }
+
+    &-examples-externalLink {
+      position: absolute;
+      top: 0;
+      right: 0;
+      opacity: 0;
+      height: 100%;
+      width: 20px;
+
+      &:hover {
+        background-color: #008dbb;
+        border-radius: 2px;
+        color: #fff;
+      }
+
+      &:before {
+        position: absolute;
+        top: 50%;
+        margin-top: -7px;
+        right: 3px;
+        .fa;
+         content: @fa-var-external-link;
+      }
+    }
+
+    &-examples-link {
+        border-bottom: 1px solid #e6e6e6;
+        color: #008dbb;
+        display: block;
+        padding: 8px 0 9px 0;
+        text-decoration: none;
+        position: relative;
+
+        &[data-active] {
+          background: #ebf8fc;
+          margin-left: -20px;
+          margin-right: -20px;
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+    }
+}
+
+.StyleguideContent {
+  position: fixed;
+  bottom: 20px;
+  left: 270px;
+  right: 20px;
+  top: 90px;
+
+  body[data-iframed] & {
+      top: 20px;
+  }
+}
+
+.StyleguideExample {
+    border: 0;
+    display: block;
+    height: ~'calc(100% - 134px)';
+    margin: 20px;
+    width: ~'calc(100% - 40px)';
+}
+
+.StyleguideContent-title {
+  font-size: 18px;
+  font-weight: 400;
+  margin: 25px 20px;
+}
+
+.StyleguideTabs {
+  margin: 0 20px;
+  padding: 0;
+  position: relative;
+
+  &-item {
+    display: inline-block;
+
+    &[data-active] a {
+      color: #262626;
+      background-color: white;
+      cursor: auto;
+
+      &:before {
+        opacity: 1;
+        top: 0;
+      }
+    }
+  }
+
+  &-link {
+    cursor: pointer;
+    display: inherit;
+    position: relative;
+    font-weight: 700;
+    color: #008dbb;
+    padding: 10px 20px;
+    text-decoration: none;
+
+    &:before {
+      border-color: #c9c9c9 #c9c9c9 #fff #c9c9c9;
+      border-radius: 2px 2px 0 0;
+      border-style: solid;
+      border-width: 1px;
+      bottom: 0;
+      content: '';
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      right: 0;
+      top: 35px;
+      transition: all 0.3s;
+    }
+  }
+
+  &-wrapper {
+    position: relative;
+
+    [data-tab=md] {
+      display: none;
+    }
+
+    [data-tab=md][data-source] {
+      display: block;
+    }
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background: #c9c9c9;
+  }
+}

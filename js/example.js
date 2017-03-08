@@ -202,11 +202,11 @@ module.exports = function (styleguide, filePath) {
       return
     }
 
-    if (!context.data.root.jsonObject) {
-      return
+    try {
+      jsonObjectData = context.data.root.jsonObject
+    } catch (e) {
+      jsonObjectData = context
     }
-
-    jsonObjectData = context.data.root.jsonObject
 
     return new handlebars.SafeString(JSON.stringify(jsonObjectData))
   })

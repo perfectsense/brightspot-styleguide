@@ -34,7 +34,7 @@ module.exports = (styleguide, gulp) => {
       // Pretend that the project is a package.
       const projectFiles = [
         path.join(styleguide.path.root(), 'package.json'),
-        path.join(styleguide.path.root(), 'styleguide/**/*.{hbs,json}')
+        path.join(styleguide.path.root(), 'styleguide/**/*.{hbs,json,md}')
       ]
 
       const projectRootPath = getProjectRootPath()
@@ -83,7 +83,7 @@ module.exports = (styleguide, gulp) => {
                     const styledExamplePath = gutil.replaceExtension(resolver.path(rootPath, configPath, template.template), '.json')
 
                     fs.mkdirsSync(path.dirname(styledExamplePath))
-                    fs.writeFileSync(styledExamplePath, JSON.stringify(exampleJson))
+                    fs.writeFileSync(styledExamplePath, JSON.stringify(exampleJson, null, '\t'))
                   })
                 }
 
@@ -217,7 +217,7 @@ module.exports = (styleguide, gulp) => {
                       const themeExamplePath = path.join(themeDir, examplePath)
 
                       fs.mkdirsSync(path.dirname(themeExamplePath))
-                      fs.writeFileSync(themeExamplePath, JSON.stringify(exampleJson))
+                      fs.writeFileSync(themeExamplePath, JSON.stringify(exampleJson, null, '\t'))
                     })
                   }
                 })
@@ -372,6 +372,10 @@ module.exports = (styleguide, gulp) => {
           glob.sync('**/*.html', { cwd: styleguide.path.build() }).forEach(match => {
             const groupName = path.dirname(path.relative(path.join(projectRootPath, 'styleguide'), path.join(styleguide.path.build(), match))).split('/').map(label).join(': ')
             let group = groupByName[groupName]
+            let item = {}
+            item.name = label(path.basename(match, '.html'))
+            item.url = '/' + gutil.replaceExtension(match, '.html')
+            item.source = {'html': 'Example', 'json': 'JSON'}
 
             if (!group) {
               group = groupByName[groupName] = {
@@ -380,10 +384,11 @@ module.exports = (styleguide, gulp) => {
               }
             }
 
-            group.examples.push({
-              name: label(path.basename(match, '.html')),
-              url: '/' + gutil.replaceExtension(match, '.html')
-            })
+            if (fs.existsSync(gutil.replaceExtension(path.join(styleguide.path.build(), match), '.md'))) {
+              item.source = Object.assign(item.source, {'md': 'Documentation'})
+            }
+
+            group.examples.push(item)
           })
 
           // Sort the grouping so that the display is alphabetical.
@@ -394,7 +399,7 @@ module.exports = (styleguide, gulp) => {
           })
 
           // Create the index HTML file.
-          const template = handlebars.compile(fs.readFileSync(path.join(__dirname, 'index.hbs'), 'utf8'), {
+          const template = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'index.hbs'), 'utf8'), {
             preventIndent: true
           })
 
@@ -430,7 +435,7 @@ module.exports = (styleguide, gulp) => {
 
     // Convert LESS files into CSS to be used by the styleguide UI itself.
     less: () => {
-      return gulp.src(path.join(__dirname, 'index.less'))
+      return gulp.src(path.join(__dirname, '../', 'index.less'))
         .pipe(less())
         .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     },
@@ -443,7 +448,10 @@ module.exports = (styleguide, gulp) => {
         defaultJSExtensions: true,
         baseURL: path.join(__dirname, '../../'),
         map: {
-          'bliss': 'node_modules/blissfuljs/bliss.min.js'
+          'bliss': 'node_modules/blissfuljs/bliss.min.js',
+          'prism': 'node_modules/prismjs/prism.js',
+          'prism-json': 'node_modules/prismjs/components/prism-json.min.js',
+          'prism-markdown': 'node_modules/prismjs/components/prism-markdown.min.js'
         }
       })
 
@@ -451,7 +459,7 @@ module.exports = (styleguide, gulp) => {
         minify: false
       }
 
-      builder.buildStatic(path.join(__dirname, 'index.js'), buildOptions).then(output => {
+      builder.buildStatic(path.join(__dirname, '../', 'index.js'), buildOptions).then(output => {
         gulp.src([ ])
           .pipe(plugins.file('index.js', output.source))
           .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))

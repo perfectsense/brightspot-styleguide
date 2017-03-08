@@ -141,6 +141,20 @@ var Util = {
     let g = Math.floor(a * parseInt(values[1]) + (1 - a) * 255)
     let b = Math.floor(a * parseInt(values[2]) + (1 - a) * 255)
     return '#' + ('0' + r.toString(16)).slice(-2) + ('0' + g.toString(16)).slice(-2) + ('0' + b.toString(16)).slice(-2)
+  },
+
+  locationSearchToObject: function (search) {
+    let searchParams = search.substring(1).split('&')
+    let searchParam
+    let paramObj = {}
+
+    for (let key in searchParams) {
+      if (searchParams[key] === null) continue
+
+      searchParam = searchParams[key].split('=')
+      paramObj[ decodeURIComponent(searchParam[0]) ] = decodeURIComponent(searchParam[1])
+    }
+    return paramObj
   }
 }
 

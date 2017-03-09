@@ -448,10 +448,10 @@ module.exports = (styleguide, gulp) => {
         defaultJSExtensions: true,
         baseURL: path.join(__dirname, '../../'),
         map: {
-          'bliss': 'node_modules/blissfuljs/bliss.min.js',
-          'prism': 'node_modules/prismjs/prism.js',
-          'prism-json': 'node_modules/prismjs/components/prism-json.min.js',
-          'prism-markdown': 'node_modules/prismjs/components/prism-markdown.min.js'
+          'bliss': require.resolve('blissfuljs/bliss.min.js'),
+          'prism': require.resolve('prismjs/prism.js'),
+          'prism-json': require.resolve('prismjs/components/prism-json.min.js'),
+          'prism-markdown': require.resolve('prismjs/components/prism-markdown.min.js')
         }
       })
 

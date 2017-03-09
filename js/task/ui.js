@@ -443,11 +443,12 @@ module.exports = (styleguide, gulp) => {
     // JavaScript transpilation to be used by the styleguide UI itself.
     js: done => {
       let builder = new Builder()
+      const indexPath = require.resolve('../index')
 
       builder.config({
         defaultJSExtensions: true,
-        baseURL: path.join(__dirname, '../../'),
-        map: {
+        baseURL: path.dirname(indexPath),
+        paths: {
           'bliss': require.resolve('blissfuljs/bliss.min.js'),
           'prism': require.resolve('prismjs/prism.js'),
           'prism-json': require.resolve('prismjs/components/prism-json.min.js'),
@@ -459,7 +460,7 @@ module.exports = (styleguide, gulp) => {
         minify: false
       }
 
-      builder.buildStatic(path.join(__dirname, '../', 'index.js'), buildOptions).then(output => {
+      builder.buildStatic(indexPath, buildOptions).then(output => {
         gulp.src([ ])
           .pipe(plugins.file('index.js', output.source))
           .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))

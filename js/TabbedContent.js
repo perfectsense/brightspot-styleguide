@@ -106,11 +106,11 @@ export class TabbedContent {
                   })
                   // allows iframe to retain style property if example
                   $(`.${self.selectors.tabList}`).setAttribute('data-viewportsize', self.dataType)
-                  self.iframeStyle = $(`.${self.selectors.iframeContent}`).getAttribute('style')
+                  self.iframeStyle = $(`.${self.selectors.iframeContent}`).parentNode.getAttribute('style')
                   if (self.dataType !== 'example') {
-                    $(`.${self.selectors.iframeContent}`).style = ''
+                    $(`.${self.selectors.iframeContent}`).parentNode.style = ''
                   } else {
-                    $(`.${self.selectors.iframeContent}`).style = self.iframeStyle
+                    $(`.${self.selectors.iframeContent}`).parentNode.style = self.iframeStyle
                   }
                   // set active indicator to active tabs
                   this.setAttribute('data-active', '')

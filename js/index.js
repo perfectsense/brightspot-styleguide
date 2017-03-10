@@ -7,20 +7,23 @@ import {TabbedContent} from './TabbedContent.js'
 
 document.addEventListener('DOMContentLoaded', function (event) {
   // load tabs
-  let content = document.querySelector('.StyleguideContent')
-
-  let deviceViewport = new DeviceViewport(content, {})
+  // initialize viewport controls
+  let viewportControls = document.querySelector('.StyleguideViewport-controls')
+  let deviceViewport = new DeviceViewport(viewportControls, {})
   deviceViewport.init()
+
+  // initialize tabs
+  let content = document.querySelector('.StyleguideContent')
   let tabbedContent = new TabbedContent(content, {})
   tabbedContent.init()
   let searchObject = Util.locationSearchToObject(window.location.search)
-
+  // loop through styleguide navigation to find matching file path and init tabs based on whats active
   $$('.StyleguideNavigation a').forEach(function (element) {
     if (element.pathname === searchObject['file']) {
       element.setAttribute('data-active', '')
       tabbedContent.initTabs(element)
     }
-
+    // bind all navigation items to a click event and create tabs for data-sources (json, markdown, ect)
     element.addEventListener('click', function (event) {
       window.history.replaceState({}, this.getAttribute('title'), '?file=' + this.pathname)
       // loop through and remove the active nav attribute

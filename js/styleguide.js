@@ -15,31 +15,31 @@ let defaults = {
   devices: [
     {
       name: 'Mobile - Portrait',
-      icon: 'StyleguideDevices-mobile',
+      icon: 'StyleguideViewport-mobile',
       width: 320,
       height: 480
     },
     {
       name: 'Mobile - Landscape',
-      icon: 'StyleguideDevices-mobile-rotate-270',
+      icon: 'StyleguideViewport-mobile-rotate-270',
       width: 480,
       height: 320
     },
     {
       name: 'Tablet - Portrait',
-      icon: 'StyleguideDevices-tablet',
+      icon: 'StyleguideViewport-tablet',
       width: 768,
       height: 1024
     },
     {
       name: 'Tablet - Landscape',
-      icon: 'StyleguideDevices-tablet-rotate-270',
+      icon: 'StyleguideViewport-tablet-rotate-270',
       width: 1024,
       height: 768
     },
     {
       name: 'Desktop',
-      icon: 'StyleguideDevices-desktop',
+      icon: 'StyleguideViewport-desktop',
       width: 1200,
       height: 600
     }

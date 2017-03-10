@@ -31,12 +31,14 @@
         </nav>
 
         <div class="StyleguideContent">
-          <div class="StyleguideDevices">
-            <button title="Reset Viewports" data-width="100%"  data-width="100%" class="StyleguideDevices-reset"></button>
+          <div class="StyleguideViewport-controls">
+            <button title="Reset Viewports" data-width="100%"  data-width="100%" class="StyleguideViewport-reset"></button>
             {{#each devices}} <button href="#" class="{{this.icon}}" title="{{this.name}}" data-viewportsize='{"width": "{{this.width}}", "height": "{{this.height}}" }'></button> {{/each}}
-            <input type="number" class="StyleguideDevices-width"  min="0" placeholder="w" /><span class="StyleguideDevices-xlabel">x</span><input type="number" class="StyleguideDevices-height"  min="0" placeholder="h" />
+            <input type="number" class="StyleguideViewport-width"  min="0" placeholder="w" /><span class="StyleguideViewport-xlabel">x</span><input type="number" class="StyleguideViewport-height"  min="0" placeholder="h" />
           </div>
+          <div class="StyleguideViewport-resize">
             <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
+          </div>
         </div>
 
     </body>

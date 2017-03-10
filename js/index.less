@@ -179,6 +179,7 @@ body {
   left: 270px;
   right: 20px;
   top: 90px;
+  overflow: auto;
 
   body[data-iframed] & {
       top: 20px;
@@ -186,9 +187,9 @@ body {
 }
 
 .StyleguideExample {
-  height: ~'calc(100% - 61px)';
+  border: 0;
+  height: 100%;
   width: 100%;
-  border: 10px solid #ededed;
   display: block;
 }
 
@@ -196,7 +197,7 @@ body {
   margin: 0;
   background-color: #ededed;
 
-  &:not([data-viewportsize=example]) ~ .StyleguideDevices {
+  &:not([data-viewportsize=example]) ~ .StyleguideViewport-controls {
     display: none;
   }
 
@@ -238,17 +239,44 @@ body {
   }
 }
 
-.StyleguideDevices {
-  padding: 10px;
+.StyleguideViewport {
 
-  button {
-      color: #008dbb;
-      outline: 0;
-      border: 0;
-      background: transparent;
+  &-controls {
+    padding: 10px;
 
-    &[data-active] {
-      color: black;
+    button {
+        color: #008dbb;
+        outline: 0;
+        border: 0;
+        background: transparent;
+
+      &[data-active] {
+        color: black;
+      }
+    }
+  }
+
+  &-resize {
+    position: relative;
+    background-color: #ededed;
+    height: ~'calc(100% - 81px)';
+    padding: 20px;
+
+    &[data-resizable] {
+      background: #ebf8fc;
+      position: relative;
+    }
+  }
+
+  &-resizer {
+    position: absolute;
+    right: 5px;
+    bottom: 2px;
+    cursor: all-scroll;
+
+    &:before {
+      .fa;
+      content: @fa-var-bars;
     }
   }
 

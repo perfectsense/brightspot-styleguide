@@ -76,6 +76,12 @@ export class TabbedContent {
     let tabList = $(`.${this.selectors.tabList}`)
     let self = this
 
+    let contentTitle = $(`.${self.selectors.content}-title`)
+    if (contentTitle !== null) {
+      contentTitle.parentNode.removeChild(contentTitle)
+    }
+    $.create('h1', {className: `${self.selectors.content}-title`, contents: element.text})._.before($(`.${this.selectors.tabList}`))
+
     // unbind old tabs
     Array.prototype.slice.call(tabList.querySelectorAll('li')).forEach((element) => {
       element._.unbind('click')

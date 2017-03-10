@@ -239,6 +239,15 @@ class ViewClassJavadocsBuilder {
             javadocLinks.add(javadocLinkBuilder.toString());
         });
 
+        if (fieldDef.hasMixedValueTypes()) {
+            javadocLinks.add("{@link "
+                    + CharSequenceClassSourceGenerator.PACKAGE_NAME
+                    + "."
+                    + CharSequenceClassSourceGenerator.PLAIN_TEXT_CLASS_NAME
+                    + " "
+                    + CharSequenceClassSourceGenerator.PLAIN_TEXT_CLASS_NAME);
+        }
+
         StringBuilder builder = new StringBuilder();
 
         if (fieldDef.getClassDefinition().getContext().isGenerateStrictTypes()) {
@@ -405,7 +414,7 @@ class ViewClassJavadocsBuilder {
             Class<? extends JsonValue> effectiveType = fieldDef.getEffectiveType();
 
             if (effectiveType == JsonList.class
-                    && ViewClassFieldNativeJavaType.STRING.equals(fieldDef.getEffectiveValueType())) {
+                    && ViewClassFieldNativeJavaType.CHAR_SEQUENCE.equals(fieldDef.getEffectiveValueType())) {
 
                 values = fieldDef.getFieldKeyValues().stream()
                         .map(Map.Entry::getValue)

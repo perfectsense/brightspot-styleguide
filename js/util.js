@@ -1,5 +1,4 @@
 var Util = {
-
   getfullDay: function (day) {
     var fullDay
     switch (day) {

@@ -28,7 +28,11 @@
     font-size: 100%;
 }
 
-body {
+pre[class*='language-'] {
+  background: transparent;
+}
+
+.StyleguideBody {
     background: #c9c9c9;
     color: #262626;
     font-family: 'Open Sans', sans-serif;
@@ -148,20 +152,36 @@ body {
     }
 
     &-examples-externalLink {
-      margin-left: 10px;
+      position: absolute;
+      top: 0;
+      right: 0;
       opacity: 0;
+      height: 100%;
+      width: 20px;
+
+      &:hover {
+        background-color: #008dbb;
+        border-radius: 2px;
+        color: #fff;
+      }
 
       &:before {
+        position: absolute;
+        top: 50%;
+        margin-top: -7px;
+        right: 3px;
         .fa;
          content: @fa-var-external-link;
       }
     }
 
     &-examples-link {
+        border-bottom: 1px solid #e6e6e6;
         color: #008dbb;
         display: block;
-        padding: 9px 0;
+        padding: 8px 0 9px 0;
         text-decoration: none;
+        position: relative;
 
         &[data-active] {
           background: #ebf8fc;
@@ -193,9 +213,16 @@ body {
   display: block;
 }
 
+.StyleguideContent-title {
+  font-size: 18px;
+  font-weight: 400;
+  margin: 25px 20px;
+}
+
 .StyleguideTabs {
-  margin: 0;
-  background-color: #ededed;
+  margin: 0 20px;
+  padding: 0;
+  position: relative;
 
   &:not([data-viewportsize=example]) ~ .StyleguideViewport-controls {
     display: none;
@@ -224,6 +251,21 @@ body {
     color: #008dbb;
     padding: 10px 20px;
     text-decoration: none;
+
+    &:before {
+      border-color: #c9c9c9 #c9c9c9 #fff #c9c9c9;
+      border-radius: 2px 2px 0 0;
+      border-style: solid;
+      border-width: 1px;
+      bottom: 0;
+      content: '';
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      right: 0;
+      top: 35px;
+      transition: all 0.3s;
+    }
   }
 
   &-wrapper {
@@ -236,6 +278,16 @@ body {
     [data-tab=md][data-source] {
       display: block;
     }
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background: #c9c9c9;
   }
 }
 

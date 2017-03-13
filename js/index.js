@@ -1,7 +1,12 @@
 /* eslint-disable no-unused-vars */
 import Bliss from 'bliss'
+import Prism from 'prism'
+import PrismJson from 'prism-json'
+import PrismMarkdown from 'prism-markdown'
+import { PrismPreviewerBase } from 'prism-previewer-base'
+import { PrismPreviewerColor } from 'prism-previewer-color'
+import { TabbedContent } from './TabbedContent.js'
 import Util from './util.js'
-import {TabbedContent} from './TabbedContent.js'
 /* global $, $$ */
 
 document.addEventListener('DOMContentLoaded', function (event) {

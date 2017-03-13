@@ -1,5 +1,7 @@
 @import (inline) 'node_modules/normalize.css/normalize.css';
 @import (inline) 'node_modules/prismjs/themes/prism.css';
+@import (inline) 'node_modules/prismjs/plugins/previewer-base/prism-previewer-base.css';
+@import (inline) 'node_modules/prismjs/plugins/previewer-color/prism-previewer-color.css';
 
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
@@ -57,26 +59,28 @@ pre[class*='language-'] {
     body[data-iframed] & {
         display: none;
     }
-}
 
-.StyleguideTitle {
-    font-size: 25px;
-    margin: 0;
-    line-height: 50px;
-    text-transform: uppercase;
+    &-title {
+      font-size: 25px;
+      margin: 0;
+      line-height: 50px;
+      text-transform: uppercase;
+
+      a {
+        color: #008dbb;
+        text-decoration: none;
+      }
+    }
 }
 
 .StyleguideNavigation,
 .StyleguideContent {
-    background: white;
-    border: 1px solid white;
-    border-radius: 2px;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+  background: white;
 
-    body[data-iframed] & {
-        border: 0;
-        box-shadow: none;
-    }
+  body[data-iframed] & {
+      border: 0;
+      box-shadow: none;
+  }
 }
 
 .StyleguideNavigation {
@@ -85,6 +89,9 @@ pre[class*='language-'] {
     position: fixed;
     top: 90px;
     width: 240px;
+    border: 1px solid white;
+    border-radius: 2px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
 
     body[data-iframed] & {
         background: transparent;
@@ -267,11 +274,11 @@ pre[class*='language-'] {
   &-wrapper {
     position: relative;
 
-    [data-tab=md] {
+    [data-tab='md'] {
       display: none;
     }
 
-    [data-tab=md][data-source] {
+    [data-tab='md'][data-source] {
       display: block;
     }
   }
@@ -284,5 +291,35 @@ pre[class*='language-'] {
     left: 0;
     height: 1px;
     background: #c9c9c9;
+  }
+}
+
+.StyleguidePage {
+  &-title {
+    background: #ededed;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    color: #262626;
+    font-size: 100%;
+    font-weight: 700;
+    height: 36px;
+    line-height: 36px;
+    overflow: hidden;
+    padding: 0 100px 0 20px;
+    text-shadow: #fff 1px 1px 1px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.StyleguideSection {
+  margin: 3em 0;
+
+  &-heading {
+    color: #262626;
+  }
+
+  &-item {
+    margin: 2em 0;
   }
 }

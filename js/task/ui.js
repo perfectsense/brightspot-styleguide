@@ -398,6 +398,40 @@ module.exports = (styleguide, gulp) => {
             groups.push(groupByName[groupName])
           })
 
+          const sketchFile = path.join(styleguide.path.root(), `sketch/Design.json`)
+          let textStyles = { }
+          let indexUrl = null
+
+          if (fs.existsSync(sketchFile)) {
+            let data = JSON.parse(fs.readFileSync(sketchFile, 'utf8'))
+            let lessData = '// lesshint hexNotation: false\n'
+            const styles = data.styles
+            textStyles = styles.filter(style => { return (style._type === `textStyle`) })
+
+            textStyles = textStyles.sort((a, b) => a.name > b.name)
+
+            textStyles.forEach(textStyle => {
+              lessData += `.${textStyle.name}() {\n  ${textStyle.cssProps.split(';').join(';\n ')}}\n\n`
+            })
+
+            try {
+              fs.writeFileSync(path.join(styleguide.path.root(), `sketch/Design.less`), lessData)
+            } catch (e){
+              logger.error('Error writing file')
+            }
+
+            indexUrl = path.join('/node_modules', getProjectName(), 'styleguide/index.html')
+          }
+
+          // Create the sketch design elements file.
+          const sketchTemplate = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'sketch.hbs'), 'utf8'), {
+            preventIndent: true
+          })
+
+          fs.writeFileSync(path.join(getProjectRootPath(), 'styleguide/index.html'), sketchTemplate({
+            textStyles: textStyles
+          }))
+
           // Create the index HTML file.
           const template = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'index.hbs'), 'utf8'), {
             preventIndent: true
@@ -405,6 +439,7 @@ module.exports = (styleguide, gulp) => {
 
           fs.mkdirsSync(path.join(styleguide.path.build(), '_styleguide'))
           fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
+            indexUrl: indexUrl,
             groups: groups
           }))
 
@@ -451,6 +486,8 @@ module.exports = (styleguide, gulp) => {
         paths: {
           'bliss': require.resolve('blissfuljs/bliss.min.js'),
           'prism': require.resolve('prismjs/prism.js'),
+          'prism-previewer-base': require.resolve('prismjs/plugins/previewer-base/prism-previewer-base.js'),
+          'prism-previewer-color': require.resolve('prismjs/plugins/previewer-color/prism-previewer-color.js'),
           'prism-json': require.resolve('prismjs/components/prism-json.min.js'),
           'prism-markdown': require.resolve('prismjs/components/prism-markdown.min.js')
         }

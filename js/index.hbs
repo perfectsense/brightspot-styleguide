@@ -8,7 +8,13 @@
     </head>
     <body class="StyleguideBody">
         <header class="StyleguideHeader">
-            <h1 class="StyleguideTitle">Styleguide</h1>
+            <h1 class="StyleguideHeader-title">
+              {{#if indexUrl}}
+                <a href="/_styleguide/index.html">Styleguide</a>
+              {{else}}
+                Styleguide
+              {{/if}}
+            </h1>
         </header>
 
         <nav class="StyleguideNavigation">
@@ -31,8 +37,7 @@
         </nav>
 
         <div class="StyleguideContent">
-          <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
+          <iframe class="StyleguideExample" name="StyleguideExample" src="{{#if indexUrl}}{{indexUrl}}{{else}}about:blank{{/if}}"></iframe>
         </div>
-
     </body>
 </html>

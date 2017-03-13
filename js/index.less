@@ -204,6 +204,12 @@ pre[class*='language-'] {
   body[data-iframed] & {
       top: 20px;
   }
+
+  &-title {
+    font-size: 18px;
+    font-weight: 400;
+    margin: 25px 20px;
+  }
 }
 
 .StyleguideExample {
@@ -213,12 +219,6 @@ pre[class*='language-'] {
   display: block;
 }
 
-.StyleguideContent-title {
-  font-size: 18px;
-  font-weight: 400;
-  margin: 25px 20px;
-}
-
 .StyleguideTabs {
   margin: 0 20px;
   padding: 0;
@@ -226,6 +226,27 @@ pre[class*='language-'] {
 
   &:not([data-viewportsize=example]) ~ .StyleguideViewport-controls {
     display: none;
+  }
+
+  &[data-viewportsize=example] ~ .StyleguideViewport-resize {
+    background-color: #ededed;
+
+    &[data-resizable] {
+      position: relative;
+      background: #ebf8fc;
+    }
+
+    .StyleguideViewport-resize-handle {
+      position: absolute;
+      right: 5px;
+      bottom: 2px;
+      cursor: all-scroll;
+
+      &:before {
+        .fa;
+        content: @fa-var-bars;
+      }
+    }
   }
 
   &-item {
@@ -310,26 +331,8 @@ pre[class*='language-'] {
 
   &-resize {
     position: relative;
-    background-color: #ededed;
-    height: ~'calc(100% - 81px)';
+    height: ~'calc(100% - 150px)';
     padding: 20px;
-
-    &[data-resizable] {
-      background: #ebf8fc;
-      position: relative;
-    }
-  }
-
-  &-resizer {
-    position: absolute;
-    right: 5px;
-    bottom: 2px;
-    cursor: all-scroll;
-
-    &:before {
-      .fa;
-      content: @fa-var-bars;
-    }
   }
 
   &-reset {

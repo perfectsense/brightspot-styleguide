@@ -55,6 +55,10 @@ export class DeviceViewport {
     this._viewportHeight = height
   }
 
+  get $resizeContainer () {
+    return $(`.${this.selectors.viewport}`)
+  }
+
   get devices () {
     return this.settings.devices
   }
@@ -70,7 +74,6 @@ export class DeviceViewport {
   }
 
   init () {
-    console.log(this.ctx)
     let self = this
     // bind width input field
     $(`.${this.selectors.controls}-width`).addEventListener('focusout', function () {
@@ -95,9 +98,8 @@ export class DeviceViewport {
       self.updateViewport()
     })
 
-    let $resizeContainer = $(`.${this.selectors.viewport}`)
-    $resizeContainer._.contents($.create('div', {
-      className: 'StyleguideViewport-resizer',
+    this.$resizeContainer._.contents($.create('div', {
+      className: `${this.selectors.viewport}-handle`,
       events: {
         mousedown: function (event) {
           self.initDrag(event)
@@ -113,7 +115,7 @@ export class DeviceViewport {
     this.startX = event.clientX
     this.startY = event.clientY
 
-    let computedStyle = document.defaultView.getComputedStyle($(`.${this.selectors.viewport}`))
+    let computedStyle = document.defaultView.getComputedStyle(this.$resizeContainer)
     this.startWidth = parseInt(computedStyle.width, 10)
     this.startHeight = parseInt(computedStyle.height, 10)
 
@@ -127,21 +129,19 @@ export class DeviceViewport {
     }, false)
 
     doc.addEventListener('mousedown', () => {
-      $(`.${this.selectors.viewport}`).setAttribute('data-resizable', '')
+      this.$resizeContainer.setAttribute('data-resizable', '')
     }, false)
   }
 
   dragContainer (event) {
-    let $resizeContainer = $(`.${this.selectors.viewport}`)
     this.viewportWidth = (this.startWidth + event.clientX - this.startX)
     this.viewportHeight = (this.startHeight + event.clientY - this.startY)
-    $resizeContainer.style.width = `${this.viewportWidth}px`
-    $resizeContainer.style.height = `${this.viewportHeight}px`
+    this.$resizeContainer.style.width = `${this.viewportWidth}px`
+    this.$resizeContainer.style.height = `${this.viewportHeight}px`
   }
 
   stopDrag () {
-    let $resizeContainer = $(`.${this.selectors.viewport}`)
-    $resizeContainer.removeAttribute('data-resizable')
+    this.$resizeContainer.removeAttribute('data-resizable')
     document.documentElement._.unbind('mousemove')
     document.documentElement._.unbind('mouseup')
     this.updateInputs()
@@ -182,28 +182,25 @@ export class DeviceViewport {
       }
     })
     // set the width of the iframe
-    // also update the input field with width
-    let $viewport = $(`.${this.selectors.viewport}`)
     let $inputWidth = $(`.${this.selectors.controls}-width`)
     if (search['width']) {
       this.viewportWidth = search['width']
-      $viewport.style.width = `${this.viewportWidth}px`
+      this.$resizeContainer.style.width = `${this.viewportWidth}px`
     } else {
       this.viewportWidth = ''
-      $viewport.style.width = this.viewportWidth
+      this.$resizeContainer.style.width = this.viewportWidth
     }
 
     // set the height of the iframe
-    // also update the input field with height
     let $inputHeight = $(`.${this.selectors.controls}-height`)
     if (search['height']) {
       this.viewportHeight = search['height']
-      $viewport.style.height = `${this.viewportHeight}px`
+      this.$resizeContainer.style.height = `${this.viewportHeight}px`
     } else {
       this.viewportHeight = ''
-      $viewport.style.height = this.viewportHeight
+      this.$resizeContainer.style.height = this.viewportHeight
     }
-
+    // also update the input field with width
     this.updateInputs()
   }
 

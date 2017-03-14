@@ -37,7 +37,6 @@ module.exports = (styleguide, gulp) => {
     if (process.env.JS_MIN !== 'true') {
       gulp.watch('styleguide/All.min.js', { cwd: styleguide.path.build() })
         .on('change', function (event) {
-          logger.info(`COPY .js >> .min.js: ${event.path}`)
           return gulp.src(path.join(styleguide.path.build(), 'styleguide/All.js'), { base: '.' })
             .pipe(plugins.rename({ extname: '.min.js' }))
             .pipe(gulp.dest('.'))

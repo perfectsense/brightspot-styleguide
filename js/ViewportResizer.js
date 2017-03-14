@@ -55,28 +55,15 @@ export class ViewportResizer {
     this._viewportHeight = height
   }
 
-  get $resizeContainer () {
-    return $(`.${this.selectors.viewport}`)
-  }
-
-  get $viewportWidthInput () {
-    return $(`.${this.selectors.controls}-width`)
-  }
-
-  get $viewportHeightInput () {
-    return $(`.${this.selectors.controls}-height`)
-  }
-
   get devices () {
     return this.settings.devices
   }
 
   constructor (ctx, options = {}) {
-    this.ctx = ctx
+    this.$ctx = $(ctx)
     this.settings = Object.assign({}, {
       selectors: {
         controls: 'StyleguideViewport',
-        viewport: 'StyleguideViewport-resize',
         iframe: 'StyleguideExample'
       }
     }, options)
@@ -87,64 +74,74 @@ export class ViewportResizer {
     // bind actions for viewport controls
     // bind width input field
     // init the viewport on load
-    self.updateViewport()
+    let $viewportResizer = this.$ctx.nextElementSibling
+    let $widthInput = this.$ctx.querySelector(`.${this.selectors.controls}-width`)
+    let $heightInput = this.$ctx.querySelector(`.${this.selectors.controls}-height`)
 
-    this.$viewportWidthInput.addEventListener('focusout', function () {
-      self.updateDeviceViewport({width: this.value})
+    self.updateViewportContainer($viewportResizer)
+    // also update the input field with width
+    self.updateInputs($widthInput, $heightInput)
+
+    $widthInput.addEventListener('focusout', function () {
+      self.updateViewport({width: this.value})
     })
     // bind height input field
-    this.$viewportHeightInput.addEventListener('focusout', function () {
-      self.updateDeviceViewport({height: this.value})
+    $heightInput.addEventListener('focusout', function () {
+      self.updateViewport({height: this.value})
     })
     // bind function to the reset button
-    $(`.${this.selectors.controls}-reset`).addEventListener('click', () => {
-      this.updateDeviceViewport({width: '', height: ''})
+    this.$ctx.querySelector(`.${this.selectors.controls}-reset`).addEventListener('click', () => {
+      this.updateViewport({width: '', height: ''})
     })
     // bind function based on preset viewports
-    $$('[data-viewportsize]').forEach(function (element) {
+    this.$ctx.querySelectorAll('[data-viewportsize]').forEach(function (element) {
       element.addEventListener('click', function () {
-        self.updateDeviceViewport(JSON.parse(this.getAttribute('data-viewportsize')))
+        self.updateViewport(JSON.parse(this.getAttribute('data-viewportsize')))
       })
     })
     // bind to Styleguide:updateViewport eventlistener
-    $(`.${this.selectors.controls}-controls`).addEventListener('Styleguide:updateViewport', function (event) {
-      self.updateViewport()
+    this.$ctx.addEventListener('Styleguide:updateViewport', function (event) {
+      self.updateViewportContainer($viewportResizer)
+      // also update the input field with width
+      self.updateInputs($widthInput, $heightInput)
     })
     // listens for tab change event and removes or adds width of viewport
-    $(`.${this.selectors.iframe}`).addEventListener('Styleguide:tabChange', (event) => {
+    this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`).addEventListener('Styleguide:tabChange', function (event) {
       if (window.location.hash === '#example') {
-        this.$resizeContainer.style.width = `${this.viewportWidth}px`
-        this.$resizeContainer.style.height = `${this.viewportHeight}px`
+        this.parentNode.style.width = `${self.viewportWidth}px`
+        this.parentNode.style.height = `${self.viewportHeight}px`
       } else {
-        this.$resizeContainer.removeAttribute('style')
+        this.parentNode.removeAttribute('style')
       }
     })
+
     // bind viewport frame actions
-    this.$resizeContainer._.contents($.create('div', {
-      className: `${this.selectors.viewport}-handle`
+    this.$ctx.nextElementSibling._.contents($.create('div', {
+      className: `${this.selectors.controls}-resize-handle`
     }))
 
-    this.$resizeContainer.addEventListener('mousedown', (event) => {
+    this.$ctx.nextElementSibling.addEventListener('mousedown', function (event) {
       self.initDrag(event)
-      self.$resizeContainer.setAttribute('data-resizable', '')
+      this.setAttribute('data-resizable', '')
     }, false)
   }
 
   initDrag (event) {
     this.startX = event.clientX
     this.startY = event.clientY
+    let $resizer = this.$ctx.nextElementSibling
 
-    let computedStyle = document.defaultView.getComputedStyle(this.$resizeContainer)
+    let computedStyle = document.defaultView.getComputedStyle($resizer)
     this.startWidth = parseInt(computedStyle.width, 10)
     this.startHeight = parseInt(computedStyle.height, 10)
 
     let doc = document.documentElement
     doc.addEventListener('mousemove', (event) => {
-      this.dragContainer(event, this.$resizeContainer)
+      this.dragContainer(event, $resizer)
     }, false)
 
     doc.addEventListener('mouseup', () => {
-      this.stopDrag(this.$resizeContainer)
+      this.stopDrag($resizer)
     }, false)
   }
 
@@ -159,26 +156,26 @@ export class ViewportResizer {
     $container.removeAttribute('data-resizable')
     document.documentElement._.unbind('mousemove')
     document.documentElement._.unbind('mouseup')
-    this.updateDeviceViewport({width: this.viewportWidth, height: this.viewportHeight})
+    this.updateViewport({width: this.viewportWidth, height: this.viewportHeight})
   }
 
-  updateInputs () {
+  updateInputs ($viewportWidthInput, $viewportHeightInput) {
     if (this.viewportWidth !== '') {
-      this.$viewportWidthInput.value = this.viewportWidth
+      $viewportWidthInput.value = this.viewportWidth
     } else {
-      this.$viewportWidthInput.value = ''
+      $viewportWidthInput.value = ''
     }
 
     if (this.viewportHeight !== '') {
-      this.$viewportHeightInput.value = this.viewportHeight
+      $viewportHeightInput.value = this.viewportHeight
     } else {
-      this.$viewportHeightInput.value = ''
+      $viewportHeightInput.value = ''
     }
   }
-  updateViewport () {
+  updateViewportContainer ($resizer) {
     let search = Util.locationSearchToObject(window.location.search)
     // set the active state of the viewport buttons based on what width and height are set in the search url
-    $$(`.${this.selectors.controls}-controls button`).forEach(function (element) {
+    this.$ctx.querySelectorAll('button').forEach(function (element) {
       let viewportsize = element.getAttribute('data-viewportsize')
       element.removeAttribute('data-active')
 
@@ -194,34 +191,33 @@ export class ViewportResizer {
         element.setAttribute('data-active', '')
       }
     })
+
     // set the width of the iframe
     if (search['width']) {
       this.viewportWidth = search['width']
-      this.$resizeContainer.style.width = `${this.viewportWidth}px`
+      $resizer.style.width = `${this.viewportWidth}px`
     } else {
       this.viewportWidth = ''
-      this.$resizeContainer.style.width = this.viewportWidth
+      $resizer.style.width = this.viewportWidth
     }
 
     // set the height of the iframe
     if (search['height']) {
       this.viewportHeight = search['height']
-      this.$resizeContainer.style.height = `${this.viewportHeight}px`
+      $resizer.style.height = `${this.viewportHeight}px`
     } else {
       this.viewportHeight = ''
-      this.$resizeContainer.style.height = this.viewportHeight
+      $resizer.style.height = this.viewportHeight
     }
-    // also update the input field with width
-    this.updateInputs()
   }
 
-  updateDeviceViewport (deviceViewport) {
+  updateViewport (deviceViewport) {
     let baseUrl = this.updateSearchURL(window.location, deviceViewport)
     window.history.pushState({}, 'Update DeviceViewport', baseUrl)
     // set an event for viewport change
     let updateViewportEvent = document.createEvent('Event')
     updateViewportEvent.initEvent('Styleguide:updateViewport', false, true)
-    $(`.${this.selectors.controls}-controls`).dispatchEvent(updateViewportEvent)
+    this.$ctx.dispatchEvent(updateViewportEvent)
   }
 
   updateSearchURL (locationObj, paramObj) {

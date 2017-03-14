@@ -8,9 +8,11 @@ import {TabbedContent} from './TabbedContent.js'
 document.addEventListener('DOMContentLoaded', function (event) {
   // load tabs
   // initialize viewport controls
-  let viewportControls = document.querySelector('.StyleguideViewport-controls')
-  let viewportResizer = new ViewportResizer(viewportControls, {})
-  viewportResizer.init()
+  let $viewportControls = $$('.StyleguideViewport-controls')
+  $viewportControls.forEach(function (element) {
+    let viewportResizer = new ViewportResizer(element, {})
+    viewportResizer.init()
+  })
 
   // initialize tabs
   let content = document.querySelector('.StyleguideContent')

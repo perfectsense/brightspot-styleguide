@@ -21,7 +21,7 @@ function resolvePath (root, parent, file) {
 }
 
 function traverseData (root, file, data) {
-  traverse(data).forEach(function (value) {
+  return traverse(data).forEach(function (value) {
     if (this.key === '_template') {
       this.update(resolvePath(root, file, value))
     } else if (value) {
@@ -41,8 +41,6 @@ function traverseData (root, file, data) {
       }
     }
   })
-
-  return data
 }
 
 function resolveData (root, file) {

@@ -1,3 +1,5 @@
+const path = require('path')
+
 module.exports = (styleguide, gulp) => {
   Object.assign(styleguide.task, {
     build: () => 'styleguide:build',
@@ -25,5 +27,8 @@ module.exports = (styleguide, gulp) => {
     originalGulpTask.apply(this, arguments)
   }
 
-  gulp.task(styleguide.task.build(), styleguide.buildDependencies)
+  gulp.task(styleguide.task.build(), styleguide.buildDependencies, () => {
+    return gulp.src('src/main/resources/**')
+      .pipe(gulp.dest(path.join(styleguide.path.build(), '_resource')))
+  })
 }

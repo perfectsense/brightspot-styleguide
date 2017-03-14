@@ -77,9 +77,6 @@ module.exports = function (styleguide, filePath) {
     }
   }
 
-  // post-process the JSON data.
-  new DataGenerator(styleguide).process(data)
-
   // Set up Handlebars cache.
   var compiledTemplates = { }
 
@@ -205,11 +202,11 @@ module.exports = function (styleguide, filePath) {
       return
     }
 
-    if (!context.data.root.jsonObject) {
-      return
+    try {
+      jsonObjectData = context.data.root.jsonObject
+    } catch (e) {
+      jsonObjectData = context
     }
-
-    jsonObjectData = context.data.root.jsonObject
 
     return new handlebars.SafeString(JSON.stringify(jsonObjectData))
   })
@@ -247,6 +244,10 @@ module.exports = function (styleguide, filePath) {
           }
           options.data.root[key] = value
           return value
+        },
+
+        resolve: function (path) {
+          return resolver.path(styleguide.path.root(), this.get(PARENT_PATH) || this.get('_template'), path)
         }
       })
 
@@ -270,7 +271,7 @@ module.exports = function (styleguide, filePath) {
     const extend = override || options.hash.extend
 
     if (bem.isTrue(extend)) {
-      const extendPath = bem.set(PARENT_PATH, resolver.path(styleguide.path.root(), bem.get(PARENT_PATH) || bem.get('_template'), extend))
+      const extendPath = bem.set(PARENT_PATH, bem.resolve(extend))
       const extendTemplate = handlebars.compile(fs.readFileSync(extendPath, 'utf8'))
       const extendResult = extendTemplate(this, options)
 
@@ -363,5 +364,8 @@ module.exports = function (styleguide, filePath) {
     }
   }))
 
-  return template({ data: convert(data) })
+  return {
+    data: _.cloneDeep(data),
+    html: template({ data: convert(new DataGenerator(styleguide, styleguide.randomSeed()).process(data)) })
+  }
 }

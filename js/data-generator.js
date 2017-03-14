@@ -7,9 +7,9 @@ const traverse = require('traverse')
 const placeholderImage = require('./placeholder-image')
 const Util = require('./util')
 
-function DataGenerator (styleguide) {
+function DataGenerator (styleguide, seed) {
   this.styleguide = styleguide
-  this.chance = new Chance()
+  this.chance = (seed) ? new Chance(seed) : new Chance()
 }
 
 DataGenerator.prototype.date = function (format) {
@@ -62,13 +62,13 @@ DataGenerator.prototype.hexColor = function (luminosity) {
   return color
 }
 
-DataGenerator.prototype.image = function (width, height) {
-  const key = this.chance.guid()
-  const finalWidth = this.number(width)
-  const finalHeight = this.number(height)
-  const url = '/placeholder-image/' + key + '/' + finalWidth + 'x' + finalHeight + '.svg'
+DataGenerator.prototype.image = function (width, height, url) {
+  if (!url) {
+    const key = this.chance.guid()
+    url = '/placeholder-image/' + key + '/' + width + 'x' + height + '.svg'
 
-  placeholderImage(key, finalWidth, finalHeight, path.join(this.styleguide.path.build(), url))
+    placeholderImage(key, width, height, path.join(this.styleguide.path.build(), url))
+  }
 
   return url
 }
@@ -179,6 +179,8 @@ DataGenerator.prototype.process = function (data) {
       }))
     }
   })
+
+  return data
 }
 
 module.exports = DataGenerator

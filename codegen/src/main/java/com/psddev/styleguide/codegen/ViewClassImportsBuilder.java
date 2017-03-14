@@ -19,17 +19,26 @@ class ViewClassImportsBuilder {
      */
     public static final String PLACEHOLDER = "${importsPlaceholder}";
 
-    private ViewClassDefinition viewDefinition;
+    private String currentPackage;
 
     private Set<String> imports = new TreeSet<>();
 
     /**
+     * Creates a new import statement builder for the given package name.
+     *
+     * @param currentPackage the package that the imports will be relative to.
+     */
+    public ViewClassImportsBuilder(String currentPackage) {
+        this.currentPackage = currentPackage;
+    }
+
+    /**
      * Creates a new import statement builder for the given view class definition.
      *
-     * @param viewDefinition the view class definition that imports
+     * @param viewDefinition the view class definition the imports will be relative to.
      */
     public ViewClassImportsBuilder(ViewClassDefinition viewDefinition) {
-        this.viewDefinition = viewDefinition;
+        this.currentPackage = viewDefinition.getPackageName();
     }
 
     /**
@@ -108,7 +117,7 @@ class ViewClassImportsBuilder {
      * if an import statement is needed or not.
      */
     private boolean isSamePackage(ViewClassFieldType fieldType) {
-        return viewDefinition.getPackageName().equals(fieldType.getPackageName());
+        return currentPackage.equals(fieldType.getPackageName());
     }
 
     /*

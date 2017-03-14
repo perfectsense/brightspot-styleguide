@@ -16,6 +16,11 @@ enum ViewClassFieldNativeJavaType implements ViewClassFieldType {
     STRING("java.lang.String"),
 
     /**
+     * Native Java CharSequence type.
+     */
+    CHAR_SEQUENCE("java.lang.CharSequence"),
+
+    /**
      * Native Java Number type.
      */
     NUMBER("java.lang.Number"),

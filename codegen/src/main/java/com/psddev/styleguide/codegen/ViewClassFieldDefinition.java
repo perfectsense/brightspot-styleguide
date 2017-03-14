@@ -33,6 +33,9 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
     private Boolean isDelegate;
     private Boolean isAbstract;
 
+    // True if this field's value types are a mix of String and Views
+    private boolean hasMixedValueTypes;
+
     private boolean validated = false;
     private List<ViewClassDefinitionError> errors = new ArrayList<>();
 
@@ -170,12 +173,13 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         Class<? extends JsonValue> effectiveValueType;
 
         if (valueTypes.size() == 1
-                || (!viewClassDef.getContext().isGenerateStrictTypes() && valueTypes.size() == 2
+                || (valueTypes.size() == 2
                 && valueTypes.containsAll(Arrays.asList(JsonViewMap.class, JsonString.class)))) {
 
             if (valueTypes.size() == 2) {
-                // If not strictly typed, we allow Strings and Objects to co-exist and just treat them as if it is an Object.
+                // We allow Strings and Objects to co-exist and just treat them as if it is an Object.
                 effectiveValueType = JsonViewMap.class;
+                hasMixedValueTypes = true;
             } else {
                 effectiveValueType = valueTypes.iterator().next();
             }
@@ -247,12 +251,13 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         isAbstract = false;
 
         if (valueTypes.size() == 1
-                || (!viewClassDef.getContext().isGenerateStrictTypes() && valueTypes.size() == 2
+                || (valueTypes.size() == 2
                 && valueTypes.containsAll(Arrays.asList(JsonViewMap.class, JsonString.class)))) {
 
             if (valueTypes.size() == 2) {
-                // If not strictly typed, we allow Strings and Objects to co-exist and just treat them as if it is an Object.
+                // We allow Strings and Objects to co-exist and just treat them as if it is an Object.
                 effectiveValueType = JsonViewMap.class;
+                hasMixedValueTypes = true;
             } else {
                 effectiveValueType = valueTypes.iterator().next();
             }
@@ -357,7 +362,7 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
                 return Collections.singleton(ViewClassFieldNativeJavaType.NUMBER);
 
             } else if (effectiveValueType == JsonString.class) {
-                return Collections.singleton(ViewClassFieldNativeJavaType.STRING);
+                return Collections.singleton(ViewClassFieldNativeJavaType.CHAR_SEQUENCE);
 
             } else if (effectiveValueType == JsonMap.class) {
                 return Collections.singleton(ViewClassFieldNativeJavaType.MAP);
@@ -444,6 +449,10 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             getFieldValueTypes();
         }
         return Boolean.TRUE.equals(isAbstract);
+    }
+
+    public boolean hasMixedValueTypes() {
+        return hasMixedValueTypes;
     }
 
     @Override

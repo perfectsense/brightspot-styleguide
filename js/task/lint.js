@@ -20,12 +20,15 @@ module.exports = (styleguide, gulp) => {
     json: () => {
       return gulp.src(path.join(styleguide.path.root(), 'styleguide/**/*.json'))
         .pipe(jsonlint())
+        .pipe(jsonlint.reporter())
         .pipe(jsonlint.failAfterError())
     },
 
     less: () => {
-      return gulp.src(path.join(styleguide.path.root(), 'styleguide/All.less'))
-        .pipe(lesshint())
+      return gulp.src(path.join(styleguide.path.root(), 'styleguide/**/*.less'))
+        .pipe(lesshint({
+          configPath: path.join(__dirname, '.lesshintrc')
+        }))
         .pipe(lesshint.reporter(''))
     }
   }

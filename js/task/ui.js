@@ -416,7 +416,7 @@ module.exports = (styleguide, gulp) => {
 
             try {
               fs.writeFileSync(path.join(styleguide.path.root(), `sketch/Design.less`), lessData)
-            } catch (e){
+            } catch (e) {
               logger.error('Error writing file')
             }
 

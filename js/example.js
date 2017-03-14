@@ -77,9 +77,6 @@ module.exports = function (styleguide, filePath) {
     }
   }
 
-  // post-process the JSON data.
-  new DataGenerator(styleguide).process(data)
-
   // Set up Handlebars cache.
   var compiledTemplates = { }
 
@@ -205,11 +202,11 @@ module.exports = function (styleguide, filePath) {
       return
     }
 
-    if (!context.data.root.jsonObject) {
-      return
+    try {
+      jsonObjectData = context.data.root.jsonObject
+    } catch (e) {
+      jsonObjectData = context
     }
-
-    jsonObjectData = context.data.root.jsonObject
 
     return new handlebars.SafeString(JSON.stringify(jsonObjectData))
   })
@@ -367,5 +364,8 @@ module.exports = function (styleguide, filePath) {
     }
   }))
 
-  return template({ data: convert(data) })
+  return {
+    data: _.cloneDeep(data),
+    html: template({ data: convert(new DataGenerator(styleguide, styleguide.randomSeed()).process(data)) })
+  }
 }

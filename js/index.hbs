@@ -6,7 +6,7 @@
         <link rel="stylesheet" type="text/css" href="/_styleguide/index.css">
         <script type="application/javascript" src="/_styleguide/index.js"></script>
     </head>
-    <body>
+    <body class="StyleguideBody">
         <header class="StyleguideHeader">
             <h1 class="StyleguideTitle">Styleguide</h1>
         </header>
@@ -20,7 +20,8 @@
                             <h3 class="StyleguideGroups-name">{{name}}</h3>
                             <ul class="StyleguideGroups-examples">
                                 {{#each examples}}
-                                    <li><a href="{{url}}" title="{{name}}" target="StyleguideExample">{{name}}</a></li>
+                                    <li class="StyleguideGroups-examples-example"><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample" {{#if source}}data-source='{{{jsonObject source}}}'{{/if}}>{{name}}<i class="StyleguideGroups-examples-externalLink" title="Open Example in a New Window"></i></a>
+                                    </li>
                                 {{/each}}
                             </ul>
                         </li>
@@ -30,7 +31,8 @@
         </nav>
 
         <div class="StyleguideContent">
-            <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
+          <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
         </div>
+
     </body>
 </html>

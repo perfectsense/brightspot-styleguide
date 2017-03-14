@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import Bliss from 'bliss'
-import {DeviceViewport} from './DeviceViewport.js'
+import {ViewportResizer} from './ViewportResizer.js'
 import Util from './util.js'
 import {TabbedContent} from './TabbedContent.js'
 /* global $, $$ */
@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', function (event) {
   // load tabs
   // initialize viewport controls
   let viewportControls = document.querySelector('.StyleguideViewport-controls')
-  let deviceViewport = new DeviceViewport(viewportControls, {})
-  deviceViewport.init()
+  let viewportResizer = new ViewportResizer(viewportControls, {})
+  viewportResizer.init()
 
   // initialize tabs
   let content = document.querySelector('.StyleguideContent')

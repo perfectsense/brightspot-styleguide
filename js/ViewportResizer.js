@@ -3,7 +3,7 @@ import Bliss from 'bliss'
 import Util from './util.js'
 /* global $, $$ */
 
-export class DeviceViewport {
+export class ViewportResizer {
   get selectors () {
     return this.settings.selectors
   }

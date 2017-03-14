@@ -212,35 +212,11 @@ export class ViewportResizer {
   }
 
   updateViewport (deviceViewport) {
-    let baseUrl = this.updateSearchURL(window.location, deviceViewport)
+    let baseUrl = Util.updateSearchURL(window.location, deviceViewport)
     window.history.pushState({}, 'Update DeviceViewport', baseUrl)
     // set an event for viewport change
     let updateViewportEvent = document.createEvent('Event')
     updateViewportEvent.initEvent('Styleguide:updateViewport', false, true)
     this.$ctx.dispatchEvent(updateViewportEvent)
-  }
-
-  updateSearchURL (locationObj, paramObj) {
-    let url = locationObj.search
-    let urlSearch = url.split('?')
-    if (urlSearch.length >= 2) {
-      let urlParams = urlSearch[1].split(/[&;]/g)
-      let hashParam = ''
-      let hash = locationObj.hash
-      for (let param in paramObj) {
-        let prefix = encodeURIComponent(param) + '='
-        for (let i = 0; i < urlParams.length; i++) {
-          if (urlParams[i].lastIndexOf(prefix, 0) !== -1) {
-            urlParams.splice(i, 1)
-          }
-        }
-
-        if (paramObj[param] !== '') {
-          urlParams.push(`${param}=${paramObj[param]}`)
-        }
-      }
-      urlSearch = `?${urlParams.join('&')}${locationObj.hash}`
-    }
-    return urlSearch
   }
 }

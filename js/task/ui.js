@@ -406,7 +406,7 @@ module.exports = (styleguide, gulp) => {
             let styles = JSON.parse(fs.readFileSync(sketchFile, 'utf8')).styles
             let lessData = '// lesshint hexNotation: false\n'
 
-            textStyles = styles.filter(style => { return (style._type === `textStyle`) })
+            let textStyles = styles.filter(style => { return (style._type === `textStyle`) })
             textStyles = textStyles.sort((a, b) => a.name > b.name)
 
             textStyles.forEach(textStyle => {

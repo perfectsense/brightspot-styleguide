@@ -329,7 +329,7 @@ module.exports = (styleguide, gulp) => {
     },
 
     zip: () => {
-      const pomFile = path.resolve('pom.xml')
+      const pomFile = path.resolve(styleguide.path.root(), 'pom.xml')
       let name = getProjectName()
 
       if (fs.existsSync(pomFile)) {

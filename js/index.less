@@ -231,20 +231,66 @@ pre[class*='language-'] {
   &[data-viewportsize=example] ~ .StyleguideViewport-resize {
     background-color: #ededed;
 
+    &:before {
+      position: absolute;
+      right: 5px;
+      top: ~'calc(50% - 5px)';
+      content: '';
+      display: block;
+      width: 10px;
+      height: 20px;
+      border: 2px solid #c9c9c9;
+      border-top: 0;
+      border-bottom: 0;
+      cursor: all-scroll;
+    }
+
+    &:after {
+      position: absolute;
+      right: ~'calc(50% - 5px)';
+      bottom: 5px;
+      content: '';
+      display: block;
+      width: 20px;
+      height: 10px;
+      border: 2px solid #c9c9c9;
+      border-right: 0;
+      border-left: 0;
+      cursor: all-scroll;
+    }
+
     &[data-resizable] {
       position: relative;
       background: #ebf8fc;
+
+      iframe {
+        pointer-events: none;
+      }
     }
 
     .StyleguideViewport-resize-handle {
       position: absolute;
-      right: 5px;
-      bottom: 2px;
+      right: 0;
+      bottom: 0;
+      width: 30px;
+      height: 30px;
       cursor: all-scroll;
 
+      &:after,
       &:before {
-        .fa;
-        content: @fa-var-bars;
+        position: absolute;
+        right: 15px;
+        bottom: 0;
+        content: '';
+        display: block;
+        height: 30px;
+        border-right: 2px solid #c9c9c9;
+        transform: rotate(45deg);
+      }
+
+      &:after {
+        right: 10px;
+        height: 20px;
       }
     }
   }

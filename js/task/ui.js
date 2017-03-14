@@ -328,7 +328,7 @@ module.exports = (styleguide, gulp) => {
         })
     },
 
-    zip: () => {
+    zip: done => {
       const pomFile = path.resolve(styleguide.path.root(), 'pom.xml')
       let name = getProjectName()
 
@@ -345,6 +345,7 @@ module.exports = (styleguide, gulp) => {
       return gulp.src(`${styleguide.path.build()}/**`)
         .pipe(zip(`${name}.zip`))
         .pipe(gulp.dest(path.join(styleguide.path.build(), '..')))
+        .on('end', done)
     },
 
     // Convert LESS files into CSS to be used by the styleguide UI itself.
@@ -387,9 +388,10 @@ module.exports = (styleguide, gulp) => {
           styleguide.ui.js(() => {
             styleguide.ui.less().on('end', () => {
               if (!styleguide.isWatching()) {
-                styleguide.ui.zip()
+                styleguide.ui.zip(done)
+              } else {
+                done()
               }
-              done()
             })
           })
         })

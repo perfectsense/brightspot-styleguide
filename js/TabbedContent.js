@@ -3,6 +3,7 @@ import Bliss from 'bliss'
 import Prism from 'prism'
 import PrismJson from 'prism-json'
 import PrismMarkdown from 'prism-markdown'
+import Util from './util.js'
 /* global $, $$ */
 
 export class TabbedContent {
@@ -16,14 +17,6 @@ export class TabbedContent {
 
   set dataType (data) {
     this._dataType = data
-  }
-
-  get iframeStyle () {
-    return this._iframeStyle
-  }
-
-  set iframeStyle (style) {
-    this._iframeStyle = style
   }
 
   constructor (ctx, options = {}) {
@@ -112,15 +105,14 @@ export class TabbedContent {
                   })
                   // allows iframe to retain style property if example
                   $(`.${self.selectors.tabList}`).setAttribute('data-viewportsize', self.dataType)
-                  self.iframeStyle = $(`.${self.selectors.iframeContent}`).parentNode.getAttribute('style')
-                  if (self.dataType !== 'example') {
-                    $(`.${self.selectors.iframeContent}`).parentNode.style = ''
-                  } else {
-                    $(`.${self.selectors.iframeContent}`).parentNode.style = self.iframeStyle
-                  }
                   // set active indicator to active tabs
                   this.setAttribute('data-active', '')
                   window.history.replaceState({}, this.getAttribute('title'), `#${self.dataType}`)
+
+                  // set an event for tab change
+                  let tabChangeEvent = document.createEvent('Event')
+                  tabChangeEvent.initEvent('Styleguide:tabChange', false, true)
+                  $(`.${self.selectors.iframeContent}`).dispatchEvent(tabChangeEvent)
                 }
               }
             },

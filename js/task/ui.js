@@ -398,30 +398,32 @@ module.exports = (styleguide, gulp) => {
             groups.push(groupByName[groupName])
           })
 
-          const sketchFile = path.join(styleguide.path.root(), `sketch/Design.json`)
-          let textStyles = { }
-          let indexUrl = null
+          // All the design elements.
+          const designElements = { }
 
-          if (fs.existsSync(sketchFile)) {
-            let data = JSON.parse(fs.readFileSync(sketchFile, 'utf8'))
+          glob.sync('**/*.json', { cwd: path.join(styleguide.path.root(), `sketch/`), absolute: true }).forEach(sketchFile => {
+            let lessFilename = sketchFile.replace(path.extname(sketchFile), '.less')
+            let styles = JSON.parse(fs.readFileSync(sketchFile, 'utf8')).styles
             let lessData = '// lesshint hexNotation: false\n'
-            const styles = data.styles
-            textStyles = styles.filter(style => { return (style._type === `textStyle`) })
 
+            textStyles = styles.filter(style => { return (style._type === `textStyle`) })
             textStyles = textStyles.sort((a, b) => a.name > b.name)
 
             textStyles.forEach(textStyle => {
               lessData += `.${textStyle.name}() {\n  ${textStyle.cssProps.split(';').join(';\n ')}}\n\n`
             })
 
-            try {
-              fs.writeFileSync(path.join(styleguide.path.root(), `sketch/Design.less`), lessData)
-            } catch (e) {
-              logger.error('Error writing file')
+            designElements[`${path.parse(sketchFile).name}`] = {
+              name: `${path.parse(sketchFile).name}`,
+              textStyles: textStyles
             }
 
-            indexUrl = path.join('/node_modules', getProjectName(), 'styleguide/index.html')
-          }
+            try {
+              fs.writeFileSync(lessFilename, lessData)
+            } catch (e) {
+              logger.error(`Error writing file: ${lessFilename}`)
+            }
+          })
 
           // Create the sketch design elements file.
           const sketchTemplate = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'sketch.hbs'), 'utf8'), {
@@ -429,17 +431,18 @@ module.exports = (styleguide, gulp) => {
           })
 
           fs.writeFileSync(path.join(getProjectRootPath(), 'styleguide/index.html'), sketchTemplate({
-            textStyles: textStyles
+            designElements: designElements
           }))
 
-          // Create the index HTML file.
+          // Create the index template function.
           const template = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'index.hbs'), 'utf8'), {
             preventIndent: true
           })
 
+          // Create the index HTML file.
           fs.mkdirsSync(path.join(styleguide.path.build(), '_styleguide'))
           fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
-            indexUrl: indexUrl,
+            indexUrl: path.join('/node_modules', getProjectName(), 'styleguide/index.html'),
             groups: groups
           }))
 

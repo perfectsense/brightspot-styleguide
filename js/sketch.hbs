@@ -7,19 +7,20 @@
   </head>
   <body class="StyleguidePage">
     <style type="text/css">
-      {{#each textStyles as |textStyle|}}
-        .{{textStyle.name}} {
-          {{textStyle.cssProps}}
-        }
+      {{#each designElements as |designElement|}}
+        {{#each designElement.textStyles as |textStyle|}}
+          .{{textStyle.name}} {
+            {{textStyle.cssProps}}
+          }
+        {{/each}}
       {{/each}}
     </style>
 
     <h1 class="StyleguidePage-title">Design Elements</h1>
-
-    {{#if textStyles}}
+    {{#each designElements as |designElement|}}
       <section class="StyleguideSection">
         <h2 class="StyleguideSection-heading">Text Styles</h2>
-        {{#each textStyles as |textStyle|}}
+        {{#each designElement.textStyles as |textStyle|}}
           <div class="StyleguideSection-item">
             <div class="StyleguideTextStyle">
               <div class="{{textStyle.name}}">{{textStyle.name}}</div>
@@ -28,7 +29,7 @@
           </div>
         {{/each}}
       </section>
-    {{/if}}
+    {{/each}}
 
     <script type="application/javascript">
       document.querySelectorAll('.language-css').forEach((element) => {

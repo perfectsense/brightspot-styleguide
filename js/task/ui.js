@@ -425,11 +425,12 @@ module.exports = (styleguide, gulp) => {
             }
           })
 
-          // Create the sketch design elements file.
+          // Create the sketch template function.
           const sketchTemplate = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'sketch.hbs'), 'utf8'), {
             preventIndent: true
           })
 
+          // Create the iframed index HTML file.
           fs.writeFileSync(path.join(getProjectRootPath(), 'styleguide/index.html'), sketchTemplate({
             designElements: designElements
           }))
@@ -439,7 +440,7 @@ module.exports = (styleguide, gulp) => {
             preventIndent: true
           })
 
-          // Create the index HTML file.
+          // Create the index HTML file for the styleguide itself.
           fs.mkdirsSync(path.join(styleguide.path.build(), '_styleguide'))
           fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
             indexUrl: path.join('/node_modules', getProjectName(), 'styleguide/index.html'),

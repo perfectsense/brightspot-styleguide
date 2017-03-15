@@ -19,11 +19,26 @@
     <h1 class="StyleguidePage-title">Design Elements</h1>
     <div class="StyleguideSections">
     {{#each designElements as |designElement|}}
+      {{!-- Color Palette --}}
+      <section class="StyleguideSection">
+        <h2 class="StyleguideSection-heading">Colors</h2>
+        <div class="StyleguideSection-items" data-grid>
+        {{#each designElement.colorStyles as |colorStyle|}}
+          <div class="StyleguideSection-items-item">
+            <div class="StyleguideColorStyle">
+              <div class="StyleguideColorStyle-name {{colorStyle.name}}" {{#with colorStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{colorStyle.name}}</div>
+              <div class="StyleguideColorStyle-sample" style="background: rgb({{colorStyle.color.red}}, {{colorStyle.color.green}}, {{colorStyle.color.blue}});"></div>
+            </div>
+          </div>
+        {{/each}}
+        </div>
+      </section>
       {{!-- Font Families --}}
       <section class="StyleguideSection">
         <h2 class="StyleguideSection-heading">Fonts</h2>
+        <div class="StyleguideSection-items">
         {{#each designElement.fontFamilies as |fontFamily|}}
-          <div class="StyleguideSection-item">
+          <div class="StyleguideSection-items-item">
             <div class="StyleguideFontStyle">
               <h4 class="StyleguideFontStyle-title">{{fontFamily}}</h4>
               <div class="StyleguideFontStyle-example" style="font-family: {{fontFamily}};">
@@ -33,18 +48,21 @@
             </div>
           </div>
         {{/each}}
+        </div>
       </section>
       {{!-- Text Styles --}}
       <section class="StyleguideSection">
         <h2 class="StyleguideSection-heading">Typography</h2>
+        <div class="StyleguideSection-items">
         {{#each designElement.textStyles as |textStyle|}}
-          <div class="StyleguideSection-item">
+          <div class="StyleguideSection-items-item">
             <div class="StyleguideTextStyle">
               <div class="StyleguideTextStyle-name {{textStyle.name}}" {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
               <div class="StyleguideTextStyle-code language-css">{{textStyle.cssProps}}<br/>{{textStyle.alignment}}</div>
             </div>
           </div>
         {{/each}}
+        </div>
       </section>
     {{/each}}
     </div>

@@ -406,6 +406,10 @@ module.exports = (styleguide, gulp) => {
             let styles = JSON.parse(fs.readFileSync(sketchFile, 'utf8')).styles
             let lessData = '// lesshint hexNotation: false\n'
 
+            // Process only the "colorStyles".
+            let colorStyles = styles.filter(style => { return (style._type === `colorStyle`) })
+            colorStyles = colorStyles.sort((a, b) => a.name > b.name)
+
             // Process only the "textStyles".
             let textStyles = styles.filter(style => { return (style._type === `textStyle`) })
             textStyles = textStyles.sort((a, b) => a.name > b.name)
@@ -438,8 +442,9 @@ module.exports = (styleguide, gulp) => {
 
             designElements[`${path.parse(sketchFile).name}`] = {
               name: `${path.parse(sketchFile).name}`,
-              textStyles: textStyles,
-              fontFamilies: fontFamilies
+              fontFamilies: fontFamilies,
+              colorStyles: colorStyles,
+              textStyles: textStyles
             }
 
             try {

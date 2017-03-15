@@ -328,9 +328,29 @@ pre[class*='language-'] {
     font-size: 3.8em;
   }
 
-  &-item {
+  &-items {
+    &[data-grid] {
+      display: flex;
+    }
+  }
+
+  &-items-item {
     margin: 2em 0;
     padding: 1em;
+  }
+}
+
+.StyleguideColorStyle {
+  &-name {
+    margin-bottom: 0.5em;
+    background: rgba(165, 175, 185, 0.1);
+    padding: 0.2em;
+    border-radius: 3px;
+  }
+
+  &-sample {
+    width: 200px;
+    height: 220px;
   }
 }
 

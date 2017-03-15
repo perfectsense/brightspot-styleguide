@@ -23,7 +23,7 @@
         {{#each designElement.textStyles as |textStyle|}}
           <div class="StyleguideSection-item">
             <div class="StyleguideTextStyle">
-              <div class="{{textStyle.name}}">{{textStyle.name}}</div>
+              <div class="{{textStyle.name}}" {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
               <div class="StyleguideTextStyle-code language-css">{{textStyle.cssProps}}<br/>{{textStyle.alignment}}</div>
             </div>
           </div>

@@ -18,7 +18,7 @@ module.exports = (styleguide, gulp) => {
   }
 
   styleguide.watch.html = () => {
-    gulp.watch('styleguide/**/*.{hbs,json}', { cwd: styleguide.path.root() }, [ styleguide.task.ui() ])
+    gulp.watch('styleguide/**/*.{hbs,json,md}', { cwd: styleguide.path.root() }, [ styleguide.task.ui() ])
       .on('change', onChange)
   }
 

@@ -14,7 +14,7 @@ module.exports = config => {
 
   app.use(express.static(config.build))
 
-  app.post('/node_modules/brightspot-express/styleguide/*', function (req, res) {
+  app.post('/node_modules/*/styleguide/*', function (req, res) {
     res.sendFile(path.join(config.build, req.originalUrl))
   })
 

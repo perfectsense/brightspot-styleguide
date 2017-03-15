@@ -406,11 +406,32 @@ module.exports = (styleguide, gulp) => {
             let styles = JSON.parse(fs.readFileSync(sketchFile, 'utf8')).styles
             let lessData = '// lesshint hexNotation: false\n'
 
+            // Process only the "textStyles".
             let textStyles = styles.filter(style => { return (style._type === `textStyle`) })
+
             textStyles = textStyles.sort((a, b) => a.name > b.name)
 
             textStyles.forEach(textStyle => {
-              lessData += `.${textStyle.name}() {\n  ${textStyle.cssProps.split(';').join(';\n ')}}\n\n`
+              // Based on the luminance of the color,
+              // determine which contrasting shade to use.
+              // credit: https://24ways.org/2010/calculating-color-contrast/
+              if (textStyle.color) {
+                const yiq = ((textStyle.color.red * 299) + (textStyle.color.green * 587) + (textStyle.color.blue * 114)) / 1000
+                let contrast = (yiq >= 128) ? 'dark' : 'light'
+                textStyle.contrast = contrast
+              }
+
+              if (textStyle.alignment) {
+                textStyle.cssProps += `text-align: ${textStyle.alignment};`
+              }
+
+              let cssProperties = textStyle.cssProps
+                .split(';').map(prop => {
+                  return `\n  ${prop.trim()}`
+                }).join(';')
+
+              // Generate the Less mixin.
+              lessData += `.${textStyle.name}() {\n  ${cssProperties.trim()}\n}\n\n`
             })
 
             designElements[`${path.parse(sketchFile).name}`] = {

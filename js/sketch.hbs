@@ -17,19 +17,37 @@
     </style>
 
     <h1 class="StyleguidePage-title">Design Elements</h1>
+    <div class="StyleguideSections">
     {{#each designElements as |designElement|}}
+      {{!-- Font Families --}}
       <section class="StyleguideSection">
-        <h2 class="StyleguideSection-heading">Text Styles</h2>
+        <h2 class="StyleguideSection-heading">Fonts</h2>
+        {{#each designElement.fontFamilies as |fontFamily|}}
+          <div class="StyleguideSection-item">
+            <div class="StyleguideFontStyle">
+              <h4 class="StyleguideFontStyle-title">{{fontFamily}}</h4>
+              <div class="StyleguideFontStyle-example" style="font-family: {{fontFamily}};">
+                <div class="StyleguideFontStyle-letters">Aa</div>
+                <div class="StyleguideFontStyle-alpha">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>abcdefghijklmnopqrstuvwxyz<br/>1234567890(,.;:?!$&*)</div>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      </section>
+      {{!-- Text Styles --}}
+      <section class="StyleguideSection">
+        <h2 class="StyleguideSection-heading">Typography</h2>
         {{#each designElement.textStyles as |textStyle|}}
           <div class="StyleguideSection-item">
             <div class="StyleguideTextStyle">
-              <div class="{{textStyle.name}}" {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
+              <div class="StyleguideTextStyle-name {{textStyle.name}}" {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
               <div class="StyleguideTextStyle-code language-css">{{textStyle.cssProps}}<br/>{{textStyle.alignment}}</div>
             </div>
           </div>
         {{/each}}
       </section>
     {{/each}}
+    </div>
 
     <script type="application/javascript">
       document.querySelectorAll('.language-css').forEach((element) => {

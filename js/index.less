@@ -312,22 +312,62 @@ pre[class*='language-'] {
   }
 }
 
+.StyleguideSections {
+  position: relative;
+}
+
 .StyleguideSection {
   margin: 3em 0;
 
+  &:not(:last-child) {
+    margin-bottom: 6.5em;
+  }
+
   &-heading {
-    color: #262626;
+    color: #565f63;
+    font-size: 3.8em;
   }
 
   &-item {
     margin: 2em 0;
+    padding: 1em;
   }
 }
 
 .StyleguideTextStyle {
-  &:first-child {
-    [data-contrast='dark'] {
-      background: rgb(96, 96, 96);
+  &-name {
+    margin-bottom: 0.5em;
+    background: rgba(165, 175, 185, 0.1);
+    padding: 0.2em;
+    border-radius: 3px;
+
+    &[data-contrast='dark'] {
+      background: rgba(66, 76, 86, 1);
     }
+  }
+}
+
+.StyleguideFontStyle {
+  font-size: 36px;
+
+  &-title {
+    font-size: 18px;
+    margin: 0 0 10px;
+  }
+
+  &-example {
+    display: flex;
+  }
+
+  &-letters {
+    width: 30%;
+    font-size: 90px;
+    align-self: center;
+  }
+
+  &-alpha {
+    width: 70%;
+    font-size: 20px;
+    align-self: center;
   }
 }

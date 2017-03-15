@@ -408,8 +408,10 @@ module.exports = (styleguide, gulp) => {
 
             // Process only the "textStyles".
             let textStyles = styles.filter(style => { return (style._type === `textStyle`) })
-
             textStyles = textStyles.sort((a, b) => a.name > b.name)
+
+            // Get the unique font-families.
+            const fontFamilies = [ ...new Set(textStyles.map(style => style.fontFamily)) ]
 
             textStyles.forEach(textStyle => {
               // Based on the luminance of the color,
@@ -436,7 +438,8 @@ module.exports = (styleguide, gulp) => {
 
             designElements[`${path.parse(sketchFile).name}`] = {
               name: `${path.parse(sketchFile).name}`,
-              textStyles: textStyles
+              textStyles: textStyles,
+              fontFamilies: fontFamilies
             }
 
             try {

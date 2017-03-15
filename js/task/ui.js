@@ -404,11 +404,15 @@ module.exports = (styleguide, gulp) => {
           glob.sync('**/*.json', { cwd: path.join(styleguide.path.root(), `sketch/`), absolute: true }).forEach(sketchFile => {
             let lessFilename = sketchFile.replace(path.extname(sketchFile), '.less')
             let styles = JSON.parse(fs.readFileSync(sketchFile, 'utf8')).styles
-            let lessData = '// lesshint hexNotation: false\n'
+            let lessData = '// lesshint hexNotation: false, spaceAroundComma: false\n\n'
 
             // Process only the "colorStyles".
             let colorStyles = styles.filter(style => { return (style._type === `colorStyle`) })
             colorStyles = colorStyles.sort((a, b) => a.name > b.name)
+
+            colorStyles.forEach(color => {
+              lessData += `@color-${color.name}: rgb(${color.color.red}, ${color.color.green}, ${color.color.blue});\n`
+            })
 
             // Process only the "textStyles".
             let textStyles = styles.filter(style => { return (style._type === `textStyle`) })
@@ -437,7 +441,7 @@ module.exports = (styleguide, gulp) => {
                 }).join(';')
 
               // Generate the Less mixin.
-              lessData += `.${textStyle.name}() {\n  ${cssProperties.trim()}\n}\n\n`
+              lessData += `\n.${textStyle.name}() {\n  ${cssProperties.trim()}\n}\n\n`
             })
 
             designElements[`${path.parse(sketchFile).name}`] = {

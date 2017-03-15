@@ -74,7 +74,7 @@ export class ViewportResizer {
     // bind actions for viewport controls
     // bind width input field
     // init the viewport on load
-    let $viewportResizer = this.$ctx.nextElementSibling
+    let $viewportResizer = this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`)
     let $widthInput = this.$ctx.querySelector(`.${this.selectors.controls}-width`)
     let $heightInput = this.$ctx.querySelector(`.${this.selectors.controls}-height`)
 
@@ -108,8 +108,8 @@ export class ViewportResizer {
     // listens for tab change event and removes or adds width of viewport
     this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`).addEventListener('Styleguide:tabChange', function (event) {
       if (window.location.hash === '#example') {
-        this.parentNode.style.width = `${self.viewportWidth}px`
-        this.parentNode.style.height = `${self.viewportHeight}px`
+        this.style.width = `${self.viewportWidth}px`
+        this.style.height = `${self.viewportHeight}px`
       } else {
         this.parentNode.removeAttribute('style')
       }
@@ -129,7 +129,7 @@ export class ViewportResizer {
   initDrag (event) {
     this.startX = event.clientX
     this.startY = event.clientY
-    let $resizer = this.$ctx.nextElementSibling
+    let $resizer = this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`)
 
     let computedStyle = document.defaultView.getComputedStyle($resizer)
     this.startWidth = parseInt(computedStyle.width, 10)
@@ -153,7 +153,7 @@ export class ViewportResizer {
   }
 
   stopDrag ($container) {
-    $container.removeAttribute('data-resizable')
+    $container.parentNode.removeAttribute('data-resizable')
     document.documentElement._.unbind('mousemove')
     document.documentElement._.unbind('mouseup')
     this.updateViewport({width: this.viewportWidth, height: this.viewportHeight})

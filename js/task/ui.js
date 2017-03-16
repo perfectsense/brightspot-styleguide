@@ -411,7 +411,7 @@ module.exports = (styleguide, gulp) => {
             colorStyles = colorStyles.sort((a, b) => a.name > b.name)
 
             colorStyles.forEach(color => {
-              color.lessVariable = `@color-${color.name.replace(' ', '-').toLowerCase()}`
+              color.lessVariable = `@color-${color.name.replace(/ /g, '-').toLowerCase()}`
               lessData += `${color.lessVariable}: rgb(${color.color.red}, ${color.color.green}, ${color.color.blue});\n`
             })
 

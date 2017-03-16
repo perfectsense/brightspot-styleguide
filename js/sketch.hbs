@@ -26,8 +26,18 @@
         {{#each designElement.colorStyles as |colorStyle|}}
           <div class="StyleguideSection-items-item">
             <div class="StyleguideColorStyle">
-              <div class="StyleguideColorStyle-name {{colorStyle.name}}" {{#with colorStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{colorStyle.name}}</div>
               <div class="StyleguideColorStyle-sample" style="background: rgb({{colorStyle.color.red}}, {{colorStyle.color.green}}, {{colorStyle.color.blue}});"></div>
+              <div class="StyleguideColorStyle-name {{colorStyle.name}}" {{#with colorStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{colorStyle.name}}</div>
+              <div class="StyleguideColorStyle-details">
+                <div class="StyleguideColorStyle-details-detail">
+                  <header>Less</header>
+                  <small>@{{colorStyle.name}}</small>
+                </div>
+                <div class="StyleguideColorStyle-details-detail">
+                  <header>Hex</header>
+                  <small>---</small>
+                </div>
+              </div>
             </div>
           </div>
         {{/each}}

@@ -341,16 +341,43 @@ pre[class*='language-'] {
 }
 
 .StyleguideColorStyle {
+  background: #fff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  width: 185px;
+  margin: 10px;
+  text-align: left;
+  box-sizing: border-box;
+
   &-name {
-    margin-bottom: 0.5em;
-    background: rgba(165, 175, 185, 0.1);
+    margin-bottom: 1em;
     padding: 0.2em;
     border-radius: 3px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-left: 0.5em;
   }
 
   &-sample {
-    width: 200px;
-    height: 220px;
+    height: 200px;
+    margin-bottom: 1em;
+    border-radius: ~'0% 0% 80% 80% / 0% 0% 80% 80%';
+  }
+
+  &-details {
+    display: flex;
+    padding-bottom: 1em;
+    margin: 0 0.5em;
+    justify-content: space-between;
+  }
+
+  &-details-detail {
+    header {
+      color: rgb(165, 175, 185);
+    }
+
+    small {
+      color: #ccc;
+    }
   }
 }
 

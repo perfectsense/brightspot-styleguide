@@ -254,14 +254,14 @@ class ViewClassJavadocsBuilder {
             if (fieldDef.isAbstract()) {
                 builder.append("An <b>abstract</b> ");
             } else {
-                builder.append("A ");
+                builder.append("An ");
             }
         } else {
             builder.append("Typically a ");
         }
 
         if (isCollection) {
-            builder.append("Collection of ");
+            builder.append("Iterable of ");
         }
 
         String operator = isCollection ? "and" : "or";

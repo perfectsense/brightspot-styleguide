@@ -362,7 +362,7 @@ module.exports = (styleguide, gulp) => {
       // after all the example HTML files are produced.
       const projectRootPath = getProjectRootPath()
 
-      gulp.src(path.join(projectRootPath, 'styleguide/**/*.json'))
+      gulp.src(['!' + path.join(projectRootPath, 'styleguide/_sketch/**/*'), path.join(projectRootPath, 'styleguide/**/*.json')])
         .pipe(through.obj(jsonToHtml))
         .pipe(gulp.dest(styleguide.path.build()))
         .on('end', () => {
@@ -398,10 +398,9 @@ module.exports = (styleguide, gulp) => {
             groups.push(groupByName[groupName])
           })
 
-          // All the design elements.
           const designElements = { }
 
-          glob.sync('**/*.json', { cwd: path.join(styleguide.path.root(), `sketch/`), absolute: true }).forEach(sketchFile => {
+          glob.sync('**/*.json', { cwd: path.join(styleguide.path.root(), `styleguide/_sketch/`), absolute: true }).forEach(sketchFile => {
             let lessFilename = sketchFile.replace(path.extname(sketchFile), '.less')
             let styles = JSON.parse(fs.readFileSync(sketchFile, 'utf8')).styles
             let lessData = '// lesshint hexNotation: false, spaceAroundComma: false\n\n'
@@ -410,6 +409,7 @@ module.exports = (styleguide, gulp) => {
             let colorStyles = styles.filter(style => { return (style._type === `colorStyle`) })
             colorStyles = colorStyles.sort((a, b) => a.name > b.name)
 
+            // Generate Less color variables.
             colorStyles.forEach(color => {
               color.lessVariable = `@color-${color.name.replace(/ /g, '-').toLowerCase()}`
               lessData += `${color.lessVariable}: rgb(${color.color.red}, ${color.color.green}, ${color.color.blue});\n`
@@ -436,6 +436,7 @@ module.exports = (styleguide, gulp) => {
                 textStyle.cssProps += `text-align: ${textStyle.alignment};`
               }
 
+              // Generate Less ruleset.
               let cssProperties = textStyle.cssProps
                 .split(';').map(prop => {
                   return `\n  ${prop.trim()}`

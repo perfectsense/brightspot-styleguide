@@ -79,14 +79,22 @@ DataGenerator.prototype.name = function () {
 
 DataGenerator.prototype.number = function (number) {
   if (Array.isArray(number)) {
-    var step = number[2]
-    number = this.chance.integer({
-      min: number[0],
-      max: number[1]
-    })
+    if (number.length < 2) {
+      return number[0] || 0
+    } else {
+      const from = number[0]
+      const to = number[1]
 
-    if (step) {
-      number = Math.round(number / step) * step
+      number = this.chance.integer({
+        min: Math.min(from, to),
+        max: Math.max(from, to)
+      })
+
+      const step = number[2]
+
+      if (step) {
+        number = Math.round(number / step) * step
+      }
     }
   }
 

@@ -1,8 +1,9 @@
 package com.psddev.styleguide.codegen;
 
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.psddev.dari.util.ObjectUtils;
 
 /**
  * Manages all of the imports that need to be included in the generated view
@@ -21,7 +22,8 @@ class ViewClassImportsBuilder {
 
     private String currentPackage;
 
-    private Set<String> imports = new TreeSet<>();
+    // key is the simple or "local" class name, used to detect conflicts.
+    private Map<String, ViewClassFieldType> imports = new HashMap<>();
 
     /**
      * Creates a new import statement builder for the given package name.
@@ -67,32 +69,11 @@ class ViewClassImportsBuilder {
      * with the same simple name.
      *
      * @param fieldType the view class field type to add.
-     * @return true if adding the import wouldn't , false otherwise.
+     * @return true if adding the import wouldn't cause conflicts, false otherwise.
      */
     public boolean add(ViewClassFieldType fieldType) {
-
-        if (!isSamePackage(fieldType) && !fieldType.getPackageName().equals("java.lang")) {
-
-            if (imports.contains(fieldType.getFullyQualifiedClassName())) {
-                return true;
-
-            } else {
-                if (!imports.stream()
-                        .map(ViewClassFieldType::from)
-                        .map(ViewClassFieldType::getLocalClassName)
-                        .collect(Collectors.toSet())
-                        .contains(fieldType.getLocalClassName())) {
-
-                    imports.add(fieldType.getFullyQualifiedClassName());
-                    return true;
-
-                } else {
-                    return false;
-                }
-            }
-        } else {
-            return true;
-        }
+        ViewClassFieldType prev = imports.putIfAbsent(fieldType.getLocalClassName(), fieldType);
+        return prev == null || prev.contentEquals(fieldType);
     }
 
     /**
@@ -104,9 +85,16 @@ class ViewClassImportsBuilder {
     public String getImportStatements() {
         StringBuilder builder = new StringBuilder();
 
-        for (String importClass : imports) {
-            builder.append("import ").append(importClass).append(";\n");
-        }
+        imports.values().stream()
+
+                // don't write out the import if it's already in this package, or it's a native java class
+                .filter(ft -> !isSamePackage(ft) && !ft.getPackageName().equals("java.lang"))
+
+                // sort the imports alphabetically
+                .sorted((ft1, ft2) -> ObjectUtils.compare(ft1.getFullyQualifiedClassName(), ft2.getFullyQualifiedClassName(), true))
+
+                // append to the builder
+                .forEach(ft -> builder.append("import ").append(ft.getFullyQualifiedClassName()).append(";\n"));
 
         return builder.toString();
     }
@@ -118,14 +106,5 @@ class ViewClassImportsBuilder {
      */
     private boolean isSamePackage(ViewClassFieldType fieldType) {
         return currentPackage.equals(fieldType.getPackageName());
-    }
-
-    /*
-     * Returns true if the specified {@code fullyQualifiedClassName} is in the
-     * same package as the view class definition that this builder is managing
-     * to determine if an import statement is needed or not.
-     */
-    private boolean isSamePackage(String fullyQualifiedClassName) {
-        return isSamePackage(() -> fullyQualifiedClassName);
     }
 }

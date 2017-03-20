@@ -141,21 +141,26 @@ module.exports = function (styleguide, filePath) {
     return renderTemplate(this)
   }
 
-  function convert (data) {
+  function convert (data, inArray) {
     if (!data) return
     if (typeof data !== 'object') return data
 
     let array
 
     if (Array.isArray(data)) {
-      array = data.map(convert)
+      array = data.map(item => convert(item, true))
     } else {
       const template = data._template || data._view ? new Template() : { }
-      array = [ template ]
 
       Object.keys(data).forEach(key => {
         template[key] = convert(data[key])
       })
+
+      if (inArray) {
+        return template
+      } else {
+        array = [ template ]
+      }
     }
 
     array.toHTML = function () {

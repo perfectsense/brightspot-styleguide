@@ -143,27 +143,26 @@ module.exports = function (styleguide, filePath) {
 
   function convert (data) {
     if (!data) return
+    if (typeof data !== 'object') return data
 
-    if (typeof data === 'object') {
-      if (Array.isArray(data)) {
-        return data.map(function (item) {
-          return convert(item)
-        })
-      } else {
-        var copy = {}
-        if (data._template || data._view) {
-          copy = new Template()
-        }
+    let array
 
-        Object.keys(data).forEach(function (key) {
-          copy[key] = convert(data[key])
-        })
+    if (Array.isArray(data)) {
+      array = data.map(convert)
+    } else {
+      const template = data._template || data._view ? new Template() : { }
+      array = [ template ]
 
-        return copy
-      }
+      Object.keys(data).forEach(key => {
+        template[key] = convert(data[key])
+      })
     }
 
-    return data
+    array.toHTML = function () {
+      return this.reduce((acc, item) => acc + (item && item.toHTML ? item.toHTML() : item.toString()), '')
+    }
+
+    return array
   }
 
   // Marks the path to be uploaded to the CDN.

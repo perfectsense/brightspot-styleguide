@@ -36,6 +36,11 @@ enum ViewClassFieldNativeJavaType implements ViewClassFieldType {
     COLLECTION("java.util.Collection"),
 
     /**
+     * Native Java Iterable type.
+     */
+    ITERABLE("java.lang.Iterable"),
+
+    /**
      * Native Java Map type.
      */
     MAP("java.util.Map");

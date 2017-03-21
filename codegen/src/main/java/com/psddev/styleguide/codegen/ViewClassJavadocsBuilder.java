@@ -473,7 +473,7 @@ class ViewClassJavadocsBuilder {
 
                 for (String sampleValue : sampleValues) {
                     builder.append("<li>");
-                    builder.append(StringUtils.escapeHtml(sampleValue));
+                    builder.append(StringUtils.escapeHtml(sampleValue).replace("*/", "&#x2A;&#x2F;"));
                     builder.append("</li>");
                     builder.append(NEW_LINE);
                 }

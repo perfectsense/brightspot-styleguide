@@ -409,10 +409,10 @@ module.exports = (styleguide, gulp) => {
             let colorStyles = styles.filter(style => { return (style._type === `colorStyle`) })
             colorStyles = colorStyles.sort((a, b) => a.name > b.name)
 
-            // Generate Less color variables.
+            // Generate Less color guards.
             colorStyles.forEach(color => {
-              color.lessVariable = `@color-${color.name.replace(/ /g, '-').toLowerCase()}`
-              lessData += `${color.lessVariable}: rgb(${color.color.red}, ${color.color.green}, ${color.color.blue});\n`
+              color.lessMixin = `.sketch("${color.name}")`
+              lessData += `.sketch(@sharedStyleName) when (@sharedStyleName = "${color.name}") { color: rgb(${color.color.red}, ${color.color.green}, ${color.color.blue}); }\n`
             })
 
             // Process only the "textStyles".

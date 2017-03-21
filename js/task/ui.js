@@ -420,7 +420,7 @@ module.exports = (styleguide, gulp) => {
             textStyles = textStyles.sort((a, b) => a.name > b.name)
 
             // Get the unique font-families.
-            const fontFamilies = [ ...new Set(textStyles.map(style => style.fontFamily)) ]
+            const fontFamilies = [ ...new Set(textStyles.map(style => style.fontFamily)) ].sort()
 
             textStyles.forEach(textStyle => {
               textStyle.className = textStyle.name.replace(/ |\//gi, '-')

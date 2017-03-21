@@ -254,14 +254,14 @@ class ViewClassJavadocsBuilder {
             if (fieldDef.isAbstract()) {
                 builder.append("An <b>abstract</b> ");
             } else {
-                builder.append("A ");
+                builder.append("An ");
             }
         } else {
             builder.append("Typically a ");
         }
 
         if (isCollection) {
-            builder.append("Collection of ");
+            builder.append("Iterable of ");
         }
 
         String operator = isCollection ? "and" : "or";
@@ -473,7 +473,7 @@ class ViewClassJavadocsBuilder {
 
                 for (String sampleValue : sampleValues) {
                     builder.append("<li>");
-                    builder.append(StringUtils.escapeHtml(sampleValue));
+                    builder.append(StringUtils.escapeHtml(sampleValue).replace("*/", "&#x2A;&#x2F;"));
                     builder.append("</li>");
                     builder.append(NEW_LINE);
                 }

@@ -9,7 +9,7 @@
     <style type="text/css">
       {{#each designElements as |designElement|}}
         {{#each designElement.textStyles as |textStyle|}}
-          .{{textStyle.name}} {
+          .{{textStyle.className}} {
             {{textStyle.cssProps}}
           }
         {{/each}}
@@ -63,7 +63,7 @@
         {{#each designElement.textStyles as |textStyle|}}
           <div class="StyleguideSection-items-item">
             <div class="StyleguideTextStyle">
-              <div class="StyleguideTextStyle-name {{textStyle.name}}" {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
+              <div class="StyleguideTextStyle-name {{textStyle.className}}" {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
               <div class="StyleguideTextStyle-code language-css">{{textStyle.cssProps}}</div>
             </div>
           </div>

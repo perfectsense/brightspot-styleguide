@@ -423,6 +423,8 @@ module.exports = (styleguide, gulp) => {
             const fontFamilies = [ ...new Set(textStyles.map(style => style.fontFamily)) ]
 
             textStyles.forEach(textStyle => {
+              textStyle.className = textStyle.name.replace(/ |\//gi, '-')
+
               // Based on the luminance of the color,
               // determine which contrasting shade to use.
               // credit: https://24ways.org/2010/calculating-color-contrast/
@@ -443,7 +445,7 @@ module.exports = (styleguide, gulp) => {
                 }).join(';')
 
               // Generate the Less mixin.
-              lessData += `\n.${textStyle.name}() {\n  ${cssProperties.trim()}\n}\n\n`
+              lessData += `\n.${textStyle.className}() {\n  ${cssProperties.trim()}\n}\n`
             })
 
             designElements[`${path.parse(sketchFile).name}`] = {

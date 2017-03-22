@@ -26,7 +26,11 @@
         {{#each designElement.colorStyles as |colorStyle|}}
           <div class="StyleguideSection-items-item">
             <div class="StyleguideColorStyle">
-              <div class="StyleguideColorStyle-sample" style="background: rgb({{colorStyle.color.red}}, {{colorStyle.color.green}}, {{colorStyle.color.blue}});"></div>
+              <div class="StyleguideColorStyle-sample" style="background: {{#if colorStyle.color.stops}}
+                linear-gradient(to bottom, {{#each colorStyle.color.stops}}rgba({{this.red}}, {{this.green}}, {{this.blue}}, {{this.alpha}}) {{this.position}}%{{#unless @last}},{{/unless}}{{/each}});
+              {{else}}
+                rgb({{colorStyle.color.red}}, {{colorStyle.color.green}}, {{colorStyle.color.blue}});
+              {{/if}}"></div>
               <div class="StyleguideColorStyle-name {{colorStyle.name}}" {{#with colorStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{colorStyle.name}}</div>
               <div class="StyleguideColorStyle-details">
                 <div class="StyleguideColorStyle-details-detail">

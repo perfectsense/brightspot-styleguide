@@ -414,6 +414,8 @@ module.exports = (styleguide, gulp) => {
 
             // Generate Less color mixins.
             colorStyles.forEach(colorStyle => {
+              if (!colorStyle.color) return
+
               colorStyle.lessMixin = `.sketch("${colorStyle.name}")`
 
               if (colorStyle.color.stops && colorStyle.color.stops.length) {

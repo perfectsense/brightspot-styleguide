@@ -26,7 +26,7 @@
                             <h3 class="StyleguideGroups-name">{{name}}</h3>
                             <ul class="StyleguideGroups-examples">
                                 {{#each examples}}
-                                    <li class="StyleguideGroups-examples-example"><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample" {{#if source}}data-source='{{{jsonObject source}}}'{{/if}}>{{name}}<i class="StyleguideGroups-examples-externalLink" title="Open Example in a New Window"></i></a>
+                                    <li class="StyleguideGroups-examples-example"><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample-frame" {{#if source}}data-source='{{{jsonObject source}}}'{{/if}}>{{name}}<i class="StyleguideGroups-examples-externalLink" title="Open Example in a New Window"></i></a>
                                     </li>
                                 {{/each}}
                             </ul>
@@ -37,7 +37,9 @@
         </nav>
 
         <div class="StyleguideContent">
-          <iframe class="StyleguideExample" name="StyleguideExample" src="{{#if indexUrl}}{{indexUrl}}{{else}}about:blank{{/if}}"></iframe>
+          <section class="StyleguideExample">
+            <iframe class="StyleguideExample-frame" name="StyleguideExample-frame" src="{{#if indexUrl}}{{indexUrl}}{{else}}about:blank{{/if}}"></iframe>
+          </section>
         </div>
     </body>
 </html>

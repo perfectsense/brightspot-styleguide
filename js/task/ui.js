@@ -425,9 +425,9 @@ module.exports = (styleguide, gulp) => {
                   propStr += `rgba(${stop.red}, ${stop.green}, ${stop.blue}, ${stop.alpha}) ${stop.position}%,`
                 })
 
-                lessData += `.sketch(@sharedStyleName) when (@sharedStyleName = "${colorStyle.name}") { background: linear-gradient(to bottom, ${propStr}); }\n`
+                lessData += `.sketch(@sharedStyleName; @prop: background) when (@sharedStyleName = "${colorStyle.name}") { @{prop}: linear-gradient(to bottom, ${propStr}); }\n`
               } else {
-                lessData += `.sketch(@sharedStyleName) when (@sharedStyleName = "${colorStyle.name}") { color: rgb(${colorStyle.color.red}, ${colorStyle.color.green}, ${colorStyle.color.blue}); }\n`
+                lessData += `.sketch(@sharedStyleName; @prop: color) when (@sharedStyleName = "${colorStyle.name}") { @{prop}: rgb(${colorStyle.color.red}, ${colorStyle.color.green}, ${colorStyle.color.blue}); }\n`
               }
             })
 

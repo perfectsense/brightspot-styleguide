@@ -20,7 +20,7 @@
                             <h3 class="StyleguideGroups-name">{{name}}</h3>
                             <ul class="StyleguideGroups-examples">
                                 {{#each examples}}
-                                    <li class="StyleguideGroups-examples-example"><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample" {{#if source}}data-source='{{{jsonObject source}}}'{{/if}}>{{name}}<i class="StyleguideGroups-examples-externalLink" title="Open Example in a New Window"></i></a>
+                                    <li class="StyleguideGroups-examples-example"><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample-frame" {{#if source}}data-source='{{{jsonObject source}}}'{{/if}}>{{name}}<i class="StyleguideGroups-examples-externalLink" title="Open Example in a New Window"></i></a>
                                     </li>
                                 {{/each}}
                             </ul>
@@ -36,9 +36,9 @@
             {{#each devices}} <button href="#" class="{{this.icon}}" title="{{this.name}}" data-viewportsize='{"width": "{{this.width}}", "height": "{{this.height}}" }'></button> {{/each}}
             <input type="number" class="StyleguideViewport-width"  min="0" placeholder="w" /><span class="StyleguideViewport-xlabel">x</span><input type="number" class="StyleguideViewport-height"  min="0" placeholder="h" />
           </div>
-          <div class="StyleguideViewport-resize">
-            <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
-          </div>
+          <section class="StyleguideExample">
+            <iframe class="StyleguideExample-frame" name="StyleguideExample-frame" src="{{#if indexUrl}}{{indexUrl}}{{else}}about:blank{{/if}}"></iframe>
+          </section>
         </div>
 
     </body>

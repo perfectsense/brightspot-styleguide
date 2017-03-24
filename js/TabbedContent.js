@@ -25,7 +25,8 @@ export class TabbedContent {
       selectors: {
         tabList: 'StyleguideTabs',
         content: 'StyleguideContent',
-        iframeContent: 'StyleguideExample'
+        example: 'StyleguideExample',
+        iframeContent: 'StyleguideExample-frame'
       },
       prismMap: {'json': 'json', 'documentation': 'markdown'}
     }, options)
@@ -33,7 +34,7 @@ export class TabbedContent {
 
   init () {
     let self = this
-    $.create('ul', {className: this.selectors.tabList})._.start($(`.${this.selectors.content}`))
+    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.example}`))
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       if (self.settings.prismMap[self.dataType] !== undefined) {
@@ -117,7 +118,7 @@ export class TabbedContent {
               }
             },
             contents: {
-              tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample', name: dataSources[key].toLowerCase(), className: `${self.selectors.tabList}-link`
+              tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample-frame', name: dataSources[key].toLowerCase(), className: `${self.selectors.tabList}-link`
             }
           })
         if (index === 0) {

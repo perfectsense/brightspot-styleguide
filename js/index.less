@@ -195,6 +195,7 @@ pre[class*='language-'] {
 
 .StyleguideContent {
   position: fixed;
+  padding: 20px;
   bottom: 20px;
   left: 270px;
   right: 20px;
@@ -208,19 +209,24 @@ pre[class*='language-'] {
   &-title {
     font-size: 18px;
     font-weight: 400;
-    margin: 25px 20px;
+    margin: 0 0 20px;
   }
 }
 
 .StyleguideExample {
-  border: 0;
   height: 100%;
-  width: 100%;
-  display: block;
+  position: relative;
+
+  &-frame {
+    border: 0;
+    display: block;
+    height: ~'calc(100% - 90px)';
+    width: 100%;
+  }
 }
 
+
 .StyleguideTabs {
-  margin: 0 20px;
   padding: 0;
   position: relative;
 

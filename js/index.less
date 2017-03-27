@@ -209,13 +209,15 @@ pre[class*='language-'] {
   &-title {
     font-size: 18px;
     font-weight: 400;
-    margin: 0 0 20px;
+    margin: 25px 20px;
   }
 }
 
 .StyleguideExample {
-  height: 100%;
   position: relative;
+  padding: 20px;
+  margin: 0 auto;
+  display: inline-block;
 
   &-frame {
     border: 0;
@@ -225,7 +227,6 @@ pre[class*='language-'] {
   }
 }
 
-
 .StyleguideTabs {
   padding: 0;
   position: relative;
@@ -234,7 +235,7 @@ pre[class*='language-'] {
     display: none;
   }
 
-  &[data-viewportsize=example] ~ .StyleguideViewport-resize {
+  &[data-viewportsize=example] ~ .StyleguideExample {
     background-color: #ededed;
 
     &:before {
@@ -274,7 +275,7 @@ pre[class*='language-'] {
       }
     }
 
-    .StyleguideViewport-resize-handle {
+    .StyleguideExample-handle {
       position: absolute;
       right: 0;
       bottom: 0;
@@ -380,13 +381,6 @@ pre[class*='language-'] {
         color: black;
       }
     }
-  }
-
-  &-resize {
-    position: relative;
-    padding: 20px;
-    margin: 0 auto;
-    display: inline-block;
   }
 
   &-reset {

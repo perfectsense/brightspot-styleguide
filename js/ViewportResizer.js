@@ -64,7 +64,8 @@ export class ViewportResizer {
     this.settings = Object.assign({}, {
       selectors: {
         controls: 'StyleguideViewport',
-        iframe: 'StyleguideExample'
+        example: 'StyleguideExample',
+        iframe: 'StyleguideExample-frame'
       }
     }, options)
   }
@@ -117,7 +118,7 @@ export class ViewportResizer {
 
     // bind viewport frame actions
     this.$ctx.nextElementSibling._.contents($.create('div', {
-      className: `${this.selectors.controls}-resize-handle`
+      className: `${this.selectors.example}-handle`
     }))
 
     this.$ctx.nextElementSibling.addEventListener('mousedown', function (event) {

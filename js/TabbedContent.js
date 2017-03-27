@@ -34,7 +34,7 @@ export class TabbedContent {
 
   init () {
     let self = this
-    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.example}`))
+    $.create('ul', {className: this.selectors.tabList})._.start($(`.${this.selectors.content}`))
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       if (self.settings.prismMap[self.dataType] !== undefined) {

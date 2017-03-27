@@ -36,7 +36,7 @@ module.exports = (styleguide, gulp) => {
       // Pretend that the project is a package.
       const projectFiles = [
         path.join(styleguide.path.root(), 'package.json'),
-        path.join(styleguide.path.root(), 'styleguide/**/*.{hbs,json,md,png}')
+        path.join(styleguide.path.root(), 'styleguide/**/*.{hbs,json,md}')
       ]
 
       const projectRootPath = getProjectRootPath()

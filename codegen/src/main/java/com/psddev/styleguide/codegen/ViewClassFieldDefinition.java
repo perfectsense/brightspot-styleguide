@@ -142,14 +142,94 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
         }
     }
 
-    /*
-     * Validates that the values have a consistent type, and returns it. If
-     * there is more than one, an error is added to this field definition and
-     * null is returned.
-     */
+    //
+    // Validates that the values have a consistent type, and returns it. If
+    // there is more than one, an error is added to this field definition and
+    // null is returned.
+    //
+    // There are some exceptions to this rule:
+    //
+    // 1. Having a mix of Strings and Views is allowed, and just considered to be a View.
+    // 2. Views are always considered to be Lists, and thus a mix of Views and Lists are also allowed.
+    //
     private Class<? extends JsonValue> getEffectiveType(Collection<JsonValue> values, boolean validate) {
 
-        // The only time values will be empty is if we are in a recursive call on a List.
+        Set<Class<? extends JsonValue>> valueTypes = values.stream()
+                .map(JsonValue::getClass)
+                .collect(Collectors.toCollection(HashSet::new));
+
+        // ignore nulls
+        valueTypes.remove(JsonNull.class);
+
+        // If we find a delegate or abstract map type, replace it with a view map type since they are placeholders for them.
+        if (valueTypes.remove(JsonDelegateMap.class)) {
+            valueTypes.add(JsonViewMap.class);
+        }
+
+        if (valueTypes.remove(JsonAbstractMap.class)) {
+            valueTypes.add(JsonViewMap.class);
+        }
+
+        // treat it as a list and validate its items.
+        if (valueTypes.contains(JsonViewMap.class) || valueTypes.contains(JsonList.class)) {
+
+            // if there are Strings, then it's considered mixed...
+            if (valueTypes.contains(JsonString.class)) {
+
+                hasMixedValueTypes = true;
+
+                // but if there are not also Views, then it's an error.
+                if (!valueTypes.contains(JsonViewMap.class)) {
+                    addMultipleEffectiveTypesErrorConditionally(valueTypes, validate);
+                    return null;
+                }
+            }
+
+            // temp set used to test if there is some combination of only list, string, and view value types.
+            Set<Class<? extends JsonValue>> tempValueTypes = new HashSet<>(valueTypes);
+            tempValueTypes.removeAll(Arrays.asList(JsonList.class, JsonViewMap.class, JsonString.class));
+
+            // If there is anything other than List, String or View, then it's also an error.
+            if (!tempValueTypes.isEmpty()) {
+                addMultipleEffectiveTypesErrorConditionally(valueTypes, validate);
+                return null;
+            }
+
+            // now conditionally validate each list item if there are any lists
+            if (validate && valueTypes.contains(JsonList.class)) {
+
+                // Recurse on list item values, since they have to all be the same as well.
+                // And we don't have to worry about List of Lists since that is caught during the JSON parse phase.
+                getEffectiveListItemType(values.stream()
+                        // ignore nulls
+                        .filter(value -> !(value instanceof JsonNull))
+                        // convert each value to a list
+                        .map(value -> value instanceof JsonList ? ((JsonList) value).getValues() : Collections.singleton(value))
+                        // flatten them out
+                        .flatMap(Collection::stream)
+                        // add them to a set
+                        .collect(Collectors.toList()), true);
+            }
+
+            return JsonList.class;
+
+        } else if (valueTypes.size() == 1) {
+            return valueTypes.iterator().next();
+
+        } else if (valueTypes.size() > 1) {
+            addMultipleEffectiveTypesErrorConditionally(valueTypes, validate);
+        }
+
+        return null;
+    }
+
+    //
+    // Validates that the list item values have a consistent type, and returns
+    // it. If there is more than one, an error is added to this field definition
+    // and null is returned
+    //
+    private Class<? extends JsonValue> getEffectiveListItemType(Collection<JsonValue> values, boolean validate) {
+
         if (values.isEmpty()) {
             addErrorConditionally("List cannot be empty, they must have at least one value.", validate);
         }
@@ -170,7 +250,7 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             valueTypes.add(JsonViewMap.class);
         }
 
-        Class<? extends JsonValue> effectiveValueType;
+        Class<? extends JsonValue> effectiveListItemValueType;
 
         if (valueTypes.size() == 1
                 || (valueTypes.size() == 2
@@ -178,42 +258,29 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
 
             if (valueTypes.size() == 2) {
                 // We allow Strings and Objects to co-exist and just treat them as if it is an Object.
-                effectiveValueType = JsonViewMap.class;
+                effectiveListItemValueType = JsonViewMap.class;
                 hasMixedValueTypes = true;
+
             } else {
-                effectiveValueType = valueTypes.iterator().next();
+                effectiveListItemValueType = valueTypes.iterator().next();
             }
 
-            // Recurse on list values, since they have to all be the same as well.
-            // And we don't have to worry about List of Lists since that is caught during the JSON parse phase.
-            if (effectiveValueType == JsonList.class) {
-                if (validate) {
-                    getEffectiveType(values.stream()
-                            // ignore nulls
-                            .filter(value -> !(value instanceof JsonNull))
-                            // the rest should be Lists
-                            .map(value -> (JsonList) value)
-                            // get the values in list
-                            .map(JsonList::getValues)
-                            // flatten it out
-                            .flatMap(Collection::stream)
-                            // add them to a set
-                            .collect(Collectors.toList()), true);
-                }
-            }
-
-            return effectiveValueType;
+            return effectiveListItemValueType;
 
         } else if (valueTypes.size() > 1) {
-            addErrorConditionally("A field can only have a single value type but has "
-                    + valueTypes.stream()
-                            .map(JsonValueType::forClass)
-                            .map(JsonValueType::getLabel)
-                            .collect(Collectors.joining(" and "))
-                    + " instead!", validate);
+            addMultipleEffectiveTypesErrorConditionally(valueTypes, validate);
         }
 
         return null;
+    }
+
+    private void addMultipleEffectiveTypesErrorConditionally(Set<Class<? extends JsonValue>> valueTypes, boolean validate) {
+        addErrorConditionally("A field can only have a single value type but has "
+                + valueTypes.stream()
+                        .map(JsonValueType::forClass)
+                        .map(JsonValueType::getLabel)
+                        .collect(Collectors.joining(" and "))
+                + " instead!", validate);
     }
 
     /**
@@ -245,131 +312,124 @@ class ViewClassFieldDefinition implements ViewClassFieldType {
             valueTypes.add(JsonViewMap.class);
         }
 
-        Class<? extends JsonValue> effectiveValueType;
-
         isDelegate = false;
         isAbstract = false;
 
-        if (valueTypes.size() == 1
-                || (valueTypes.size() == 2
-                && valueTypes.containsAll(Arrays.asList(JsonViewMap.class, JsonString.class)))) {
+        Class<? extends JsonValue> effectiveItemType;
+        Collection<JsonValue> itemValues;
 
-            if (valueTypes.size() == 2) {
-                // We allow Strings and Objects to co-exist and just treat them as if it is an Object.
-                effectiveValueType = JsonViewMap.class;
-                hasMixedValueTypes = true;
-            } else {
-                effectiveValueType = valueTypes.iterator().next();
-            }
+        Class<? extends JsonValue> effectiveType = getEffectiveType(values, false);
 
-            // Recurse on list values, since they have to all be the same as well.
-            // And we don't have to worry about List of Lists since that is caught during the JSON parse phase.
-            if (effectiveValueType == JsonList.class) {
-                return getFieldValueTypes(values.stream()
-                        // ignore nulls
-                        .filter(value -> !(value instanceof JsonNull))
-                        // the rest should be Lists
-                        .map(value -> (JsonList) value)
-                        // get the values in list
-                        .map(JsonList::getValues)
-                        // flatten it out
-                        .flatMap(Collection::stream)
-                        // add them to a set
-                        .collect(Collectors.toList()), validate);
+        if (effectiveType == JsonList.class) {
 
-            } else if (effectiveValueType == JsonViewMap.class) {
+            itemValues = values.stream()
+                    // ignore nulls
+                    .filter(value -> !(value instanceof JsonNull))
+                    // convert each value to a list
+                    .map(value -> value instanceof JsonList ? ((JsonList) value).getValues() : Collections.singleton(value))
+                    // flatten them out
+                    .flatMap(Collection::stream)
+                    // add them to a set
+                    .collect(Collectors.toList());
 
-                Set<ViewClassFieldType> fieldValueTypes = new TreeSet<>((o1, o2) -> ObjectUtils.compare(
-                        o1.getFullyQualifiedClassName(),
-                        o2.getFullyQualifiedClassName(),
-                        true));
+            effectiveItemType = getEffectiveListItemType(itemValues, false);
 
-                values.stream()
-                        .filter(value -> (value instanceof JsonViewMap))
-                        .map(value -> (JsonViewMap) value)
-                        .map(JsonViewMap::getViewKey)
-                        .collect(Collectors.toCollection(() -> fieldValueTypes));
+        } else {
+            itemValues = values;
+            effectiveItemType = effectiveType;
+        }
 
-                Set<JsonDelegateMap> delegateMaps = values.stream()
-                        .filter(value -> (value instanceof JsonDelegateMap))
-                        .map(value -> (JsonDelegateMap) value)
-                        .collect(Collectors.toSet());
+        if (effectiveItemType == JsonViewMap.class) {
 
-                Set<JsonAbstractMap> abstractMaps = values.stream()
-                        .filter(value -> (value instanceof JsonAbstractMap))
-                        .map(value -> (JsonAbstractMap) value)
-                        .collect(Collectors.toSet());
+            Set<ViewClassFieldType> fieldValueTypes = new TreeSet<>((o1, o2) -> ObjectUtils.compare(
+                    o1.getFullyQualifiedClassName(),
+                    o2.getFullyQualifiedClassName(),
+                    true));
 
-                /*
-                 * for each delegate key search for all view class definitions
-                 * that have a JSON view map whose wrapper JSON file matches
-                 * the file that the delegate map is declared in.
-                 */
-                Set<Path> delegateFilePaths = delegateMaps.stream()
-                        .map(JsonDelegateMap::getDeclaringJsonFile)
-                        .map(JsonFile::getRelativePath)
-                        .collect(Collectors.toCollection(TreeSet::new));
+            itemValues.stream()
+                    .filter(value -> (value instanceof JsonViewMap))
+                    .map(value -> (JsonViewMap) value)
+                    .map(JsonViewMap::getViewKey)
+                    .collect(Collectors.toCollection(() -> fieldValueTypes));
 
-                if (!delegateFilePaths.isEmpty()) {
+            Set<JsonDelegateMap> delegateMaps = itemValues.stream()
+                    .filter(value -> (value instanceof JsonDelegateMap))
+                    .map(value -> (JsonDelegateMap) value)
+                    .collect(Collectors.toSet());
 
-                    for (ViewClassDefinition classDef : getContext().getClassDefinitions()) {
+            Set<JsonAbstractMap> abstractMaps = itemValues.stream()
+                    .filter(value -> (value instanceof JsonAbstractMap))
+                    .map(value -> (JsonAbstractMap) value)
+                    .collect(Collectors.toSet());
 
-                        for (JsonViewMap jsonViewMap : classDef.getJsonViewMaps()) {
+            // for each delegate key search for all view class definitions
+            // that have a JSON view map whose wrapper JSON file matches
+            // the file that the delegate map is declared in.
+            Set<Path> delegateFilePaths = delegateMaps.stream()
+                    .map(JsonDelegateMap::getDeclaringJsonFile)
+                    .map(JsonFile::getRelativePath)
+                    .collect(Collectors.toCollection(TreeSet::new));
 
-                            JsonFile wrapper = jsonViewMap.getWrapper();
-                            if (wrapper != null) {
-                                if (delegateFilePaths.contains(wrapper.getRelativePath())) {
-                                    fieldValueTypes.add(classDef);
-                                }
+            if (!delegateFilePaths.isEmpty()) {
+
+                for (ViewClassDefinition classDef : getContext().getClassDefinitions()) {
+
+                    for (JsonViewMap jsonViewMap : classDef.getJsonViewMaps()) {
+
+                        JsonFile wrapper = jsonViewMap.getWrapper();
+                        if (wrapper != null) {
+                            if (delegateFilePaths.contains(wrapper.getRelativePath())) {
+                                fieldValueTypes.add(classDef);
                             }
                         }
                     }
                 }
+            }
 
-                if (!abstractMaps.isEmpty() && !delegateMaps.isEmpty()) {
-                    addErrorConditionally("A field cannot be declared as both delegate and abstract.", validate);
-                }
+            if (!abstractMaps.isEmpty() && !delegateMaps.isEmpty()) {
+                addErrorConditionally("A field cannot be declared as both delegate and abstract.", validate);
+            }
 
-                if (!delegateMaps.isEmpty()) {
-                    isDelegate = true;
+            if (!delegateMaps.isEmpty()) {
+                isDelegate = true;
 
                     /*
                      * This means that this field definition is a delegate, but
                      * no corresponding class definitions that declared it as
                      * its wrapper.
                      */
-                    if (fieldValueTypes.isEmpty()) {
-                        addErrorConditionally("Can't infer the type of this delegate field"
-                                + " because there are no views that implicitly nor"
-                                + " explicitly declared the field's file(s) as a"
-                                + " wrapper. Unreferenced wrapper files: "
-                                + delegateFilePaths, validate);
-                    }
+                if (fieldValueTypes.isEmpty()) {
+                    addErrorConditionally("Can't infer the type of this delegate field"
+                            + " because there are no views that implicitly nor"
+                            + " explicitly declared the field's file(s) as a"
+                            + " wrapper. Unreferenced wrapper files: "
+                            + delegateFilePaths, validate);
                 }
-
-                if (!abstractMaps.isEmpty() && fieldValueTypes.isEmpty()) {
-                    isAbstract = true;
-
-                    return Collections.singleton(this);
-                }
-
-                return fieldValueTypes;
-
-            } else if (effectiveValueType == JsonBoolean.class) {
-                return Collections.singleton(ViewClassFieldNativeJavaType.BOOLEAN);
-
-            } else if (effectiveValueType == JsonNumber.class) {
-                return Collections.singleton(ViewClassFieldNativeJavaType.NUMBER);
-
-            } else if (effectiveValueType == JsonString.class) {
-                return Collections.singleton(ViewClassFieldNativeJavaType.CHAR_SEQUENCE);
-
-            } else if (effectiveValueType == JsonMap.class) {
-                return Collections.singleton(ViewClassFieldNativeJavaType.MAP);
             }
-        }
 
-        return Collections.emptySet();
+            if (!abstractMaps.isEmpty() && fieldValueTypes.isEmpty()) {
+                isAbstract = true;
+
+                return Collections.singleton(this);
+            }
+
+            return fieldValueTypes;
+
+        } else if (effectiveItemType == JsonBoolean.class) {
+            return Collections.singleton(ViewClassFieldNativeJavaType.BOOLEAN);
+
+        } else if (effectiveItemType == JsonNumber.class) {
+            return Collections.singleton(ViewClassFieldNativeJavaType.NUMBER);
+
+        } else if (effectiveItemType == JsonString.class) {
+            return Collections.singleton(ViewClassFieldNativeJavaType.CHAR_SEQUENCE);
+
+        } else if (effectiveItemType == JsonMap.class) {
+            return Collections.singleton(ViewClassFieldNativeJavaType.MAP);
+
+        } else {
+            return Collections.emptySet();
+        }
     }
 
     /**

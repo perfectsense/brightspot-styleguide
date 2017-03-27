@@ -1,3 +1,4 @@
+const Builder = require('systemjs-builder')
 const del = require('del')
 const filter = require('gulp-filter')
 const fs = require('fs-extra')
@@ -6,10 +7,11 @@ const gutil = require('gulp-util')
 const handlebars = require('handlebars')
 const less = require('gulp-less')
 const path = require('path')
+const plugins = require('gulp-load-plugins')()
 const through = require('through2')
 const traverse = require('traverse')
-const plugins = require('gulp-load-plugins')()
-const Builder = require('systemjs-builder')
+const xml2js = require('xml2js')
+const zip = require('gulp-zip')
 
 const example = require('../example')
 const label = require('../label')
@@ -435,6 +437,26 @@ module.exports = (styleguide, gulp) => {
         })
     },
 
+    zip: done => {
+      const pomFile = path.resolve(styleguide.path.root(), 'pom.xml')
+      let name = getProjectName()
+
+      if (fs.existsSync(pomFile)) {
+        xml2js.parseString(fs.readFileSync(pomFile), { async: false }, (error, pomXml) => {
+          if (error) {
+            throw error
+          }
+
+          name = `${pomXml.project.artifactId}-${pomXml.project.version}`
+        })
+      }
+
+      return gulp.src(`${styleguide.path.build()}/**`)
+        .pipe(zip(`${name}.zip`))
+        .pipe(gulp.dest(path.join(styleguide.path.build(), '..')))
+        .on('end', done)
+    },
+
     // Convert LESS files into CSS to be used by the styleguide UI itself.
     less: () => {
       return gulp.src(path.join(__dirname, '../', 'index.less'))
@@ -478,7 +500,11 @@ module.exports = (styleguide, gulp) => {
         styleguide.ui.fonts().on('end', () => {
           styleguide.ui.js(() => {
             styleguide.ui.less().on('end', () => {
-              done()
+              if (!styleguide.isWatching()) {
+                styleguide.ui.zip(done)
+              } else {
+                done()
+              }
             })
           })
         })

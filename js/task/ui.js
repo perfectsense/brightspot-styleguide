@@ -297,7 +297,7 @@ module.exports = (styleguide, gulp) => {
             if (processedExample) {
               traverse(processedExample.data).forEach(function (value) {
                 if (typeof value === 'string') {
-                  const match = value.match(/\{\{\s*image\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)\s*}}/)
+                  const match = value.match(/\{\{\s*image\s*\(\s*(\d+|\[[^]]+])\s*,\s*(\d+|\[[^]]+])\s*\)\s*}}/)
 
                   if (match) {
                     const selector = [ ]

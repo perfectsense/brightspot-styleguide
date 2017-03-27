@@ -65,6 +65,8 @@ DataGenerator.prototype.hexColor = function (luminosity) {
 DataGenerator.prototype.image = function (width, height, url) {
   if (!url) {
     const key = this.chance.guid()
+    width = this.number(width)
+    height = this.number(height)
     url = '/placeholder-image/' + key + '/' + width + 'x' + height + '.svg'
 
     placeholderImage(key, width, height, path.join(this.styleguide.path.build(), url))

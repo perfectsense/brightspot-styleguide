@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * A special JSON key.
+ * A special JSON key prefixed with an underscore.
  */
 enum JsonSpecialKey {
 
@@ -24,7 +24,7 @@ enum JsonSpecialKey {
     /**
      * The JSON key for referencing another JSON file.
      */
-    DATA_URL_KEY("dataUrl"),
+    DATA_URL_KEY("include", "dataUrl"),
 
     /**
      * The JSON key specifying a custom wrapper JSON.

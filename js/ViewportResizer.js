@@ -117,9 +117,11 @@ export class ViewportResizer {
     })
 
     // bind viewport frame actions
-    this.$ctx.nextElementSibling._.contents($.create('div', {
-      className: `${this.selectors.example}-handle`
-    }))
+    this.$ctx.nextElementSibling._.contents({contents: [
+      {tag: 'div', className: `${this.selectors.example}-handle-ew`},
+      {tag: 'div', className: `${this.selectors.example}-handle-nwse`},
+      {tag: 'div', className: `${this.selectors.example}-handle-ns`}
+    ]})
 
     this.$ctx.nextElementSibling.addEventListener('mousedown', function (event) {
       self.initDrag(event)

@@ -9,7 +9,7 @@
     <style type="text/css">
       {{#each designElements as |designElement|}}
         {{#each designElement.textStyles as |textStyle|}}
-          .{{textStyle.className}} {
+          .StyleguideTextStyle-name[data-textStyle-name="{{textStyle.name}}"] {
             {{textStyle.cssProps}}
           }
         {{/each}}
@@ -43,6 +43,7 @@
         {{/each}}
         </div>
       </section> --}}
+
       {{!-- Font Families --}}
       <section class="StyleguideSection">
         <h2 class="StyleguideSection-heading">Fonts</h2>
@@ -60,6 +61,7 @@
         {{/each}}
         </div>
       </section>
+
       {{!-- Text Styles --}}
       <section class="StyleguideSection">
         <h2 class="StyleguideSection-heading">Typography</h2>
@@ -67,7 +69,7 @@
         {{#each designElement.textStyles as |textStyle|}}
           <div class="StyleguideSection-items-item">
             <div class="StyleguideTextStyle">
-              <div class="StyleguideTextStyle-name {{textStyle.className}}" {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
+              <div class="StyleguideTextStyle-name" {{#with textStyle.name}}data-textStyle-name="{{this}}"{{/with}} {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
               <div class="StyleguideTextStyle-code language-css">{{textStyle.cssProps}}</div>
             </div>
           </div>

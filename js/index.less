@@ -200,7 +200,8 @@ pre[class*='language-'] {
   left: 270px;
   right: 20px;
   top: 90px;
-  overflow: auto;
+  overflow-y: hidden;
+  overflow-x: auto;
 
   body[data-iframed] & {
       top: 20px;
@@ -209,20 +210,20 @@ pre[class*='language-'] {
   &-title {
     font-size: 18px;
     font-weight: 400;
-    margin: 25px 20px;
+    margin: 0 0 20px 0;
   }
 }
 
 .StyleguideExample {
   position: relative;
   padding: 20px;
-  margin: 0 auto;
-  display: inline-block;
+  height: 100%;
+  width: 100%;
 
   &-frame {
     border: 0;
     display: block;
-    height: ~'calc(100% - 90px)';
+    height: 100%;
     width: 100%;
   }
 }
@@ -237,6 +238,12 @@ pre[class*='language-'] {
 
   &[data-viewportsize=example] ~ .StyleguideExample {
     background-color: #ededed;
+    display: inline-block;
+
+    &[data-viewportset] {
+      height: auto;
+      width: auto;
+    }
 
     &:before {
       position: absolute;

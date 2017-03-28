@@ -112,7 +112,7 @@ export class ViewportResizer {
         this.style.width = `${self.viewportWidth}px`
         this.style.height = `${self.viewportHeight}px`
       } else {
-        this.parentNode.removeAttribute('style')
+        this.removeAttribute('style')
       }
     })
 
@@ -197,9 +197,11 @@ export class ViewportResizer {
     if (search['width']) {
       this.viewportWidth = search['width']
       $resizer.style.width = `${this.viewportWidth}px`
+      $resizer.parentNode.setAttribute('data-viewportset', '')
     } else {
       this.viewportWidth = ''
       $resizer.style.width = this.viewportWidth
+      $resizer.parentNode.removeAttribute('data-viewportset')
     }
 
     // set the height of the iframe

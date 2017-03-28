@@ -426,6 +426,8 @@ module.exports = (styleguide, gulp) => {
               } else {
                 cssProperty += `rgb(${colorStyle.color.red}, ${colorStyle.color.green}, ${colorStyle.color.blue});\n`
               }
+
+              return cssProperty
             })
 
             // Process only the "textStyles".

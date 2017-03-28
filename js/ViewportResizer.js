@@ -68,6 +68,8 @@ export class ViewportResizer {
         iframe: 'StyleguideExample-frame'
       }
     }, options)
+    this.$widthInput = this.$ctx.querySelector(`.${this.selectors.controls}-width`)
+    this.$heightInput = this.$ctx.querySelector(`.${this.selectors.controls}-height`)
   }
 
   init () {
@@ -76,18 +78,16 @@ export class ViewportResizer {
     // bind width input field
     // init the viewport on load
     let $viewportResizer = this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`)
-    let $widthInput = this.$ctx.querySelector(`.${this.selectors.controls}-width`)
-    let $heightInput = this.$ctx.querySelector(`.${this.selectors.controls}-height`)
 
     self.updateViewportContainer($viewportResizer)
     // also update the input field with width
-    self.updateInputs($widthInput, $heightInput)
+    self.updateInputs(this.$widthInput, this.$heightInput)
 
-    $widthInput.addEventListener('focusout', function () {
+    this.$widthInput.addEventListener('focusout', function () {
       self.updateViewport({width: this.value})
     })
     // bind height input field
-    $heightInput.addEventListener('focusout', function () {
+    this.$heightInput.addEventListener('focusout', function () {
       self.updateViewport({height: this.value})
     })
     // bind function to the reset button
@@ -104,7 +104,7 @@ export class ViewportResizer {
     this.$ctx.addEventListener('Styleguide:updateViewport', function (event) {
       self.updateViewportContainer($viewportResizer)
       // also update the input field with width
-      self.updateInputs($widthInput, $heightInput)
+      self.updateInputs(self.$widthInput, self.$heightInput)
     })
     // listens for tab change event and removes or adds width of viewport
     this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`).addEventListener('Styleguide:tabChange', function (event) {
@@ -139,6 +139,7 @@ export class ViewportResizer {
     let doc = document.documentElement
     doc.addEventListener('mousemove', (event) => {
       this.dragContainer(event, $resizer)
+      this.updateInputs(this.$widthInput, this.$heightInput)
     }, false)
 
     doc.addEventListener('mouseup', () => {

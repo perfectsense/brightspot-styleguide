@@ -397,13 +397,21 @@ pre[class*='language-'] {
 }
 
 .SketchTextStyle {
-  &-example {
-    background: rgba(165, 175, 185, 0.1);
-    padding: 20px;
-    border-radius: 3px;
+  background: rgba(165, 175, 185, 0.1);
+  border-radius: 3px;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
 
-    &[data-contrast='dark'] {
-      background: rgba(66, 76, 86, 1);
+  &-code {
+    font-size: 0.8em;
+  }
+
+  &[data-contrast='dark'] {
+    background: rgba(66, 76, 86, 1);
+
+    .SketchTextStyle-code {
+      color: white;
     }
   }
 }

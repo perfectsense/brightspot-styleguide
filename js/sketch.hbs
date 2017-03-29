@@ -9,7 +9,7 @@
     <style type="text/css">
       {{#each designElements as |designElement|}}
         {{#each designElement.textStyles as |textStyle|}}
-          .SketchTextStyle-example[data-textStyle-name="{{textStyle.name}}"] {
+          .SketchTextStyle [data-textStyle-name="{{textStyle.name}}"] {
             {{textStyle.cssProps}}
           }
         {{/each}}
@@ -64,12 +64,13 @@
 
       {{!-- Text Styles --}}
       <section class="StyleguideSection">
-        <h2 class="StyleguideSection-heading">Typography</h2>
+        <h2 class="StyleguideSection-heading">Text Styles</h2>
         <div class="StyleguideSection-items">
         {{#each designElement.textStyles as |textStyle|}}
           <div class="StyleguideSection-items-item">
-            <div class="SketchTextStyle">
-              <div class="SketchTextStyle-example" {{#with textStyle.name}}data-textStyle-name="{{this}}"{{/with}} {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
+            <div class="SketchTextStyle" {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>
+              <div class="SketchTextStyle-name" {{#with textStyle.name}}data-textStyle-name="{{this}}"{{/with}}>{{textStyle.name}}</div>
+              <code class="SketchTextStyle-code">.sketch("{{textStyle.name}}");</code>
             </div>
           </div>
         {{/each}}

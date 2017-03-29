@@ -19,31 +19,6 @@
     <!--h1 class="StyleguidePage-title">Design Elements</h1-->
     <div class="StyleguideSections">
     {{#each designElements as |designElement|}}
-      {{!-- Color Palette
-      <section class="StyleguideSection">
-        <h2 class="StyleguideSection-heading">Colors</h2>
-        <div class="StyleguideSection-items" data-grid>
-        {{#each designElement.colorStyles as |colorStyle|}}
-          <div class="StyleguideSection-items-item">
-            <div class="SketchSharedStyle">
-              <div class="SketchSharedStyle-sample" style="background: {{#if colorStyle.color.stops}}
-                linear-gradient(to bottom, {{#each colorStyle.color.stops}}rgba({{this.red}}, {{this.green}}, {{this.blue}}, {{this.alpha}}) {{this.position}}%{{#unless @last}},{{/unless}}{{/each}});
-              {{else}}
-                rgb({{colorStyle.color.red}}, {{colorStyle.color.green}}, {{colorStyle.color.blue}});
-              {{/if}}"></div>
-              <div class="SketchSharedStyle-name {{colorStyle.name}}" {{#with colorStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{colorStyle.name}}</div>
-              <div class="SketchSharedStyle-details">
-                <div class="SketchSharedStyle-details-detail">
-                  <header>Less</header>
-                  <small>{{colorStyle.lessMixin}}</small>
-                </div>
-              </div>
-            </div>
-          </div>
-        {{/each}}
-        </div>
-      </section> --}}
-
       {{!-- Font Families --}}
       <section class="StyleguideSection">
         <h2 class="StyleguideSection-heading">Fonts</h2>

@@ -110,10 +110,14 @@ module.exports = function (styleguide, filePath) {
     return jsonCompiledTemplate(jsonData)
   }
 
-  // Returns all pairs who's keyname doesn't start with an '_'
+  // Removes pairs whose key name starts with an '_', excepting '_view'
   function removePrivateKeys (data) {
     return _.omit(data, function (value, key) {
-      return _.startsWith(key, '_')
+      if (Object(value) === value) {
+        removePrivateKeys(value)
+      }
+
+      return _.startsWith(key, '_') && (key !== '_view')
     })
   }
 

@@ -501,7 +501,7 @@ module.exports = (styleguide, gulp) => {
           // Create the index HTML file for the styleguide itself.
           fs.mkdirsSync(path.join(styleguide.path.build(), '_styleguide'))
           fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
-            indexUrl: path.join('/node_modules', getProjectName(), 'styleguide/index.html'),
+            indexUrl: path.join('/node_modules', styleguide.project.name(), 'styleguide/index.html'),
             groups: groups
           }))
 

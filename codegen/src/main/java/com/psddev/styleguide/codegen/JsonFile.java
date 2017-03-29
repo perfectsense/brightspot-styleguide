@@ -17,51 +17,6 @@ import com.psddev.dari.util.IoUtils;
 class JsonFile {
 
     /**
-     * The standard prefix for all specialized JSON keys.
-     */
-    public static final String SPECIAL_KEY_PREFIX = "_";
-
-    /**
-     * The JSON key used to name JSON based Views.
-     */
-    public static final String VIEW_KEY = "_view";
-
-    /**
-     * The JSON key used to reference template based Views.
-     */
-    public static final String TEMPLATE_KEY = "_template";
-
-    /**
-     * The JSON key for referencing another JSON file.
-     */
-    public static final String DATA_URL_KEY = "_dataUrl";
-
-    /**
-     * The JSON key specifying a custom wrapper JSON.
-     */
-    public static final String WRAPPER_KEY = "_wrapper";
-
-    /**
-     * The JSON key for denoting that a particular field's value can be ANY view.
-     */
-    public static final String DELEGATE_KEY = "_delegate";
-
-    /**
-     * The JSON key for denoting that a particular field's value is abstract, and not defined in this module.
-     */
-    public static final String ABSTRACT_KEY = "_abstract";
-
-    /**
-     * The JSON key for providing documentation for the view map it's contained in.
-     */
-    public static final String NOTES_KEY = "_notes";
-
-    /**
-     * The JSON key pattern for providing documentation for a specific field within a view.
-     */
-    public static final String FIELD_NOTES_KEY_PATTERN = "_%sNotes";
-
-    /**
      * The JSON key denoting an unstructured map value of key/value pairs for FE display related options.
      */
     public static final String DISPLAY_OPTIONS_KEY = "displayOptions";
@@ -96,7 +51,7 @@ class JsonFile {
 
     private JsonValue parsedValue;
     private JsonValue normalizedValue;
-    private JsonViewMap resolvedViewMap;
+    private List<JsonViewMap> resolvedViewMaps;
 
     private List<JsonFileError> errors = new ArrayList<>();
 
@@ -227,15 +182,15 @@ class JsonFile {
      *
      * @return a structured map-like object representing this file.
      */
-    public JsonViewMap resolve() {
+    public List<JsonViewMap> resolve() {
         if (!isResolved && errors.isEmpty()) {
 
             if (isNormalized() || normalize() != null) {
-                resolvedViewMap = new JsonFileResolver(this).resolve();
+                resolvedViewMaps = new JsonFileResolver(this).resolve();
                 isResolved = true;
             }
         }
-        return resolvedViewMap;
+        return resolvedViewMaps;
     }
 
     /**

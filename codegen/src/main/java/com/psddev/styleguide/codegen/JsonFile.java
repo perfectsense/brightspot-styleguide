@@ -51,7 +51,7 @@ class JsonFile {
 
     private JsonValue parsedValue;
     private JsonValue normalizedValue;
-    private JsonViewMap resolvedViewMap;
+    private List<JsonViewMap> resolvedViewMaps;
 
     private List<JsonFileError> errors = new ArrayList<>();
 
@@ -182,15 +182,15 @@ class JsonFile {
      *
      * @return a structured map-like object representing this file.
      */
-    public JsonViewMap resolve() {
+    public List<JsonViewMap> resolve() {
         if (!isResolved && errors.isEmpty()) {
 
             if (isNormalized() || normalize() != null) {
-                resolvedViewMap = new JsonFileResolver(this).resolve();
+                resolvedViewMaps = new JsonFileResolver(this).resolve();
                 isResolved = true;
             }
         }
-        return resolvedViewMap;
+        return resolvedViewMaps;
     }
 
     /**

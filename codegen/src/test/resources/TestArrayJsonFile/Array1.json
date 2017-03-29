@@ -1,0 +1,13 @@
+[
+    {
+        "_template": "Module1.hbs",
+        "title1": "foo"
+    },
+    {
+        "_template": "Module2.hbs",
+        "title2": "bar"
+    },
+    {
+        "_include": "Array2.json"
+    }
+]

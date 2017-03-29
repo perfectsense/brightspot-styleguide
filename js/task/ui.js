@@ -370,7 +370,7 @@ module.exports = (styleguide, gulp) => {
       // after all the example HTML files are produced.
       const projectRootPath = getProjectRootPath()
 
-      gulp.src(['!' + path.join(projectRootPath, 'styleguide/_sketch/**/*'), path.join(projectRootPath, 'styleguide/**/*.json')])
+      gulp.src(path.join(projectRootPath, 'styleguide/**/*.json'))
         .pipe(through.obj(jsonToHtml))
         .pipe(gulp.dest(styleguide.path.build()))
         .on('end', () => {
@@ -409,8 +409,10 @@ module.exports = (styleguide, gulp) => {
           const designElements = { }
           const lesshintOverrides = `hexNotation: false, spaceAroundComma: false, maxCharPerLine: false, singleLinePerProperty: false, newlineAfterBlock: false`
 
-          glob.sync('**/*.json',
-            { cwd: path.join(styleguide.path.root(), `styleguide/_sketch/`), absolute: true })
+          glob.sync('**/*.json', {
+            cwd: path.join(styleguide.path.root(), `sketch/export`),
+            absolute: true
+          })
             .forEach(sketchFile => {
               const styles = JSON.parse(fs.readFileSync(sketchFile, 'utf8')).styles
 

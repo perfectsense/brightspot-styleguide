@@ -70,6 +70,9 @@ export class ViewportResizer {
     }, options)
     this.$widthInput = this.$ctx.querySelector(`.${this.selectors.controls}-width`)
     this.$heightInput = this.$ctx.querySelector(`.${this.selectors.controls}-height`)
+    this.widthInputMin = this.$widthInput.getAttribute('min')
+    this.heightInputMin = this.$heightInput.getAttribute('min')
+    this.$viewportResizer = this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`)
   }
 
   init () {
@@ -77,18 +80,21 @@ export class ViewportResizer {
     // bind actions for viewport controls
     // bind width input field
     // init the viewport on load
-    let $viewportResizer = this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`)
 
-    self.updateViewportContainer($viewportResizer)
+    self.updateViewportContainer()
     // also update the input field with width
-    self.updateInputs(this.$widthInput, this.$heightInput)
+    self.updateInputs()
 
     this.$widthInput.addEventListener('focusout', function () {
-      self.updateViewport({width: this.value})
+      if (this.value >= this.getAttribute('min')) {
+        self.updateViewport({width: this.value})
+      }
     })
     // bind height input field
     this.$heightInput.addEventListener('focusout', function () {
-      self.updateViewport({height: this.value})
+      if (this.value >= this.getAttribute('min')) {
+        self.updateViewport({height: this.value})
+      }
     })
     // bind function to the reset button
     this.$ctx.querySelector(`.${this.selectors.controls}-reset`).addEventListener('click', () => {
@@ -102,9 +108,9 @@ export class ViewportResizer {
     })
     // bind to Styleguide:updateViewport eventlistener
     this.$ctx.addEventListener('Styleguide:updateViewport', function (event) {
-      self.updateViewportContainer($viewportResizer)
+      self.updateViewportContainer()
       // also update the input field with width
-      self.updateInputs(self.$widthInput, self.$heightInput)
+      self.updateInputs()
     })
     // listens for tab change event and removes or adds width of viewport
     this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`).addEventListener('Styleguide:tabChange', function (event) {
@@ -142,7 +148,7 @@ export class ViewportResizer {
     let doc = document.documentElement
     doc.addEventListener('mousemove', (event) => {
       this.dragContainer(event, $resizer, handleTarget)
-      this.updateInputs(this.$widthInput, this.$heightInput)
+      this.updateInputs()
     }, false)
 
     doc.addEventListener('mouseup', () => {
@@ -153,18 +159,32 @@ export class ViewportResizer {
   dragContainer (event, $container, handleTarget) {
     if (handleTarget.classList.contains(`${this.selectors.example}-handle-ns`)) {
       this.viewportHeight = (this.startHeight + event.clientY - this.startY)
+      if (this.viewportHeight < this.heightInputMin) {
+        this.viewportHeight = this.heightInputMin
+      }
       $container.style.height = `${this.viewportHeight}px`
     }
 
     if (handleTarget.classList.contains(`${this.selectors.example}-handle-ew`)) {
       this.viewportWidth = (this.startWidth + event.clientX - this.startX)
+      if (this.viewportWidth < this.widthInputMin) {
+        this.viewportWidth = this.widthInputMin
+      }
       $container.style.width = `${this.viewportWidth}px`
     }
 
     if (handleTarget.classList.contains(`${this.selectors.example}-handle-nwse`)) {
       this.viewportHeight = (this.startHeight + event.clientY - this.startY)
       this.viewportWidth = (this.startWidth + event.clientX - this.startX)
+
+      if (this.viewportHeight < this.heightInputMin) {
+        this.viewportHeight = this.heightInputMin
+      }
       $container.style.height = `${this.viewportHeight}px`
+
+      if (this.viewportWidth < this.widthInputMin) {
+        this.viewportWidth = this.widthInputMin
+      }
       $container.style.width = `${this.viewportWidth}px`
     }
   }
@@ -176,20 +196,38 @@ export class ViewportResizer {
     this.updateViewport({width: this.viewportWidth, height: this.viewportHeight})
   }
 
-  updateInputs ($viewportWidthInput, $viewportHeightInput) {
+  updateInputs () {
+    this.$widthInput.value = ''
     if (this.viewportWidth !== '') {
-      $viewportWidthInput.value = this.viewportWidth
-    } else {
-      $viewportWidthInput.value = ''
+      this.$widthInput.value = this.viewportWidth
     }
 
+    this.$heightInput.value = ''
     if (this.viewportHeight !== '') {
-      $viewportHeightInput.value = this.viewportHeight
-    } else {
-      $viewportHeightInput.value = ''
+      this.$heightInput.value = this.viewportHeight
     }
   }
-  updateViewportContainer ($resizer) {
+
+  updateViewportSize (search) {
+    // set the width of the iframe
+    if (search['width']) {
+      this.viewportWidth = search['width']
+      this.$viewportResizer.style.width = `${this.viewportWidth}px`
+    } else {
+      this.viewportWidth = ''
+      this.$viewportResizer.style.width = this.viewportWidth
+    }
+
+    // set the height of the iframe
+    if (search['height']) {
+      this.viewportHeight = search['height']
+      this.$viewportResizer.style.height = `${this.viewportHeight}px`
+    } else {
+      this.viewportHeight = ''
+      this.$viewportResizer.style.height = this.viewportHeight
+    }
+  }
+  updateViewportContainer () {
     let search = Util.locationSearchToObject(window.location.search)
     // set the active state of the viewport buttons based on what width and height are set in the search url
     this.$ctx.querySelectorAll('button').forEach(function (element) {
@@ -209,24 +247,12 @@ export class ViewportResizer {
       }
     })
 
-    // set the width of the iframe
-    if (search['width']) {
-      this.viewportWidth = search['width']
-      $resizer.style.width = `${this.viewportWidth}px`
-      $resizer.parentNode.setAttribute('data-viewportset', '')
-    } else {
-      this.viewportWidth = ''
-      $resizer.style.width = this.viewportWidth
-      $resizer.parentNode.removeAttribute('data-viewportset')
-    }
+    this.updateViewportSize(search)
 
-    // set the height of the iframe
-    if (search['height']) {
-      this.viewportHeight = search['height']
-      $resizer.style.height = `${this.viewportHeight}px`
+    if (this.viewportHeight !== '' || this.viewportWidth !== '') {
+      this.$viewportResizer.parentNode.setAttribute('data-viewportset', '')
     } else {
-      this.viewportHeight = ''
-      $resizer.style.height = this.viewportHeight
+      this.$viewportResizer.parentNode.removeAttribute('data-viewportset')
     }
   }
 

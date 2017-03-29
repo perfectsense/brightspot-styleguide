@@ -32,9 +32,13 @@
 
         <div class="StyleguideContent">
           <div class="StyleguideViewport-controls">
-            <button title="Reset Viewports" data-width="100%"  data-width="100%" class="StyleguideViewport-reset"></button>
-            {{#each devices}} <button href="#" class="{{this.icon}}" title="{{this.name}}" data-viewportsize='{"width": "{{this.width}}", "height": "{{this.height}}" }'></button> {{/each}}
-            <input type="number" class="StyleguideViewport-width"  min="0" placeholder="w" /><span class="StyleguideViewport-xlabel">x</span><input type="number" class="StyleguideViewport-height"  min="0" placeholder="h" />
+            <div class="StyleguideViewport-presets">
+              <button title="Reset Viewports" data-width="100%"  data-width="100%" class="StyleguideViewport-reset"></button>
+              {{#each devices}} <button href="#" class="{{this.icon}}" title="{{this.name}}" data-viewportsize='{"width": "{{this.width}}", "height": "{{this.height}}" }'></button> {{/each}}
+            </div>
+            <div class="StyleguideViewport-custom">
+              <span>Custom</span> <label class="StyleguideViewport-custom-label">w<input type="number" class="StyleguideViewport-width"  min="320" placeholder="px" /></label><span class="StyleguideViewport-custom-xlabel">x</span> <label class="StyleguideViewport-custom-label">h<input type="number" class="StyleguideViewport-height"  min="320" placeholder="px" /></label>
+            </div>
           </div>
           <section class="StyleguideExample">
             <iframe class="StyleguideExample-frame" name="StyleguideExample-frame" src="{{#if indexUrl}}{{indexUrl}}{{else}}about:blank{{/if}}"></iframe>

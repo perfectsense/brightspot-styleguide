@@ -235,6 +235,11 @@ pre[class*='language-'] {
 .StyleguideTabs {
   padding: 0;
   position: relative;
+  display: none;
+
+  &[data-initialized] {
+    display: block;
+  }
 
   &-item {
     display: inline-block;

@@ -49,6 +49,7 @@ export class TabbedContent {
   initTabs (element) {
     // Event listener for the tabs
     this.createTabs(element)
+
     $(`.${this.selectors.tabList}`).addEventListener('Styleguide:tabsInit', function (e) {
       let hashTab = window.location.hash
       if (hashTab !== '') {
@@ -73,6 +74,7 @@ export class TabbedContent {
     if (contentTitle !== null) {
       contentTitle.parentNode.removeChild(contentTitle)
     }
+
     $.create('h1', {className: `${self.selectors.content}-title`, contents: element.text})._.before($(`.${this.selectors.tabList}`))
 
     // unbind old tabs
@@ -117,6 +119,7 @@ export class TabbedContent {
           tabItem.setAttribute('data-active', '')
         }
         $(`.${this.selectors.tabList}`)._.contents(tabItem)
+        $(`.${this.selectors.tabList}`).setAttribute(`data-initialized`, ``)
       }
     }
   }

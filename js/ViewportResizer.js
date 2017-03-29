@@ -133,6 +133,7 @@ export class ViewportResizer {
     this.startX = event.clientX
     this.startY = event.clientY
     let $resizer = this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`)
+    let handleTarget = event.target
 
     let computedStyle = document.defaultView.getComputedStyle($resizer)
     this.startWidth = parseInt(computedStyle.width, 10)
@@ -140,7 +141,7 @@ export class ViewportResizer {
 
     let doc = document.documentElement
     doc.addEventListener('mousemove', (event) => {
-      this.dragContainer(event, $resizer)
+      this.dragContainer(event, $resizer, handleTarget)
       this.updateInputs(this.$widthInput, this.$heightInput)
     }, false)
 
@@ -149,11 +150,23 @@ export class ViewportResizer {
     }, false)
   }
 
-  dragContainer (event, $container) {
-    this.viewportWidth = (this.startWidth + event.clientX - this.startX)
-    this.viewportHeight = (this.startHeight + event.clientY - this.startY)
-    $container.style.width = `${this.viewportWidth}px`
-    $container.style.height = `${this.viewportHeight}px`
+  dragContainer (event, $container, handleTarget) {
+    if (handleTarget.classList.contains(`${this.selectors.example}-handle-ns`)) {
+      this.viewportHeight = (this.startHeight + event.clientY - this.startY)
+      $container.style.height = `${this.viewportHeight}px`
+    }
+
+    if (handleTarget.classList.contains(`${this.selectors.example}-handle-ew`)) {
+      this.viewportWidth = (this.startWidth + event.clientX - this.startX)
+      $container.style.width = `${this.viewportWidth}px`
+    }
+
+    if (handleTarget.classList.contains(`${this.selectors.example}-handle-nwse`)) {
+      this.viewportHeight = (this.startHeight + event.clientY - this.startY)
+      this.viewportWidth = (this.startWidth + event.clientX - this.startX)
+      $container.style.height = `${this.viewportHeight}px`
+      $container.style.width = `${this.viewportWidth}px`
+    }
   }
 
   stopDrag ($container) {

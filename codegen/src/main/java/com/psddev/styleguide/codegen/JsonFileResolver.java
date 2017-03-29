@@ -77,7 +77,7 @@ class JsonFileResolver {
 
         // Get all of the keys of the map excluding those prefixed with an underscore.
         Set<JsonKey> keys = jsonMap.getValues().keySet().stream()
-                .filter(key -> !key.getName().startsWith(JsonFile.SPECIAL_KEY_PREFIX))
+                .filter(key -> !key.getName().startsWith(JsonSpecialKey.PREFIX))
                 .collect(Collectors.toSet());
 
         Optional<Boolean> isDelegate = isDelegate(jsonMap);
@@ -164,7 +164,7 @@ class JsonFileResolver {
      */
     private JsonFile getWrapper(JsonMap jsonMap, Map<JsonKey, JsonValue> resolvedValues, boolean isBeginningOfFile) {
 
-        JsonValue wrapper = jsonMap.getValue(JsonFile.WRAPPER_KEY);
+        JsonValue wrapper = jsonMap.getValue(JsonSpecialKey.WRAPPER_KEY);
 
         /*
          * If there's no wrapper defined and it's the beginning of the file and
@@ -182,7 +182,7 @@ class JsonFileResolver {
         }
 
         if (!isBeginningOfFile) {
-            addError("JSON key [" + JsonFile.WRAPPER_KEY + "] must be at the root level of the JSON file.", wrapper);
+            addError("JSON key [" + JsonSpecialKey.WRAPPER_KEY.getAlias(jsonMap::containsKey) + "] must be at the root level of the JSON file.", wrapper);
             return null;
         }
 
@@ -193,7 +193,7 @@ class JsonFileResolver {
         }
 
         if (!(wrapper instanceof JsonString)) {
-            addError("JSON key [" + JsonFile.WRAPPER_KEY + "] must be a String.", wrapper);
+            addError("JSON key [" + JsonSpecialKey.WRAPPER_KEY.getAlias(jsonMap::containsKey) + "] must be a String.", wrapper);
             return null;
         }
 
@@ -203,7 +203,7 @@ class JsonFileResolver {
         JsonFile wrapperFile = file.getBaseDirectory().getNormalizedFile(file, Paths.get(wrapperPath));
 
         if (wrapperFile == null) {
-            addError("Couldn't find " + JsonFile.WRAPPER_KEY + ": " + wrapperPath, wrapper);
+            addError("Couldn't find " + JsonSpecialKey.WRAPPER_KEY.getAlias(jsonMap::containsKey) + ": " + wrapperPath, wrapper);
             return null;
         }
 
@@ -237,11 +237,11 @@ class JsonFileResolver {
      * allow it for now.
      */
     private Optional<Boolean> isDelegate(JsonMap jsonMap) {
-        JsonValue delegate = jsonMap.getValue(JsonFile.DELEGATE_KEY);
+        JsonValue delegate = jsonMap.getValue(JsonSpecialKey.DELEGATE_KEY);
         if (delegate != null) {
 
             if (jsonMap.getValues().size() > 1) {
-                addError("JSON key [" + JsonFile.DELEGATE_KEY + "] must be the only key in the map.", jsonMap);
+                addError("JSON key [" + JsonSpecialKey.DELEGATE_KEY.getAlias(jsonMap::containsKey) + "] must be the only key in the map.", jsonMap);
             }
 
             if (delegate instanceof JsonBoolean) {
@@ -255,7 +255,7 @@ class JsonFileResolver {
                 }
 
             } else {
-                addError("JSON key [" + JsonFile.DELEGATE_KEY + "] must be a boolean.", delegate);
+                addError("JSON key [" + JsonSpecialKey.DELEGATE_KEY.getAlias(jsonMap::containsKey) + "] must be a boolean.", delegate);
                 return Optional.of(true);
             }
 
@@ -273,11 +273,11 @@ class JsonFileResolver {
      * allow it for now.
      */
     private Optional<Boolean> isAbstract(JsonMap jsonMap) {
-        JsonValue abstractValue = jsonMap.getValue(JsonFile.ABSTRACT_KEY);
+        JsonValue abstractValue = jsonMap.getValue(JsonSpecialKey.ABSTRACT_KEY);
         if (abstractValue != null) {
 
             if (jsonMap.getValues().size() > 1) {
-                addError("JSON key [" + JsonFile.ABSTRACT_KEY + "] must be the only key in the map.", jsonMap);
+                addError("JSON key [" + JsonSpecialKey.ABSTRACT_KEY.getAlias(jsonMap::containsKey) + "] must be the only key in the map.", jsonMap);
             }
 
             if (abstractValue instanceof JsonBoolean) {
@@ -291,7 +291,7 @@ class JsonFileResolver {
                 }
 
             } else {
-                addError("JSON key [" + JsonFile.ABSTRACT_KEY + "] must be a boolean.", abstractValue);
+                addError("JSON key [" + JsonSpecialKey.ABSTRACT_KEY.getAlias(jsonMap::containsKey) + "] must be a boolean.", abstractValue);
                 return Optional.of(true);
             }
 
@@ -309,28 +309,28 @@ class JsonFileResolver {
         JsonString viewKey = null;
         JsonString template = null;
 
-        if (jsonMap.containsKey(JsonFile.VIEW_KEY)) {
+        if (jsonMap.containsKey(JsonSpecialKey.VIEW_KEY)) {
 
             // get the view key and ensure it's a String.
-            JsonValue viewKeyValue = jsonMap.getValue(JsonFile.VIEW_KEY);
+            JsonValue viewKeyValue = jsonMap.getValue(JsonSpecialKey.VIEW_KEY);
             if (viewKeyValue instanceof JsonString) {
                 viewKey = (JsonString) viewKeyValue;
 
             } else {
-                addError(JsonFile.VIEW_KEY + " key must be a String!", viewKeyValue);
+                addError(JsonSpecialKey.VIEW_KEY.getAlias(jsonMap::containsKey) + " key must be a String!", viewKeyValue);
                 return null;
             }
         }
 
-        if (jsonMap.containsKey(JsonFile.TEMPLATE_KEY)) {
+        if (jsonMap.containsKey(JsonSpecialKey.TEMPLATE_KEY)) {
 
             // get the template and ensure it's a String.
-            JsonValue templateValue = jsonMap.getValue(JsonFile.TEMPLATE_KEY);
+            JsonValue templateValue = jsonMap.getValue(JsonSpecialKey.TEMPLATE_KEY);
             if (templateValue instanceof JsonString) {
                 template = (JsonString) templateValue;
 
             } else {
-                addError(JsonFile.TEMPLATE_KEY + " must be a String!", templateValue);
+                addError(JsonSpecialKey.TEMPLATE_KEY.getAlias(jsonMap::containsKey) + " must be a String!", templateValue);
                 return null;
             }
         }
@@ -354,7 +354,7 @@ class JsonFileResolver {
                         viewKey.toRawValue());
             }
         } else {
-            addError("Must specify the view via the " + JsonFile.VIEW_KEY + " key or " + JsonFile.TEMPLATE_KEY + " key!", jsonMap);
+            addError("Must specify the view via the " + JsonSpecialKey.VIEW_KEY + " key or " + JsonSpecialKey.TEMPLATE_KEY + " key!", jsonMap);
             return null;
         }
     }
@@ -465,14 +465,14 @@ class JsonFileResolver {
     private JsonMap tryFetchAndMergeDataUrl(JsonMap jsonMap, Set<Path> visitedDataUrlPaths) {
 
         // if there's no data url key, just return the original
-        if (!jsonMap.containsKey(JsonFile.DATA_URL_KEY)) {
+        if (!jsonMap.containsKey(JsonSpecialKey.DATA_URL_KEY)) {
             return jsonMap;
         }
 
         // get its value
-        JsonValue dataUrlValue = jsonMap.getValue(JsonFile.DATA_URL_KEY);
+        JsonValue dataUrlValue = jsonMap.getValue(JsonSpecialKey.DATA_URL_KEY);
         if (!(dataUrlValue instanceof JsonString)) {
-            addError(JsonFile.DATA_URL_KEY + " must be a String", dataUrlValue);
+            addError(JsonSpecialKey.DATA_URL_KEY.getAlias(jsonMap::containsKey) + " must be a String", dataUrlValue);
             return jsonMap;
         }
 
@@ -483,13 +483,13 @@ class JsonFileResolver {
 
         // if no file can be found, error and return.
         if (dataUrlFile == null) {
-            addError("Couldn't find " + JsonFile.DATA_URL_KEY + ": " + dataUrl, dataUrlValue);
+            addError("Couldn't find " + JsonSpecialKey.DATA_URL_KEY.getAlias(jsonMap::containsKey) + ": " + dataUrl, dataUrlValue);
             return jsonMap;
         }
 
         // Prevent cyclic references by adding the path to the set. If it's already present error and return.
         if (visitedDataUrlPaths.contains(dataUrlFile.getRelativePath())) {
-            addError(JsonFile.DATA_URL_KEY + " contains a cyclic reference: " + visitedDataUrlPaths, dataUrlValue);
+            addError(JsonSpecialKey.DATA_URL_KEY.getAlias(jsonMap::containsKey) + " contains a cyclic reference: " + visitedDataUrlPaths, dataUrlValue);
             return jsonMap;
         }
 
@@ -498,14 +498,14 @@ class JsonFileResolver {
 
         // If the contents of the data url file is not a map, error and return.
         if (!(dataUrlContents instanceof JsonMap)) {
-            addError("The contents of a " + JsonFile.DATA_URL_KEY + " must be a Map!", dataUrlContents);
+            addError("The contents of a " + JsonSpecialKey.DATA_URL_KEY.getAlias(jsonMap::containsKey) + " must be a Map!", dataUrlContents);
             return jsonMap;
         }
 
         // Check if the dataUrl map contains another _dataUrl key anywhere inside of it.
         // If it does then we need to track that we visited this file in case we encounter
         // it again as we recurse down the tree.
-        if (((JsonMap) dataUrlContents).containsKeyAnywhere(JsonFile.DATA_URL_KEY)) {
+        if (((JsonMap) dataUrlContents).containsKeyAnywhere(JsonSpecialKey.DATA_URL_KEY)) {
             visitedDataUrlPaths.add(dataUrlFile.getRelativePath());
         }
 
@@ -517,7 +517,7 @@ class JsonFileResolver {
 
         // overlay all of the original json map's values onto the merged map.
         jsonMap.getValues().entrySet().stream()
-                .filter(entry -> !entry.getKey().getName().equals(JsonFile.DATA_URL_KEY))
+                .filter(entry -> !JsonSpecialKey.DATA_URL_KEY.getAliases().contains(entry.getKey().getName()))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
@@ -534,14 +534,19 @@ class JsonFileResolver {
      * Gets the overall notes for a view based map.
      */
     private String getNotes(JsonMap jsonMap) {
-        return jsonMap.getRawValueAs(String.class, JsonFile.NOTES_KEY);
+        return jsonMap.getRawValueAs(String.class, JsonSpecialKey.NOTES_KEY);
     }
 
     /*
      * Gets the corresponding notes field for a given JSON key.
      */
     private String getNotes(JsonKey jsonKey, JsonMap jsonMap) {
-        return jsonMap.getRawValueAs(String.class, String.format(JsonFile.FIELD_NOTES_KEY_PATTERN, jsonKey.getName()));
+        return JsonSpecialKey.FIELD_NOTES_KEY_PATTERN.getAliases().stream()
+                .map(pattern -> String.format(pattern, jsonKey.getName()))
+                .map(name -> jsonMap.getRawValueAs(String.class, name))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     /*

@@ -65,7 +65,7 @@ module.exports = (styleguide, gulp) => {
                 const templates = style.templates
 
                 // Create styled example JSON files.
-                if (templates) {
+                if (templates && templates.length > 0) {
                   templates.forEach(template => {
                     const example = template.example || style.example
                     const examplePath = resolver.path(rootPath, configPath, example)
@@ -93,32 +93,32 @@ module.exports = (styleguide, gulp) => {
                     fs.mkdirsSync(path.dirname(styledExamplePath))
                     fs.writeFileSync(styledExamplePath, JSON.stringify(exampleJson, null, '\t'))
                   })
-                }
 
-                // Create the template that delegates to the styled ones.
-                styledTemplates[styledTemplate] = ''
+                  // Create the template that delegates to the styled ones.
+                  styledTemplates[styledTemplate] = ''
 
-                function appendStyledTemplate (template) {
-                  const templatePath = resolver.path(rootPath, configPath, template.template)
+                  function appendStyledTemplate (template) {
+                    const templatePath = resolver.path(rootPath, configPath, template.template)
 
-                  styledTemplates[styledTemplate] += `{{#withParentPath '${path.relative(styleguide.path.build(), templatePath)}'}}`
-                  styledTemplates[styledTemplate] += fs.readFileSync(templatePath, 'utf8')
-                  styledTemplates[styledTemplate] += '{{/withParentPath}}'
-                }
+                    styledTemplates[styledTemplate] += `{{#withParentPath '${path.relative(styleguide.path.build(), templatePath)}'}}`
+                    styledTemplates[styledTemplate] += fs.readFileSync(templatePath, 'utf8')
+                    styledTemplates[styledTemplate] += '{{/withParentPath}}'
+                  }
 
-                for (let i = templates.length - 1; i > 0; --i) {
-                  const template = templates[i]
-                  const internalName = template.internalName || template.template
+                  for (let i = templates.length - 1; i > 0; --i) {
+                    const template = templates[i]
+                    const internalName = template.internalName || template.template
 
-                  styledTemplates[styledTemplate] += `{{#styledTemplate '${internalName}'}}`
-                  appendStyledTemplate(template)
-                  styledTemplates[styledTemplate] += '{{else}}'
-                }
+                    styledTemplates[styledTemplate] += `{{#styledTemplate '${internalName}'}}`
+                    appendStyledTemplate(template)
+                    styledTemplates[styledTemplate] += '{{else}}'
+                  }
 
-                appendStyledTemplate(templates[0])
+                  appendStyledTemplate(templates[0])
 
-                for (let i = templates.length - 1; i > 0; --i) {
-                  styledTemplates[styledTemplate] += '{{/styledTemplate}}'
+                  for (let i = templates.length - 1; i > 0; --i) {
+                    styledTemplates[styledTemplate] += '{{/styledTemplate}}'
+                  }
                 }
               })
             }
@@ -280,14 +280,17 @@ module.exports = (styleguide, gulp) => {
 
           Object.keys(styles).forEach(originalTemplate => {
             const relativeOriginalTemplate = '/' + path.relative(styleguide.path.root(), resolver.path(rootPath, configPath, originalTemplate))
+            const templates = styles[originalTemplate].templates
 
-            styles[originalTemplate].templates.forEach(template => {
-              const relativeTemplate = '/' + path.relative(styleguide.path.build(), resolver.path(rootPath, configPath, template.template))
+            if (templates && templates.length > 0) {
+              styles[originalTemplate].templates.forEach(template => {
+                const relativeTemplate = '/' + path.relative(styleguide.path.build(), resolver.path(rootPath, configPath, template.template))
 
-              originalTemplates[relativeTemplate] = relativeOriginalTemplate
-              styledTemplates[relativeOriginalTemplate] = styledTemplates[relativeOriginalTemplate] || [ ]
-              styledTemplates[relativeOriginalTemplate].push(relativeTemplate)
-            })
+                originalTemplates[relativeTemplate] = relativeOriginalTemplate
+                styledTemplates[relativeOriginalTemplate] = styledTemplates[relativeOriginalTemplate] || [ ]
+                styledTemplates[relativeOriginalTemplate].push(relativeTemplate)
+              })
+            }
           })
         }
       }

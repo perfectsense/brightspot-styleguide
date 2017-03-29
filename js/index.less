@@ -23,6 +23,19 @@
 @import 'node_modules/font-awesome/less/icons';
 @import 'node_modules/font-awesome/less/screen-reader';
 
+.Heading() {
+  background: #ededed;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  height: 36px;
+  line-height: 36px;
+  margin: 0;
+  padding: 0 20px;
+  text-shadow: white 1px 1px 1px;
+}
+
 *,
 *:after,
 *:before {
@@ -100,15 +113,7 @@ pre[class*='language-'] {
     }
 
     &-title {
-        background: #ededed;
-        border-top-left-radius: 2px;
-        border-top-right-radius: 2px;
-        font-weight: 700;
-        height: 36px;
-        line-height: 36px;
-        margin: 0;
-        padding: 0 20px;
-        text-shadow: white 1px 1px 1px;
+        .Heading;
 
         body[data-iframed] & {
             display: none;
@@ -334,9 +339,8 @@ pre[class*='language-'] {
   }
 
   &-heading {
-    color: #565f63;
-    font-size: 3.8em;
-    margin-top: 0;
+    .Heading;
+    font-size: 13px;
   }
 
   &-items {

@@ -9,7 +9,7 @@
     <style type="text/css">
       {{#each designElements as |designElement|}}
         {{#each designElement.textStyles as |textStyle|}}
-          .StyleguideTextStyle-name[data-textStyle-name="{{textStyle.name}}"] {
+          .SketchTextStyle-name[data-textStyle-name="{{textStyle.name}}"] {
             {{textStyle.cssProps}}
           }
         {{/each}}
@@ -25,15 +25,15 @@
         <div class="StyleguideSection-items" data-grid>
         {{#each designElement.colorStyles as |colorStyle|}}
           <div class="StyleguideSection-items-item">
-            <div class="StyleguideColorStyle">
-              <div class="StyleguideColorStyle-sample" style="background: {{#if colorStyle.color.stops}}
+            <div class="SketchSharedStyle">
+              <div class="SketchSharedStyle-sample" style="background: {{#if colorStyle.color.stops}}
                 linear-gradient(to bottom, {{#each colorStyle.color.stops}}rgba({{this.red}}, {{this.green}}, {{this.blue}}, {{this.alpha}}) {{this.position}}%{{#unless @last}},{{/unless}}{{/each}});
               {{else}}
                 rgb({{colorStyle.color.red}}, {{colorStyle.color.green}}, {{colorStyle.color.blue}});
               {{/if}}"></div>
-              <div class="StyleguideColorStyle-name {{colorStyle.name}}" {{#with colorStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{colorStyle.name}}</div>
-              <div class="StyleguideColorStyle-details">
-                <div class="StyleguideColorStyle-details-detail">
+              <div class="SketchSharedStyle-name {{colorStyle.name}}" {{#with colorStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{colorStyle.name}}</div>
+              <div class="SketchSharedStyle-details">
+                <div class="SketchSharedStyle-details-detail">
                   <header>Less</header>
                   <small>{{colorStyle.lessMixin}}</small>
                 </div>
@@ -50,11 +50,11 @@
         <div class="StyleguideSection-items">
         {{#each designElement.fontFamilies as |fontFamily|}}
           <div class="StyleguideSection-items-item">
-            <div class="StyleguideFontStyle">
-              <h4 class="StyleguideFontStyle-title">{{fontFamily}}</h4>
-              <div class="StyleguideFontStyle-example" style="font-family: {{fontFamily}};">
-                <div class="StyleguideFontStyle-letters">Aa</div>
-                <div class="StyleguideFontStyle-alpha">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>abcdefghijklmnopqrstuvwxyz<br/>1234567890(,.;:?!$&*)</div>
+            <div class="SketchFont">
+              <h4 class="SketchFont-title">{{fontFamily}}</h4>
+              <div class="SketchFont-example" style="font-family: {{fontFamily}};">
+                <div>Aa</div>
+                <div>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>abcdefghijklmnopqrstuvwxyz<br/>1234567890(,.;:?!$&*)</div>
               </div>
             </div>
           </div>
@@ -68,9 +68,9 @@
         <div class="StyleguideSection-items">
         {{#each designElement.textStyles as |textStyle|}}
           <div class="StyleguideSection-items-item">
-            <div class="StyleguideTextStyle">
-              <div class="StyleguideTextStyle-name" {{#with textStyle.name}}data-textStyle-name="{{this}}"{{/with}} {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
-              <div class="StyleguideTextStyle-code language-css">{{textStyle.cssProps}}</div>
+            <div class="SketchTextStyle">
+              <div class="SketchTextStyle-name" {{#with textStyle.name}}data-textStyle-name="{{this}}"{{/with}} {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>{{textStyle.name}}</div>
+              <div class="SketchTextStyle-code language-css">{{textStyle.cssProps}}</div>
             </div>
           </div>
         {{/each}}

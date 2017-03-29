@@ -69,6 +69,7 @@ pre[class*='language-'] {
       a {
         color: #008dbb;
         text-decoration: none;
+        display: block;
       }
     }
 }
@@ -345,7 +346,7 @@ pre[class*='language-'] {
   }
 }
 
-.StyleguideColorStyle {
+.SketchSharedStyle {
   background: #fff;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
   width: 185px;
@@ -386,7 +387,7 @@ pre[class*='language-'] {
   }
 }
 
-.StyleguideTextStyle {
+.SketchTextStyle {
   &-name {
     margin-bottom: 0.5em;
     background: rgba(165, 175, 185, 0.1);
@@ -399,7 +400,7 @@ pre[class*='language-'] {
   }
 }
 
-.StyleguideFontStyle {
+.SketchFont {
   font-size: 36px;
 
   &-title {
@@ -409,17 +410,17 @@ pre[class*='language-'] {
 
   &-example {
     display: flex;
-  }
 
-  &-letters {
-    width: 30%;
-    font-size: 90px;
-    align-self: center;
-  }
+    > :first-child {
+      width: 30%;
+      font-size: 90px;
+      align-self: center;
+    }
 
-  &-alpha {
-    width: 70%;
-    font-size: 20px;
-    align-self: center;
+    > :last-child {
+      width: 70%;
+      font-size: 20px;
+      align-self: center;
+    }
   }
 }

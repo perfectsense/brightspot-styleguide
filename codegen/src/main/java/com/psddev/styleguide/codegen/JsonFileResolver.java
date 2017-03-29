@@ -93,9 +93,7 @@ class JsonFileResolver {
         ViewKey viewKey = null;
         if (!isDelegate.get() && !isAbstract.get()) {
 
-            if (isViewExpected) {
-                viewKey = requireViewKey(jsonMap);
-            }
+            viewKey = getViewKey(jsonMap, isViewExpected);
 
             for (JsonKey key : keys) {
                 key = new JsonKey(key.getName(), key.getLocation(), getNotes(key, jsonMap));
@@ -103,7 +101,7 @@ class JsonFileResolver {
                 JsonValue value = jsonMap.getValue(key);
 
                 // only resolve the value if it's a view, otherwise it's just a raw map.
-                if (isViewExpected) {
+                if (viewKey != null) {
                     value = resolveValue(key, value, new LinkedHashSet<>(visitedDataUrlPaths));
                 }
 
@@ -135,7 +133,7 @@ class JsonFileResolver {
     private JsonValue resolveValue(JsonKey key, JsonValue value, Set<Path> visitedDataUrlPaths) {
 
         if (value instanceof JsonMap) {
-            JsonMap jsonMap = resolveMap((JsonMap) value, !isMapBasedKey(key), visitedDataUrlPaths, false);
+            JsonMap jsonMap = resolveMap((JsonMap) value, false, visitedDataUrlPaths, false);
             // The only time this will be null is if { "_delegate": false } in the map.
             return jsonMap != null ? jsonMap : new JsonNull(null);
 
@@ -304,7 +302,7 @@ class JsonFileResolver {
      * Verifies that the given JSON map contains a valid view or template key,
      * adding an error to the file being resolved if it doesn't.
      */
-    private ViewKey requireViewKey(JsonMap jsonMap) {
+    private ViewKey getViewKey(JsonMap jsonMap, boolean isRequired) {
 
         JsonString viewKey = null;
         JsonString template = null;
@@ -353,10 +351,11 @@ class JsonFileResolver {
                         file.getBaseDirectory().getContext(),
                         viewKey.toRawValue());
             }
-        } else {
+        } else if (isRequired) {
             addError("Must specify the view via the " + JsonFile.VIEW_KEY + " key or " + JsonFile.TEMPLATE_KEY + " key!", jsonMap);
-            return null;
         }
+
+        return null;
     }
 
     /*
@@ -542,15 +541,6 @@ class JsonFileResolver {
      */
     private String getNotes(JsonKey jsonKey, JsonMap jsonMap) {
         return jsonMap.getRawValueAs(String.class, String.format(JsonFile.FIELD_NOTES_KEY_PATTERN, jsonKey.getName()));
-    }
-
-    /*
-     * Returns true if the specified JSON key is expected to contain a non-view
-     * based map as its value. Meaning there should be no nested views within
-     * the resulting map.
-     */
-    private boolean isMapBasedKey(JsonKey key) {
-        return JsonFile.JSON_MAP_KEYS.contains(key.getName());
     }
 
     /*

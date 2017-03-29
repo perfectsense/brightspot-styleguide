@@ -469,7 +469,7 @@ module.exports = (styleguide, gulp) => {
               const fontFamilies = [ ...new Set(textStyles.map(style => style.fontFamily)) ].sort()
 
               designElements[`${path.parse(sketchFile).name}`] = {
-                name: `${path.parse(sketchFile).name}`,
+                sketchFileName: `${path.parse(sketchFile).name}`,
                 fontFamilies: fontFamilies,
                 textStyles: textStyles
               }

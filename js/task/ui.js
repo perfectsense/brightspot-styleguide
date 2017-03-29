@@ -10,7 +10,6 @@ const path = require('path')
 const plugins = require('gulp-load-plugins')()
 const through = require('through2')
 const traverse = require('traverse')
-const xml2js = require('xml2js')
 const zip = require('gulp-zip')
 
 const example = require('../example')
@@ -21,12 +20,8 @@ const resolver = require('../resolver')
 module.exports = (styleguide, gulp) => {
   styleguide.task.ui = () => 'styleguide:ui'
 
-  function getProjectName () {
-    return JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), 'package.json'), 'utf8')).name
-  }
-
   function getProjectRootPath () {
-    return path.join(styleguide.path.build(), 'node_modules', getProjectName())
+    return path.join(styleguide.path.build(), 'node_modules', styleguide.project.name())
   }
 
   styleguide.ui = {
@@ -34,14 +29,25 @@ module.exports = (styleguide, gulp) => {
     // Copy all files related to producing example HTML.
     copy: done => {
       // Pretend that the project is a package.
-      const projectFiles = [
-        path.join(styleguide.path.root(), 'package.json'),
-        path.join(styleguide.path.root(), 'styleguide/**/*.{hbs,json,md}')
-      ]
-
+      const packageFile = path.join(styleguide.path.root(), 'package.json')
       const projectRootPath = getProjectRootPath()
 
-      gulp.src(projectFiles, { base: '.' })
+      fs.mkdirsSync(projectRootPath)
+
+      if (fs.existsSync(packageFile)) {
+        fs.copySync(packageFile, path.join(projectRootPath, 'package.json'))
+      } else {
+        fs.writeFileSync(path.join(projectRootPath, 'package.json'), JSON.stringify({
+          name: styleguide.project.name(),
+          version: styleguide.project.version(),
+          private: true
+        }))
+      }
+
+      gulp.src([ 'styleguide/**/*.{hbs,json,md}' ], {
+        cwd: styleguide.path.root(),
+        base: styleguide.path.root()
+      })
         .pipe(gulp.dest(projectRootPath))
         .on('end', () => {
           // Automatically create all files related to styled templates.
@@ -413,7 +419,7 @@ module.exports = (styleguide, gulp) => {
           // Create a project pointer for BE.
           fs.writeFileSync(
             path.join(styleguide.path.build(), '_name'),
-            getProjectName())
+            styleguide.project.name())
 
           // Remove all unnecessary files.
           const packageDir = path.join(styleguide.path.build(), 'node_modules/*')
@@ -436,29 +442,20 @@ module.exports = (styleguide, gulp) => {
     },
 
     zip: done => {
-      const pomFile = path.resolve(styleguide.path.root(), 'pom.xml')
-      let name = getProjectName()
+      const name = `${styleguide.project.name()}-${styleguide.project.version()}.zip`
 
-      if (fs.existsSync(pomFile)) {
-        xml2js.parseString(fs.readFileSync(pomFile), { async: false }, (error, pomXml) => {
-          if (error) {
-            throw error
-          }
-
-          name = `${pomXml.project.artifactId}-${pomXml.project.version}`
-        })
-      }
-
-      return gulp.src(`${styleguide.path.build()}/**`)
-        .pipe(zip(`${name}.zip`))
-        .pipe(gulp.dest(path.join(styleguide.path.build(), '..')))
+      return gulp.src([ '**', `!${name}` ], { cwd: styleguide.path.build() })
+        .pipe(zip(name))
+        .pipe(gulp.dest(styleguide.path.zip()))
         .on('end', done)
     },
 
     // Convert LESS files into CSS to be used by the styleguide UI itself.
     less: () => {
       return gulp.src(path.join(__dirname, '../', 'index.less'))
-        .pipe(less())
+        .pipe(less({
+          paths: [ styleguide.path.parent() ]
+        }))
         .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
     },
 
@@ -490,6 +487,31 @@ module.exports = (styleguide, gulp) => {
       })
     }
 
+  }
+
+  // Pretend that the parent is a package.
+  if (styleguide.path.parent() !== styleguide.path.root()) {
+    const parentPackageFile = path.join(styleguide.path.parent(), 'package.json')
+
+    if (fs.existsSync(parentPackageFile)) {
+      const oldCopy = styleguide.ui.copy
+
+      styleguide.ui.copy = done => {
+        const parentFiles = [
+          'package.json',
+          'styleguide/**/*.{hbs,json,md}'
+        ]
+
+        gulp.src(parentFiles, {
+          cwd: styleguide.path.parent(),
+          base: styleguide.path.parent()
+        })
+          .pipe(gulp.dest(path.join(styleguide.path.build(), 'node_modules', JSON.parse(fs.readFileSync(parentPackageFile, 'utf8')).name)))
+          .on('end', () => {
+            oldCopy(done)
+          })
+      }
+    }
   }
 
   gulp.task(styleguide.task.ui(), [ styleguide.task.clean() ], done => {

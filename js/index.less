@@ -1,5 +1,7 @@
 @import (inline) 'node_modules/normalize.css/normalize.css';
 @import (inline) 'node_modules/prismjs/themes/prism.css';
+@import (inline) 'node_modules/prismjs/plugins/previewer-base/prism-previewer-base.css';
+@import (inline) 'node_modules/prismjs/plugins/previewer-color/prism-previewer-color.css';
 
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
@@ -20,6 +22,19 @@
 @import 'node_modules/font-awesome/less/stacked';
 @import 'node_modules/font-awesome/less/icons';
 @import 'node_modules/font-awesome/less/screen-reader';
+
+.Heading() {
+  background: #ededed;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  height: 36px;
+  line-height: 36px;
+  margin: 0;
+  padding: 0 20px;
+  text-shadow: white 1px 1px 1px;
+}
 
 *,
 *:after,
@@ -57,26 +72,29 @@ pre[class*='language-'] {
     body[data-iframed] & {
         display: none;
     }
-}
 
-.StyleguideTitle {
-    font-size: 25px;
-    margin: 0;
-    line-height: 50px;
-    text-transform: uppercase;
+    &-title {
+      font-size: 25px;
+      margin: 0;
+      line-height: 50px;
+      text-transform: uppercase;
+
+      a {
+        color: #008dbb;
+        text-decoration: none;
+        display: block;
+      }
+    }
 }
 
 .StyleguideNavigation,
 .StyleguideContent {
-    background: white;
-    border: 1px solid white;
-    border-radius: 2px;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+  background: white;
 
-    body[data-iframed] & {
-        border: 0;
-        box-shadow: none;
-    }
+  body[data-iframed] & {
+      border: 0;
+      box-shadow: none;
+  }
 }
 
 .StyleguideNavigation {
@@ -85,6 +103,9 @@ pre[class*='language-'] {
     position: fixed;
     top: 90px;
     width: 240px;
+    border: 1px solid white;
+    border-radius: 2px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
 
     body[data-iframed] & {
         background: transparent;
@@ -92,15 +113,7 @@ pre[class*='language-'] {
     }
 
     &-title {
-        background: #ededed;
-        border-top-left-radius: 2px;
-        border-top-right-radius: 2px;
-        font-weight: 700;
-        height: 36px;
-        line-height: 36px;
-        margin: 0;
-        padding: 0 20px;
-        text-shadow: white 1px 1px 1px;
+        .Heading;
 
         body[data-iframed] & {
             display: none;
@@ -195,6 +208,7 @@ pre[class*='language-'] {
 
 .StyleguideContent {
   position: fixed;
+  padding: 20px;
   bottom: 20px;
   left: 270px;
   right: 20px;
@@ -206,23 +220,31 @@ pre[class*='language-'] {
 }
 
 .StyleguideExample {
+  height: 100%;
+  position: relative;
+
+  &-frame {
     border: 0;
     display: block;
-    height: ~'calc(100% - 134px)';
-    margin: 20px;
-    width: ~'calc(100% - 40px)';
+    height: ~'calc(100% - 90px)';
+    width: 100%;
+  }
 }
 
 .StyleguideContent-title {
   font-size: 18px;
   font-weight: 400;
-  margin: 25px 20px;
+  margin: 0 0 20px;
 }
 
 .StyleguideTabs {
-  margin: 0 20px;
   padding: 0;
   position: relative;
+  display: none;
+
+  &[data-initialized] {
+    display: block;
+  }
 
   &-item {
     display: inline-block;
@@ -267,11 +289,11 @@ pre[class*='language-'] {
   &-wrapper {
     position: relative;
 
-    [data-tab=md] {
+    [data-tab='md'] {
       display: none;
     }
 
-    [data-tab=md][data-source] {
+    [data-tab='md'][data-source] {
       display: block;
     }
   }
@@ -284,5 +306,141 @@ pre[class*='language-'] {
     left: 0;
     height: 1px;
     background: #c9c9c9;
+  }
+}
+
+.StyleguidePage {
+  &-title {
+    background: #ededed;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    color: #262626;
+    font-size: 100%;
+    font-weight: 700;
+    height: 36px;
+    line-height: 36px;
+    overflow: hidden;
+    padding: 0 100px 0 20px;
+    text-shadow: #fff 1px 1px 1px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.StyleguideSection {
+  margin: 3em 0;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 6.5em;
+  }
+
+  &-heading {
+    .Heading;
+    font-size: 13px;
+
+    small {
+      color: #545457;
+    }
+  }
+
+  &-items {
+    &[data-grid] {
+      display: flex;
+    }
+  }
+
+  &-items-item {
+    margin: 2em 0;
+    padding: 1em;
+  }
+}
+
+.SketchSharedStyle {
+  background: #fff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  width: 185px;
+  margin: 10px;
+  text-align: left;
+  box-sizing: border-box;
+
+  &-name {
+    margin-bottom: 1em;
+    padding: 0.2em;
+    border-radius: 3px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-left: 0.5em;
+  }
+
+  &-sample {
+    height: 200px;
+    margin-bottom: 1em;
+    border-radius: ~'0% 0% 80% 80% / 0% 0% 80% 80%';
+  }
+
+  &-details {
+    display: flex;
+    padding-bottom: 1em;
+    margin: 0 0.5em;
+    justify-content: space-between;
+  }
+
+  &-details-detail {
+    header {
+      color: rgb(165, 175, 185);
+    }
+
+    small {
+      color: #ccc;
+    }
+  }
+}
+
+.SketchTextStyle {
+  background: rgba(165, 175, 185, 0.1);
+  border-radius: 3px;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+
+  &-code {
+    font-size: 0.8em;
+  }
+
+  &[data-contrast='dark'] {
+    background: rgba(66, 76, 86, 1);
+
+    .SketchTextStyle-code {
+      color: white;
+    }
+  }
+}
+
+.SketchFont {
+  font-size: 36px;
+
+  &-title {
+    font-size: 18px;
+    margin: 0 0 10px;
+  }
+
+  &-example {
+    display: flex;
+
+    > :first-child {
+      width: 30%;
+      font-size: 90px;
+      align-self: center;
+    }
+
+    > :last-child {
+      width: 70%;
+      font-size: 20px;
+      align-self: center;
+    }
   }
 }

@@ -8,7 +8,13 @@
     </head>
     <body class="StyleguideBody">
         <header class="StyleguideHeader">
-            <h1 class="StyleguideTitle">Styleguide</h1>
+            <h1 class="StyleguideHeader-title">
+              {{#if indexUrl}}
+                <a href="/_styleguide/index.html">Styleguide</a>
+              {{else}}
+                Styleguide
+              {{/if}}
+            </h1>
         </header>
 
         <nav class="StyleguideNavigation">
@@ -20,7 +26,7 @@
                             <h3 class="StyleguideGroups-name">{{name}}</h3>
                             <ul class="StyleguideGroups-examples">
                                 {{#each examples}}
-                                    <li class="StyleguideGroups-examples-example"><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample" {{#if source}}data-source='{{{jsonObject source}}}'{{/if}}>{{name}}<i class="StyleguideGroups-examples-externalLink" title="Open Example in a New Window"></i></a>
+                                    <li class="StyleguideGroups-examples-example"><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample-frame" {{#if source}}data-source='{{{jsonObject source}}}'{{/if}}>{{name}}<i class="StyleguideGroups-examples-externalLink" title="Open Example in a New Window"></i></a>
                                     </li>
                                 {{/each}}
                             </ul>
@@ -31,8 +37,9 @@
         </nav>
 
         <div class="StyleguideContent">
-          <iframe class="StyleguideExample" name="StyleguideExample" src="about:blank"></iframe>
+          <section class="StyleguideExample">
+            <iframe class="StyleguideExample-frame" name="StyleguideExample-frame" src="{{#if indexUrl}}{{indexUrl}}{{else}}about:blank{{/if}}"></iframe>
+          </section>
         </div>
-
     </body>
 </html>

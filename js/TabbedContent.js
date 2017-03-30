@@ -24,7 +24,8 @@ export class TabbedContent {
       selectors: {
         tabList: 'StyleguideTabs',
         content: 'StyleguideContent',
-        iframeContent: 'StyleguideExample'
+        example: 'StyleguideExample',
+        iframeContent: 'StyleguideExample-frame'
       },
       prismMap: {'json': 'json', 'documentation': 'markdown'}
     }, options)
@@ -32,7 +33,7 @@ export class TabbedContent {
 
   init () {
     let self = this
-    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.iframeContent}`))
+    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.example}`))
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       if (self.settings.prismMap[self.dataType] !== undefined) {
@@ -48,6 +49,7 @@ export class TabbedContent {
   initTabs (element) {
     // Event listener for the tabs
     this.createTabs(element)
+
     $(`.${this.selectors.tabList}`).addEventListener('Styleguide:tabsInit', function (e) {
       let hashTab = window.location.hash
       if (hashTab !== '') {
@@ -72,6 +74,7 @@ export class TabbedContent {
     if (contentTitle !== null) {
       contentTitle.parentNode.removeChild(contentTitle)
     }
+
     $.create('h1', {className: `${self.selectors.content}-title`, contents: element.text})._.before($(`.${this.selectors.tabList}`))
 
     // unbind old tabs
@@ -109,13 +112,14 @@ export class TabbedContent {
               }
             },
             contents: {
-              tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample', name: dataSources[key].toLowerCase(), className: `${self.selectors.tabList}-link`
+              tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample-frame', name: dataSources[key].toLowerCase(), className: `${self.selectors.tabList}-link`
             }
           })
         if (index === 0) {
           tabItem.setAttribute('data-active', '')
         }
         $(`.${this.selectors.tabList}`)._.contents(tabItem)
+        $(`.${this.selectors.tabList}`).setAttribute(`data-initialized`, ``)
       }
     }
   }

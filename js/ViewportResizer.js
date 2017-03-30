@@ -86,13 +86,13 @@ export class ViewportResizer {
     self.updateInputs()
 
     this.$widthInput.addEventListener('focusout', function () {
-      if (this.value >= this.getAttribute('min')) {
+      if (this.value >= self.widthInputMin || this.value === '') {
         self.updateViewport({width: this.value})
       }
     })
     // bind height input field
     this.$heightInput.addEventListener('focusout', function () {
-      if (this.value >= this.getAttribute('min')) {
+      if (this.value >= self.heightInputMin || this.value === '') {
         self.updateViewport({height: this.value})
       }
     })
@@ -122,7 +122,7 @@ export class ViewportResizer {
       }
     })
 
-    // bind viewport frame actions
+    // create handles for resizer
     this.$ctx.nextElementSibling._.contents({contents: [
       {tag: 'div', className: `${this.selectors.example}-handle-ew`},
       {tag: 'div', className: `${this.selectors.example}-handle-nwse`},
@@ -138,31 +138,30 @@ export class ViewportResizer {
   initDrag (event) {
     this.startX = event.clientX
     this.startY = event.clientY
-    let $resizer = this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`)
     let handleTarget = event.target
 
-    let computedStyle = document.defaultView.getComputedStyle($resizer)
+    let computedStyle = document.defaultView.getComputedStyle(this.$viewportResizer)
     this.startWidth = parseInt(computedStyle.width, 10)
     this.startHeight = parseInt(computedStyle.height, 10)
 
     let doc = document.documentElement
     doc.addEventListener('mousemove', (event) => {
-      this.dragContainer(event, $resizer, handleTarget)
+      this.dragContainer(event, handleTarget)
       this.updateInputs()
     }, false)
 
     doc.addEventListener('mouseup', () => {
-      this.stopDrag($resizer)
+      this.stopDrag()
     }, false)
   }
 
-  dragContainer (event, $container, handleTarget) {
+  dragContainer (event, handleTarget) {
     if (handleTarget.classList.contains(`${this.selectors.example}-handle-ns`)) {
       this.viewportHeight = (this.startHeight + event.clientY - this.startY)
       if (this.viewportHeight < this.heightInputMin) {
         this.viewportHeight = this.heightInputMin
       }
-      $container.style.height = `${this.viewportHeight}px`
+      this.$viewportResizer.style.height = `${this.viewportWidth ? this.viewportWidth + 'px' : ''}`
     }
 
     if (handleTarget.classList.contains(`${this.selectors.example}-handle-ew`)) {
@@ -170,7 +169,7 @@ export class ViewportResizer {
       if (this.viewportWidth < this.widthInputMin) {
         this.viewportWidth = this.widthInputMin
       }
-      $container.style.width = `${this.viewportWidth}px`
+      this.$viewportResizer.style.width = `${this.viewportWidth ? this.viewportWidth + 'px' : ''}`
     }
 
     if (handleTarget.classList.contains(`${this.selectors.example}-handle-nwse`)) {
@@ -180,17 +179,17 @@ export class ViewportResizer {
       if (this.viewportHeight < this.heightInputMin) {
         this.viewportHeight = this.heightInputMin
       }
-      $container.style.height = `${this.viewportHeight}px`
+      this.$viewportResizer.style.height = `${this.viewportHeight}px`
 
       if (this.viewportWidth < this.widthInputMin) {
         this.viewportWidth = this.widthInputMin
       }
-      $container.style.width = `${this.viewportWidth}px`
+      this.$viewportResizer.style.width = `${this.viewportWidth}px`
     }
   }
 
   stopDrag ($container) {
-    $container.parentNode.removeAttribute('data-resizable')
+    this.$viewportResizer.parentNode.removeAttribute('data-resizable')
     document.documentElement._.unbind('mousemove')
     document.documentElement._.unbind('mouseup')
     this.updateViewport({width: this.viewportWidth, height: this.viewportHeight})
@@ -198,34 +197,24 @@ export class ViewportResizer {
 
   updateInputs () {
     this.$widthInput.value = ''
-    if (this.viewportWidth !== '') {
+    if (this.viewportWidth) {
       this.$widthInput.value = this.viewportWidth
     }
 
     this.$heightInput.value = ''
-    if (this.viewportHeight !== '') {
+    if (this.viewportHeight) {
       this.$heightInput.value = this.viewportHeight
     }
   }
 
   updateViewportSize (search) {
     // set the width of the iframe
-    if (search['width']) {
-      this.viewportWidth = search['width']
-      this.$viewportResizer.style.width = `${this.viewportWidth}px`
-    } else {
-      this.viewportWidth = ''
-      this.$viewportResizer.style.width = this.viewportWidth
-    }
+    this.viewportWidth = search['width']
+    this.$viewportResizer.style.width = `${this.viewportWidth ? this.viewportWidth + 'px' : ''}`
 
     // set the height of the iframe
-    if (search['height']) {
-      this.viewportHeight = search['height']
-      this.$viewportResizer.style.height = `${this.viewportHeight}px`
-    } else {
-      this.viewportHeight = ''
-      this.$viewportResizer.style.height = this.viewportHeight
-    }
+    this.viewportHeight = search['height']
+    this.$viewportResizer.style.height = `${this.viewportHeight ? this.viewportHeight + 'px' : ''}`
   }
   updateViewportContainer () {
     let search = Util.locationSearchToObject(window.location.search)
@@ -249,7 +238,7 @@ export class ViewportResizer {
 
     this.updateViewportSize(search)
 
-    if (this.viewportHeight !== '' || this.viewportWidth !== '') {
+    if (this.viewportHeight || this.viewportWidth) {
       this.$viewportResizer.parentNode.setAttribute('data-viewportset', '')
     } else {
       this.$viewportResizer.parentNode.removeAttribute('data-viewportset')

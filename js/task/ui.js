@@ -380,7 +380,7 @@ module.exports = (styleguide, gulp) => {
           // Group example HTML files by their path.
           const groupByName = { }
 
-          glob.sync('**/*.html', { cwd: styleguide.path.build() }).forEach(match => {
+          glob.sync('**/*.html', { cwd: styleguide.path.build(), ignore: ['_styleguide/index.html', '**/sketch.html'] }).forEach(match => {
             const groupName = path.dirname(path.relative(path.join(projectRootPath, 'styleguide'), path.join(styleguide.path.build(), match))).split('/').map(label).join(': ')
             let group = groupByName[groupName]
             let item = {}
@@ -494,7 +494,7 @@ module.exports = (styleguide, gulp) => {
           })
 
           // Create the iframed index HTML file.
-          fs.writeFileSync(path.join(getProjectRootPath(), 'styleguide/index.html'), sketchTemplate({
+          fs.writeFileSync(path.join(getProjectRootPath(), 'styleguide/sketch.html'), sketchTemplate({
             designElements: designElements
           }))
 
@@ -506,7 +506,7 @@ module.exports = (styleguide, gulp) => {
           // Create the index HTML file for the styleguide itself.
           fs.mkdirsSync(path.join(styleguide.path.build(), '_styleguide'))
           fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
-            indexUrl: path.join('/node_modules', styleguide.project.name(), 'styleguide/index.html'),
+            indexUrl: path.join('/node_modules', styleguide.project.name(), 'styleguide/sketch.html'),
             groups: groups
           }))
 

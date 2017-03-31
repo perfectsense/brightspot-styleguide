@@ -155,36 +155,24 @@ export class ViewportResizer {
   }
 
   dragContainer (event, handleEvent) {
+    const newHeight = (this.startHeight + event.clientY - this.startY)
+    const newWidth = (this.startWidth + event.clientX - this.startX)
+
     if (handleEvent.target.classList.contains(`${this.selectors.example}-handle-ns`)) {
-      this.viewportHeight = (this.startHeight + event.clientY - this.startY)
-      if (this.viewportHeight < this.heightInputMin) {
-        this.viewportHeight = this.heightInputMin
-      }
-      this.$viewportResizer.style.height = `${this.viewportHeight}px`
+      this.viewportHeight = (newHeight > this.heightInputMin) ? newHeight : this.heightInputMin
     }
 
     if (handleEvent.target.classList.contains(`${this.selectors.example}-handle-ew`)) {
-      this.viewportWidth = (this.startWidth + event.clientX - this.startX)
-      if (this.viewportWidth < this.widthInputMin) {
-        this.viewportWidth = this.widthInputMin
-      }
-      this.$viewportResizer.style.width = `${this.viewportWidth}px`
+      this.viewportWidth = (newWidth > this.widthInputMin) ? newWidth : this.widthInputMin
     }
 
     if (handleEvent.target.classList.contains(`${this.selectors.example}-handle-nwse`)) {
-      this.viewportHeight = (this.startHeight + event.clientY - this.startY)
-      this.viewportWidth = (this.startWidth + event.clientX - this.startX)
-
-      if (this.viewportHeight < this.heightInputMin) {
-        this.viewportHeight = this.heightInputMin
-      }
-      this.$viewportResizer.style.height = `${this.viewportHeight}px`
-
-      if (this.viewportWidth < this.widthInputMin) {
-        this.viewportWidth = this.widthInputMin
-      }
-      this.$viewportResizer.style.width = `${this.viewportWidth}px`
+      this.viewportHeight = (newHeight > this.heightInputMin) ? newHeight : this.heightInputMin
+      this.viewportWidth = (newWidth > this.widthInputMin) ? newWidth : this.widthInputMin
     }
+
+    this.$viewportResizer.style.width = `${this.viewportWidth}px`
+    this.$viewportResizer.style.height = `${this.viewportHeight}px`
   }
 
   stopDrag ($container) {
@@ -215,6 +203,7 @@ export class ViewportResizer {
     this.viewportHeight = search['height']
     this.$viewportResizer.style.height = `${this.viewportHeight ? this.viewportHeight + 'px' : ''}`
   }
+
   updateViewportContainer () {
     let search = Util.locationSearchToObject(window.location.search)
     // set the active state of the viewport buttons based on what width and height are set in the search url

@@ -135,10 +135,9 @@ export class ViewportResizer {
     }, false)
   }
 
-  initDrag (event) {
-    this.startX = event.clientX
-    this.startY = event.clientY
-    let handleTarget = event.target
+  initDrag (mouseDownEvent) {
+    this.startX = mouseDownEvent.clientX
+    this.startY = mouseDownEvent.clientY
 
     let computedStyle = document.defaultView.getComputedStyle(this.$viewportResizer)
     this.startWidth = parseInt(computedStyle.width, 10)
@@ -146,7 +145,7 @@ export class ViewportResizer {
 
     let doc = document.documentElement
     doc.addEventListener('mousemove', (event) => {
-      this.dragContainer(event, handleTarget)
+      this.dragContainer(event, mouseDownEvent)
       this.updateInputs()
     }, false)
 
@@ -155,24 +154,24 @@ export class ViewportResizer {
     }, false)
   }
 
-  dragContainer (event, handleTarget) {
-    if (handleTarget.classList.contains(`${this.selectors.example}-handle-ns`)) {
+  dragContainer (event, handleEvent) {
+    if (handleEvent.target.classList.contains(`${this.selectors.example}-handle-ns`)) {
       this.viewportHeight = (this.startHeight + event.clientY - this.startY)
       if (this.viewportHeight < this.heightInputMin) {
         this.viewportHeight = this.heightInputMin
       }
-      this.$viewportResizer.style.height = `${this.viewportWidth ? this.viewportWidth + 'px' : ''}`
+      this.$viewportResizer.style.height = `${this.viewportHeight}px`
     }
 
-    if (handleTarget.classList.contains(`${this.selectors.example}-handle-ew`)) {
+    if (handleEvent.target.classList.contains(`${this.selectors.example}-handle-ew`)) {
       this.viewportWidth = (this.startWidth + event.clientX - this.startX)
       if (this.viewportWidth < this.widthInputMin) {
         this.viewportWidth = this.widthInputMin
       }
-      this.$viewportResizer.style.width = `${this.viewportWidth ? this.viewportWidth + 'px' : ''}`
+      this.$viewportResizer.style.width = `${this.viewportWidth}px`
     }
 
-    if (handleTarget.classList.contains(`${this.selectors.example}-handle-nwse`)) {
+    if (handleEvent.target.classList.contains(`${this.selectors.example}-handle-nwse`)) {
       this.viewportHeight = (this.startHeight + event.clientY - this.startY)
       this.viewportWidth = (this.startWidth + event.clientX - this.startX)
 

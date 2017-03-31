@@ -312,11 +312,11 @@ pre[class*='language-'] {
   position: relative;
   text-align: left;
 
-  &:not([data-viewportsize=example]) ~ .StyleguideViewport-controls {
+  &:not([data-viewportsize='example']) ~ .StyleguideViewport-controls {
     display: none;
   }
 
-  &[data-viewportsize=example] ~ .StyleguideExample {
+  &[data-viewportsize='example'] ~ .StyleguideExample {
     background-color: #ededed;
     display: inline-block;
 
@@ -378,11 +378,11 @@ pre[class*='language-'] {
   &-wrapper {
     position: relative;
 
-    [data-tab=md] {
+    [data-tab='md'] {
       display: none;
     }
 
-    [data-tab=md][data-source] {
+    [data-tab='md'][data-source] {
       display: block;
     }
   }

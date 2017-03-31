@@ -97,7 +97,7 @@ module.exports = (styleguide, gulp) => {
                   // Create the template that delegates to the styled ones.
                   styledTemplates[styledTemplate] = ''
 
-                  function appendStyledTemplate (template) {
+                  function appendStyledTemplate (template) { // eslint-disable-line no-inner-declarations
                     const templatePath = resolver.path(rootPath, configPath, template.template)
 
                     styledTemplates[styledTemplate] += `{{#withParentPath '${path.relative(styleguide.path.build(), templatePath)}'}}`

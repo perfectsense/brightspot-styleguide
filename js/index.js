@@ -30,4 +30,13 @@ document.addEventListener('DOMContentLoaded', function (event) {
       }
     })
   })
+
+  $('.StyleguideNavigation-button').addEventListener('click', function () {
+    let navFlag = $('body').getAttribute('data-nav')
+    if (navFlag === '') {
+      $('body').removeAttribute('data-nav')
+    } else {
+      $('body').setAttribute('data-nav', '')
+    }
+  })
 }, false)

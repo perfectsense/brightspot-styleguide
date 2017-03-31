@@ -64,6 +64,7 @@ pre[class*='language-'] {
     margin: 0;
     line-height: 50px;
     text-transform: uppercase;
+    display: inline-block;
 }
 
 .StyleguideNavigation,
@@ -85,10 +86,28 @@ pre[class*='language-'] {
     position: fixed;
     top: 90px;
     width: 240px;
+    transition: left 0.3s linear;
+
+    [data-nav] & {
+      left: -240px;
+    }
 
     body[data-iframed] & {
         background: transparent;
         top: 20px;
+    }
+
+    &-button {
+      display: inline-block;
+      background-color: transparent;
+      border: 0;
+      font-size: 24px;
+      outline: none;
+
+      &:before {
+        .fa;
+        content: @fa-var-bars;
+      }
     }
 
     &-title {
@@ -199,6 +218,11 @@ pre[class*='language-'] {
   left: 270px;
   right: 20px;
   top: 90px;
+  transition: left 0.3s linear;
+
+  [data-nav] & {
+    left: 20px;
+  }
 
   body[data-iframed] & {
       top: 20px;

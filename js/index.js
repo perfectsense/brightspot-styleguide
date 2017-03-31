@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
-import Bliss from 'bliss'
-import {ViewportResizer} from './ViewportResizer.js'
-import Util from './util.js'
-import {TabbedContent} from './TabbedContent.js'
 /* global $, $$ */
+import Bliss from 'bliss'
+import { TabbedContent } from './TabbedContent.js'
+import Util from './util.js'
+import { ViewportResizer } from './ViewportResizer.js'
 
 document.addEventListener('DOMContentLoaded', function (event) {
   // load tabs

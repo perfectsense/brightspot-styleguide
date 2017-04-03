@@ -2,11 +2,11 @@ package com.psddev.styleguide.codegen;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Normalizes all String values for specific keys that represent paths to other
@@ -14,11 +14,13 @@ import java.util.stream.Collectors;
  */
 class JsonFileNormalizer {
 
-    private static final Set<String> KEYS_TO_NORMALIZE = new HashSet<>(
-            Arrays.asList(
-                    JsonFile.TEMPLATE_KEY,
-                    JsonFile.DATA_URL_KEY,
-                    JsonFile.WRAPPER_KEY));
+    private static final Set<String> KEYS_TO_NORMALIZE = Stream.of(
+            JsonSpecialKey.TEMPLATE_KEY,
+            JsonSpecialKey.DATA_URL_KEY,
+            JsonSpecialKey.WRAPPER_KEY)
+            .map(JsonSpecialKey::getAliases)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet());
 
     private JsonFile file;
 

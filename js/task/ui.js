@@ -271,9 +271,18 @@ module.exports = (styleguide, gulp) => {
       const originalTemplates = { }
       const styledTemplates = { }
       const configPath = path.join(getProjectRootPath(), 'styleguide/_config.json')
+      const displayNames = { }
 
       if (fs.existsSync(configPath)) {
-        const styles = JSON.parse(fs.readFileSync(configPath, 'utf8')).styles
+        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+
+        if (config.displayNames) {
+          Object.keys(config.displayNames).forEach(p => {
+            displayNames[resolver.path(styleguide.path.build(), configPath, p)] = config.displayNames[p]
+          })
+        }
+
+        const styles = config.styles
 
         if (styles) {
           const rootPath = styleguide.path.root()
@@ -304,6 +313,8 @@ module.exports = (styleguide, gulp) => {
             const processedExample = example(styleguide, filePath)
 
             if (processedExample) {
+              displayNames[filePath] = processedExample.displayName
+
               traverse(processedExample.data).forEach(function (value) {
                 if (typeof value === 'string') {
                   const match = value.match(/\{\{\s*image\s*\(\s*(\d+|\[[^]]+])\s*,\s*(\d+|\[[^]]+])\s*\)\s*}}/)
@@ -381,10 +392,11 @@ module.exports = (styleguide, gulp) => {
           const groupByName = { }
 
           glob.sync('**/*.html', { cwd: styleguide.path.build() }).forEach(match => {
-            const groupName = path.dirname(path.relative(path.join(projectRootPath, 'styleguide'), path.join(styleguide.path.build(), match))).split('/').map(label).join(': ')
+            const displayNamePath = path.join(styleguide.path.build(), gutil.replaceExtension(match, '.json'))
+            const groupName = displayNames[path.dirname(displayNamePath)] || path.dirname(path.relative(path.join(projectRootPath, 'styleguide'), path.join(styleguide.path.build(), match))).split('/').map(label).join(': ')
             let group = groupByName[groupName]
             let item = {}
-            item.name = label(path.basename(match, '.html'))
+            item.name = displayNames[displayNamePath] || label(path.basename(match, '.html'))
             item.url = '/' + gutil.replaceExtension(match, '.html')
             item.source = {'html': 'Example', 'json': 'JSON'}
 

@@ -2,6 +2,7 @@ package com.psddev.styleguide.codegen;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.psddev.dari.util.ObjectUtils;
@@ -47,8 +48,16 @@ class JsonMap extends JsonValue {
      * @param name the name of the JSON key.
      * @return true if the key is contained in the map.
      */
-    public boolean containsKey(String name) {
-        return keyMap.containsKey(name);
+    public boolean containsKey(Object name) {
+        if (name instanceof JsonSpecialKey) {
+            return ((JsonSpecialKey) name).getAliases().stream().anyMatch(this::containsKey);
+
+        } else if (name instanceof String) {
+            return keyMap.containsKey(name);
+
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -58,9 +67,17 @@ class JsonMap extends JsonValue {
      * @param name the name of the JSON key.
      * @return true if the key is contained anywhere in the map.
      */
-    public boolean containsKeyAnywhere(String name) {
-        return keyMap.containsKey(name)
-                || getValues().values().stream().anyMatch(itemValue -> containsKeyAnywhere(name, itemValue));
+    public boolean containsKeyAnywhere(Object name) {
+        if (name instanceof JsonSpecialKey) {
+            return ((JsonSpecialKey) name).getAliases().stream().anyMatch(this::containsKeyAnywhere);
+
+        } else if (name instanceof String) {
+            return keyMap.containsKey(name)
+                    || getValues().values().stream().anyMatch(itemValue -> containsKeyAnywhere((String) name, itemValue));
+
+        } else {
+            return false;
+        }
     }
 
     /*
@@ -89,8 +106,16 @@ class JsonMap extends JsonValue {
      * @param name the name of the JSON key.
      * @return the JSON key for the given name.
      */
-    public JsonKey getKey(String name) {
-        return keyMap.get(name);
+    public JsonKey getKey(Object name) {
+        if (name instanceof JsonSpecialKey) {
+            return ((JsonSpecialKey) name).getAliases().stream().map(this::getKey).filter(Objects::nonNull).findFirst().orElse(null);
+
+        } else if (name instanceof String) {
+            return keyMap.get(name);
+
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -99,8 +124,16 @@ class JsonMap extends JsonValue {
      * @param name the name of the JSON key.
      * @return the JSON value for the given key name.
      */
-    public JsonValue getValue(String name) {
-        return getValue(getKey(name));
+    public JsonValue getValue(Object name) {
+        if (name instanceof JsonSpecialKey) {
+            return ((JsonSpecialKey) name).getAliases().stream().map(this::getValue).filter(Objects::nonNull).findFirst().orElse(null);
+
+        } else if (name instanceof String) {
+            return getValue(getKey(name));
+
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -123,7 +156,7 @@ class JsonMap extends JsonValue {
      * @param <T> the type of JsonValue to check for.
      * @return the value for the given key.
      */
-    public <T extends JsonValue> T getValueAs(Class<T> valueClass, String name) {
+    public <T extends JsonValue> T getValueAs(Class<T> valueClass, Object name) {
 
         JsonValue value = getValue(name);
 
@@ -142,7 +175,7 @@ class JsonMap extends JsonValue {
      * @param name the name of the JSON key.
      * @return the raw value at the given key name.
      */
-    public Object getRawValue(String name) {
+    public Object getRawValue(Object name) {
         JsonValue jsonValue = getValue(name);
         return jsonValue != null ? jsonValue.toRawValue() : null;
     }
@@ -156,7 +189,7 @@ class JsonMap extends JsonValue {
      * @param <T> the type of the raw value returned.
      * @return the raw value converted to the given type for a particular key.
      */
-    public <T> T getRawValueAs(Class<T> valueClass, String name) {
+    public <T> T getRawValueAs(Class<T> valueClass, Object name) {
         JsonValue jsonValue = getValue(name);
         return jsonValue != null ? ObjectUtils.to(valueClass, jsonValue.toRawValue()) : null;
     }

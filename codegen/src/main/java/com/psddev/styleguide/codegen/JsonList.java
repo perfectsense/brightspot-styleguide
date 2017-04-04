@@ -1,5 +1,6 @@
 package com.psddev.styleguide.codegen;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -20,9 +21,9 @@ class JsonList extends JsonValue {
      * @param location the location of the list within a file.
      * @param values the list of JSON values.
      */
-    public JsonList(JsonDataLocation location, List<JsonValue> values) {
+    public JsonList(JsonDataLocation location, List<? extends JsonValue> values) {
         super(location);
-        this.values = values;
+        this.values = new ArrayList<>(values);
     }
 
     /**

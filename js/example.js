@@ -12,6 +12,7 @@ const resolver = require('./resolver')
 module.exports = function (styleguide, filePath) {
   const buildPath = styleguide.path.build()
   let data = resolver.data(buildPath, filePath)
+  const displayName = data._displayName
 
   if (Object.keys(data).length === 0) {
     throw new Error(`Example data contains zero keys`)
@@ -369,6 +370,7 @@ module.exports = function (styleguide, filePath) {
   }))
 
   return {
+    displayName: displayName,
     data: _.cloneDeep(data),
     html: template({ data: convert(new DataGenerator(styleguide, styleguide.randomSeed()).process(data)) })
   }

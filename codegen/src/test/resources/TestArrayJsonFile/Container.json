@@ -1,0 +1,7 @@
+{
+    "_template": "Container.hbs",
+    "foo": "bar",
+    "modules": {
+        "_dataUrl": "Array1.json"
+    }
+}

@@ -421,7 +421,7 @@ class ViewClassSourceGenerator {
 
         methodJavadocs.addSampleValuesList(fieldDef, 10);
 
-        boolean isDefaulted = context.isGenerateDefaultMethods();
+        boolean isDefaulted = context.isGenerateDefaultMethods() || fieldDef.getEffectiveType() == JsonMap.class;
 
         // if it's a default interface method just make the body return null;
         String methodBody = !isDefaulted ? ";" : (" {\n"

@@ -139,7 +139,11 @@ module.exports = function (styleguide, filePath) {
   }
 
   Template.prototype.toHTML = function () {
-    return renderTemplate(this)
+    if (!this._html) {
+      this._html = renderTemplate(this)
+    }
+
+    return this._html
   }
 
   function convert (data, inArray) {

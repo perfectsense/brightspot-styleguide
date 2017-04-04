@@ -6,6 +6,7 @@ const path = require('path')
 const plumber = require('gulp-plumber')
 const xml2js = require('xml2js')
 
+const handlebars = require('./handlebars.js')
 const logger = require('./logger.js')
 
 let defaults = {
@@ -173,6 +174,8 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   this.devices = () => {
     return config.devices
   }
+
+  this.handlebars = handlebars(this)
 
   // random seed API
   this.randomSeed = () => config.randomSeed

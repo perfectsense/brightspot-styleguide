@@ -42,7 +42,7 @@
             {{#each designGroup as |design examplePath|}}
               <span class="StyleguideComparison-group" data-example-path="{{examplePath}}">
               {{#each design}}
-                <a href="{{this.src}}" target="StyleguideComparison-frame">{{this.filename}}</a>
+                <a href="{{this.src}}" target="StyleguideComparison-frame" data-target-width="{{this.width}}px" data-target-height="{{this.height}}px">{{this.filename}}</a>
               {{/each}}
               </span>
             {{/each}}

@@ -15,6 +15,15 @@ export default {
         if (el.dataset.examplePath && el.dataset.examplePath === examplePath) {
           el.setAttribute(`data-visible`, ``)
         }
+
+        el.querySelectorAll(`a`).forEach(el => {
+          el.addEventListener(`click`, () => {
+            $$(`.StyleguideExample-frame`)._.attributes({
+              width: el.dataset.targetWidth,
+              height: el.dataset.targetHeight
+            })
+          })
+        })
       })
     })
   }

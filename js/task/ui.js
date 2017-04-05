@@ -12,6 +12,7 @@ const through = require('through2')
 const traverse = require('traverse')
 const zip = require('gulp-zip')
 
+const comparison = require('../comparison')
 const example = require('../example')
 const label = require('../label')
 const logger = require('../logger')
@@ -304,6 +305,8 @@ module.exports = (styleguide, gulp) => {
         }
       }
 
+      const designs = [ ]
+
       function jsonToHtml (file, encoding, callback) {
         const filePath = file.path
         const fileName = path.basename(filePath)
@@ -314,6 +317,24 @@ module.exports = (styleguide, gulp) => {
 
             if (processedExample) {
               displayNames[filePath] = processedExample.displayName
+
+              if (processedExample.data.body._designs) {
+                processedExample.data.body._designs.forEach(item => {
+                  const design = JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), `sketch/export`, gutil.replaceExtension(item, `.json`)), 'utf8'))
+                  design['src'] = path.join(`/node_modules`, styleguide.project.name(), `styleguide/_sketch`, gutil.replaceExtension(item, `.html`))
+
+                  const match = designs.find(group => {
+                    if (group.hasOwnProperty(filePath)) {
+                      return group[filePath].push(design)
+                    }
+                    return false
+                  })
+
+                  if (!match) {
+                    designs.push({[filePath]: [ design ]})
+                  }
+                })
+              }
 
               traverse(processedExample.data).forEach(function (value) {
                 if (typeof value === 'string') {
@@ -520,7 +541,9 @@ module.exports = (styleguide, gulp) => {
           fs.mkdirsSync(path.join(styleguide.path.build(), '_styleguide'))
           fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
             indexUrl: path.join('/node_modules', styleguide.project.name(), 'styleguide/sketch.html'),
-            groups: groups
+            groups: groups,
+            designs: designs,
+            devices: styleguide.devices
           }))
 
           // Create a project pointer for BE.
@@ -594,8 +617,37 @@ module.exports = (styleguide, gulp) => {
           .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
           .on('end', done)
       })
-    }
+    },
 
+    // Copy all sketch related files needed by the styleguide UI itself.
+    sketch: () => {
+      function sketchToHtml (file, encoding, callback) {
+        const filePath = file.path
+
+        try {
+          const processed = comparison(styleguide, filePath)
+
+          file.contents = Buffer.from(processed.html)
+          file.path = gutil.replaceExtension(filePath, '.html')
+          this.push(file)
+        } catch (err) {
+          logger.error(`${err.message} at [${filePath}]!`)
+          if (!styleguide.isWatching()) {
+            process.exit(1)
+          }
+        }
+
+        callback()
+      }
+
+      const onlyJsonFiles = filter(['**/*.json'], { restore: true })
+
+      return gulp.src(path.join(styleguide.path.root(), 'sketch/export/**/*.{json,png}'))
+        .pipe(onlyJsonFiles)
+        .pipe(through.obj(sketchToHtml))
+        .pipe(onlyJsonFiles.restore)
+        .pipe(gulp.dest(path.join(getProjectRootPath(), 'styleguide/_sketch')))
+    }
   }
 
   // Pretend that the parent is a package.
@@ -625,15 +677,17 @@ module.exports = (styleguide, gulp) => {
 
   gulp.task(styleguide.task.ui(), [ styleguide.task.clean() ], done => {
     styleguide.ui.copy(() => {
-      styleguide.ui.html(() => {
-        styleguide.ui.fonts().on('end', () => {
-          styleguide.ui.js(() => {
-            styleguide.ui.less().on('end', () => {
-              if (!styleguide.isWatching()) {
-                styleguide.ui.zip(done)
-              } else {
-                done()
-              }
+      styleguide.ui.sketch().on('end', () => {
+        styleguide.ui.html(() => {
+          styleguide.ui.fonts().on('end', () => {
+            styleguide.ui.js(() => {
+              styleguide.ui.less().on('end', () => {
+                if (!styleguide.isWatching()) {
+                  styleguide.ui.zip(done)
+                } else {
+                  done()
+                }
+              })
             })
           })
         })

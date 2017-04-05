@@ -37,8 +37,23 @@
         </nav>
 
         <div class="StyleguideContent">
+          <div class="StyleguideComparison-controls" data-toggled="off">
+          {{#each designs as |designGroup|}}
+            {{#each designGroup as |design key|}}
+              <span class="StyleguideComparison-group" data-key="{{key}}">
+              {{#each design}}
+                <a href="{{this.src}}" target="StyleguideComparison-frame">{{this.filename}}</a>
+              {{/each}}
+              </span>
+            {{/each}}
+          {{/each}}
+          </div>
+
           <section class="StyleguideExample">
             <iframe class="StyleguideExample-frame" name="StyleguideExample-frame" src="{{#if indexUrl}}{{indexUrl}}{{else}}about:blank{{/if}}"></iframe>
+          </section>
+          <section class="StyleguideComparison">
+            <iframe class="StyleguideComparison-frame" name="StyleguideComparison-frame" src="about:blank" frameborder="0" scrolling="no" onload="this.style.height=this.contentDocument.body.scrollHeight +'px';this.style.width=this.contentDocument.body.scrollWidth +'px'"></iframe>
           </section>
         </div>
     </body>

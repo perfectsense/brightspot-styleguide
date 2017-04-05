@@ -217,18 +217,53 @@ pre[class*='language-'] {
 }
 
 .StyleguideExample {
+  display: inline-block;
   position: relative;
   padding: 0 20px 20px 0;
-  width: 100%;
   height: ~'calc(100% - 131px)';
 
   &-frame {
     border: 0;
-    display: block;
+    display: inline-block;
     height: 100%;
     width: 100%;
     min-width: 320px;
     min-height: 320px;
+    vertical-align: top;
+  }
+}
+
+.StyleguideComparison {
+  display: inline-block;
+
+  &-controls {
+    display: block;
+
+    &[data-toggled='off'] {
+      > div {
+        display: none;
+      }
+    }
+
+    &[data-toggled='on'] {
+      > div {
+        display: block;
+      }
+    }
+  }
+
+  &-group {
+    outline: solid 1px dodgerblue;
+  }
+
+  &-frame {
+    border: 0;
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    min-width: 320px;
+    min-height: 320px;
+    vertical-align: top;
   }
 }
 

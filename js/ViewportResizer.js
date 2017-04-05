@@ -72,7 +72,7 @@ export class ViewportResizer {
     this.$heightInput = this.$ctx.querySelector(`.${this.selectors.controls}-height`)
     this.widthInputMin = this.$widthInput.getAttribute('min')
     this.heightInputMin = this.$heightInput.getAttribute('min')
-    this.$viewportResizer = this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`)
+    this.$viewportResizer = $(`.${this.selectors.iframe}`)
   }
 
   init () {
@@ -113,7 +113,7 @@ export class ViewportResizer {
       self.updateInputs()
     })
     // listens for tab change event and removes or adds width of viewport
-    this.$ctx.nextElementSibling.querySelector(`.${this.selectors.iframe}`).addEventListener('Styleguide:tabChange', function (event) {
+    this.$viewportResizer._.addEventListener('Styleguide:tabChange', function (event) {
       if (window.location.hash === '#example') {
         this.style.width = `${self.viewportWidth}px`
         this.style.height = `${self.viewportHeight}px`
@@ -123,13 +123,13 @@ export class ViewportResizer {
     })
 
     // create handles for resizer
-    this.$ctx.nextElementSibling._.contents({contents: [
+    $$(`.StyleguideExample`)._.contents({contents: [
       {tag: 'div', className: `${this.selectors.example}-handle-ew`},
       {tag: 'div', className: `${this.selectors.example}-handle-nwse`},
       {tag: 'div', className: `${this.selectors.example}-handle-ns`}
     ]})
 
-    this.$ctx.nextElementSibling.addEventListener('mousedown', function (event) {
+    $$(`.StyleguideExample`)._.addEventListener('mousedown', function (event) {
       self.initDrag(event)
       this.setAttribute('data-resizable', '')
     }, false)

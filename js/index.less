@@ -253,7 +253,11 @@ pre[class*='language-'] {
   }
 
   &-group {
-    outline: solid 1px dodgerblue;
+    display: none;
+
+    &[data-visible] {
+      display: block;
+    }
   }
 
   &-frame {

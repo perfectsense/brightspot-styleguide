@@ -12,9 +12,22 @@ const compiledTemplates = { }
 
 function compile (path) {
   if (!compiledTemplates[path]) {
-    compiledTemplates[path] = handlebars.compile(fs.readFileSync(path, 'utf8'))
+    compiledTemplates[path] = {
+      time: fs.statSync(path).mtime.getTime(),
+      template: handlebars.compile(fs.readFileSync(path, 'utf8'))
+    }
+  } else {
+    const newTime = fs.statSync(path).mtime.getTime()
+
+    if (compiledTemplates[path].time !== newTime) {
+      compiledTemplates[path] = {
+        time: newTime,
+        template: handlebars.compile(fs.readFileSync(path, 'utf8'))
+      }
+    }
   }
-  return compiledTemplates[path]
+
+  return compiledTemplates[path].template
 }
 
 // Returns all pairs who's keyname doesn't start with an '_'

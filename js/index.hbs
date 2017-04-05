@@ -45,8 +45,8 @@
 
             <div class="StyleguideComparison-controls" data-toggled="off">
             {{#each designs as |designGroup|}}
-              {{#each designGroup as |design key|}}
-                <span class="StyleguideComparison-group" data-key="{{key}}">
+              {{#each designGroup as |design examplePath|}}
+                <span class="StyleguideComparison-group" data-example-path="{{examplePath}}">
                 {{#each design}}
                   <a href="{{this.src}}" target="StyleguideComparison-frame">{{this.filename}}</a>
                 {{/each}}

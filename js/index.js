@@ -1,21 +1,25 @@
 /* eslint-disable no-unused-vars */
+/* global $, $$ */
 import Bliss from 'bliss'
 import Prism from 'prism'
 import PrismJson from 'prism-json'
 import PrismMarkdown from 'prism-markdown'
 import { PrismPreviewerBase } from 'prism-previewer-base'
 import { PrismPreviewerColor } from 'prism-previewer-color'
+
+import Comparison from './comparison-mode.js'
 import { TabbedContent } from './TabbedContent.js'
 import Util from './util.js'
-/* global $, $$ */
 
 document.addEventListener('DOMContentLoaded', function (event) {
   // load tabs
   let content = document.querySelector('.StyleguideContent')
   let tabbedContent = new TabbedContent(content, {})
   tabbedContent.init()
+
   let searchObject = Util.locationSearchToObject(window.location.search)
 
+  // loop through styleguide navigation to find matching file path and init tabs based on whats active
   $$('.StyleguideNavigation a').forEach(function (element) {
     if (element.pathname === searchObject['file']) {
       element.setAttribute('data-active', '')
@@ -35,4 +39,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
       }
     })
   })
+
+  Comparison.init()
 }, false)

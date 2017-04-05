@@ -318,20 +318,22 @@ module.exports = (styleguide, gulp) => {
             if (processedExample) {
               displayNames[filePath] = processedExample.displayName
 
+              const examplePath = gutil.replaceExtension(filePath.slice(filePath.indexOf('/node_modules')), `.html`)
+
               if (processedExample.data.body._designs) {
                 processedExample.data.body._designs.forEach(item => {
                   const design = JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), `sketch/export`, gutil.replaceExtension(item, `.json`)), 'utf8'))
                   design['src'] = path.join(`/node_modules`, styleguide.project.name(), `styleguide/_sketch`, gutil.replaceExtension(item, `.html`))
 
                   const match = designs.find(group => {
-                    if (group.hasOwnProperty(filePath)) {
-                      return group[filePath].push(design)
+                    if (group.hasOwnProperty(examplePath)) {
+                      return group[examplePath].push(design)
                     }
                     return false
                   })
 
                   if (!match) {
-                    designs.push({[filePath]: [ design ]})
+                    designs.push({[examplePath]: [ design ]})
                   }
                 })
               }

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* global $, $$ */
 import Bliss from 'bliss'
+import Comparison from './comparison-mode.js'
 import { TabbedContent } from './TabbedContent.js'
 import Util from './util.js'
 import { ViewportResizer } from './ViewportResizer.js'
@@ -18,7 +19,9 @@ document.addEventListener('DOMContentLoaded', function (event) {
   let content = document.querySelector('.StyleguideContent')
   let tabbedContent = new TabbedContent(content, {})
   tabbedContent.init()
+
   let searchObject = Util.locationSearchToObject(window.location.search)
+
   // loop through styleguide navigation to find matching file path and init tabs based on whats active
   $$('.StyleguideNavigation a').forEach(function (element) {
     if (element.pathname === searchObject['file']) {
@@ -39,4 +42,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
       }
     })
   })
+
+  Comparison.init()
 }, false)

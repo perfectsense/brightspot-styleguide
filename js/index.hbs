@@ -42,19 +42,20 @@
               <span class="StyleguideViewport-custom-xlabel">x</span>
               <label class="StyleguideViewport-custom-label">h<input type="number" class="StyleguideViewport-height" min="320" placeholder="px" /></label>
             </div>
+          </div>
 
-            <div class="StyleguideComparison-controls" data-toggled="off">
+          <div class="StyleguideComparison-controls" data-toggled="off">
             {{#each designs as |designGroup|}}
               {{#each designGroup as |design examplePath|}}
                 <span class="StyleguideComparison-group" data-example-path="{{examplePath}}">
                 {{#each design}}
-                  <a href="{{this.src}}" target="StyleguideComparison-frame">{{this.filename}}</a>
+                  <a href="{{this.src}}" target="StyleguideComparison-frame" data-target-width="{{this.width}}px" data-target-height="{{this.height}}px">{{this.filename}}</a>
                 {{/each}}
                 </span>
               {{/each}}
             {{/each}}
-            </div>
           </div>
+
           <section class="StyleguideExample">
             <iframe class="StyleguideExample-frame" name="StyleguideExample-frame" src="{{#if indexUrl}}{{indexUrl}}{{else}}about:blank{{/if}}"></iframe>
           </section>

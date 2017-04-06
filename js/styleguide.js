@@ -8,6 +8,7 @@ const xml2js = require('xml2js')
 
 const handlebars = require('./handlebars.js')
 const logger = require('./logger.js')
+const resolver = require('./resolver.js')
 
 let defaults = {
   host: 'localhost',
@@ -161,6 +162,7 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   // Expose common paths.
   this.path = {
     build: () => config.build,
+    config: () => configFile,
     parent: () => config.parent,
     root: () => config.root,
     zip: () => config.zip
@@ -171,9 +173,24 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
     version: () => config.version
   }
 
+  // Display name overrides.
+  const displayNames = { }
+
+  if (config.displayNames) {
+    Object.keys(config.displayNames).forEach(p => {
+      displayNames[resolver.path(styleguide.path.build(), configFile, p)] = config.displayNames[p]
+    })
+  }
+
+  this.displayNames = () => _.cloneDeep(displayNames)
+
+  // Styles.
+  this.styles = () => config.styles ? _.cloneDeep(config.styles) : null
+
+  // Handlebars renderer.
   this.handlebars = handlebars(this)
 
-  // random seed API
+  // Random seed API.
   this.randomSeed = () => config.randomSeed
 
   // Variables in config to be used in example JSON files.

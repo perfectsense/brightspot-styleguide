@@ -1,0 +1,7 @@
+{
+    "_template": "Outer.hbs",
+    "foo": "bar",
+    "baz": {
+        "_include": "Inner.json"
+    }
+}

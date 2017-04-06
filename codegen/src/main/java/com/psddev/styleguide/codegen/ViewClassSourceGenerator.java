@@ -421,7 +421,7 @@ class ViewClassSourceGenerator {
 
         methodJavadocs.addSampleValuesList(fieldDef, 10);
 
-        boolean isDefaulted = context.isGenerateDefaultMethods();
+        boolean isDefaulted = context.isGenerateDefaultMethods() || fieldDef.getEffectiveType() == JsonMap.class;
 
         // if it's a default interface method just make the body return null;
         String methodBody = !isDefaulted ? ";" : (" {\n"
@@ -484,7 +484,7 @@ class ViewClassSourceGenerator {
 
         } else if (effectiveType == JsonList.class) {
 
-            importsBuilder.add(ViewClassFieldNativeJavaType.COLLECTION);
+            importsBuilder.add(ViewClassFieldNativeJavaType.ITERABLE);
 
             String genericArgument;
 
@@ -501,7 +501,7 @@ class ViewClassSourceGenerator {
                 }
             }
 
-            return ViewClassFieldNativeJavaType.COLLECTION.getClassName() + "<" + genericArgument + ">";
+            return ViewClassFieldNativeJavaType.ITERABLE.getClassName() + "<" + genericArgument + ">";
 
         } else {
             throw new IllegalStateException("Field definitions must have a valid effective type!");
@@ -519,9 +519,13 @@ class ViewClassSourceGenerator {
         if (fieldDef.getEffectiveType() == JsonList.class) {
             importsBuilder.add(ViewClassFieldNativeJavaType.COLLECTION);
 
-            // Collection<?> --> Collection<Object>
-            // Collection<? extends Foo> --> Collection<Foo>
-            return getJavaFieldType(fieldDef).replace("? extends ", "").replace("?", ViewClassFieldNativeJavaType.OBJECT.getClassName());
+            // Iterable<?> --> Collection<Object>
+            // Iterable<? extends Foo> --> Collection<Foo>
+            // kind of hacky, may want to formalize at a later time...
+            return getJavaFieldType(fieldDef)
+                    .replace(ViewClassFieldNativeJavaType.ITERABLE.getLocalClassName(), ViewClassFieldNativeJavaType.COLLECTION.getLocalClassName())
+                    .replace("? extends ", "")
+                    .replace("?", ViewClassFieldNativeJavaType.OBJECT.getClassName());
 
         } else {
             return getJavaFieldType(fieldDef);
@@ -556,10 +560,26 @@ class ViewClassSourceGenerator {
             method1Javadocs.addParameter(fieldName).addCollectionFieldValueTypesSnippet(fieldDef).newLine();
             method1Javadocs.addReturn().add("this builder.");
 
+            /*
+            public Builder authors(Iterable<?> authors) {
+                if (authors != null) {
+                    this.authors = new ArrayList<>();
+                    authors.forEach(this.authors::add);
+                } else {
+                    this.authors = null;
+                }
+                return this;
+            }
+             */
             String[] method1 = {
                     method1Javadocs.buildJavadocsSource(indent),
                     indent(indent) + "public Builder " + fieldName + "(" + getJavaFieldType(fieldDef) + " " + fieldName + ") {\n",
-                    indent(indent + 1) + "this." + fieldName + " = " + fieldName + " != null ? new ArrayList<>(" + fieldName + ") : null;\n",
+                    indent(indent + 1) + "if (" + fieldName + " != null) {\n",
+                    indent(indent + 2) + "this." + fieldName + " = new ArrayList<>();\n",
+                    indent(indent + 2) + fieldName + ".forEach(this." + fieldName + "::add);\n",
+                    indent(indent + 1) + "} else {\n",
+                    indent(indent + 2) + "this." + fieldName + " = null;\n",
+                    indent(indent + 1) + "}\n",
                     indent(indent + 1) + "return this;\n",
                     indent(indent) + "}"
             };
@@ -613,11 +633,12 @@ class ViewClassSourceGenerator {
             method3Javadocs.addParameter(fieldName).add("the items to add. ").addCollectionFieldValueTypesSnippet(fieldDef).newLine();
             method3Javadocs.addReturn().add("this builder.");
             /*
-            public Builder addAllToAuthors(Collection<?> authors) {
+            public Builder addAllToAuthors(Iterable<?> authors) {
                 if (this.authors == null) {
                     this.authors = new ArrayList<>();
                 }
                 this.authors.addAll(authors);
+                authors.forEach(this.authors::add);
                 return this;
             }
              */
@@ -627,7 +648,7 @@ class ViewClassSourceGenerator {
                     indent(indent + 1) + "if (this." + fieldName + " == null) {\n",
                     indent(indent + 2) + "this." + fieldName + " = new ArrayList<>();\n",
                     indent(indent + 1) + "}\n",
-                    indent(indent + 1) + "this." + fieldName + ".addAll(" + fieldName + ");\n",
+                    indent(indent + 1) + fieldName + ".forEach(this." + fieldName + "::add);\n",
                     indent(indent + 1) + "return this;\n",
                     indent(indent) + "}"
             };

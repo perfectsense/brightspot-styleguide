@@ -466,6 +466,8 @@ class JsonDirectory {
             Set<JsonViewMap> fileViewMaps = files.stream()
                     .map(JsonFile::resolve)
                     .filter(Objects::nonNull)
+                    .flatMap(Collection::stream)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
 
             // check for errors
@@ -473,7 +475,7 @@ class JsonDirectory {
 
             // find all the nested view maps
             viewMaps = new LinkedHashSet<>();
-            fileViewMaps.stream().forEach(viewMap -> populateNestedViewMaps(viewMaps, viewMap));
+            fileViewMaps.forEach(viewMap -> populateNestedViewMaps(viewMaps, viewMap));
         }
 
         return viewMaps;

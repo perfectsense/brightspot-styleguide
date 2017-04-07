@@ -77,7 +77,6 @@ module.exports = function (styleguide, filePath) {
 
   return {
     displayName: displayName,
-    data: _.cloneDeep(data),
     html: styleguide.handlebars(data)
   }
 }

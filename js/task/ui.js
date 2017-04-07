@@ -20,7 +20,6 @@ const resolver = require('../resolver')
 module.exports = (styleguide, gulp) => {
   styleguide.task.ui = () => 'styleguide:ui'
 
-  const configFile = styleguide.path.config()
   const buildDir = styleguide.path.build()
   const parentDir = styleguide.path.parent()
   const rootDir = styleguide.path.root()
@@ -254,38 +253,6 @@ module.exports = (styleguide, gulp) => {
 
     // Convert example JSON files to HTML.
     html: done => {
-      const imageSizes = { }
-
-      function addImageSize (template, field, imageSize) {
-        if (!template) return
-        let x = imageSizes[template]
-        if (!x) x = imageSizes[template] = { }
-        let y = x[field]
-        if (!y) y = imageSizes[template][field] = [ ]
-        y.push(imageSize)
-      }
-
-      const originalTemplates = { }
-      const styledTemplates = { }
-      const styles = styleguide.styles()
-
-      if (styles) {
-        Object.keys(styles).forEach(originalTemplate => {
-          const relativeOriginalTemplate = '/' + path.relative(rootDir, resolver.path(rootDir, configFile, originalTemplate))
-          const templates = styles[originalTemplate].templates
-
-          if (templates && templates.length > 0) {
-            styles[originalTemplate].templates.forEach(template => {
-              const relativeTemplate = '/' + path.relative(buildDir, resolver.path(rootDir, configFile, template.template))
-
-              originalTemplates[relativeTemplate] = relativeOriginalTemplate
-              styledTemplates[relativeOriginalTemplate] = styledTemplates[relativeOriginalTemplate] || [ ]
-              styledTemplates[relativeOriginalTemplate].push(relativeTemplate)
-            })
-          }
-        })
-      }
-
       const displayNames = styleguide.displayNames()
 
       function jsonToHtml (file, encoding, callback) {
@@ -298,56 +265,6 @@ module.exports = (styleguide, gulp) => {
 
             if (processedExample) {
               displayNames[filePath] = processedExample.displayName
-
-              traverse(processedExample.data).forEach(function (value) {
-                if (typeof value === 'string') {
-                  const match = value.match(/\{\{\s*image\s*\(\s*(\d+|\[[^]]+])\s*,\s*(\d+|\[[^]]+])\s*\)\s*}}/)
-
-                  if (match) {
-                    const selector = [ ]
-
-                    for (let parent = this.parent; parent; parent = parent.parent) {
-                      const template = parent.node._template
-
-                      if (template) {
-                        const relativeTemplate = '/' + path.relative(buildDir, template)
-                        const originalTemplate = originalTemplates[relativeTemplate]
-                        const index = parseInt(parent.key, 10)
-
-                        selector.unshift(relativeTemplate)
-
-                        if (originalTemplate) {
-                          selector.unshift(originalTemplate)
-                        }
-
-                        if (!isNaN(index)) {
-                          const grandparent = parent.parent
-                          const grandparentTemplate = grandparent.parent.node._template
-
-                          if (grandparentTemplate) {
-                            const grandparentKey = '/' + path.relative(buildDir, grandparentTemplate) + ':' + grandparent.key
-
-                            selector.unshift(grandparentKey + ':' + index)
-                            selector.unshift(grandparentKey)
-                          }
-                        }
-                      }
-                    }
-
-                    const template = selector[selector.length - 1]
-                    const field = this.key
-                    const imageSize = {
-                      selector: selector,
-                      width: parseInt(match[1], 10),
-                      height: parseInt(match[2], 10)
-                    }
-
-                    addImageSize(template, field, imageSize)
-                    addImageSize(originalTemplates[template], field, imageSize)
-                  }
-                }
-              })
-
               file.base = buildDir
               file.contents = Buffer.from(processedExample.html)
               file.path = gutil.replaceExtension(filePath, '.html')
@@ -426,15 +343,6 @@ module.exports = (styleguide, gulp) => {
           del.sync([
             path.join(packageDir, '**/_theme.json')
           ])
-
-          fs.writeFileSync(
-            path.join(buildDir, '_image-sizes'),
-
-            JSON.stringify({
-              originalTemplates: originalTemplates,
-              styledTemplates: styledTemplates,
-              imageSizes: imageSizes
-            }, null, '  '))
 
           done()
         })

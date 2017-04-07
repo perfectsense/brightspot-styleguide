@@ -89,7 +89,9 @@ module.exports = function (styleguide) {
     const root = data.root
     if (!root) return
 
-    const attrs = root.extraAttributes
+    let attrs = root.extraAttributes
+    if (!attrs) return
+    if (Array.isArray(attrs)) attrs = attrs[0]
     if (!attrs) return
 
     return new handlebars.SafeString(Object

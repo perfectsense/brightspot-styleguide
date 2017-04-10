@@ -36,13 +36,10 @@ export default {
         }
       })
 
-      $(`#slider-opacity`).addEventListener(`input`, (evt) => {
-        const newOpacity = evt.currentTarget.value
-        $('.OpacityControl-output').value = newOpacity
-        $(`.StyleguideExample-frame`)._.style({
-          opacity: newOpacity
-        })
-      })
+      $(`#slider-opacity`).value = 1
+      updateOpacity()
+      $(`#slider-opacity`).removeEventListener(`input`, updateOpacity)
+      $(`#slider-opacity`).addEventListener(`input`, updateOpacity)
 
       if ($$(`.StyleguideComparison-group[data-visible]`).length > 0) {
         $(`.StyleguideComparison-controls`).setAttribute(`data-visible`, ``)
@@ -112,6 +109,9 @@ export default {
       })
 
       if (compareMode === 0) {
+        $(`#slider-opacity`).value = 1
+        updateOpacity()
+
         $(`.StyleguideComparison-wrapper`)._.setAttribute(`data-transition-state`, `in-progress`)
 
         // Transition the comparison frame into visibility
@@ -144,6 +144,9 @@ export default {
         })
       // Overlay mode
       } else {
+        $(`#slider-opacity`).value = $('.OpacityControl-output').value
+        updateOpacity()
+
         $(`.StyleguideComparison-wrapper`)._.transition({ transform: `translateX(0px)` }, 200)
         .then(el => {
           $(`.StyleguideComparison-frame`).setAttribute(`src`, targetSrc)
@@ -171,6 +174,15 @@ export default {
 
       $(`.StyleguideExample`).setAttribute(`data-compare-mode`, `${compareMode}`)
       compare()
+    }
+
+    let updateOpacity = () => {
+      // check last value and exit early
+      const newOpacity = $(`#slider-opacity`).value
+      $('.OpacityControl-output').value = newOpacity
+      $(`.StyleguideExample-frame`)._.style({
+        opacity: newOpacity
+      })
     }
   }
 }

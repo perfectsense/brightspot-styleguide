@@ -324,6 +324,7 @@ module.exports = (styleguide, gulp) => {
                 processedExample.data.body._designs.forEach(item => {
                   const design = JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), `sketch/export`, gutil.replaceExtension(item, `.json`)), 'utf8'))
                   design['src'] = path.join(`/node_modules`, styleguide.project.name(), `styleguide/_sketch`, gutil.replaceExtension(item, `.html`))
+                  design['label'] = gutil.replaceExtension(design.filename, ``)
 
                   const match = designs.find(group => {
                     if (group.hasOwnProperty(examplePath)) {

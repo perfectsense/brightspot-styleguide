@@ -69,6 +69,7 @@
 
   &-modes {
     display: flex;
+    margin-top: 24px;
   }
 
   &-modeButton {
@@ -77,7 +78,7 @@
 
   &-controls {
     display: none;
-    padding: 24px 24px 24px 0;
+    padding: 24px 24px 0 0;
     width: 100%;
     z-index: 0;
 
@@ -104,6 +105,7 @@
 
   &-opacityControl {
     display: none;
+    margin: 0 0 0 24px;
   }
 }
 
@@ -126,6 +128,16 @@
 
 .StyleguideComparison--overlayMode() {
   &-opacityControl {
-    display: block;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #262626;
+    background: #ededed;
+    padding: 0 12px;
+    border-radius: 3px;
+
+    > label, input {
+      margin-right: 24px;
+    }
   }
 }

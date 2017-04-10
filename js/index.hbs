@@ -37,23 +37,28 @@
         </nav>
 
         <div class="StyleguideContent">
-          <div class="StyleguideComparison-controls" data-toggled="off">
-          {{#each designs as |designGroup|}}
-            {{#each designGroup as |design examplePath|}}
-              <span class="StyleguideComparison-group" data-example-path="{{examplePath}}">
-              {{#each design}}
-                <a href="{{this.src}}" target="StyleguideComparison-frame" data-target-width="{{this.width}}px" data-target-height="{{this.height}}px">{{this.filename}}</a>
-              {{/each}}
-              </span>
-            {{/each}}
-          {{/each}}
-          </div>
-
           <section class="StyleguideExample">
-            <iframe class="StyleguideExample-frame" name="StyleguideExample-frame" src="{{#if indexUrl}}{{indexUrl}}{{else}}about:blank{{/if}}"></iframe>
-          </section>
-          <section class="StyleguideComparison">
-            <iframe class="StyleguideComparison-frame" name="StyleguideComparison-frame" src="about:blank" frameborder="0" scrolling="no" onload="this.style.height=this.contentDocument.body.scrollHeight +'px';this.style.width=this.contentDocument.body.scrollWidth +'px'"></iframe>
+            <div class="StyleguideComparison-controls">
+              {{#each designs as |designGroup|}}
+                {{#each designGroup as |design examplePath|}}
+                  <span class="StyleguideComparison-group" data-example-path="{{examplePath}}">
+                  {{#each design}}
+                    <a class="StyleguideComparison-button" href="{{this.src}}" target="StyleguideComparison-frame" title="{{this.filename}}" data-target-width="{{this.width}}" data-target-height="{{this.height}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.25 8.891l-1.421-1.409-6.105 6.218-3.078-2.937-1.396 1.436 4.5 4.319 7.5-7.627z"/></svg>{{this.label}}</a>
+                  {{/each}}
+                  </span>
+                {{/each}}
+              {{/each}}
+              <div class="StyleguideComparison-modes">
+                <button href="#" class="StyleguideComparison-modeButton"></button>
+                <div class="StyleguideComparison-opacityControl">
+                  <label for="slider-opacity">Opacity</label>
+                  <input type="range" min="0" max="1" value="1" id="slider-opacity" step=".10">
+                  <output class="OpacityControl-output" for="slider-opacity"></output>
+                </div>
+              </div>
+            </div>
+            <iframe class="StyleguideExample-frame" frameborder="0" name="StyleguideExample-frame" src="{{#if indexUrl}}{{indexUrl}}{{else}}about:blank{{/if}}"></iframe>
+            <div class="StyleguideComparison-wrapper"><iframe class="StyleguideComparison-frame" frameborder="0" name="StyleguideComparison-frame" scrolling="no" src="about:blank"></iframe></div>
           </section>
         </div>
     </body>

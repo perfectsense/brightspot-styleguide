@@ -7,6 +7,21 @@
         <script type="application/javascript" src="/_styleguide/index.js"></script>
     </head>
     <body class="StyleguideBody">
+        <svg style="position: absolute; width: 0; height: 0;" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <defs>
+            <symbol id="icon-images" viewBox="0 0 36 32">
+              <title>images</title>
+              <path d="M34 4h-2v-2c0-1.1-0.9-2-2-2h-28c-1.1 0-2 0.9-2 2v24c0 1.1 0.9 2 2 2h2v2c0 1.1 0.9 2 2 2h28c1.1 0 2-0.9 2-2v-24c0-1.1-0.9-2-2-2zM4 6v20h-1.996c-0.001-0.001-0.003-0.002-0.004-0.004v-23.993c0.001-0.001 0.002-0.003 0.004-0.004h27.993c0.001 0.001 0.003 0.002 0.004 0.004v1.996h-24c-1.1 0-2 0.9-2 2v0zM34 29.996c-0.001 0.001-0.002 0.003-0.004 0.004h-27.993c-0.001-0.001-0.003-0.002-0.004-0.004v-23.993c0.001-0.001 0.002-0.003 0.004-0.004h27.993c0.001 0.001 0.003 0.002 0.004 0.004v23.993z"></path>
+              <path d="M30 11c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3z"></path>
+              <path d="M32 28h-24v-4l7-12 8 10h2l7-6z"></path>
+            </symbol>
+            <symbol id="icon-insert-template" viewBox="0 0 32 32">
+              <title>insert-template</title>
+              <path d="M12 6h4v2h-4zM18 6h4v2h-4zM28 6v8h-6v-2h4v-4h-2v-2zM10 12h4v2h-4zM16 12h4v2h-4zM6 8v4h2v2h-4v-8h6v2zM12 18h4v2h-4zM18 18h4v2h-4zM28 18v8h-6v-2h4v-4h-2v-2zM10 24h4v2h-4zM16 24h4v2h-4zM6 20v4h2v2h-4v-8h6v2zM30 2h-28v28h28v-28zM32 0v0 32h-32v-32h32z"></path>
+            </symbol>
+          </defs>
+        </svg>
+
         <header class="StyleguideHeader">
             <h1 class="StyleguideHeader-title">
               {{#if indexUrl}}
@@ -49,7 +64,12 @@
                 {{/each}}
               {{/each}}
               <div class="StyleguideComparison-modes">
-                <button href="#" class="StyleguideComparison-modeButton"></button>
+                <button href="#" class="ComparisonMode-button" data-mode="0" disabled>
+                  <svg class="icon-insert-template"><use xlink:href="#icon-insert-template"></use></svg>
+                </button>
+                <button href="#" class="ComparisonMode-button" data-mode="1">
+                  <svg class="icon-images"><use xlink:href="#icon-images"></use></svg>
+                </button>
                 <div class="StyleguideComparison-opacityControl">
                   <label for="slider-opacity">Opacity</label>
                   <input type="range" min="0" max="1" value="1" id="slider-opacity" step=".10">

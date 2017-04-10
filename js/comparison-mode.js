@@ -15,12 +15,10 @@ export default {
         margin: `0px`
       })
 
-      if (compareMode === 0) {
-        $(`.StyleguideComparison-modeButton`).textContent = `Overlay`
-      } else {
-        $(`.StyleguideComparison-modeButton`).textContent = `Side-by-Side`
-      }
+      // Activate the current comparison mode button.
+      $(`.ComparisonMode-button[data-mode="${compareMode}"]`).setAttribute(`disabled`, ``)
 
+      // Reset all the comparison iframes to blank
       $$(`.StyleguideComparison-frame`).forEach(el => { el.setAttribute(`src`, `about:blank`) })
 
       $$(`.StyleguideComparison-group`).forEach(el => {
@@ -43,14 +41,32 @@ export default {
 
       if ($$(`.StyleguideComparison-group[data-visible]`).length > 0) {
         $(`.StyleguideComparison-controls`).setAttribute(`data-visible`, ``)
-        $(`.StyleguideComparison-modeButton`).addEventListener(`click`, updateMode)
+        $$(`.ComparisonMode-button`).forEach(el => {
+          el.addEventListener(`click`, onModeChanged)
+        })
       } else {
         $(`.StyleguideComparison-controls`).removeAttribute(`data-visible`, ``)
-        $(`.StyleguideComparison-modeButton`).removeEventListener(`click`, updateMode)
+        $$(`.ComparisonMode-button`).forEach(el => {
+          el.removeEventListener(`click`, onModeChanged)
+        })
       }
 
       $(`.StyleguideExample`).removeAttribute(`data-comparing`)
     })
+
+    let onModeChanged = (evt) => {
+      const button = evt.currentTarget
+
+      $$(`.ComparisonMode-button`).forEach(el => {
+        if (el.hasAttribute(`disabled`)) {
+          el.removeAttribute(`disabled`)
+        }
+      })
+
+      button.setAttribute(`disabled`, ``)
+
+      updateMode(button.dataset.mode)
+    }
 
     let onDesignChanged = (evt) => {
       const button = evt.currentTarget
@@ -119,7 +135,7 @@ export default {
         ._.transition({
           width: `${targetWidth}px`,
           height: `${targetHeight}px`,
-          margin: `17px`
+          margin: `0 17px`
         }, 200)
         .then(el => {
           el.classList.remove('animate')
@@ -158,20 +174,13 @@ export default {
         ._.transition({
           width: `${targetWidth}px`,
           height: `${targetHeight}px`,
-          margin: `17px`
+          margin: `0 17px`
         }, 200)
       }
     }
 
-    let updateMode = () => {
-      if (compareMode === 0) {
-        compareMode = 1
-        $(`.StyleguideComparison-modeButton`).textContent = `Side-by-Side`
-      } else {
-        compareMode = 0
-        $(`.StyleguideComparison-modeButton`).textContent = `Overlay`
-      }
-
+    let updateMode = (mode) => {
+      compareMode = parseInt(mode, 10)
       $(`.StyleguideExample`).setAttribute(`data-compare-mode`, `${compareMode}`)
       compare()
     }

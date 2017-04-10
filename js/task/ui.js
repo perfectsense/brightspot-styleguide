@@ -339,6 +339,11 @@ module.exports = (styleguide, gulp) => {
                 })
               }
 
+              designs.forEach((design) => {
+                const group = Object.values(design)[0]
+                group.sort((a, b) => a.width - b.width)
+              })
+
               traverse(processedExample.data).forEach(function (value) {
                 if (typeof value === 'string') {
                   const match = value.match(/\{\{\s*image\s*\(\s*(\d+|\[[^]]+])\s*,\s*(\d+|\[[^]]+])\s*\)\s*}}/)

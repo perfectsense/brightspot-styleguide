@@ -1,0 +1,131 @@
+.StyleguideComparison {
+  &-wrapper {
+    display: none;
+    position: relative;
+    transition-timing-function: ease-out;
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #e1e1e1;
+      border: solid 2px #d2d2d2;
+      z-index: 3;
+      transition: all 230ms ease-out;
+    }
+
+    &[data-transition-state='in-progress'] {
+      background: #e1e1e1;
+
+      &:before {
+        opacity: 1;
+      }
+    }
+
+    &[data-transition-state='in-complete'] {
+      background: none;
+
+      &:before {
+        opacity: 0;
+      }
+    }
+  }
+
+  &-button {
+    align-items: center;
+    color: #fff;
+    display: flex;
+    height: 24px;
+    border-radius: 20px;
+    background: #0facff;
+    margin-right: 10px;
+    padding: 13px;
+    position: relative;
+    text-decoration: none;
+
+    &:hover {
+      background: #0f8bff;
+    }
+
+    > svg {
+      fill: transparent;
+      left: 1px;
+      position: absolute;
+    }
+
+    &[data-active] {
+      background: #0f8bff;
+      outline: solid 1px white;
+      padding-left: 30px;
+
+      > svg {
+        fill: white;
+      }
+    }
+  }
+
+  &-modes {
+    display: flex;
+  }
+
+  &-modeButton {
+    display: none;
+  }
+
+  &-controls {
+    display: none;
+    padding: 24px 24px 24px 0;
+    width: 100%;
+    z-index: 0;
+
+    &[data-visible] {
+      display: block;
+    }
+  }
+
+  &-group {
+    display: none;
+
+    &[data-visible] {
+      display: flex;
+      //animation: staggerIn 400ms ease-out 200ms;
+    }
+  }
+
+  &-frame {
+    border: 0;
+    height: 100%;
+    width: 100%;
+    position: relative;
+  }
+
+  &-opacityControl {
+    display: none;
+  }
+}
+
+.StyleguideComparison--compareModeOn() {
+  &-wrapper {
+    display: block;
+    margin: 17px;
+    position: absolute;
+    z-index: 0;
+  }
+
+  &-modeButton {
+    display: block;
+  }
+}
+
+.StyleguideComparison--sideBySideMode() {
+
+}
+
+.StyleguideComparison--overlayMode() {
+  &-opacityControl {
+    display: block;
+  }
+}

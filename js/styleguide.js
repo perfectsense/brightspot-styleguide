@@ -263,12 +263,6 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
       }
 
       for (let parent = node.parent; parent; parent = parent.parent) {
-        const index = parseInt(parent.key, 10)
-
-        if (!isNaN(index)) {
-          find(parent.parent.key + ':' + index)
-        }
-
         let template = parent.node._template
 
         if (template) {
@@ -281,6 +275,12 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
           if (originalTemplate) {
             find(originalTemplate)
           }
+        }
+
+        const index = parseInt(parent.key, 10)
+
+        if (!isNaN(index)) {
+          find(parent.parent.key + ':' + index)
         }
       }
 

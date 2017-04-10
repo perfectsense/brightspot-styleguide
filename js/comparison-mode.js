@@ -25,9 +25,11 @@ export default {
 
       $$(`.StyleguideComparison-group`).forEach(el => {
         el.removeAttribute(`data-visible`)
+
         if (el.dataset.examplePath && el.dataset.examplePath === examplePath) {
           el.setAttribute(`data-visible`, ``)
           el.querySelectorAll(`a`).forEach(button => {
+            button.removeAttribute(`data-active`)
             button.removeEventListener(`click`, onDesignChanged)
             button.addEventListener(`click`, onDesignChanged)
           })
@@ -147,6 +149,14 @@ export default {
           $(`.StyleguideComparison-frame`).setAttribute(`src`, targetSrc)
           el.setAttribute(`data-transition-state`, `in-complete`)
         })
+
+        // Transition the comparison frame into visibility
+        $(`.StyleguideExample-frame`)
+        ._.transition({
+          width: `${targetWidth}px`,
+          height: `${targetHeight}px`,
+          margin: `17px`
+        }, 200)
       }
     }
 

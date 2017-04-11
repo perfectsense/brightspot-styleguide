@@ -20,8 +20,12 @@ const resolver = require('../resolver')
 module.exports = (styleguide, gulp) => {
   styleguide.task.ui = () => 'styleguide:ui'
 
+  const buildDir = styleguide.path.build()
+  const parentDir = styleguide.path.parent()
+  const rootDir = styleguide.path.root()
+
   function getProjectRootPath () {
-    return path.join(styleguide.path.build(), 'node_modules', styleguide.project.name())
+    return path.join(buildDir, 'node_modules', styleguide.project.name())
   }
 
   styleguide.ui = {
@@ -29,7 +33,7 @@ module.exports = (styleguide, gulp) => {
     // Copy all files related to producing example HTML.
     copy: done => {
       // Pretend that the project is a package.
-      const packageFile = path.join(styleguide.path.root(), 'package.json')
+      const packageFile = path.join(rootDir, 'package.json')
       const projectRootPath = getProjectRootPath()
 
       fs.mkdirsSync(projectRootPath)
@@ -44,84 +48,76 @@ module.exports = (styleguide, gulp) => {
         }))
       }
 
-      gulp.src([ 'styleguide/**/*.{hbs,json,md}' ], {
-        cwd: styleguide.path.root(),
-        base: styleguide.path.root()
-      })
+      gulp.src([ 'styleguide/**/*.{hbs,json,md}' ], { cwd: rootDir, base: rootDir })
         .pipe(gulp.dest(projectRootPath))
         .on('end', () => {
           // Automatically create all files related to styled templates.
           const configPath = path.join(projectRootPath, 'styleguide/_config.json')
           const styledTemplates = { }
+          const styles = styleguide.styles()
 
-          if (fs.existsSync(configPath)) {
-            const styles = JSON.parse(fs.readFileSync(configPath, 'utf8')).styles
+          if (styles) {
+            Object.keys(styles).forEach(styledTemplate => {
+              const style = styles[styledTemplate]
+              const templates = style.templates
 
-            if (styles) {
-              const rootPath = styleguide.path.root()
+              // Create styled example JSON files.
+              if (templates && templates.length > 0) {
+                templates.forEach(template => {
+                  const example = template.example || style.example
+                  const examplePath = resolver.path(rootDir, configPath, example)
+                  const exampleJson = JSON.parse(fs.readFileSync(examplePath, 'utf8'))
 
-              Object.keys(styles).forEach(styledTemplate => {
-                const style = styles[styledTemplate]
-                const templates = style.templates
+                  traverse(exampleJson).forEach(function (value) {
+                    if (!value) {
+                      return
+                    }
 
-                // Create styled example JSON files.
-                if (templates && templates.length > 0) {
-                  templates.forEach(template => {
-                    const example = template.example || style.example
-                    const examplePath = resolver.path(rootPath, configPath, example)
-                    const exampleJson = JSON.parse(fs.readFileSync(examplePath, 'utf8'))
-
-                    traverse(exampleJson).forEach(function (value) {
-                      if (!value) {
-                        return
-                      }
-
-                      if (this.key === '_template' &&
-                        resolver.path(rootPath, examplePath, value) === resolver.path(rootPath, examplePath, styledTemplate)) {
-                        this.update(template.template)
-                      } else if ((this.key === '_template' ||
-                        this.key === '_wrapper' ||
-                        this.key === '_include' ||
-                        this.key === '_dataUrl') &&
-                        !value.startsWith('/')) {
-                        this.update(path.resolve(path.dirname(example), value))
-                      }
-                    })
-
-                    const styledExamplePath = gutil.replaceExtension(resolver.path(rootPath, configPath, template.template), '.json')
-
-                    fs.mkdirsSync(path.dirname(styledExamplePath))
-                    fs.writeFileSync(styledExamplePath, JSON.stringify(exampleJson, null, '\t'))
+                    if (this.key === '_template' &&
+                      resolver.path(rootDir, examplePath, value) === resolver.path(rootDir, examplePath, styledTemplate)) {
+                      this.update(template.template)
+                    } else if ((this.key === '_template' ||
+                      this.key === '_wrapper' ||
+                      this.key === '_include' ||
+                      this.key === '_dataUrl') &&
+                      !value.startsWith('/')) {
+                      this.update(path.resolve(path.dirname(example), value))
+                    }
                   })
 
-                  // Create the template that delegates to the styled ones.
-                  styledTemplates[styledTemplate] = ''
+                  const styledExamplePath = gutil.replaceExtension(resolver.path(rootDir, configPath, template.template), '.json')
 
-                  const appendStyledTemplate = function (template) {
-                    const templatePath = resolver.path(rootPath, configPath, template.template)
+                  fs.mkdirsSync(path.dirname(styledExamplePath))
+                  fs.writeFileSync(styledExamplePath, JSON.stringify(exampleJson, null, '\t'))
+                })
 
-                    styledTemplates[styledTemplate] += `{{#withParentPath '${path.relative(styleguide.path.build(), templatePath)}'}}`
-                    styledTemplates[styledTemplate] += fs.readFileSync(templatePath, 'utf8')
-                    styledTemplates[styledTemplate] += '{{/withParentPath}}'
-                  }
+                // Create the template that delegates to the styled ones.
+                styledTemplates[styledTemplate] = ''
 
-                  for (let i = templates.length - 1; i > 0; --i) {
-                    const template = templates[i]
-                    const internalName = template.internalName || template.template
+                const appendStyledTemplate = function (template) {
+                  const templatePath = resolver.path(rootDir, configPath, template.template)
 
-                    styledTemplates[styledTemplate] += `{{#styledTemplate '${internalName}'}}`
-                    appendStyledTemplate(template)
-                    styledTemplates[styledTemplate] += '{{else}}'
-                  }
-
-                  appendStyledTemplate(templates[0])
-
-                  for (let i = templates.length - 1; i > 0; --i) {
-                    styledTemplates[styledTemplate] += '{{/styledTemplate}}'
-                  }
+                  styledTemplates[styledTemplate] += `{{#withParentPath '${path.relative(buildDir, templatePath)}'}}`
+                  styledTemplates[styledTemplate] += fs.readFileSync(templatePath, 'utf8')
+                  styledTemplates[styledTemplate] += '{{/withParentPath}}'
                 }
-              })
-            }
+
+                for (let i = templates.length - 1; i > 0; --i) {
+                  const template = templates[i]
+                  const internalName = template.internalName || template.template
+
+                  styledTemplates[styledTemplate] += `{{#styledTemplate '${internalName}'}}`
+                  appendStyledTemplate(template)
+                  styledTemplates[styledTemplate] += '{{else}}'
+                }
+
+                appendStyledTemplate(templates[0])
+
+                for (let i = templates.length - 1; i > 0; --i) {
+                  styledTemplates[styledTemplate] += '{{/styledTemplate}}'
+                }
+              }
+            })
           }
 
           // Don't copy package.json from modules without the styleguide.
@@ -133,13 +129,13 @@ module.exports = (styleguide, gulp) => {
           })
 
           const packageFiles = [
-            path.join(styleguide.path.root(), 'node_modules/*/package.json'),
-            path.join(styleguide.path.root(), 'node_modules/*/styleguide/**/*.{hbs,json}')
+            path.join(rootDir, 'node_modules/*/package.json'),
+            path.join(rootDir, 'node_modules/*/styleguide/**/*.{hbs,json}')
           ]
 
           gulp.src(packageFiles, { base: '.' })
             .pipe(onlyStyleguidePackages)
-            .pipe(gulp.dest(styleguide.path.build()))
+            .pipe(gulp.dest(buildDir))
 
             // Copy all files related to theming.
             .on('end', () => {
@@ -150,7 +146,7 @@ module.exports = (styleguide, gulp) => {
                 // Make sure source exists and is resolved.
                 if (!rawSource) return
 
-                const source = path.join(styleguide.path.build(), rawSource)
+                const source = path.join(buildDir, rawSource)
                 const themeDir = path.dirname(themeFile)
                 const report = {
                   overrides: [ ],
@@ -233,7 +229,7 @@ module.exports = (styleguide, gulp) => {
 
               // Override styled templates.
               Object.keys(styledTemplates).forEach(styledTemplate => {
-                const styledTemplatePath = path.join(styleguide.path.build(), styledTemplate)
+                const styledTemplatePath = path.join(buildDir, styledTemplate)
 
                 fs.mkdirsSync(path.dirname(styledTemplatePath))
                 fs.writeFileSync(styledTemplatePath,
@@ -252,57 +248,12 @@ module.exports = (styleguide, gulp) => {
     // Copy fonts used by the styleguide UI itself.
     fonts: () => {
       return gulp.src(path.join(path.dirname(require.resolve('font-awesome/package.json')), 'fonts', '*'))
-        .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
+        .pipe(gulp.dest(path.join(buildDir, '_styleguide')))
     },
 
     // Convert example JSON files to HTML.
     html: done => {
-      const imageSizes = { }
-
-      function addImageSize (template, field, imageSize) {
-        if (!template) return
-        let x = imageSizes[template]
-        if (!x) x = imageSizes[template] = { }
-        let y = x[field]
-        if (!y) y = imageSizes[template][field] = [ ]
-        y.push(imageSize)
-      }
-
-      const originalTemplates = { }
-      const styledTemplates = { }
-      const configPath = path.join(getProjectRootPath(), 'styleguide/_config.json')
-      const displayNames = { }
-
-      if (fs.existsSync(configPath)) {
-        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
-
-        if (config.displayNames) {
-          Object.keys(config.displayNames).forEach(p => {
-            displayNames[resolver.path(styleguide.path.build(), configPath, p)] = config.displayNames[p]
-          })
-        }
-
-        const styles = config.styles
-
-        if (styles) {
-          const rootPath = styleguide.path.root()
-
-          Object.keys(styles).forEach(originalTemplate => {
-            const relativeOriginalTemplate = '/' + path.relative(styleguide.path.root(), resolver.path(rootPath, configPath, originalTemplate))
-            const templates = styles[originalTemplate].templates
-
-            if (templates && templates.length > 0) {
-              styles[originalTemplate].templates.forEach(template => {
-                const relativeTemplate = '/' + path.relative(styleguide.path.build(), resolver.path(rootPath, configPath, template.template))
-
-                originalTemplates[relativeTemplate] = relativeOriginalTemplate
-                styledTemplates[relativeOriginalTemplate] = styledTemplates[relativeOriginalTemplate] || [ ]
-                styledTemplates[relativeOriginalTemplate].push(relativeTemplate)
-              })
-            }
-          })
-        }
-      }
+      const displayNames = styleguide.displayNames()
 
       function jsonToHtml (file, encoding, callback) {
         const filePath = file.path
@@ -314,57 +265,7 @@ module.exports = (styleguide, gulp) => {
 
             if (processedExample) {
               displayNames[filePath] = processedExample.displayName
-
-              traverse(processedExample.data).forEach(function (value) {
-                if (typeof value === 'string') {
-                  const match = value.match(/\{\{\s*image\s*\(\s*(\d+|\[[^]]+])\s*,\s*(\d+|\[[^]]+])\s*\)\s*}}/)
-
-                  if (match) {
-                    const selector = [ ]
-
-                    for (let parent = this.parent; parent; parent = parent.parent) {
-                      const template = parent.node._template
-
-                      if (template) {
-                        const relativeTemplate = '/' + path.relative(styleguide.path.build(), template)
-                        const originalTemplate = originalTemplates[relativeTemplate]
-                        const index = parseInt(parent.key, 10)
-
-                        selector.unshift(relativeTemplate)
-
-                        if (originalTemplate) {
-                          selector.unshift(originalTemplate)
-                        }
-
-                        if (!isNaN(index)) {
-                          const grandparent = parent.parent
-                          const grandparentTemplate = grandparent.parent.node._template
-
-                          if (grandparentTemplate) {
-                            const grandparentKey = '/' + path.relative(styleguide.path.build(), grandparentTemplate) + ':' + grandparent.key
-
-                            selector.unshift(grandparentKey + ':' + index)
-                            selector.unshift(grandparentKey)
-                          }
-                        }
-                      }
-                    }
-
-                    const template = selector[selector.length - 1]
-                    const field = this.key
-                    const imageSize = {
-                      selector: selector,
-                      width: parseInt(match[1], 10),
-                      height: parseInt(match[2], 10)
-                    }
-
-                    addImageSize(template, field, imageSize)
-                    addImageSize(originalTemplates[template], field, imageSize)
-                  }
-                }
-              })
-
-              file.base = styleguide.path.build()
+              file.base = buildDir
               file.contents = Buffer.from(processedExample.html)
               file.path = gutil.replaceExtension(filePath, '.html')
               this.push(file)
@@ -386,14 +287,14 @@ module.exports = (styleguide, gulp) => {
 
       gulp.src(path.join(projectRootPath, 'styleguide/**/*.json'))
         .pipe(through.obj(jsonToHtml))
-        .pipe(gulp.dest(styleguide.path.build()))
+        .pipe(gulp.dest(buildDir))
         .on('end', () => {
           // Group example HTML files by their path.
           const groupByName = { }
 
-          glob.sync('**/*.html', { cwd: styleguide.path.build() }).forEach(match => {
-            const displayNamePath = path.join(styleguide.path.build(), gutil.replaceExtension(match, '.json'))
-            const groupName = displayNames[path.dirname(displayNamePath)] || path.dirname(path.relative(path.join(projectRootPath, 'styleguide'), path.join(styleguide.path.build(), match))).split('/').map(label).join(': ')
+          glob.sync('**/*.html', { cwd: buildDir }).forEach(match => {
+            const displayNamePath = path.join(buildDir, gutil.replaceExtension(match, '.json'))
+            const groupName = displayNames[path.dirname(displayNamePath)] || path.dirname(path.relative(path.join(projectRootPath, 'styleguide'), path.join(buildDir, match))).split('/').map(label).join(': ')
             let group = groupByName[groupName]
             let item = {}
             item.name = displayNames[displayNamePath] || label(path.basename(match, '.html'))
@@ -407,7 +308,7 @@ module.exports = (styleguide, gulp) => {
               }
             }
 
-            if (fs.existsSync(gutil.replaceExtension(path.join(styleguide.path.build(), match), '.md'))) {
+            if (fs.existsSync(gutil.replaceExtension(path.join(buildDir, match), '.md'))) {
               item.source = Object.assign(item.source, {'md': 'Documentation'})
             }
 
@@ -426,31 +327,22 @@ module.exports = (styleguide, gulp) => {
             preventIndent: true
           })
 
-          fs.mkdirsSync(path.join(styleguide.path.build(), '_styleguide'))
-          fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
+          fs.mkdirsSync(path.join(buildDir, '_styleguide'))
+          fs.writeFileSync(path.join(buildDir, '_styleguide/index.html'), template({
             groups: groups
           }))
 
           // Create a project pointer for BE.
           fs.writeFileSync(
-            path.join(styleguide.path.build(), '_name'),
+            path.join(buildDir, '_name'),
             styleguide.project.name())
 
           // Remove all unnecessary files.
-          const packageDir = path.join(styleguide.path.build(), 'node_modules/*')
+          const packageDir = path.join(buildDir, 'node_modules/*')
 
           del.sync([
             path.join(packageDir, '**/_theme.json')
           ])
-
-          fs.writeFileSync(
-            path.join(styleguide.path.build(), '_image-sizes'),
-
-            JSON.stringify({
-              originalTemplates: originalTemplates,
-              styledTemplates: styledTemplates,
-              imageSizes: imageSizes
-            }, null, '  '))
 
           done()
         })
@@ -459,7 +351,7 @@ module.exports = (styleguide, gulp) => {
     zip: done => {
       const name = `${styleguide.project.name()}-${styleguide.project.version()}.zip`
 
-      return gulp.src([ '**', `!${name}` ], { cwd: styleguide.path.build() })
+      return gulp.src([ '**', `!${name}` ], { cwd: buildDir })
         .pipe(zip(name))
         .pipe(gulp.dest(styleguide.path.zip()))
         .on('end', done)
@@ -468,10 +360,8 @@ module.exports = (styleguide, gulp) => {
     // Convert LESS files into CSS to be used by the styleguide UI itself.
     less: () => {
       return gulp.src(path.join(__dirname, '../', 'index.less'))
-        .pipe(less({
-          paths: [ styleguide.path.parent() ]
-        }))
-        .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
+        .pipe(less({ paths: [ parentDir ] }))
+        .pipe(gulp.dest(path.join(buildDir, '_styleguide')))
     },
 
     // JavaScript transpilation to be used by the styleguide UI itself.
@@ -497,7 +387,7 @@ module.exports = (styleguide, gulp) => {
       builder.buildStatic(indexPath, buildOptions).then(output => {
         gulp.src([ ])
           .pipe(plugins.file('index.js', output.source))
-          .pipe(gulp.dest(path.join(styleguide.path.build(), '_styleguide')))
+          .pipe(gulp.dest(path.join(buildDir, '_styleguide')))
           .on('end', done)
       })
     }
@@ -505,8 +395,8 @@ module.exports = (styleguide, gulp) => {
   }
 
   // Pretend that the parent is a package.
-  if (styleguide.path.parent() !== styleguide.path.root()) {
-    const parentPackageFile = path.join(styleguide.path.parent(), 'package.json')
+  if (parentDir !== rootDir) {
+    const parentPackageFile = path.join(parentDir, 'package.json')
 
     if (fs.existsSync(parentPackageFile)) {
       const oldCopy = styleguide.ui.copy
@@ -517,11 +407,8 @@ module.exports = (styleguide, gulp) => {
           'styleguide/**/*.{hbs,json,md}'
         ]
 
-        gulp.src(parentFiles, {
-          cwd: styleguide.path.parent(),
-          base: styleguide.path.parent()
-        })
-          .pipe(gulp.dest(path.join(styleguide.path.build(), 'node_modules', JSON.parse(fs.readFileSync(parentPackageFile, 'utf8')).name)))
+        gulp.src(parentFiles, { cwd: parentDir, base: parentDir })
+          .pipe(gulp.dest(path.join(buildDir, 'node_modules', JSON.parse(fs.readFileSync(parentPackageFile, 'utf8')).name)))
           .on('end', () => {
             oldCopy(done)
           })

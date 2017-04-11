@@ -17,6 +17,7 @@ const example = require('../example')
 const label = require('../label')
 const logger = require('../logger')
 const resolver = require('../resolver')
+const Util = require('../util')
 
 module.exports = (styleguide, gulp) => {
   styleguide.task.ui = () => 'styleguide:ui'
@@ -325,6 +326,7 @@ module.exports = (styleguide, gulp) => {
                   const design = JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), `sketch/export`, gutil.replaceExtension(item, `.json`)), 'utf8'))
                   design['src'] = path.join(`/node_modules`, styleguide.project.name(), `styleguide/_sketch`, gutil.replaceExtension(item, `.html`))
                   design['label'] = gutil.replaceExtension(design.filename, ``)
+                  design['color'] = Util.randomHue()
 
                   const match = designs.find(group => {
                     if (group.hasOwnProperty(examplePath)) {

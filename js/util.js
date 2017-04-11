@@ -155,6 +155,16 @@ var Util = {
       paramObj[ decodeURIComponent(searchParam[0]) ] = decodeURIComponent(searchParam[1])
     }
     return paramObj
+  },
+
+  randomHue: () => {
+    const GOLDEN_RATIO = 0.618033988749895
+    let hue = Math.random()
+
+    hue += GOLDEN_RATIO
+    hue %= 1.0
+
+    return `hsl(${hue * 360}, 50%, 50%)`
   }
 }
 

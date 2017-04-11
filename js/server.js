@@ -1,6 +1,6 @@
 const express = require('express')
-
 const path = require('path')
+
 const logger = require('./logger')
 
 module.exports = config => {
@@ -14,7 +14,7 @@ module.exports = config => {
 
   app.use(express.static(config.build))
 
-  app.post('/node_modules/*/styleguide/*', function (req, res) {
+  app.post('/node_modules/*/styleguide/*', (req, res) => {
     res.sendFile(path.join(config.build, req.originalUrl))
   })
 

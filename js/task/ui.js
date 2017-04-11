@@ -514,6 +514,9 @@ module.exports = (styleguide, gulp) => {
                   textStyle.cssProps += `text-align: ${textStyle.alignment};`
                 }
 
+                textStyle.cssProps += `-webkit-font-smoothing: antialiased;`
+                textStyle.cssProps += `-moz-osx-font-smoothing: grayscale;`
+
                 // Format the CSS ruleset.
                 let cssProperties = textStyle.cssProps
                   .split(';').map(prop => {

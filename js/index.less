@@ -262,6 +262,7 @@ pre[class*='language-'] {
   left: 270px;
   right: 20px;
   top: 90px;
+  overflow: auto;
 
   body[data-iframed] & {
       top: 20px;
@@ -271,7 +272,7 @@ pre[class*='language-'] {
 .StyleguideExample {
   display: block;
   position: relative;
-  height: ~'calc(100% - 90px)';
+  height: 100%;
   width: 100%;
 
   &-frame {

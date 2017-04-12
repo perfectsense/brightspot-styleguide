@@ -103,7 +103,6 @@ module.exports = (styleguide, gulp) => {
         // Get the unique font-families from the textStyles.
         const fontFamilies = [ ...new Set(textStyles.map(style => style.fontFamily)) ].sort()
 
-        // Construct a new data structure to write into the build directory.
         styleguide.sketch[`${path.parse(sketchFile).name}`] = {
           fontFamilies: fontFamilies,
           textStyles: textStyles

@@ -6,8 +6,8 @@
   </head>
   <body class="StyleguidePage">
     <style type="text/css">
-      {{#each designElements as |designElement|}}
-        {{#each designElement.textStyles as |textStyle|}}
+      {{#each sketchStyles as |sketchStyle|}}
+        {{#each sketchStyle.textStyles as |textStyle|}}
           .SketchTextStyle [data-textStyle-name="{{textStyle.name}}"] {
             {{textStyle.cssProps}}
           }
@@ -16,12 +16,12 @@
     </style>
 
     <div class="StyleguideSections">
-    {{#each designElements as |designElement|}}
+    {{#each sketchStyles as |sketchStyle|}}
       {{!-- Font Families --}}
       <section class="StyleguideSection">
-        <h2 class="StyleguideSection-heading">Fonts <small>({{designElement.fontFamilies.length}})</small></h2>
+        <h2 class="StyleguideSection-heading">Fonts <small>({{sketchStyle.fontFamilies.length}})</small></h2>
         <div class="StyleguideSection-items">
-        {{#each designElement.fontFamilies as |fontFamily|}}
+        {{#each sketchStyle.fontFamilies as |fontFamily|}}
           <div class="StyleguideSection-items-item">
             <div class="SketchFont">
               <h4 class="SketchFont-title">{{fontFamily}}</h4>
@@ -37,9 +37,9 @@
 
       {{!-- Text Styles --}}
       <section class="StyleguideSection">
-        <h2 class="StyleguideSection-heading">Text Styles <small>({{designElement.textStyles.length}})</small></h2>
+        <h2 class="StyleguideSection-heading">Text Styles <small>({{sketchStyle.textStyles.length}})</small></h2>
         <div class="StyleguideSection-items">
-        {{#each designElement.textStyles as |textStyle|}}
+        {{#each sketchStyle.textStyles as |textStyle|}}
           <div class="StyleguideSection-items-item">
             <div class="SketchTextStyle" {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>
               <div class="SketchTextStyle-name" {{#with textStyle.name}}data-textStyle-name="{{this}}"{{/with}}>{{textStyle.name}}</div>

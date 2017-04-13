@@ -126,56 +126,36 @@ pre[class*='language-'] {
     }
 }
 
-.StyleguideNavigation,
-.StyleguideContent {
-  background: white;
-
-  body[data-iframed] & {
-      border: 0;
-      box-shadow: none;
-  }
-}
-
 .StyleguideNavigation {
-    bottom: 20px;
-    left: 20px;
-    position: fixed;
-    top: 90px;
-    width: 240px;
+  bottom: 20px;
+  left: 20px;
+  position: fixed;
+  top: 90px;
+  width: 240px;
+
+  &-group {
     border: 1px solid white;
     border-radius: 2px;
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
 
-    body[data-iframed] & {
-        background: transparent;
-        top: 20px;
+    &:not(:first-child) {
+      margin-top: 10px;
     }
+  }
 
-    &-title {
-        .Heading;
+  &-title {
+    .Heading;
+  }
+}
 
-        body[data-iframed] & {
-            display: none;
-        }
-    }
-
-    &-content {
-        bottom: 20px;
-        left: 0;
-        overflow: auto;
-        position: absolute;
-        right: 0;
-        top: 56px;
-
-        body[data-iframed] & {
-            top: 0;
-        }
-    }
+.StyleguideNavigation-group,
+.StyleguideContent {
+  background: white;
 }
 
 .StyleguideGroups {
   list-style: none;
-  margin: 0 20px;
+  margin: 20px 20px 0;
   padding: 0;
 
   &-name {

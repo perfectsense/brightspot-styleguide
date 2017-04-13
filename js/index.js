@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
   let searchObject = Util.locationSearchToObject(window.location.search)
 
   // loop through styleguide navigation to find matching file path and init tabs based on whats active
-  $$('.StyleguideNavigation a:not(.StyleguideGroups-sketch-link)').forEach(function (element) {
+  $$('.StyleguideNavigation-group a').forEach(function (element) {
     if (element.pathname === searchObject['file']) {
       element.setAttribute('data-active', '')
       tabbedContent.initTabs(element)
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
     element.addEventListener('click', function (event) {
       window.history.replaceState({}, this.getAttribute('title'), '?file=' + this.pathname)
       // loop through and remove the active nav attribute
-      $$('.StyleguideNavigation a[data-active]').forEach(function (element) {
+      $$('.StyleguideNavigation-group a[data-active]').forEach(function (element) {
         element.removeAttribute('data-active')
       })
       this.setAttribute('data-active', '')

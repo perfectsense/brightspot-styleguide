@@ -62,14 +62,26 @@
         </header>
 
         <nav class="StyleguideNavigation">
+          {{#if sketchFiles}}
+            <section class="StyleguideNavigation-group">
+              <h2 class="StyleguideNavigation-title">Sketch</h2>
+              <div class="StyleguideNavigation-content">
+                <ul class="StyleguideGroups">
+                  <li>
+                    <ul class="StyleguideGroups-examples">
+                      {{#each sketchFiles}}
+                        <li class="StyleguideGroups-sketch-example"><a class="StyleguideGroups-sketch-link" data-active target="StyleguideExample-frame" href="{{this.src}}">{{this.name}}</a></li>
+                      {{/each}}
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </section>
+          {{/if}}
+          <section class="StyleguideNavigation-group">
             <h2 class="StyleguideNavigation-title">Examples</h2>
             <div class="StyleguideNavigation-content">
               <ul class="StyleguideGroups">
-                <li>
-                  <ul class="StyleguideGroups-examples">
-                    <li class="StyleguideGroups-sketch-example"><a class="StyleguideGroups-sketch-link" data-active href="/_styleguide/index.html"><svg class="icon-sketch-logo"><use xlink:href="#sketch-logo"></use></svg>Sketch</a></li>
-                  </ul>
-                </li>
                 {{#each groups}}
                   <li>
                     <h3 class="StyleguideGroups-name">{{name}}</h3>
@@ -83,6 +95,7 @@
                 {{/each}}
               </ul>
             </div>
+          </section>
         </nav>
 
         <div class="StyleguideContent">

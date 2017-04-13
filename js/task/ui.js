@@ -462,28 +462,27 @@ module.exports = (styleguide, gulp) => {
             groups.push(groupByName[groupName])
           })
 
-          // Create the sketch template function.
-          const sketchTemplate = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'sketch.hbs'), 'utf8'), {
-            preventIndent: true
-          })
-
-          // Create the iframed index HTML file.
-          fs.writeFileSync(path.join(getProjectRootPath(), 'styleguide/sketch.html'), sketchTemplate({
-            sketchStyles: styleguide.sketch.styles
-          }))
-
           // Create the index template function.
           const template = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'index.hbs'), 'utf8'), {
             preventIndent: true
           })
 
+          const sketchFiles = [ ]
+          glob.sync(`**/*.html`, { cwd: path.join(styleguide.path.build(), '_styleguide/sketch') }).forEach(file => {
+            sketchFiles.push({
+              name: gutil.replaceExtension(file, ''),
+              src: `/_styleguide/sketch/${file}`
+            })
+          })
+
           // Create the index HTML file for the styleguide itself.
           fs.mkdirsSync(path.join(styleguide.path.build(), '_styleguide'))
           fs.writeFileSync(path.join(styleguide.path.build(), '_styleguide/index.html'), template({
-            indexUrl: path.join('/node_modules', styleguide.project.name(), 'styleguide/sketch.html'),
-            groups: groups,
             designs: designs,
-            devices: styleguide.devices
+            devices: styleguide.devices,
+            groups: groups,
+            indexUrl: (sketchFiles.length) ? sketchFiles[0].src : null,
+            sketchFiles: sketchFiles
           }))
 
           // Create a project pointer for BE.

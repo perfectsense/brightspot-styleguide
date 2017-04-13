@@ -2,6 +2,7 @@ const filter = require('gulp-filter')
 const fs = require('fs-extra')
 const glob = require('glob')
 const gutil = require('gulp-util')
+const handlebars = require('handlebars')
 const path = require('path')
 const through = require('through2')
 
@@ -16,17 +17,19 @@ module.exports = (styleguide, gulp) => {
   }
 
   styleguide.sketch = {
-    styles: { },
-
     processExport: done => {
-      styleguide.sketch.styles = { }
+      // Create the sketch template function.
+      const sketchTemplate = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'sketch.hbs'), 'utf8'), {
+        preventIndent: true
+      })
 
       glob.sync('**/*.json', {
         cwd: path.join(styleguide.path.root(), `sketch/export`),
         absolute: true
       })
         .forEach(sketchFile => {
-          const styles = JSON.parse(fs.readFileSync(sketchFile, 'utf8')).styles
+          const sketchData = JSON.parse(fs.readFileSync(sketchFile, 'utf8'))
+          const styles = sketchData.styles
 
           if (!styles) {
             return
@@ -88,16 +91,21 @@ module.exports = (styleguide, gulp) => {
           // Get the unique font-families from the textStyles.
           const fontFamilies = [ ...new Set(textStyles.map(style => style.fontFamily)) ].sort()
 
-          styleguide.sketch.styles[`${path.parse(sketchFile).name}`] = {
-            fontFamilies: fontFamilies,
-            textStyles: textStyles
-          }
-
           try {
+            // Create the sketch Less file.
             fs.mkdirsSync(path.join(getProjectRootPath(), `/styleguide/_sketch`, path.dirname(sketchFile).split(`/export/`).pop()))
             fs.writeFileSync(path.join(getProjectRootPath(), `/styleguide/_sketch`, gutil.replaceExtension(sketchFile, '.less').split(`/export/`).pop()), lessData)
+
+            // Create the sketch HTML file.
+            fs.mkdirsSync(path.join(styleguide.path.build(), `_styleguide/sketch`))
+            fs.writeFileSync(path.join(styleguide.path.build(), `_styleguide/sketch/${sketchData.name}.html`), sketchTemplate({
+              sketchStyles: [{
+                fontFamilies: fontFamilies,
+                textStyles: textStyles
+              }]
+            }))
           } catch (e) {
-            logger.error(`Error writing file: ${gutil.replaceExtension(sketchFile, '.less')}`)
+            logger.error(`Error writing file: ${gutil.replaceExtension(sketchFile, '')}`)
           }
         })
 

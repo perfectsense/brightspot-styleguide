@@ -105,11 +105,11 @@ pre[class*='language-'] {
   &-button {
     border: 0;
     background-color: ededed;
-    width: 100%;
+    font-weight: bold;
     text-align: left;
     outline: none;
     padding: 10px;
-
+    width: 100%;
 
     &:after {
       .fa;
@@ -143,6 +143,7 @@ pre[class*='language-'] {
   &-filter {
     width: 100%;
     display: block;
+
     input {
       margin-right: 5px;
     }
@@ -211,14 +212,38 @@ pre[class*='language-'] {
     padding: 0;
 
     &-name {
+        cursor: pointer;
         font-weight: 700;
         margin: 20px 0 10px 0;
+        position: relative;
+
+        &:after {
+          .fa;
+          content: '\f077';
+          margin-left: 5px;
+          position: absolute;
+          right: 0;
+          top: 2px;
+        }
+
+        [data-closed] & {
+          &:after {
+            .fa;
+            content: '\f078';
+          }
+        }
+
     }
 
     &-examples {
         list-style: none;
         margin: 0 0;
         padding: 0;
+
+        [data-closed] & {
+          max-height: 0;
+          overflow: hidden;
+        }
     }
 
   &-examples-link {

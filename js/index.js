@@ -39,11 +39,11 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
   $$('.StyleguideGroups-name').forEach(element => {
     element.addEventListener('click', function () {
-      let toggleElementAttr = this.nextElementSibling
-      if (toggleElementAttr.getAttribute('data-active') === '') {
-        toggleElementAttr.removeAttribute('data-active')
+      let toggleElementAttr = this.parentNode
+      if (toggleElementAttr.getAttribute('data-closed') === '') {
+        toggleElementAttr.removeAttribute('data-closed')
       } else {
-        toggleElementAttr.setAttribute('data-active', '')
+        toggleElementAttr.setAttribute('data-closed', '')
       }
     })
   })

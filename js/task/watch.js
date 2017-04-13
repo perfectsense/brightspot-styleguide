@@ -39,15 +39,13 @@ module.exports = (styleguide, gulp) => {
   }
 
   styleguide.watch.sketch = () => {
-    watch([`sketch/export/**/*.json`], { base: styleguide.path.root(), verbose: true, debounceTimeout: 1000 }, (file) => {
-      if (file.event === `add` || file.event === `change`) {
-        logger.info(`Running processExport()`)
-        styleguide.sketch.processExport()
-        logger.info(`Running Less task`)
-      } else if (file.event === `error`) {
-        logger.error(`Watch event for Sketch failed`)
-        return
-      }
-    })
+    gulp.watch(['sketch/export/metadata.json'], { cwd: styleguide.path.root() }, [ `default` ])
+      .on('change', onChange)
+      .on('error', error => {
+        // Catch 'ENOENT' error typically caused by deleting/renaming watched folders
+        if (error.code === 'ENOENT') {
+          return
+        }
+      })
   }
 }

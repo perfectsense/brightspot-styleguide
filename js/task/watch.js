@@ -1,5 +1,3 @@
-const watch = require('gulp-debounced-watch')
-
 const logger = require('../logger')
 
 module.exports = (styleguide, gulp) => {

@@ -13,7 +13,6 @@
     "fs-extra": "^1.0.0",
     "geopattern": "1.2.3",
     "glob": "^7.1.1",
-    "gulp-debounced-watch": "^1.0.4",
     "gulp-file": "0.3.0",
     "gulp-filter": "^4.0.0",
     "gulp-jsonlint": "1.1.2",

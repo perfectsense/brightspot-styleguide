@@ -292,6 +292,28 @@ module.exports = (styleguide, gulp) => {
           // Group example HTML files by their path.
           const groupByName = { }
 
+          // src in filtered glob and create a list of matching url paths.
+          let filteredList = {}
+          let config = {}
+          const configPath = path.join(projectRootPath, 'styleguide/_config.json')
+
+          if (fs.existsSync(configPath)) {
+            config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+            let listItem = []
+            if (config.filters) {
+              let filters = config.filters[0]
+              Object.keys(filters).forEach(key => {
+                Object.keys(filters[key]).forEach(item => {
+                  glob.sync(filters[key][item], { cwd: styleguide.path.build() }).forEach(files => {
+                    listItem.push(files)
+                  })
+                })
+                filteredList[key] = listItem
+                listItem = []
+              })
+            }
+          }
+
           glob.sync('**/*.html', { cwd: buildDir }).forEach(match => {
             const displayNamePath = path.join(buildDir, gutil.replaceExtension(match, '.json'))
             const groupName = displayNames[path.dirname(displayNamePath)] || path.dirname(path.relative(path.join(projectRootPath, 'styleguide'), path.join(buildDir, match))).split('/').map(label).join(': ')
@@ -300,6 +322,17 @@ module.exports = (styleguide, gulp) => {
             item.name = displayNames[displayNamePath] || label(path.basename(match, '.html'))
             item.url = '/' + gutil.replaceExtension(match, '.html')
             item.source = {'html': 'Example', 'json': 'JSON'}
+
+            let filterTags = []
+            if (filteredList) {
+              Object.keys(filteredList).forEach(list => {
+                if (filteredList[list].indexOf(item.url.substr(1)) > -1) {
+                  filterTags.push(list.replace(/\s+/g, '-').toLowerCase())
+                  // item.filter = list
+                }
+              })
+              item.filter = filterTags
+            }
 
             if (!group) {
               group = groupByName[groupName] = {
@@ -317,10 +350,20 @@ module.exports = (styleguide, gulp) => {
 
           // Sort the grouping so that the display is alphabetical.
           const groups = [ ]
-
           Object.keys(groupByName).sort().forEach((groupName) => {
             groups.push(groupByName[groupName])
           })
+          // create list of filter navigation items
+          const filterNavigationItems = []
+
+          if (config.filters) {
+            Object.keys(config.filters[0]).forEach(label => {
+              const filterItem = {}
+              filterItem.displayName = label
+              filterItem.displayId = label.replace(/\s+/g, '-').toLowerCase()
+              filterNavigationItems.push(filterItem)
+            })
+          }
 
           // Create the index HTML file.
           const template = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'index.hbs'), 'utf8'), {
@@ -329,7 +372,8 @@ module.exports = (styleguide, gulp) => {
 
           fs.mkdirsSync(path.join(buildDir, '_styleguide'))
           fs.writeFileSync(path.join(buildDir, '_styleguide/index.html'), template({
-            groups: groups
+            groups: groups,
+            filters: filterNavigationItems
           }))
 
           // Create a project pointer for BE.

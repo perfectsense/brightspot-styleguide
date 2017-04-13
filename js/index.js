@@ -2,6 +2,7 @@
 import Bliss from 'bliss'
 import Util from './util.js'
 import {TabbedContent} from './TabbedContent.js'
+import {DropdownFilter} from './DropdownFilter.js'
 /* global $, $$ */
 
 document.addEventListener('DOMContentLoaded', function (event) {
@@ -27,6 +28,22 @@ document.addEventListener('DOMContentLoaded', function (event) {
       tabbedContent.createTabs(this)
       if (event.target.classList.contains('StyleguideGroups-examples-externalLink')) {
         window.open(this.href)
+      }
+    })
+  })
+
+  $$('.StyleguideDropdown').forEach(function (element) {
+    let dropdownFilter = new DropdownFilter(element, {})
+    dropdownFilter.init()
+  })
+
+  $$('.StyleguideGroups-name').forEach(element => {
+    element.addEventListener('click', function () {
+      let toggleElementAttr = this.nextElementSibling
+      if (toggleElementAttr.getAttribute('data-active') === '') {
+        toggleElementAttr.removeAttribute('data-active')
+      } else {
+        toggleElementAttr.setAttribute('data-active', '')
       }
     })
   })

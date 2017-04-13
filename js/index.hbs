@@ -5,6 +5,20 @@
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700">
         <link rel="stylesheet" type="text/css" href="/_styleguide/index.css">
         <script type="application/javascript" src="/_styleguide/index.js"></script>
+        <style>
+        {{#each filters}}
+          .StyleguideNavigation-content[data-filter*={{displayId}}] .StyleguideGroups-name {
+            display: none;
+          }
+          .StyleguideNavigation-content[data-filter*={{displayId}}] .StyleguideGroups-examples-example {
+            display: none;
+          }
+          .StyleguideNavigation-content[data-filter*={{displayId}}] .StyleguideGroups-examples-example[data-filter*={{displayId}}] {
+            display: block;
+          }
+
+        {{/each}}
+        </style>
     </head>
     <body class="StyleguideBody">
         <header class="StyleguideHeader">
@@ -12,7 +26,16 @@
         </header>
 
         <nav class="StyleguideNavigation">
-            <h2 class="StyleguideNavigation-title">Examples</h2>
+          <div class="StyleguideDropdown">
+            <button class="StyleguideDropdown-button">Filter Examples</button>
+            <div class="StyleguideDropdown-content">
+              <input type="text" placeholder="Search.." id="myInput"  class="StyleguideDropdown-search" />
+              {{#each filters}}
+                <label class="StyleguideDropdown-filter" for="StyleguideDropdown-filter-{{displayId}}"><input type="checkbox" id="StyleguideDropdown-filter-{{displayId}}" name="filter-{{displayId}}" value="{{displayId}}" />{{displayName}}</label>
+              {{/each}}
+            </div>
+          </div>
+
             <div class="StyleguideNavigation-content">
                 <ul class="StyleguideGroups">
                     {{#each groups}}
@@ -20,7 +43,7 @@
                             <h3 class="StyleguideGroups-name">{{name}}</h3>
                             <ul class="StyleguideGroups-examples">
                                 {{#each examples}}
-                                    <li class="StyleguideGroups-examples-example"><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample" {{#if source}}data-source='{{{jsonObject source}}}'{{/if}}>{{name}}<i class="StyleguideGroups-examples-externalLink" title="Open Example in a New Window"></i></a>
+                                    <li class="StyleguideGroups-examples-example" {{#if filter}}data-filter="{{#each filter}}{{this}} {{/each}}"{{else}}data-filter="all"{{/if}}><a class="StyleguideGroups-examples-link" href="{{url}}" title="{{name}}" target="StyleguideExample" {{#if source}}data-source='{{{jsonObject source}}}'{{/if}}>{{name}}<i class="StyleguideGroups-examples-externalLink" title="Open Example in a New Window"></i></a>
                                     </li>
                                 {{/each}}
                             </ul>

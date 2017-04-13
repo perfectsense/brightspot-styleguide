@@ -431,7 +431,7 @@ module.exports = (styleguide, gulp) => {
           // Group example HTML files by their path.
           const groupByName = { }
 
-          glob.sync('**/*.html', { cwd: styleguide.path.build(), ignore: [`**/_sketch/**/*.html`, `_styleguide/index.html`, `**/sketch.html`] }).forEach(match => {
+          glob.sync('**/*.html', { cwd: styleguide.path.build(), ignore: [`**/_sketch/**/*.html`, `_styleguide/**/*.html`] }).forEach(match => {
             const displayNamePath = path.join(styleguide.path.build(), gutil.replaceExtension(match, '.json'))
             const groupName = displayNames[path.dirname(displayNamePath)] || path.dirname(path.relative(path.join(projectRootPath, 'styleguide'), path.join(styleguide.path.build(), match))).split('/').map(label).join(': ')
 

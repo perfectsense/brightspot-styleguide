@@ -469,7 +469,7 @@ module.exports = (styleguide, gulp) => {
 
           // Create the iframed index HTML file.
           fs.writeFileSync(path.join(getProjectRootPath(), 'styleguide/sketch.html'), sketchTemplate({
-            sketchStyles: styleguide.sketch
+            sketchStyles: styleguide.sketch.styles
           }))
 
           // Create the index template function.

@@ -55,36 +55,60 @@ export class TabbedContent {
       if (hashTab !== '') {
         this.querySelector('[name=' + hashTab.replace('#', '') + ']').click()
       } else {
-        this.querySelector('a').click()
+        if (this.querySelector('a')) {
+          this.querySelector('a').click()
+        }
       }
     })
+
     // set an event for tabs init
     let tabCreationEvent = document.createEvent('Event')
     tabCreationEvent.initEvent('Styleguide:tabsInit', false, true)
     $(`.${this.selectors.tabList}`).dispatchEvent(tabCreationEvent)
   }
 
+  removeTabs (element) {
+    const tabList = $(`.${this.selectors.tabList}`)
+
+    // unbind old tabs
+    Array.prototype.slice.call(tabList.querySelectorAll('li')).forEach((element) => {
+      element._.unbind('click')
+    })
+
+    // remove old tabs
+    while (tabList.lastChild) {
+      tabList.removeChild(tabList.lastChild)
+    }
+
+    let contentTitle = $(`.${this.selectors.content}-title`)
+    if (contentTitle !== null) {
+      contentTitle.parentNode.removeChild(contentTitle)
+    }
+
+    $(`.${this.selectors.tabList}`).removeAttribute(`data-initialized`)
+  }
+
   createTabs (element) {
-    let dataSources = JSON.parse(element.getAttribute('data-source'))
-    let baseURL = element.getAttribute('href').split('.html')
     let tabList = $(`.${this.selectors.tabList}`)
     let self = this
+    let dataSources = JSON.parse(element.getAttribute('data-source'))
+
+    this.removeTabs(element)
+
+    if (!dataSources) {
+      return
+    }
+
+    let baseURL = element.getAttribute('href').split('.html')
 
     let contentTitle = $(`.${self.selectors.content}-title`)
     if (contentTitle !== null) {
       contentTitle.parentNode.removeChild(contentTitle)
     }
 
-    $.create('h1', {className: `${self.selectors.content}-title`, contents: element.text})._.before($(`.${this.selectors.tabList}`))
+    $.create('h1', {className: `${self.selectors.content}-title`, contents: element.text})
+      ._.before($(`.${this.selectors.tabList}`))
 
-    // unbind old tabs
-    Array.prototype.slice.call(tabList.querySelectorAll('li')).forEach((element) => {
-      element._.unbind('click')
-    })
-    // remove old tabs
-    while (tabList.lastChild) {
-      tabList.removeChild(tabList.lastChild)
-    }
     // init to first datatype
     self.dataType = dataSources[Object.keys(dataSources)[0]]
 

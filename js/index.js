@@ -28,12 +28,16 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
     element.addEventListener('click', function (event) {
       window.history.replaceState({}, this.getAttribute('title'), '?file=' + this.pathname)
+
       // loop through and remove the active nav attribute
       $$('.StyleguideNavigation-group a[data-active]').forEach(function (element) {
         element.removeAttribute('data-active')
       })
+
       this.setAttribute('data-active', '')
+
       tabbedContent.createTabs(this)
+
       if (event.target.classList.contains('StyleguideGroups-examples-externalLink')) {
         window.open(this.href)
       }

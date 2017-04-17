@@ -55,6 +55,15 @@
   }
 }
 
+.Button() {
+  &:focus,
+  &:active {
+    outline: 0;
+    outline-width: 0;
+    outline-style: none;
+  }
+}
+
 .Heading() {
   background: #ededed;
   border-top-left-radius: 2px;
@@ -274,12 +283,6 @@ pre[class*='language-'] {
 
     .StyleguideComparison {
       .StyleguideComparison--compareModeOn;
-    }
-
-    &[data-compare-mode='0'] {
-      .StyleguideComparison {
-        .StyleguideComparison--sideBySideMode;
-      }
     }
 
     &[data-compare-mode='1'] {

@@ -35,6 +35,8 @@
   }
 
   &-button {
+    .Button;
+
     align-items: center;
     color: #fff;
     display: flex;
@@ -49,7 +51,9 @@
       box-shadow: 0 0 100px rgba(0, 0, 0, 0.4) inset;
     }
 
-    > svg {
+    > .icon-checkmark {
+      width: 24px;
+      height: 24px;
       fill: transparent;
       left: 1px;
       position: absolute;
@@ -60,7 +64,7 @@
       outline: solid 1px white;
       padding-left: 30px;
 
-      > svg {
+      > .icon-checkmark {
         fill: white;
       }
     }
@@ -127,10 +131,6 @@
   }
 }
 
-.StyleguideComparison--sideBySideMode() {
-
-}
-
 .StyleguideComparison--overlayMode() {
   &-opacityControl {
     display: flex;
@@ -166,6 +166,8 @@
 }
 
 .ComparisonMode-button {
+  .Button;
+
   display: flex;
   padding: 8px;
   border: 0;

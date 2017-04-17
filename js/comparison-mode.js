@@ -87,8 +87,6 @@ export default {
 
         // Disable comparison mode.
         $(`.StyleguideExample`).removeAttribute(`data-comparing`)
-        $(`.StyleguideComparison-frame`).classList.remove('animate')
-        $(`.StyleguideExample-frame`).classList.remove('animate')
         $(`.StyleguideExample-frame`).setAttribute(`style`, ``)
       } else {
         // Remove previous active state.
@@ -142,24 +140,12 @@ export default {
           margin: `0 17px`
         }, 200)
         .then(el => {
-          el.classList.remove('animate')
+          const newX = parseInt(targetWidth) + 17
 
-          // animate the example frame
-          setTimeout(() => { el.classList.add('animate') }, 2)
-
-          // slide the comparison frame out
-          el.addEventListener(`animationend`, (evt) => {
-            if (evt.animationName === `drop`) {
-              const newX = parseInt(targetWidth) + 17
-
-              el.classList.remove('animate')
-
-              $(`.StyleguideComparison-wrapper`)._.transition({ transform: `translateX(${newX}px)` }, 200)
-              .then(el => {
-                $(`.StyleguideComparison-frame`).setAttribute(`src`, targetSrc)
-                el.setAttribute(`data-transition-state`, `in-complete`)
-              })
-            }
+          $(`.StyleguideComparison-wrapper`)._.transition({ transform: `translateX(${newX}px)` }, 200)
+          .then(el => {
+            $(`.StyleguideComparison-frame`).setAttribute(`src`, targetSrc)
+            el.setAttribute(`data-transition-state`, `in-complete`)
           })
         })
       // Overlay mode

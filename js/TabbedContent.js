@@ -38,10 +38,12 @@ export class TabbedContent {
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       if (self.settings.prismMap[self.dataType] !== undefined) {
         let prismElement = this.contentWindow.document.querySelector('pre')
-        prismElement.className = `language-${self.settings.prismMap[self.dataType]}`
-        Prism.highlightElement(prismElement)
-        let cssAppend = $.clone($('link[href="/_styleguide/index.css"]'))
-        this.contentWindow.document.head.append(cssAppend)
+        if (prismElement) {
+          prismElement.className = `language-${self.settings.prismMap[self.dataType]}`
+          Prism.highlightElement(prismElement)
+          let cssAppend = $.clone($('link[href="/_styleguide/index.css"]'))
+          this.contentWindow.document.head.append(cssAppend)
+        }
       }
     })
   }

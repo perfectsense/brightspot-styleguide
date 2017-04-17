@@ -24,7 +24,9 @@ export default {
       $$(`.StyleguideComparison-group`).forEach(el => {
         el.removeAttribute(`data-visible`)
 
-        if (el.dataset.examplePath && el.dataset.examplePath === examplePath) {
+        if (el.dataset.examplePath &&
+          (window.location.hash === `` || window.location.hash === `#example`) &&
+          el.dataset.examplePath === examplePath) {
           el.setAttribute(`data-visible`, ``)
           el.querySelectorAll(`a`).forEach(button => {
             button.removeAttribute(`data-active`)

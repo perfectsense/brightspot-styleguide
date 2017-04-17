@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', function (event) {
     if (element.pathname === searchObject['file']) {
       element.setAttribute('data-active', '')
       tabbedContent.initTabs(element)
+    } else {
+      element.removeAttribute('data-active')
     }
 
     element.addEventListener('click', function (event) {

@@ -104,7 +104,7 @@ pre[class*='language-'] {
 
   &-button {
     border: 0;
-    background-color: ededed;
+    background-color: #ededed;
     font-weight: bold;
     text-align: left;
     outline: none;
@@ -117,7 +117,7 @@ pre[class*='language-'] {
       margin-left: 5px;
     }
 
-    [data-dropdown-open] & {
+    [data-selected] & {
       &:after {
         .fa;
         content: '\f077';
@@ -135,7 +135,7 @@ pre[class*='language-'] {
     overflow: hidden;
     margin: 10px;
 
-    [data-dropdown-open] & {
+    [data-selected] & {
       max-height: 1000px;
     }
   }
@@ -169,6 +169,7 @@ pre[class*='language-'] {
     position: fixed;
     top: 90px;
     width: 240px;
+    overflow: auto;
 
     body[data-iframed] & {
         background: transparent;
@@ -193,16 +194,14 @@ pre[class*='language-'] {
     }
 
     &-content {
-        bottom: 20px;
-        left: 0;
-        overflow: auto;
-        position: absolute;
-        right: 0;
-        top: 56px;
-
-        body[data-iframed] & {
-            top: 0;
+      &:not([data-filter]) {
+        [data-selected] {
+          .StyleguideGroups-examples {
+              max-height: 0;
+              overflow: hidden;
+          }
         }
+      }
     }
 }
 
@@ -226,7 +225,9 @@ pre[class*='language-'] {
           top: 2px;
         }
 
-        [data-closed] & {
+        [data-selected] & {
+          margin: 10px 0;
+
           &:after {
             .fa;
             content: '\f078';
@@ -239,11 +240,6 @@ pre[class*='language-'] {
         list-style: none;
         margin: 0 0;
         padding: 0;
-
-        [data-closed] & {
-          max-height: 0;
-          overflow: hidden;
-        }
     }
 
   &-examples-link {

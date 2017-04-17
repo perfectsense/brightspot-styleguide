@@ -2,7 +2,7 @@
 import Bliss from 'bliss'
 import Util from './util.js'
 import {TabbedContent} from './TabbedContent.js'
-import {DropdownFilter} from './DropdownFilter.js'
+import {Navigation} from './Navigation.js'
 /* global $, $$ */
 
 document.addEventListener('DOMContentLoaded', function (event) {
@@ -32,19 +32,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
     })
   })
 
-  $$('.StyleguideDropdown').forEach(function (element) {
-    let dropdownFilter = new DropdownFilter(element, {})
-    dropdownFilter.init()
-  })
-
-  $$('.StyleguideGroups-name').forEach(element => {
-    element.addEventListener('click', function () {
-      let toggleElementAttr = this.parentNode
-      if (toggleElementAttr.getAttribute('data-closed') === '') {
-        toggleElementAttr.removeAttribute('data-closed')
-      } else {
-        toggleElementAttr.setAttribute('data-closed', '')
-      }
-    })
-  })
+  let navigation = new Navigation($('.StyleguideNavigation'), {})
+  navigation.init()
 }, false)

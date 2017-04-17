@@ -155,6 +155,19 @@ var Util = {
       paramObj[ decodeURIComponent(searchParam[0]) ] = decodeURIComponent(searchParam[1])
     }
     return paramObj
+  },
+
+  updateArray (currentArray, value) {
+    let filterValue = value
+    let matchIndex = currentArray.indexOf(filterValue)
+    if (matchIndex > -1) {
+      // remove item if match
+      currentArray.splice(matchIndex, 1)
+    } else {
+      // add new item to array
+      currentArray.push(filterValue)
+    }
+    return currentArray
   }
 }
 

@@ -588,7 +588,7 @@ class JsonFileResolver {
             JsonMap mergedMap = new JsonMap(jsonMap.getLocation(), mergedValues);
 
             // recurse in case the data url contained another data url
-            mergedMaps.addAll(tryFetchAndMergeDataUrl(mergedMap, visitedDataUrlPaths));
+            mergedMaps.addAll(tryFetchAndMergeDataUrl(mergedMap, new LinkedHashSet<>(visitedDataUrlPaths)));
         }
 
         return mergedMaps;

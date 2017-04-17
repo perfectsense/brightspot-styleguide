@@ -38,6 +38,7 @@ module.exports = (styleguide, gulp) => {
 
   styleguide.watch.sketch = () => {
     gulp.watch(['sketch/export/metadata.json'], { cwd: styleguide.path.root() }, [ `default` ])
+      .on('deleted', () => { return })
       .on('change', onChange)
       .on('error', error => {
         // Catch 'ENOENT' error typically caused by deleting/renaming watched folders

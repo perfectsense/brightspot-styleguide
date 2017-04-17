@@ -37,7 +37,9 @@ export default {
       })
 
       $(`#slider-opacity`).value = 1
+
       updateOpacity()
+
       $(`#slider-opacity`).removeEventListener(`input`, updateOpacity)
       $(`#slider-opacity`).addEventListener(`input`, updateOpacity)
 
@@ -162,7 +164,6 @@ export default {
         })
       // Overlay mode
       } else {
-        $(`#slider-opacity`).value = $('.OpacityControl-output').value
         updateOpacity()
 
         $(`.StyleguideComparison-wrapper`)._.transition({ transform: `translateX(0px)` }, 200)
@@ -188,11 +189,8 @@ export default {
     }
 
     let updateOpacity = () => {
-      // check last value and exit early
-      const newOpacity = $(`#slider-opacity`).value
-      $('.OpacityControl-output').value = newOpacity
       $(`.StyleguideExample-frame`)._.style({
-        opacity: newOpacity
+        opacity: $(`#slider-opacity`).value
       })
     }
   }

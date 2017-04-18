@@ -333,8 +333,8 @@ module.exports = (styleguide, gulp) => {
               if (processedExample.data.body._designs) {
                 processedExample.data.body._designs.forEach(item => {
                   glob.sync(item, { cwd: path.join(styleguide.path.root(), `sketch/export`) }).forEach(file => {
-                    const design = JSON.parse(fs.readFileSync(gutil.replaceExtension(path.join(styleguide.path.root(), `sketch/export`, file), `.json`), 'utf8'))
-
+                    const design = JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), `sketch/export`, file), 'utf8'))
+debugger
                     design['src'] = path.join(`/node_modules`, styleguide.project.name(), `styleguide/_sketch`, gutil.replaceExtension(file, `.html`))
                     design['label'] = gutil.replaceExtension(design.filename, ``)
                     design['color'] = randomHue()

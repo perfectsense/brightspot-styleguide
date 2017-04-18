@@ -329,9 +329,10 @@ module.exports = (styleguide, gulp) => {
               displayNames[filePath] = processedExample.displayName
 
               const examplePath = gutil.replaceExtension(filePath.slice(filePath.indexOf('/node_modules')), `.html`)
+              const _designs = processedExample.data._designs || (processedExample.data.body ? processedExample.data.body._designs : null)
 
-              if (processedExample.data.body._designs) {
-                processedExample.data.body._designs.forEach(item => {
+              if (_designs) {
+                _designs.forEach(item => {
                   glob.sync(item, { cwd: path.join(styleguide.path.root(), `sketch/export`) }).forEach(file => {
                     const design = JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), `sketch/export`, file), 'utf8'))
 

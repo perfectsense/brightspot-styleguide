@@ -168,6 +168,28 @@ var Util = {
       currentArray.push(filterValue)
     }
     return currentArray
+  },
+
+  updateSearchURL (locationObj, paramObj) {
+    let url = locationObj.search
+    let urlSearch = url.split('?')
+    if (urlSearch.length >= 2) {
+      let urlParams = urlSearch[1].split(/[&;]/g)
+      for (let param in paramObj) {
+        let prefix = encodeURIComponent(param) + '='
+        for (let i = 0; i < urlParams.length; i++) {
+          if (urlParams[i].lastIndexOf(prefix, 0) !== -1) {
+            urlParams.splice(i, 1)
+          }
+        }
+
+        if (paramObj[param].length > 0) {
+          urlParams.push(`${param}=${paramObj[param]}`)
+        }
+      }
+      urlSearch = `?${urlParams.join('&')}${locationObj.hash}`
+    }
+    return urlSearch
   }
 }
 

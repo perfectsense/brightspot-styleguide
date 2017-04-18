@@ -37,7 +37,7 @@ module.exports = (styleguide, gulp) => {
   }
 
   styleguide.watch.sketch = () => {
-    gulp.watch(['sketch/export/metadata.json'], { cwd: styleguide.path.root() }, [ `default` ])
+    gulp.watch(['sketch/export/**/metadata.json'], { cwd: styleguide.path.root() }, [ `default` ])
       .on('deleted', () => { return })
       .on('change', onChange)
       .on('error', error => {

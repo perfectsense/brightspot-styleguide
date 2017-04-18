@@ -332,21 +332,24 @@ module.exports = (styleguide, gulp) => {
 
               if (processedExample.data.body._designs) {
                 processedExample.data.body._designs.forEach(item => {
-                  const design = JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), `sketch/export`, gutil.replaceExtension(item, `.json`)), 'utf8'))
-                  design['src'] = path.join(`/node_modules`, styleguide.project.name(), `styleguide/_sketch`, gutil.replaceExtension(item, `.html`))
-                  design['label'] = gutil.replaceExtension(design.filename, ``)
-                  design['color'] = randomHue()
+                  glob.sync(item, { cwd: path.join(styleguide.path.root(), `sketch/export`) }).forEach(file => {
+                    const design = JSON.parse(fs.readFileSync(gutil.replaceExtension(path.join(styleguide.path.root(), `sketch/export`, file), `.json`), 'utf8'))
 
-                  const match = designs.find(group => {
-                    if (group.hasOwnProperty(examplePath)) {
-                      return group[examplePath].push(design)
+                    design['src'] = path.join(`/node_modules`, styleguide.project.name(), `styleguide/_sketch`, gutil.replaceExtension(file, `.html`))
+                    design['label'] = gutil.replaceExtension(design.filename, ``)
+                    design['color'] = randomHue()
+
+                    const match = designs.find(group => {
+                      if (group.hasOwnProperty(examplePath)) {
+                        return group[examplePath].push(design)
+                      }
+                      return false
+                    })
+
+                    if (!match) {
+                      designs.push({[examplePath]: [ design ]})
                     }
-                    return false
                   })
-
-                  if (!match) {
-                    designs.push({[examplePath]: [ design ]})
-                  }
                 })
               }
 

@@ -76,6 +76,7 @@ module.exports = function (styleguide, filePath) {
   }
 
   return {
+    designs: data.body ? data.body._designs : null,
     displayName: displayName,
     html: styleguide.handlebars(data)
   }

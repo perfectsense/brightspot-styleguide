@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Styleguide Sketch Export</title>
+    <link rel="stylesheet" type="text/css" href="../index.css">
+  </head>
+  <body class="StyleguidePage">
+    <style type="text/css">
+      {{#each sketchStyles as |sketchStyle|}}
+        {{#each sketchStyle.textStyles as |textStyle|}}
+          .SketchTextStyle [data-textStyle-name="{{textStyle.name}}"] {
+            {{textStyle.cssProps}}
+          }
+        {{/each}}
+      {{/each}}
+    </style>
+
+    <div class="StyleguideSections">
+    {{#each sketchStyles as |sketchStyle|}}
+      {{!-- Font Families --}}
+      <section class="StyleguideSection">
+        <h2 class="StyleguideSection-heading">Fonts <small>({{sketchStyle.fontFamilies.length}})</small></h2>
+        <div class="StyleguideSection-items">
+        {{#each sketchStyle.fontFamilies as |fontFamily|}}
+          <div class="StyleguideSection-items-item">
+            <div class="SketchFont">
+              <h4 class="SketchFont-title">{{fontFamily}}</h4>
+              <div class="SketchFont-example" style="font-family: {{fontFamily}};">
+                <div>Aa</div>
+                <div>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>abcdefghijklmnopqrstuvwxyz<br/>1234567890(,.;:?!$&*)</div>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+        </div>
+      </section>
+
+      {{!-- Text Styles --}}
+      <section class="StyleguideSection">
+        <h2 class="StyleguideSection-heading">Text Styles <small>({{sketchStyle.textStyles.length}})</small></h2>
+        <div class="StyleguideSection-items">
+        {{#each sketchStyle.textStyles as |textStyle|}}
+          <div class="StyleguideSection-items-item">
+            <div class="SketchTextStyle" {{#with textStyle.contrast}}data-contrast="{{this}}"{{/with}}>
+              <div class="SketchTextStyle-name" {{#with textStyle.name}}data-textStyle-name="{{this}}"{{/with}}>{{textStyle.name}}</div>
+              <code class="SketchTextStyle-code">.sketch("{{textStyle.name}}");</code>
+            </div>
+          </div>
+        {{/each}}
+        </div>
+      </section>
+    {{else}}
+      <div class="Styleguide-errorMessage">Nothing has been exported from Sketch.</div>
+    {{/each}}
+    </div>
+  </body>
+</html>

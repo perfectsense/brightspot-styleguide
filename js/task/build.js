@@ -10,7 +10,7 @@ module.exports = (styleguide, gulp) => {
   // Intercept gulp.task to allow dynamic dependencies on the build task.
   const originalGulpTask = gulp.task
   styleguide.buildExtras = [ styleguide.task.js(), styleguide.task.less() ]
-  styleguide.buildDependencies = [ styleguide.task.clean() ]
+  styleguide.buildDependencies = [ styleguide.task.clean(), styleguide.task.sketch() ]
 
   styleguide.task.extra = name => {
     styleguide.buildExtras.push(name)

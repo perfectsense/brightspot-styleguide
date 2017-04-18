@@ -24,7 +24,8 @@ export class TabbedContent {
       selectors: {
         tabList: 'StyleguideTabs',
         content: 'StyleguideContent',
-        iframeContent: 'StyleguideExample'
+        example: 'StyleguideExample',
+        iframeContent: 'StyleguideExample-frame'
       },
       prismMap: {'json': 'json', 'documentation': 'markdown'}
     }, options)
@@ -32,15 +33,17 @@ export class TabbedContent {
 
   init () {
     let self = this
-    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.iframeContent}`))
+    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.example}`))
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       if (self.settings.prismMap[self.dataType] !== undefined) {
         let prismElement = this.contentWindow.document.querySelector('pre')
-        prismElement.className = `language-${self.settings.prismMap[self.dataType]}`
-        Prism.highlightElement(prismElement)
-        let cssAppend = $.clone($('link[href="/_styleguide/index.css"]'))
-        this.contentWindow.document.head.append(cssAppend)
+        if (prismElement) {
+          prismElement.className = `language-${self.settings.prismMap[self.dataType]}`
+          Prism.highlightElement(prismElement)
+          let cssAppend = $.clone($('link[href="/_styleguide/index.css"]'))
+          this.contentWindow.document.head.append(cssAppend)
+        }
       }
     })
   }
@@ -48,40 +51,66 @@ export class TabbedContent {
   initTabs (element) {
     // Event listener for the tabs
     this.createTabs(element)
+
     $(`.${this.selectors.tabList}`).addEventListener('Styleguide:tabsInit', function (e) {
       let hashTab = window.location.hash
       if (hashTab !== '') {
         this.querySelector('[name=' + hashTab.replace('#', '') + ']').click()
       } else {
-        this.querySelector('a').click()
+        if (this.querySelector('a')) {
+          this.querySelector('a').click()
+        }
       }
     })
+
     // set an event for tabs init
     let tabCreationEvent = document.createEvent('Event')
     tabCreationEvent.initEvent('Styleguide:tabsInit', false, true)
     $(`.${this.selectors.tabList}`).dispatchEvent(tabCreationEvent)
   }
 
-  createTabs (element) {
-    let dataSources = JSON.parse(element.getAttribute('data-source'))
-    let baseURL = element.getAttribute('href').split('.html')
-    let tabList = $(`.${this.selectors.tabList}`)
-    let self = this
-
-    let contentTitle = $(`.${self.selectors.content}-title`)
-    if (contentTitle !== null) {
-      contentTitle.parentNode.removeChild(contentTitle)
-    }
-    $.create('h1', {className: `${self.selectors.content}-title`, contents: element.text})._.before($(`.${this.selectors.tabList}`))
+  removeTabs (element) {
+    const tabList = $(`.${this.selectors.tabList}`)
 
     // unbind old tabs
     Array.prototype.slice.call(tabList.querySelectorAll('li')).forEach((element) => {
       element._.unbind('click')
     })
+
     // remove old tabs
     while (tabList.lastChild) {
       tabList.removeChild(tabList.lastChild)
     }
+
+    let contentTitle = $(`.${this.selectors.content}-title`)
+    if (contentTitle !== null) {
+      contentTitle.parentNode.removeChild(contentTitle)
+    }
+
+    $(`.${this.selectors.tabList}`).removeAttribute(`data-initialized`)
+  }
+
+  createTabs (element) {
+    let tabList = $(`.${this.selectors.tabList}`)
+    let self = this
+    let dataSources = JSON.parse(element.getAttribute('data-source'))
+
+    this.removeTabs(element)
+
+    if (!dataSources) {
+      return
+    }
+
+    let baseURL = element.getAttribute('href').split('.html')
+
+    let contentTitle = $(`.${self.selectors.content}-title`)
+    if (contentTitle !== null) {
+      contentTitle.parentNode.removeChild(contentTitle)
+    }
+
+    $.create('h1', {className: `${self.selectors.content}-title`, contents: element.text})
+      ._.before($(`.${this.selectors.tabList}`))
+
     // init to first datatype
     self.dataType = dataSources[Object.keys(dataSources)[0]]
 
@@ -109,13 +138,14 @@ export class TabbedContent {
               }
             },
             contents: {
-              tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample', name: dataSources[key].toLowerCase(), className: `${self.selectors.tabList}-link`
+              tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample-frame', name: dataSources[key].toLowerCase(), className: `${self.selectors.tabList}-link`
             }
           })
         if (index === 0) {
           tabItem.setAttribute('data-active', '')
         }
         $(`.${this.selectors.tabList}`)._.contents(tabItem)
+        $(`.${this.selectors.tabList}`).setAttribute(`data-initialized`, ``)
       }
     }
   }

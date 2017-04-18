@@ -28,6 +28,17 @@ module.exports = (styleguide, gulp) => {
     return path.join(buildDir, 'node_modules', styleguide.project.name())
   }
 
+  let hue = 0
+
+  function randomHue () {
+    const GOLDEN_RATIO = 0.618033988749895
+
+    hue += GOLDEN_RATIO
+    hue %= 1.0
+
+    return `hsl(${hue * 360}, 50%, 50%)`
+  }
+
   styleguide.ui = {
 
     // Copy all files related to producing example HTML.
@@ -254,6 +265,7 @@ module.exports = (styleguide, gulp) => {
     // Convert example JSON files to HTML.
     html: done => {
       const displayNames = styleguide.displayNames()
+      const designs = [ ]
 
       function jsonToHtml (file, encoding, callback) {
         const filePath = file.path
@@ -265,6 +277,37 @@ module.exports = (styleguide, gulp) => {
 
             if (processedExample) {
               displayNames[filePath] = processedExample.displayName
+
+              const examplePath = gutil.replaceExtension(filePath.slice(filePath.indexOf('/node_modules')), `.html`)
+
+              if (processedExample.designs) {
+                processedExample.designs.forEach(item => {
+                  glob.sync(item, { cwd: path.join(styleguide.path.root(), `sketch/export`) }).forEach(file => {
+                    const design = JSON.parse(fs.readFileSync(path.join(styleguide.path.root(), `sketch/export`, file), 'utf8'))
+
+                    design['src'] = path.join(`/node_modules`, styleguide.project.name(), `styleguide/_sketch`, gutil.replaceExtension(file, `.html`))
+                    design['label'] = gutil.replaceExtension(design.filename, ``)
+                    design['color'] = randomHue()
+
+                    const match = designs.find(group => {
+                      if (group.hasOwnProperty(examplePath)) {
+                        return group[examplePath].push(design)
+                      }
+                      return false
+                    })
+
+                    if (!match) {
+                      designs.push({[examplePath]: [ design ]})
+                    }
+                  })
+                })
+              }
+
+              designs.forEach((design) => {
+                const group = Object.values(design)[0]
+                group.sort((a, b) => a.width - b.width)
+              })
+
               file.base = buildDir
               file.contents = Buffer.from(processedExample.html)
               file.path = gutil.replaceExtension(filePath, '.html')
@@ -292,9 +335,10 @@ module.exports = (styleguide, gulp) => {
           // Group example HTML files by their path.
           const groupByName = { }
 
-          glob.sync('**/*.html', { cwd: buildDir }).forEach(match => {
+          glob.sync('**/*.html', { cwd: buildDir, ignore: [`**/_sketch/**/*.html`, `_styleguide/**/*.html`] }).forEach(match => {
             const displayNamePath = path.join(buildDir, gutil.replaceExtension(match, '.json'))
             const groupName = displayNames[path.dirname(displayNamePath)] || path.dirname(path.relative(path.join(projectRootPath, 'styleguide'), path.join(buildDir, match))).split('/').map(label).join(': ')
+
             let group = groupByName[groupName]
             let item = {}
             item.name = displayNames[displayNamePath] || label(path.basename(match, '.html'))
@@ -322,14 +366,27 @@ module.exports = (styleguide, gulp) => {
             groups.push(groupByName[groupName])
           })
 
-          // Create the index HTML file.
+          // Create the index template function.
           const template = handlebars.compile(fs.readFileSync(path.join(__dirname, '../', 'index.hbs'), 'utf8'), {
             preventIndent: true
           })
 
+          const sketchFiles = [ ]
+          glob.sync(`**/*.html`, { cwd: path.join(styleguide.path.build(), '_styleguide/sketch') }).forEach(file => {
+            sketchFiles.push({
+              name: gutil.replaceExtension(file, ''),
+              src: `/_styleguide/sketch/${file}`
+            })
+          })
+
+          // Create the index HTML file for the styleguide itself.
           fs.mkdirsSync(path.join(buildDir, '_styleguide'))
           fs.writeFileSync(path.join(buildDir, '_styleguide/index.html'), template({
-            groups: groups
+            designs: designs,
+            devices: styleguide.devices,
+            groups: groups,
+            indexUrl: (sketchFiles.length) ? sketchFiles[0].src : null,
+            sketchFiles: sketchFiles
           }))
 
           // Create a project pointer for BE.
@@ -375,6 +432,8 @@ module.exports = (styleguide, gulp) => {
         paths: {
           'bliss': require.resolve('blissfuljs/bliss.min.js'),
           'prism': require.resolve('prismjs/prism.js'),
+          'prism-previewer-base': require.resolve('prismjs/plugins/previewer-base/prism-previewer-base.js'),
+          'prism-previewer-color': require.resolve('prismjs/plugins/previewer-color/prism-previewer-color.js'),
           'prism-json': require.resolve('prismjs/components/prism-json.min.js'),
           'prism-markdown': require.resolve('prismjs/components/prism-markdown.min.js')
         }
@@ -391,7 +450,6 @@ module.exports = (styleguide, gulp) => {
           .on('end', done)
       })
     }
-
   }
 
   // Pretend that the parent is a package.

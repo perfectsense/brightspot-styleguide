@@ -339,6 +339,7 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   this.task = { }
 
   require('./task/clean')(this, gulp)
+  require('./task/sketch')(this, gulp)
   require('./task/build')(this, gulp)
   require('./task/lint')(this, gulp)
   require('./task/ui')(this, gulp)
@@ -346,6 +347,7 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
 
   gulp.task('default', [
     this.task.clean(),
+    this.task.sketch(),
     this.task.build(),
     this.task.lint(),
     this.task.ui()

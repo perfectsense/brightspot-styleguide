@@ -110,11 +110,14 @@ pre[class*='language-'] {
     outline: none;
     padding: 10px;
     width: 100%;
+    position: relative;
 
     &:after {
       .fa;
       content: '\f078';
       margin-left: 5px;
+      position: absolute;
+      right: 10px;
     }
 
     [data-selected] & {

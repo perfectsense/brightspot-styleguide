@@ -418,6 +418,7 @@ module.exports = (styleguide, gulp) => {
         baseURL: path.dirname(indexPath),
         paths: {
           'bliss': require.resolve('blissfuljs/bliss.min.js'),
+          'fuse.js': require.resolve('fuse.js/src/fuse.js'),
           'prism': require.resolve('prismjs/prism.js'),
           'prism-json': require.resolve('prismjs/components/prism-json.min.js'),
           'prism-markdown': require.resolve('prismjs/components/prism-markdown.min.js')

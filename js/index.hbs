@@ -29,7 +29,9 @@
           <div class="StyleguideDropdown">
             <button class="StyleguideDropdown-button">Filter Examples</button>
             <div class="StyleguideDropdown-content">
-              <input type="text" placeholder="Search.." id="myInput"  class="StyleguideDropdown-search" />
+              <div class="StyleguideDropdown-search">
+                <input type="text" placeholder="Search.." id="myInput"  class="StyleguideDropdown-search-input" />
+              </div>
               {{#each filters}}
                 <label class="StyleguideDropdown-filter" for="StyleguideDropdown-filter-{{displayId}}"><input type="checkbox" id="StyleguideDropdown-filter-{{displayId}}" name="filter-{{displayId}}" value="{{displayId}}" />{{displayName}}</label>
               {{/each}}

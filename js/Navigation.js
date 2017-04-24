@@ -98,6 +98,14 @@ export class Navigation {
         }
       })
     }
+    this.ctx.querySelector(`.${this.selectors.dropdown}-search-clear`).addEventListener('click', function (event) {
+      let $searchInput = $(`.${self.selectors.dropdown}-search-input`)
+      $searchInput.value = ''
+      $searchInput.focus()
+      // remove old list items
+      self.clearListItems($(`.${self.selectors.dropdown}-results`))
+    })
+
     // binding events for search input
     this.ctx.querySelector(`.${this.selectors.dropdown}-search-input`).addEventListener('click', function (event) {
       let $results = $(`.${self.selectors.dropdown}-results`)
@@ -131,10 +139,8 @@ export class Navigation {
       }
 
       // remove old list items
+      self.clearListItems($resultList)
 
-      while ($resultList.lastChild) {
-        $resultList.removeChild($resultList.lastChild)
-      }
       if (this.value === '') {
         return false
       }
@@ -243,6 +249,12 @@ export class Navigation {
     $resultItems[this.searchResultsIndex].parentNode.querySelector('[data-active]').removeAttribute('data-active')
     // add active state to item
     $resultItems[this.searchResultsIndex].setAttribute('data-active', '')
+  }
+
+  clearListItems ($resultList) {
+    while ($resultList.lastChild) {
+      $resultList.removeChild($resultList.lastChild)
+    }
   }
 
   toggleMenu ($ctxElement) {

@@ -37,6 +37,10 @@ export class Navigation {
       highlightTag: 'b'
     }, options)
     this.searchResultsIndex = 0
+    this.navList = []
+    this.filterList = []
+    this.navigationState = []
+    this.$navigationLinks = $$(`.${this.selectors.groups}-examples-link`)
   }
 
   addfilterAttributes (filtersArray) {
@@ -50,9 +54,6 @@ export class Navigation {
 
   init () {
     let self = this
-    this.navList = []
-    let $navigationLinks = $$(`.${this.selectors.groups}-examples-link`)
-
     let currentGroupName
     let exampleLinkIndex = 0
     let fuse = new Fuse(this.navList, this.settings.filterOptions)
@@ -69,8 +70,6 @@ export class Navigation {
       }
     })
 
-    this.filterList = []
-    this.navigationState = []
     let filtersStorage = Util.locationSearchToObject(window.location.search)
 
     if (filtersStorage['filters']) {
@@ -173,7 +172,7 @@ export class Navigation {
               // set the searchResultsIndex when user clicks on item
               self.searchResultsIndex = index
               // trigger a click event on the navigational item
-              $navigationLinks[results.item.index].click()
+              self.$navigationLinks[results.item.index].click()
               // set the seearch input with the selected text
               $searchInput.value = results.item.name
               // hide the list

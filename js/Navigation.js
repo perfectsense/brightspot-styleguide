@@ -52,13 +52,13 @@ export class Navigation {
     let self = this
     this.navList = []
     let $navigationLinks = $$(`.${this.selectors.groups}-examples-link`)
-    // $navigationLinks.forEach((element) => {
-    //   this.navList.push(element.text)
-    // })
+
     let currentGroupName
     let exampleLinkIndex = 0
+    let fuse = new Fuse(this.navList, this.settings.filterOptions)
+
     $$(`.${this.selectors.groups}-name, .${this.selectors.groups}-examples-link`).forEach(($item, index, array) => {
-      var item = {}
+      let item = {}
       if ($item.classList.value === 'StyleguideGroups-name') {
         currentGroupName = $item.childNodes[0].nodeValue
       } else {
@@ -101,16 +101,15 @@ export class Navigation {
     }
     // binding events for search input
     this.ctx.querySelector(`.${this.selectors.dropdown}-search-input`).addEventListener('click', function (event) {
-      if (!$(`.${self.selectors.dropdown}-results`)) {
+      let $results = $(`.${self.selectors.dropdown}-results`)
+      if (!$results) {
         // create list container if it doesn't exist
         $.create('ul', {className: `${self.selectors.dropdown}-results`})._.after($(this))
       } else {
         // else removing the style display none property
-        $(`.${self.selectors.dropdown}-results`).removeAttribute('style')
+        $results.removeAttribute('style')
       }
     })
-
-    let fuse = new Fuse(this.navList, this.settings.filterOptions)
 
     this.ctx.querySelector(`.${this.selectors.dropdown}-search-input`).addEventListener('keyup', function (event) {
       let $resultList = $(`.${self.selectors.dropdown}-results`)
@@ -142,7 +141,6 @@ export class Navigation {
       }
 
       let results = fuse.search(this.value)
-      console.log(results)
       let $searchInput = this
       this.searchResultsIndex = 0
       results.forEach((results, index, array) => {
@@ -180,7 +178,6 @@ export class Navigation {
               $searchInput.value = results.item.name
               // hide the list
               $resultList.style.display = 'none'
-              console.log(index)
             }
           }
         })
@@ -221,8 +218,8 @@ export class Navigation {
     let result = []
     let pair = matches.shift()
     // Build the formatted string
-    for (var i = 0; i < text.length; i++) {
-      var char = text.charAt(i)
+    for (let i = 0; i < text.length; i++) {
+      let char = text.charAt(i)
       if (pair && i === pair[0]) {
         result.push(`<${this.settings.highlightTag}>`)
       }

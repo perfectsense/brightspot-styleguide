@@ -3,6 +3,9 @@ package com.psddev.styleguide.codegen;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -31,7 +34,7 @@ class JsonFileResolver {
     }
 
     /**
-     * Resolves a JSON file into a JSON view map. It first
+     * Resolves a JSON file into 1 or many JSON view maps. It first
      * {@link JsonFile#normalize() normalizes} the file and then resolves all
      * the special keys and validates that all the data is valid. Specifically,
      * it imports any data URL references to other JSON files, as well as
@@ -39,92 +42,115 @@ class JsonFileResolver {
      *
      * @return the resolved file as a JSON view map.
      */
-    public JsonViewMap resolve() {
+    public List<JsonViewMap> resolve() {
 
         JsonValue value = file.normalize();
 
         if (value instanceof JsonMap) {
-            return resolveViewMap((JsonMap) value);
-        } else {
-            addError("JSON file must be a map!", value);
-            return null;
+            return resolveViewMaps((JsonMap) value);
+
+        } else if (value instanceof JsonList) {
+            List<JsonValue> values = ((JsonList) value).getValues();
+
+            List<JsonMap> jsonMaps = values.stream()
+                    .filter(JsonMap.class::isInstance)
+                    .map(JsonMap.class::cast)
+                    .collect(Collectors.toList());
+
+            if (jsonMaps.size() < values.size()) {
+                addError("JSON Array files must only contain maps!", value);
+                return Collections.emptyList();
+            }
+
+            return jsonMaps.stream()
+                    .map(this::resolveViewMaps)
+                    .flatMap(Collection::stream)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
         }
+
+        return Collections.emptyList();
     }
 
     /*
      * Helper method for resolving JSON view maps.
      */
-    private JsonViewMap resolveViewMap(JsonMap jsonMap) {
-
-        JsonMap resolved = resolveMap(jsonMap, true, new LinkedHashSet<>(), true);
-        if (resolved instanceof JsonViewMap) {
-            return (JsonViewMap) resolved;
-
-        } else {
-            return null;
-        }
+    private List<JsonViewMap> resolveViewMaps(JsonMap jsonMap) {
+        return resolveMap(jsonMap, true, new LinkedHashSet<>(), true)
+                .stream()
+                .filter(JsonViewMap.class::isInstance)
+                .map(JsonViewMap.class::cast)
+                .collect(Collectors.toList());
     }
 
     /*
      * Recursive helper method for resolving JSON maps.
+     * The method signature returns a List because of the one case where a Map
+     * defines a _dataUrl/_include that points to a List, and thus the Map
+     * should be converted as such.
      */
-    private JsonMap resolveMap(JsonMap jsonMap, boolean isViewExpected, Set<Path> visitedDataUrlPaths, boolean isBeginningOfFile) {
+    private List<JsonMap> resolveMap(JsonMap jsonMap, boolean isViewExpected, Set<Path> visitedDataUrlPaths, boolean isBeginningOfFile) {
 
-        Map<JsonKey, JsonValue> resolved = new LinkedHashMap<>();
+        List<JsonMap> resolveMaps = new ArrayList<>();
 
-        // look for a _dataUrl and return a new unresolved map containing all the values from the data url, or just return the same map
-        jsonMap = tryFetchAndMergeDataUrl(jsonMap, visitedDataUrlPaths);
+        // look for a _dataUrl and return a new unresolved map (or list of maps) containing all the values from the data url, or just return the same map
+        List<JsonMap> mergedList = tryFetchAndMergeDataUrl(jsonMap, visitedDataUrlPaths);
 
-        // Get all of the keys of the map excluding those prefixed with an underscore.
-        Set<JsonKey> keys = jsonMap.getValues().keySet().stream()
-                .filter(key -> !key.getName().startsWith(JsonFile.SPECIAL_KEY_PREFIX))
-                .collect(Collectors.toSet());
+        for (JsonMap mergedJsonMap : mergedList) {
 
-        Optional<Boolean> isDelegate = isDelegate(jsonMap);
-        if (!isDelegate.isPresent()) {
-            return null;
-        }
+            Map<JsonKey, JsonValue> resolved = new LinkedHashMap<>();
 
-        Optional<Boolean> isAbstract = isAbstract(jsonMap);
-        if (!isAbstract.isPresent()) {
-            return null;
-        }
+            // Get all of the keys of the map excluding those prefixed with an underscore.
+            Set<JsonKey> keys = mergedJsonMap.getValues().keySet().stream()
+                    .filter(key -> !key.getName().startsWith(JsonSpecialKey.PREFIX))
+                    .collect(Collectors.toSet());
 
-        ViewKey viewKey = null;
-        if (!isDelegate.get() && !isAbstract.get()) {
-
-            if (isViewExpected) {
-                viewKey = requireViewKey(jsonMap);
+            Optional<Boolean> isDelegate = isDelegate(mergedJsonMap);
+            if (!isDelegate.isPresent()) {
+                continue;
             }
 
-            for (JsonKey key : keys) {
-                key = new JsonKey(key.getName(), key.getLocation(), getNotes(key, jsonMap));
+            Optional<Boolean> isAbstract = isAbstract(mergedJsonMap);
+            if (!isAbstract.isPresent()) {
+                continue;
+            }
 
-                JsonValue value = jsonMap.getValue(key);
+            ViewKey viewKey = null;
+            if (!isDelegate.get() && !isAbstract.get()) {
 
-                // only resolve the value if it's a view, otherwise it's just a raw map.
-                if (isViewExpected) {
-                    value = resolveValue(key, value, new LinkedHashSet<>(visitedDataUrlPaths));
+                viewKey = getViewKey(mergedJsonMap, isViewExpected);
+
+                for (JsonKey key : keys) {
+                    key = new JsonKey(key.getName(), key.getLocation(), getNotes(key, mergedJsonMap));
+
+                    JsonValue value = mergedJsonMap.getValue(key);
+
+                    // only resolve the value if it's a view, otherwise it's just a raw map.
+                    if (viewKey != null) {
+                        value = resolveValue(key, value, new LinkedHashSet<>(visitedDataUrlPaths));
+                    }
+
+                    resolved.put(key, value);
                 }
+            }
 
-                resolved.put(key, value);
+            JsonFile wrapperJsonFile = getWrapper(mergedJsonMap, resolved, isBeginningOfFile);
+
+            if (viewKey != null) {
+                resolveMaps.add(new JsonViewMap(mergedJsonMap.getLocation(), resolved, wrapperJsonFile, viewKey, getNotes(mergedJsonMap)));
+
+            } else if (isAbstract.get()) {
+                resolveMaps.add(new JsonAbstractMap(mergedJsonMap.getLocation(), resolved));
+
+            } else if (isDelegate.get()) {
+                resolveMaps.add(new JsonDelegateMap(mergedJsonMap.getLocation(), resolved, file));
+
+            } else {
+                resolveMaps.add(new JsonMap(mergedJsonMap.getLocation(), resolved));
             }
         }
 
-        JsonFile wrapperJsonFile = getWrapper(jsonMap, resolved, isBeginningOfFile);
-
-        if (viewKey != null) {
-            return new JsonViewMap(jsonMap.getLocation(), resolved, wrapperJsonFile, viewKey, getNotes(jsonMap));
-
-        } else if (isAbstract.get()) {
-            return new JsonAbstractMap(jsonMap.getLocation(), resolved);
-
-        } else if (isDelegate.get()) {
-            return new JsonDelegateMap(jsonMap.getLocation(), resolved, file);
-
-        } else {
-            return new JsonMap(jsonMap.getLocation(), resolved);
-        }
+        return resolveMaps;
     }
 
     /*
@@ -135,9 +161,19 @@ class JsonFileResolver {
     private JsonValue resolveValue(JsonKey key, JsonValue value, Set<Path> visitedDataUrlPaths) {
 
         if (value instanceof JsonMap) {
-            JsonMap jsonMap = resolveMap((JsonMap) value, !isMapBasedKey(key), visitedDataUrlPaths, false);
-            // The only time this will be null is if { "_delegate": false } in the map.
-            return jsonMap != null ? jsonMap : new JsonNull(null);
+
+            List<JsonMap> resolvedList = resolveMap((JsonMap) value, false, visitedDataUrlPaths, false);
+
+            // The only times this will be empty is if { "_delegate": false } or { "_abstract": false } is in the map.
+            if (resolvedList.isEmpty()) {
+                return new JsonNull(null);
+
+            } else if (resolvedList.size() == 1) {
+                return resolvedList.get(0);
+
+            } else {
+                return new JsonList(value.getLocation(), resolvedList);
+            }
 
         } else if (value instanceof JsonList) {
 
@@ -164,7 +200,7 @@ class JsonFileResolver {
      */
     private JsonFile getWrapper(JsonMap jsonMap, Map<JsonKey, JsonValue> resolvedValues, boolean isBeginningOfFile) {
 
-        JsonValue wrapper = jsonMap.getValue(JsonFile.WRAPPER_KEY);
+        JsonValue wrapper = jsonMap.getValue(JsonSpecialKey.WRAPPER_KEY);
 
         /*
          * If there's no wrapper defined and it's the beginning of the file and
@@ -182,7 +218,7 @@ class JsonFileResolver {
         }
 
         if (!isBeginningOfFile) {
-            addError("JSON key [" + JsonFile.WRAPPER_KEY + "] must be at the root level of the JSON file.", wrapper);
+            addError("JSON key [" + JsonSpecialKey.WRAPPER_KEY.getAlias(jsonMap::containsKey) + "] must be at the root level of the JSON file.", wrapper);
             return null;
         }
 
@@ -193,7 +229,7 @@ class JsonFileResolver {
         }
 
         if (!(wrapper instanceof JsonString)) {
-            addError("JSON key [" + JsonFile.WRAPPER_KEY + "] must be a String.", wrapper);
+            addError("JSON key [" + JsonSpecialKey.WRAPPER_KEY.getAlias(jsonMap::containsKey) + "] must be a String.", wrapper);
             return null;
         }
 
@@ -203,7 +239,7 @@ class JsonFileResolver {
         JsonFile wrapperFile = file.getBaseDirectory().getNormalizedFile(file, Paths.get(wrapperPath));
 
         if (wrapperFile == null) {
-            addError("Couldn't find " + JsonFile.WRAPPER_KEY + ": " + wrapperPath, wrapper);
+            addError("Couldn't find " + JsonSpecialKey.WRAPPER_KEY.getAlias(jsonMap::containsKey) + ": " + wrapperPath, wrapper);
             return null;
         }
 
@@ -237,11 +273,11 @@ class JsonFileResolver {
      * allow it for now.
      */
     private Optional<Boolean> isDelegate(JsonMap jsonMap) {
-        JsonValue delegate = jsonMap.getValue(JsonFile.DELEGATE_KEY);
+        JsonValue delegate = jsonMap.getValue(JsonSpecialKey.DELEGATE_KEY);
         if (delegate != null) {
 
             if (jsonMap.getValues().size() > 1) {
-                addError("JSON key [" + JsonFile.DELEGATE_KEY + "] must be the only key in the map.", jsonMap);
+                addError("JSON key [" + JsonSpecialKey.DELEGATE_KEY.getAlias(jsonMap::containsKey) + "] must be the only key in the map.", jsonMap);
             }
 
             if (delegate instanceof JsonBoolean) {
@@ -255,7 +291,7 @@ class JsonFileResolver {
                 }
 
             } else {
-                addError("JSON key [" + JsonFile.DELEGATE_KEY + "] must be a boolean.", delegate);
+                addError("JSON key [" + JsonSpecialKey.DELEGATE_KEY.getAlias(jsonMap::containsKey) + "] must be a boolean.", delegate);
                 return Optional.of(true);
             }
 
@@ -273,11 +309,11 @@ class JsonFileResolver {
      * allow it for now.
      */
     private Optional<Boolean> isAbstract(JsonMap jsonMap) {
-        JsonValue abstractValue = jsonMap.getValue(JsonFile.ABSTRACT_KEY);
+        JsonValue abstractValue = jsonMap.getValue(JsonSpecialKey.ABSTRACT_KEY);
         if (abstractValue != null) {
 
             if (jsonMap.getValues().size() > 1) {
-                addError("JSON key [" + JsonFile.ABSTRACT_KEY + "] must be the only key in the map.", jsonMap);
+                addError("JSON key [" + JsonSpecialKey.ABSTRACT_KEY.getAlias(jsonMap::containsKey) + "] must be the only key in the map.", jsonMap);
             }
 
             if (abstractValue instanceof JsonBoolean) {
@@ -291,7 +327,7 @@ class JsonFileResolver {
                 }
 
             } else {
-                addError("JSON key [" + JsonFile.ABSTRACT_KEY + "] must be a boolean.", abstractValue);
+                addError("JSON key [" + JsonSpecialKey.ABSTRACT_KEY.getAlias(jsonMap::containsKey) + "] must be a boolean.", abstractValue);
                 return Optional.of(true);
             }
 
@@ -304,33 +340,33 @@ class JsonFileResolver {
      * Verifies that the given JSON map contains a valid view or template key,
      * adding an error to the file being resolved if it doesn't.
      */
-    private ViewKey requireViewKey(JsonMap jsonMap) {
+    private ViewKey getViewKey(JsonMap jsonMap, boolean isRequired) {
 
         JsonString viewKey = null;
         JsonString template = null;
 
-        if (jsonMap.containsKey(JsonFile.VIEW_KEY)) {
+        if (jsonMap.containsKey(JsonSpecialKey.VIEW_KEY)) {
 
             // get the view key and ensure it's a String.
-            JsonValue viewKeyValue = jsonMap.getValue(JsonFile.VIEW_KEY);
+            JsonValue viewKeyValue = jsonMap.getValue(JsonSpecialKey.VIEW_KEY);
             if (viewKeyValue instanceof JsonString) {
                 viewKey = (JsonString) viewKeyValue;
 
             } else {
-                addError(JsonFile.VIEW_KEY + " key must be a String!", viewKeyValue);
+                addError(JsonSpecialKey.VIEW_KEY.getAlias(jsonMap::containsKey) + " key must be a String!", viewKeyValue);
                 return null;
             }
         }
 
-        if (jsonMap.containsKey(JsonFile.TEMPLATE_KEY)) {
+        if (jsonMap.containsKey(JsonSpecialKey.TEMPLATE_KEY)) {
 
             // get the template and ensure it's a String.
-            JsonValue templateValue = jsonMap.getValue(JsonFile.TEMPLATE_KEY);
+            JsonValue templateValue = jsonMap.getValue(JsonSpecialKey.TEMPLATE_KEY);
             if (templateValue instanceof JsonString) {
                 template = (JsonString) templateValue;
 
             } else {
-                addError(JsonFile.TEMPLATE_KEY + " must be a String!", templateValue);
+                addError(JsonSpecialKey.TEMPLATE_KEY.getAlias(jsonMap::containsKey) + " must be a String!", templateValue);
                 return null;
             }
         }
@@ -353,10 +389,11 @@ class JsonFileResolver {
                         file.getBaseDirectory().getContext(),
                         viewKey.toRawValue());
             }
-        } else {
-            addError("Must specify the view via the " + JsonFile.VIEW_KEY + " key or " + JsonFile.TEMPLATE_KEY + " key!", jsonMap);
-            return null;
+        } else if (isRequired) {
+            addError("Must specify the view via the " + JsonSpecialKey.VIEW_KEY + " key or " + JsonSpecialKey.TEMPLATE_KEY + " key!", jsonMap);
         }
+
+        return null;
     }
 
     /*
@@ -462,18 +499,18 @@ class JsonFileResolver {
      * fetch subsequent _dataUrls that are found in the resulting map while
      * also preventing cyclic references that could result in a stack overflow.
      */
-    private JsonMap tryFetchAndMergeDataUrl(JsonMap jsonMap, Set<Path> visitedDataUrlPaths) {
+    private List<JsonMap> tryFetchAndMergeDataUrl(JsonMap jsonMap, Set<Path> visitedDataUrlPaths) {
 
         // if there's no data url key, just return the original
-        if (!jsonMap.containsKey(JsonFile.DATA_URL_KEY)) {
-            return jsonMap;
+        if (!jsonMap.containsKey(JsonSpecialKey.DATA_URL_KEY)) {
+            return Collections.singletonList(jsonMap);
         }
 
         // get its value
-        JsonValue dataUrlValue = jsonMap.getValue(JsonFile.DATA_URL_KEY);
+        JsonValue dataUrlValue = jsonMap.getValue(JsonSpecialKey.DATA_URL_KEY);
         if (!(dataUrlValue instanceof JsonString)) {
-            addError(JsonFile.DATA_URL_KEY + " must be a String", dataUrlValue);
-            return jsonMap;
+            addError(JsonSpecialKey.DATA_URL_KEY.getAlias(jsonMap::containsKey) + " must be a String", dataUrlValue);
+            return Collections.singletonList(jsonMap);
         }
 
         String dataUrl = ((JsonString) dataUrlValue).toRawValue();
@@ -483,74 +520,97 @@ class JsonFileResolver {
 
         // if no file can be found, error and return.
         if (dataUrlFile == null) {
-            addError("Couldn't find " + JsonFile.DATA_URL_KEY + ": " + dataUrl, dataUrlValue);
-            return jsonMap;
+            addError("Couldn't find " + JsonSpecialKey.DATA_URL_KEY.getAlias(jsonMap::containsKey) + ": " + dataUrl, dataUrlValue);
+            return Collections.singletonList(jsonMap);
         }
 
         // Prevent cyclic references by adding the path to the set. If it's already present error and return.
         if (visitedDataUrlPaths.contains(dataUrlFile.getRelativePath())) {
-            addError(JsonFile.DATA_URL_KEY + " contains a cyclic reference: " + visitedDataUrlPaths, dataUrlValue);
-            return jsonMap;
+            addError(JsonSpecialKey.DATA_URL_KEY.getAlias(jsonMap::containsKey) + " contains a cyclic reference: " + visitedDataUrlPaths, dataUrlValue);
+            return Collections.singletonList(jsonMap);
         }
 
         // Parse the file to get the unresolved value.
         JsonValue dataUrlContents = dataUrlFile.normalize();
 
-        // If the contents of the data url file is not a map, error and return.
-        if (!(dataUrlContents instanceof JsonMap)) {
-            addError("The contents of a " + JsonFile.DATA_URL_KEY + " must be a Map!", dataUrlContents);
-            return jsonMap;
+        List<JsonMap> dataUrlMaps = new ArrayList<>();
+
+        if (dataUrlContents instanceof JsonMap) {
+            dataUrlMaps.add((JsonMap) dataUrlContents);
+
+        } else if (dataUrlContents instanceof JsonList) {
+
+            List<JsonValue> values = ((JsonList) dataUrlContents).getValues();
+
+            List<JsonMap> jsonMaps = values.stream()
+                    .filter(JsonMap.class::isInstance)
+                    .map(JsonMap.class::cast)
+                    .collect(Collectors.toList());
+
+            if (jsonMaps.size() < values.size()) {
+                addError("JSON Array files must only contain maps!", dataUrlContents);
+                return Collections.singletonList(jsonMap);
+            }
+
+            dataUrlMaps.addAll(jsonMaps);
+
+        } else {
+            addError("The contents of a " + JsonSpecialKey.DATA_URL_KEY.getAlias(jsonMap::containsKey) + " must be a Map or List!", dataUrlContents);
+            return Collections.singletonList(jsonMap);
         }
 
-        // Check if the dataUrl map contains another _dataUrl key anywhere inside of it.
-        // If it does then we need to track that we visited this file in case we encounter
-        // it again as we recurse down the tree.
-        if (((JsonMap) dataUrlContents).containsKeyAnywhere(JsonFile.DATA_URL_KEY)) {
-            visitedDataUrlPaths.add(dataUrlFile.getRelativePath());
+        List<JsonMap> mergedMaps = new ArrayList<>();
+
+        for (JsonMap dataUrlMap : dataUrlMaps) {
+
+            // Check if the dataUrl map contains another _dataUrl key anywhere inside of it.
+            // If it does then we need to track that we visited this file in case we encounter
+            // it again as we recurse down the tree.
+            if (dataUrlMap.containsKeyAnywhere(JsonSpecialKey.DATA_URL_KEY)) {
+                visitedDataUrlPaths.add(dataUrlFile.getRelativePath());
+            }
+
+            // Finally, merge the values of the data url and the original map together.
+            Map<JsonKey, JsonValue> mergedValues = new LinkedHashMap<>();
+
+            // put all the dataUrl values into the merged map
+            mergedValues.putAll(dataUrlMap.getValues());
+
+            // overlay all of the original json map's values onto the merged map.
+            jsonMap.getValues().entrySet().stream()
+                    .filter(entry -> !JsonSpecialKey.DATA_URL_KEY.getAliases().contains(entry.getKey().getName()))
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (value1, value2) -> value2,
+                            () -> mergedValues));
+
+            JsonMap mergedMap = new JsonMap(jsonMap.getLocation(), mergedValues);
+
+            // recurse in case the data url contained another data url
+            mergedMaps.addAll(tryFetchAndMergeDataUrl(mergedMap, new LinkedHashSet<>(visitedDataUrlPaths)));
         }
 
-        // Finally, merge the values of the data url and the original map together.
-        Map<JsonKey, JsonValue> mergedValues = new LinkedHashMap<>();
-
-        // put all the dataUrl values into the merged map
-        mergedValues.putAll(((JsonMap) dataUrlContents).getValues());
-
-        // overlay all of the original json map's values onto the merged map.
-        jsonMap.getValues().entrySet().stream()
-                .filter(entry -> !entry.getKey().getName().equals(JsonFile.DATA_URL_KEY))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (value1, value2) -> value2,
-                        () -> mergedValues));
-
-        JsonMap mergedMap = new JsonMap(jsonMap.getLocation(), mergedValues);
-
-        // recurse in case the data url contained another data url
-        return tryFetchAndMergeDataUrl(mergedMap, visitedDataUrlPaths);
+        return mergedMaps;
     }
 
     /*
      * Gets the overall notes for a view based map.
      */
     private String getNotes(JsonMap jsonMap) {
-        return jsonMap.getRawValueAs(String.class, JsonFile.NOTES_KEY);
+        return jsonMap.getRawValueAs(String.class, JsonSpecialKey.NOTES_KEY);
     }
 
     /*
      * Gets the corresponding notes field for a given JSON key.
      */
     private String getNotes(JsonKey jsonKey, JsonMap jsonMap) {
-        return jsonMap.getRawValueAs(String.class, String.format(JsonFile.FIELD_NOTES_KEY_PATTERN, jsonKey.getName()));
-    }
-
-    /*
-     * Returns true if the specified JSON key is expected to contain a non-view
-     * based map as its value. Meaning there should be no nested views within
-     * the resulting map.
-     */
-    private boolean isMapBasedKey(JsonKey key) {
-        return JsonFile.JSON_MAP_KEYS.contains(key.getName());
+        return JsonSpecialKey.FIELD_NOTES_KEY_PATTERN.getAliases().stream()
+                .map(pattern -> String.format(pattern, jsonKey.getName()))
+                .map(name -> jsonMap.getRawValueAs(String.class, name))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     /*

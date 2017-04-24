@@ -329,7 +329,8 @@ module.exports = (styleguide, gulp) => {
 
           fs.mkdirsSync(path.join(buildDir, '_styleguide'))
           fs.writeFileSync(path.join(buildDir, '_styleguide/index.html'), template({
-            groups: groups
+            groups: groups,
+            devices: styleguide.devices
           }))
 
           // Create a project pointer for BE.

@@ -3,6 +3,7 @@ import Bliss from 'bliss'
 import Prism from 'prism'
 import PrismJson from 'prism-json'
 import PrismMarkdown from 'prism-markdown'
+import Util from './util.js'
 /* global $, $$ */
 
 export class TabbedContent {
@@ -24,7 +25,8 @@ export class TabbedContent {
       selectors: {
         tabList: 'StyleguideTabs',
         content: 'StyleguideContent',
-        iframeContent: 'StyleguideExample'
+        example: 'StyleguideExample',
+        iframeContent: 'StyleguideExample-frame'
       },
       prismMap: {'json': 'json', 'documentation': 'markdown'}
     }, options)
@@ -32,7 +34,7 @@ export class TabbedContent {
 
   init () {
     let self = this
-    $.create('ul', {className: this.selectors.tabList})._.before($(`.${this.selectors.iframeContent}`))
+    $.create('ul', {className: this.selectors.tabList})._.start($(`.${this.selectors.content}`))
     // event listener for iframed content; uses Prism plugin to highlight elements
     $(`.${this.selectors.iframeContent}`).addEventListener('load', function (event) {
       if (self.settings.prismMap[self.dataType] !== undefined) {
@@ -97,22 +99,30 @@ export class TabbedContent {
               click: {
                 a: function () {
                   let tabsList = this.parentNode
+                  self.dataType = this.querySelector('a').name
                   // remove active indicator from all tabs
                   Array.prototype.slice.call(tabsList.querySelectorAll('li')).forEach((element) => {
                     element.removeAttribute('data-active')
                   })
+                  // allows iframe to retain style property if example
+                  $(`.${self.selectors.tabList}`).setAttribute('data-viewportsize', self.dataType)
                   // set active indicator to active tabs
                   this.setAttribute('data-active', '')
-                  self.dataType = this.querySelector('a').name
                   window.history.replaceState({}, this.getAttribute('title'), `#${self.dataType}`)
+
+                  // set an event for tab change
+                  let tabChangeEvent = document.createEvent('Event')
+                  tabChangeEvent.initEvent('Styleguide:tabChange', false, true)
+                  $(`.${self.selectors.iframeContent}`).dispatchEvent(tabChangeEvent)
                 }
               }
             },
             contents: {
-              tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample', name: dataSources[key].toLowerCase(), className: `${self.selectors.tabList}-link`
+              tag: 'a', href: iframeSrc, textContent: dataSources[key], target: 'StyleguideExample-frame', name: dataSources[key].toLowerCase(), className: `${self.selectors.tabList}-link`
             }
           })
         if (index === 0) {
+          $(`.${self.selectors.tabList}`).setAttribute('data-viewportsize', dataSources[key].toLowerCase())
           tabItem.setAttribute('data-active', '')
         }
         $(`.${this.selectors.tabList}`)._.contents(tabItem)

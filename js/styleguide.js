@@ -20,31 +20,31 @@ let defaults = {
   devices: [
     {
       name: 'Mobile - Portrait',
-      icon: 'fa fa-mobile',
+      icon: 'StyleguideViewport-mobile',
       width: 320,
       height: 480
     },
     {
       name: 'Mobile - Landscape',
-      icon: 'fa fa-mobile fa-rotate-270',
+      icon: 'StyleguideViewport-mobile-rotate-270',
       width: 480,
       height: 320
     },
     {
       name: 'Tablet - Portrait',
-      icon: 'fa fa-tablet',
+      icon: 'StyleguideViewport-tablet',
       width: 768,
       height: 1024
     },
     {
       name: 'Tablet - Landscape',
-      icon: 'fa fa-tablet fa-rotate-270',
+      icon: 'StyleguideViewport-tablet-rotate-270',
       width: 1024,
       height: 768
     },
     {
       name: 'Desktop',
-      icon: 'fa fa-desktop',
+      icon: 'StyleguideViewport-desktop',
       width: 1200,
       height: 600
     }
@@ -175,6 +175,10 @@ module.exports = function Styleguide (gulp, configOverrides = { }) {
   this.project = {
     name: () => config.name,
     version: () => config.version
+  }
+
+  this.devices = () => {
+    return config.devices
   }
 
   // Display name overrides.

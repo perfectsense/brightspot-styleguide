@@ -1,0 +1,8 @@
+{
+    "_view": "Collage",
+    "items": [
+        {
+            "_include": "Freeform.json"
+        }
+    ]
+}

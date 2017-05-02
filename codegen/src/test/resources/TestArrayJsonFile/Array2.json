@@ -1,0 +1,10 @@
+[
+    {
+        "_template": "Module3.hbs",
+        "title3": "baz"
+    },
+    {
+        "_template": "Module4.hbs",
+        "title4": "qux"
+    }
+]

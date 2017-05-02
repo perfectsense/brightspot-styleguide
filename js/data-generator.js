@@ -62,9 +62,46 @@ DataGenerator.prototype.hexColor = function (luminosity) {
   return color
 }
 
-DataGenerator.prototype.image = function (width, height, url) {
+DataGenerator.prototype.image = function () {
+  let width
+  let height
+  let url
+
+  if (arguments.length < 3) {
+    const first = arguments[0]
+
+    if (typeof first === 'number') {
+      width = first
+      height = arguments[1]
+    } else {
+      const imageSize = this.styleguide.getImageSize(first)
+
+      if (imageSize) {
+        width = imageSize.width || imageSize.previewWidth
+        height = imageSize.height || imageSize.previewHeight
+      }
+
+      url = arguments[2]
+    }
+  } else {
+    width = arguments[0]
+    height = arguments[1]
+    url = arguments[2]
+  }
+
+  if (!width) {
+    throw new Error('Image width can\'t be 0!')
+  }
+
+  if (!height) {
+    throw new Error('Image height can\'t be 0!')
+  }
+
   if (!url) {
     const key = this.chance.guid()
+    width = this.number(width)
+    height = this.number(height)
+
     url = '/placeholder-image/' + key + '/' + width + 'x' + height + '.svg'
 
     placeholderImage(key, width, height, path.join(this.styleguide.path.build(), url))
@@ -136,18 +173,18 @@ DataGenerator.prototype.var = function (key) {
 }
 
 DataGenerator.prototype.process = function (data) {
-  var self = this
+  const self = this
 
   traverse(data).forEach(function (value) {
-    var node = this
+    const node = this
 
     // If there are any objects with _repeat entry in the list,
     // clone them.
     if (Array.isArray(value)) {
-      var newArray = [ ]
+      const newArray = [ ]
 
-      value.forEach(function (item) {
-        var repeat = item._repeat
+      value.forEach(item => {
+        let repeat = item._repeat
 
         if (repeat) {
           for (repeat = self.number(repeat); repeat > 0; --repeat) {
@@ -161,13 +198,17 @@ DataGenerator.prototype.process = function (data) {
       node.update(newArray)
     } else if (typeof value === 'string') {
       // Handlebars-like variable substitution.
-      node.update(value.replace(/\{\{(.*?)}}/g, function (match, invocation) {
+      node.update(value.replace(/\{\{(.*?)}}/g, (match, invocation) => {
         if (invocation.indexOf('(') < 0) {
-          invocation += '()'
+          if (invocation === 'image') {
+            invocation += `('${self.styleguide.getImageSizeName(node)}')`
+          } else {
+            invocation += '()'
+          }
         }
 
         try {
-          var data = eval('self.' + invocation)
+          const data = eval('self.' + invocation)
           if (data instanceof Error) {
             throw data
           } else {

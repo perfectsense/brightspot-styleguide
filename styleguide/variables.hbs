@@ -2,7 +2,19 @@
     {{#*inline 'head'}}
         <link rel="stylesheet" type="text/css" href="/node-modules/codemirror/lib/codemirror.css">
 
-        <script type="text/javascript" src="/node-modules/sticky-kit/dist/sticky-kit.min.js"></script>
+        <script type="application/javascript">
+            /*
+             Sticky-kit v1.1.4 | MIT | Leaf Corcoran 2015 | http://leafo.net
+            */
+            (function(){var $,doc,win;$=window.jQuery;win=$(window);doc=$(document);
+              $.fn.stick_in_parent=function(b){var y,l,I,m,z,J,n,p,K,q,D,t,A;null==b&&(b={});t=b.sticky_class;z=b.inner_scrolling;D=b.recalc_every;q=b.parent;p=b.offset_top;n=b.spacer;l=b.bottoming;A=win.height();y=doc.height();null==p&&(p=0);null==q&&(q=void 0);null==z&&(z=!0);null==t&&(t="is_stuck");null==l&&(l=!0);K=function(a){var b;return window.getComputedStyle?(a=window.getComputedStyle(a[0]),b=parseFloat(a.getPropertyValue("width"))+parseFloat(a.getPropertyValue("margin-left"))+parseFloat(a.getPropertyValue("margin-right")),
+              "border-box"!==a.getPropertyValue("box-sizing")&&(b+=parseFloat(a.getPropertyValue("border-left-width"))+parseFloat(a.getPropertyValue("border-right-width"))+parseFloat(a.getPropertyValue("padding-left"))+parseFloat(a.getPropertyValue("padding-right"))),b):a.outerWidth(!0)};I=function(a,b,m,B,E,u,r,F){var v,G,k,C,H,d,e,w,g,x,f,c;if(!a.data("sticky_kit")){a.data("sticky_kit",!0);H=y;e=a.parent();null!=q&&(e=e.closest(q));if(!e.length)throw"failed to find stick parent";v=k=!1;(f=null!=n?n&&a.closest(n):
+              $("<div />"))&&f.css("position",a.css("position"));w=function(){var d,l,h;if(!F&&(A=win.height(),H=y=doc.height(),d=parseInt(e.css("border-top-width"),10),l=parseInt(e.css("padding-top"),10),b=parseInt(e.css("padding-bottom"),10),m=e.offset().top+d+l,B=e.height(),k&&(v=k=!1,null==n&&(a.insertAfter(f),f.detach()),a.css({position:"",top:"",width:"",bottom:""}).removeClass(t),h=!0),E=a.offset().top-(parseInt(a.css("margin-top"),10)||0)-p,u=a.outerHeight(!0),r=a.css("float"),f&&f.css({width:K(a),height:u,
+              display:a.css("display"),"vertical-align":a.css("vertical-align"),"float":r}),h))return c()};w();if(u!==B)return C=void 0,d=p,x=D,c=function(){var c,q,h,g;if(!F&&(c=!1,null!=x&&(--x,0>=x&&(x=D,w(),c=!0)),c||y===H||w(),h=win.scrollTop(),null!=C&&(q=h-C),C=h,k?(l&&(g=h+u+d>B+m,v&&!g&&(v=!1,a.css({position:"fixed",bottom:"",top:d}).trigger("sticky_kit:unbottom"))),h<E&&(k=!1,d=p,null==n&&("left"!==r&&"right"!==r||a.insertAfter(f),f.detach()),c={position:"",width:"",top:""},a.css(c).removeClass(t).trigger("sticky_kit:unstick")),
+              z&&u+p>A&&!v&&(d-=q,d=Math.max(A-u,d),d=Math.min(p,d),k&&a.css({top:d+"px"}))):h>E&&(k=!0,c={position:"fixed",top:d},c.width="border-box"===a.css("box-sizing")?a.outerWidth()+"px":a.width()+"px",a.css(c).addClass(t),null==n&&(a.after(f),"left"!==r&&"right"!==r||f.append(a)),a.trigger("sticky_kit:stick")),k&&l&&(null==g&&(g=h+u+d>B+m),!v&&g)))return v=!0,"static"===e.css("position")&&e.css({position:"relative"}),a.css({position:"absolute",bottom:b,top:"auto"}).trigger("sticky_kit:bottom")},g=function(){w();
+              return c()},G=function(){F=!0;win.off("touchmove",c);win.off("scroll",c);win.off("resize",g);$(document.body).off("sticky_kit:recalc",g);a.off("sticky_kit:detach",G);a.removeData("sticky_kit");a.css({position:"",bottom:"",top:"",width:""});e.position("position","");if(k)return null==n&&("left"!==r&&"right"!==r||a.insertAfter(f),f.remove()),a.removeClass(t)},win.on("touchmove",c),win.on("scroll",c),win.on("resize",g),$(document.body).on("sticky_kit:recalc",g),a.on("sticky_kit:detach",G),setTimeout(c,
+              0)}};m=0;for(J=this.length;m<J;m++)b=this[m],I($(b));return this}}).call(this);
+        </script>
         <script type="text/javascript" src="/node-modules/codemirror/lib/codemirror.js"></script>
         <script type="text/javascript" src="/node-modules/codemirror/mode/javascript/javascript.js"></script>
 
@@ -105,7 +117,7 @@
                         </div>
 
                     {{else}}
-                        {{this}}    
+                        {{this}}
                     {{/if}}
                 {{/each}}
             </div>

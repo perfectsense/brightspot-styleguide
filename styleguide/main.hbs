@@ -36,6 +36,7 @@
                         {{/if}}
                         initCallback: function(iframe) {
                             $(iframe).contents().find('html', 'body').css('height', 'auto');
+                            $(document.body).trigger('sticky_kit:recalc');
                         }
                     });
                 });

@@ -158,13 +158,15 @@
 
                                     <iframe
                                         style="height: {{device.height}}px; width: {{device.width}}px;"
-                                        src="{{../../url}}?device=true&amp;seed={{../../../seed}}{{#if ../../../selectedStyleSheet}}&amp;ss={{../../../selectedStyleSheet.idx}}{{/if}}">
+                                        src="{{../../url}}?device=true&amp;seed={{../../../seed}}{{#if ../../../selectedStyleSheet}}&amp;ss={{../../../selectedStyleSheet.idx}}{{/if}}"
+                                        onload="$(document.body).trigger('sticky_kit:recalc')">
                                     </iframe>
                                 </div>
                             {{/each}}
 
                         {{else}}
-                            <iframe src="{{url}}?seed={{../seed}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}"></iframe>
+                            <iframe src="{{url}}?seed={{../seed}}{{#if ../selectedStyleSheet}}&amp;ss={{../selectedStyleSheet.idx}}{{/if}}"
+                            onload="$(document.body).trigger('sticky_kit:recalc')"></iframe>
                         {{/with}}
                     </div>
                 </div>
